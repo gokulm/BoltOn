@@ -13,7 +13,7 @@ namespace BoltOn.Bootstrapping
 		private List<Assembly> _assemblies = new List<Assembly>();
 		private bool _isDisposed;
 
-		Bootstrapper()
+		private Bootstrapper()
 		{
 		}
 

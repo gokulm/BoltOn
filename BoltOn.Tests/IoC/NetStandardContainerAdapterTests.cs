@@ -49,6 +49,25 @@ namespace BoltOn.Tests.IoC
 		}
 
 		[Fact]
+		public void GetInstance_RegisterScoped_ResolvesDependencies()
+		{
+			// arrange
+			_container = new NetStandardContainerAdapter();
+			ServiceLocator.SetContainer(_container);
+			_container.RegisterScoped<ITestService, TestService>();
+			_container.LockRegistration();
+
+			// act
+			var service1 = _container.GetInstance<ITestService>();
+			service1.SetName("abc");
+			var service2 = _container.GetInstance<ITestService>();
+			var name = service2.GetName();
+
+			// assert
+			Assert.Equal("abc", name);
+		}
+
+		[Fact]
 		public void GetInstance_RegisterTransientAndInjectService_ResolvesDependencies()
 		{
 			// arrange

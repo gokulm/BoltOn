@@ -20,8 +20,6 @@ namespace BoltOn.Tests.Logging
 
 			// act
 			sut.Debug(logMessage);
-			//var ex = new Exception(logMessage);
-			//sut.Error(ex);
 
 			// assert 
 			logger.Verify(v => v.Log(LogLevel.Debug, 0, logMessage, null, It.IsAny<Func<object, Exception, string>>()));

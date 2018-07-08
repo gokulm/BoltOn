@@ -23,7 +23,7 @@ namespace BoltOn.IoC
 			}
 		}
 
-		public static void SetContainer(IBoltOnContainer boltOnContainer)
+		internal static void SetContainer(IBoltOnContainer boltOnContainer)
 		{
 			_serviceLocator = boltOnContainer;
 		}

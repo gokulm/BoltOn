@@ -4,6 +4,7 @@ using SimpleInjector;
 using System.Reflection;
 using System.Linq;
 using SimpleInjector.Advanced;
+using SimpleInjector.Lifestyles;
 
 namespace BoltOn.IoC.SimpleInjector
 {
@@ -12,10 +13,11 @@ namespace BoltOn.IoC.SimpleInjector
 		private Container _container;
 		private bool _isDisposed;
 
-		public SimpleInjectorContainerAdapter()
+		public SimpleInjectorContainerAdapter(Container container = null, ScopedLifestyle defaultScopedLifestyle = null)
 		{
-			_container = new Container(); 
+			_container = container ?? new Container(); 
 			_container.Options.ConstructorResolutionBehavior = new FewParameterizedConstructorBehavior();
+			_container.Options.DefaultScopedLifestyle = defaultScopedLifestyle ?? new AsyncScopedLifestyle();
 		}
 
 		public IEnumerable<TService> GetAllInstances<TService>() where TService : class
@@ -48,7 +50,7 @@ namespace BoltOn.IoC.SimpleInjector
 			where TService : class
 			where TImplementation : class, TService
 		{
-			_container.Register<TService, TImplementation>();
+			_container.Register<TService, TImplementation>(Lifestyle.Scoped);
 			return this;
 		}
 

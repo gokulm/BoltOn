@@ -2,6 +2,8 @@
 using BoltOn.IoC;
 using BoltOn.IoC.SimpleInjector;
 using Moq.AutoMock;
+using SimpleInjector;
+using SimpleInjector.Lifestyles;
 using Xunit;
 
 namespace BoltOn.Tests.IoC
@@ -43,6 +45,28 @@ namespace BoltOn.Tests.IoC
 
 			// assert
 			Assert.Equal("abc", name);
+		}
+
+		[Fact]
+		public void GetInstance_RegisterScoped_ResolvesDependencies()
+		{
+			// arrange
+			var simpleInjectorContainer = new Container();
+			_container = new SimpleInjectorContainerAdapter(simpleInjectorContainer);
+			_container.RegisterScoped<ITestService, TestService>();
+			_container.LockRegistration();
+
+			// act & assert
+			using (AsyncScopedLifestyle.BeginScope(simpleInjectorContainer))
+			{
+				var service1 = _container.GetInstance<ITestService>();
+				service1.SetName("abc");
+				var service2 = _container.GetInstance<ITestService>();
+				var name = service2.GetName();
+
+				// assert
+				Assert.Equal("abc", name);
+			}
 		}
 
 		[Fact]
