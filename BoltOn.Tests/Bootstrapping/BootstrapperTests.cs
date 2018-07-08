@@ -11,7 +11,6 @@ using Xunit;
 
 namespace BoltOn.Tests.Bootstrapping
 {
-	// todo: since bootstrapper is disposed after every test, testpriority can be removed. left if for future reference
 	[TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
 	public class BootstrapperTests : IDisposable
 	{
@@ -26,7 +25,9 @@ namespace BoltOn.Tests.Bootstrapping
 		public void CreateContainer_NetStandard_CreatesContainer()
 		{
 			// act 
-			Bootstrapper.Instance.CreateContainer(new NetStandardContainerAdapter());
+			Bootstrapper
+				.Instance
+				.CreateContainer(new NetStandardContainerAdapter());
 
 			// assert
 			Assert.NotNull(Bootstrapper.Instance.Container);

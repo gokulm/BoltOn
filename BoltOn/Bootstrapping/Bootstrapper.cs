@@ -10,8 +10,9 @@ namespace BoltOn.Bootstrapping
 	{
 		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
 		private IBoltOnContainer _container;
-		private List<Assembly> _assemblies = new List<Assembly>();
+		private HashSet<Assembly> _assemblies = new HashSet<Assembly>();
 		private bool _isDisposed;
+		private Assembly _callingAssembly;
 
 		private Bootstrapper()
 		{
@@ -41,6 +42,8 @@ namespace BoltOn.Bootstrapping
 
 		public Bootstrapper ForAssemblies(Assembly[] assemblies)
 		{
+			//var test = Assembly.GetCallingAssembly().FullName;
+			//var test2 = Assembly.GetCallingAssembly().GetReferencedAssemblies().Select(si => si.Name);
 			assemblies.ToList().ForEach(a =>
 			{
 				_assemblies.Add(a);
@@ -48,8 +51,29 @@ namespace BoltOn.Bootstrapping
 			return this;
 		}
 
+		private void PopulateAssembliesByConvention()
+		{
+			var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+			var referencedAssemblies = _callingAssembly.GetReferencedAssemblies();
+			var boltOnAssemblies = (from r in referencedAssemblies
+									join a in appDomainAssemblies
+									on r.FullName equals a.FullName
+									where r.Name.StartsWith("BoltOn", StringComparison.Ordinal)
+			                        select a).ToList();
+			boltOnAssemblies.ForEach(f => _assemblies.Add(f));
+			var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
+			var appAssemblies = (from r in referencedAssemblies
+								 join a in appDomainAssemblies
+								 on r.FullName equals a.FullName
+								 where r.Name.StartsWith(appPrefix, StringComparison.Ordinal)
+								 select a).ToList();
+			appAssemblies.ForEach(f => _assemblies.Add(f));
+		}
+
 		public void Run()
 		{
+			_callingAssembly = Assembly.GetCallingAssembly();
+			PopulateAssembliesByConvention();
 			RunPreRegistrationTasks();
 			RunRegistrationTasks();
 			_container.LockRegistration();
