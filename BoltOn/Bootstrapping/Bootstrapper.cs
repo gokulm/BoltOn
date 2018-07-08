@@ -31,9 +31,10 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
-		public Bootstrapper CreateContainer<TContainer>() where TContainer : IBoltOnContainer, new()
+		public Bootstrapper CreateContainer<TContainer>(TContainer container) 
+			where TContainer : IBoltOnContainer
 		{
-			_container = new TContainer();
+			_container = container;
 			ServiceLocator.SetContainer(_container);
 			return this;
 		}
