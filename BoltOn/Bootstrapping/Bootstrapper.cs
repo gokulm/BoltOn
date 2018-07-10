@@ -10,9 +10,10 @@ namespace BoltOn.Bootstrapping
 	{
 		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
 		private IBoltOnContainer _container;
-		private HashSet<Assembly> _assemblies = new HashSet<Assembly>();
+		private List<Assembly> _assemblies = new List<Assembly>();
 		private bool _isDisposed;
 		private Assembly _callingAssembly;
+		private HashSet<Assembly> _assembliesToBeExcluded = new HashSet<Assembly>();
 
 		private Bootstrapper()
 		{
@@ -40,12 +41,12 @@ namespace BoltOn.Bootstrapping
 			return this;
 		}
 
-		public Bootstrapper ForAssemblies(Assembly[] assemblies)
+		public Bootstrapper ExcludeAssemblies(params Assembly[] assemblies)
 		{
-			//assemblies.ToList().ForEach(a =>
-			//{
-			//	_assemblies.Add(a);
-			//});
+			assemblies.ToList().ForEach(a =>
+			{
+				_assembliesToBeExcluded.Add(a);
+			});
 			return this;
 		}
 
@@ -54,36 +55,33 @@ namespace BoltOn.Bootstrapping
 			var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 			var referencedAssemblies = _callingAssembly.GetReferencedAssemblies().ToList();
 			referencedAssemblies.Add(_callingAssembly.GetName());
-			var boltOnAssemblies = (from r in referencedAssemblies
-									join a in appDomainAssemblies
-									on r.FullName equals a.FullName
-									where r.Name.StartsWith("BoltOn", StringComparison.Ordinal)
-			                        let orderAttribute = a.GetCustomAttribute<AssemblyRegistrationOrderAttribute>()
-			                        select new 
-									{ 
-										Assembly = a, 
-										Order = orderAttribute != null ? orderAttribute.Order : int.MaxValue
-									}).ToList();
-
+			// get BoltOn assemblies
+			var boltOnAssemblies = GetAssembliesStartsWith("BoltOn");
 			boltOnAssemblies
-				.OrderBy(o => o.Order)
+				.OrderBy(o => o.Item2)
 				.ToList()
-				.ForEach(f => _assemblies.Add(f.Assembly));
+				.ForEach(f => _assemblies.Add(f.Item1));
+			// get app assemblies
 			var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
-			var appAssemblies = (from r in referencedAssemblies
-								 join a in appDomainAssemblies
-								 on r.FullName equals a.FullName
-			                     where r.Name.StartsWith(appPrefix, StringComparison.Ordinal)
-								 let orderAttribute = a.GetCustomAttribute<AssemblyRegistrationOrderAttribute>()
-			                     select new
-								 {
-									 Assembly = a,
-									Order = orderAttribute != null ? orderAttribute.Order : int.MaxValue
-								 }).ToList();
+			var appAssemblies = GetAssembliesStartsWith(appPrefix);
 			appAssemblies
-				.OrderBy(o => o.Order)
+				.OrderBy(o => o.Item2)
 				.ToList()
-				.ForEach(f => _assemblies.Add(f.Assembly));
+				.ForEach(f => _assemblies.Add(f.Item1));
+			var assembliesToBeExcludedNames = _assembliesToBeExcluded.Select(s => s.FullName).ToList();
+			_assemblies = _assemblies.Where(a => !assembliesToBeExcludedNames.Contains(a.FullName)).Distinct().ToList();
+
+			List<Tuple<Assembly, int>> GetAssembliesStartsWith(string startsWith)
+			{
+				var temp = (from r in referencedAssemblies
+							join a in appDomainAssemblies
+							on r.FullName equals a.FullName
+            				where r.Name.StartsWith(startsWith, StringComparison.Ordinal)
+							let orderAttribute = a.GetCustomAttribute<AssemblyRegistrationOrderAttribute>()
+	                        select new Tuple<Assembly, int>
+	                        (a, orderAttribute != null ? orderAttribute.Order : int.MaxValue)).Distinct().ToList();
+				return temp;
+			}
 		}
 
 		public void Run()

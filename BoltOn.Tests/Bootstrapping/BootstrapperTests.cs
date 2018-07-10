@@ -41,7 +41,7 @@ namespace BoltOn.Tests.Bootstrapping
 			Bootstrapper
 				.Instance
 				.CreateContainer(new NetStandardContainerAdapter())
-				.ForAssemblies(new[] { typeof(NetStandardLoggerAdapter<>).Assembly, Assembly.GetExecutingAssembly() })
+				.ExcludeAssemblies(typeof(NetStandardLoggerAdapter<>).Assembly)
 				.Run();
 			var employee = ServiceLocator.Current.GetInstance<Employee>();
 
