@@ -42,32 +42,48 @@ namespace BoltOn.Bootstrapping
 
 		public Bootstrapper ForAssemblies(Assembly[] assemblies)
 		{
-			//var test = Assembly.GetCallingAssembly().FullName;
-			//var test2 = Assembly.GetCallingAssembly().GetReferencedAssemblies().Select(si => si.Name);
-			assemblies.ToList().ForEach(a =>
-			{
-				_assemblies.Add(a);
-			});
+			//assemblies.ToList().ForEach(a =>
+			//{
+			//	_assemblies.Add(a);
+			//});
 			return this;
 		}
 
 		private void PopulateAssembliesByConvention()
 		{
 			var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-			var referencedAssemblies = _callingAssembly.GetReferencedAssemblies();
+			var referencedAssemblies = _callingAssembly.GetReferencedAssemblies().ToList();
+			referencedAssemblies.Add(_callingAssembly.GetName());
 			var boltOnAssemblies = (from r in referencedAssemblies
 									join a in appDomainAssemblies
 									on r.FullName equals a.FullName
 									where r.Name.StartsWith("BoltOn", StringComparison.Ordinal)
-			                        select a).ToList();
-			boltOnAssemblies.ForEach(f => _assemblies.Add(f));
+			                        let orderAttribute = a.GetCustomAttribute<AssemblyRegistrationOrderAttribute>()
+			                        select new 
+									{ 
+										Assembly = a, 
+										Order = orderAttribute != null ? orderAttribute.Order : int.MaxValue
+									}).ToList();
+
+			boltOnAssemblies
+				.OrderBy(o => o.Order)
+				.ToList()
+				.ForEach(f => _assemblies.Add(f.Assembly));
 			var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
 			var appAssemblies = (from r in referencedAssemblies
 								 join a in appDomainAssemblies
 								 on r.FullName equals a.FullName
-								 where r.Name.StartsWith(appPrefix, StringComparison.Ordinal)
-								 select a).ToList();
-			appAssemblies.ForEach(f => _assemblies.Add(f));
+			                     where r.Name.StartsWith(appPrefix, StringComparison.Ordinal)
+								 let orderAttribute = a.GetCustomAttribute<AssemblyRegistrationOrderAttribute>()
+			                     select new
+								 {
+									 Assembly = a,
+									Order = orderAttribute != null ? orderAttribute.Order : int.MaxValue
+								 }).ToList();
+			appAssemblies
+				.OrderBy(o => o.Order)
+				.ToList()
+				.ForEach(f => _assemblies.Add(f.Assembly));
 		}
 
 		public void Run()
