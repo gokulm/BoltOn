@@ -13,9 +13,9 @@ namespace BoltOn.IoC.SimpleInjector
 		private Container _container;
 		private bool _isDisposed;
 
-		public SimpleInjectorContainerAdapter(Container container = null, ScopedLifestyle defaultScopedLifestyle = null)
+		public SimpleInjectorContainerAdapter(ScopedLifestyle defaultScopedLifestyle = null)
 		{
-			_container = container ?? new Container(); 
+			_container = new Container(); 
 			_container.Options.ConstructorResolutionBehavior = new FewParameterizedConstructorBehavior();
 			_container.Options.DefaultScopedLifestyle = defaultScopedLifestyle ?? new AsyncScopedLifestyle();
 		}

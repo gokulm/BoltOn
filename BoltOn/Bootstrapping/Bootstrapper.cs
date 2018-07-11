@@ -33,6 +33,10 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
+		/// <summary>
+		/// This method can be used if a container needs to be created with customization specific to 
+		/// the DI framework/library
+		/// </summary>
 		public Bootstrapper CreateContainer<TContainer>(TContainer container) 
 			where TContainer : IBoltOnContainer
 		{
@@ -88,6 +92,7 @@ namespace BoltOn.Bootstrapping
 		{
 			_callingAssembly = Assembly.GetCallingAssembly();
 			PopulateAssembliesByConvention();
+			CreateContainer();
 			RunPreRegistrationTasks();
 			RunRegistrationTasks();
 			_container.LockRegistration();
@@ -103,16 +108,10 @@ namespace BoltOn.Bootstrapping
 			                                && t.IsClass
 											select t).ToList();
 
-			try{
-				foreach (var type in preRegistrationTaskTypes)
-				{
-					var task = Activator.CreateInstance(type) as IBootstrapperPreRegistrationTask;
-					task.Run();
-				}
-				
-			}
-			catch(Exception ex){
-				var test = ex;
+			foreach (var type in preRegistrationTaskTypes)
+			{
+				var task = Activator.CreateInstance(type) as IBootstrapperPreRegistrationTask;
+				task.Run();
 			}
 		}
 
@@ -155,6 +154,21 @@ namespace BoltOn.Bootstrapping
 			postRegistrationTasks.ForEach(t => t.Run());
 		}
 
+		private void CreateContainer()
+		{
+			if(_container == null)
+			{
+				var containerFactoryInterfaceType = typeof(IBoltOnContainerFactory);
+				// only one container factory will be if there are many DI libraries included
+				var containerFactoryType = (from a in _assemblies
+											 from t in a.GetTypes()
+											 where containerFactoryInterfaceType.IsAssignableFrom(t)
+											 && t.IsClass
+				                            select t).First();
+				var task = Activator.CreateInstance(containerFactoryType) as IBoltOnContainerFactory;
+				_container = task.Create();
+			}
+		}
 
 		protected virtual void Dispose(bool disposing)
 		{

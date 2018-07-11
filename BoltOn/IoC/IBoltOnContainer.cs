@@ -2,7 +2,7 @@
 
 namespace BoltOn.IoC
 {
-    public interface IBoltOnContainer : IServiceLocator, IDisposable
+	public interface IBoltOnContainer : IServiceLocator, IDisposable
     {
         IBoltOnContainer RegisterScoped<TService, TImplementation>() where TService : class
             where TImplementation : class, TService;
@@ -15,9 +15,4 @@ namespace BoltOn.IoC
         IBoltOnContainer RegisterTransient<TService>(Func<TService> implementationFactory) where TService : class;
         void LockRegistration();
     }
-
-	public interface IBoltOnContainerFactory
-	{
-		IBoltOnContainer Create();
-	}
 }

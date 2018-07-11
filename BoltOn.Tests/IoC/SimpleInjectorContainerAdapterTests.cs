@@ -52,7 +52,7 @@ namespace BoltOn.Tests.IoC
 		{
 			// arrange
 			var simpleInjectorContainer = new Container();
-			_container = new SimpleInjectorContainerAdapter(simpleInjectorContainer);
+			_container = new SimpleInjectorContainerAdapter();
 			_container.RegisterScoped<ITestService, TestService>();
 			_container.LockRegistration();
 

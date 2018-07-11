@@ -3,10 +3,12 @@ using System.Reflection;
 using BoltOn.Bootstrapping;
 using BoltOn.IoC;
 using BoltOn.IoC.NetStandardBolt;
+using BoltOn.IoC.SimpleInjector;
 using BoltOn.Logging;
 using BoltOn.Logging.NetStandard;
 using BoltOn.Tests.Common;
 using Moq;
+using SimpleInjector.Lifestyles;
 using Xunit;
 
 namespace BoltOn.Tests.Bootstrapping
@@ -40,7 +42,7 @@ namespace BoltOn.Tests.Bootstrapping
 			// arrange
 			Bootstrapper
 				.Instance
-				.CreateContainer(new NetStandardContainerAdapter())
+				//.CreateContainer(new NetStandardContainerAdapter())
 				//.ExcludeAssemblies(typeof(NetStandardLoggerAdapter<>).Assembly)
 				.Run();
 			var employee = ServiceLocator.Current.GetInstance<Employee>();
