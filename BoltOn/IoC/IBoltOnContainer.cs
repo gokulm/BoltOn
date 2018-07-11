@@ -15,4 +15,9 @@ namespace BoltOn.IoC
         IBoltOnContainer RegisterTransient<TService>(Func<TService> implementationFactory) where TService : class;
         void LockRegistration();
     }
+
+	public interface IBoltOnContainerFactory
+	{
+		IBoltOnContainer Create();
+	}
 }

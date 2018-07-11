@@ -35,13 +35,13 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact, TestPriority(3)]
-		public void Run_WithAssembliesIncluded_RunsRegistrationTasks()
+		public void Run_IncludeAllReferencedAssemblies_RunsRegistrationTasks()
 		{
 			// arrange
 			Bootstrapper
 				.Instance
 				.CreateContainer(new NetStandardContainerAdapter())
-				.ExcludeAssemblies(typeof(NetStandardLoggerAdapter<>).Assembly)
+				//.ExcludeAssemblies(typeof(NetStandardLoggerAdapter<>).Assembly)
 				.Run();
 			var employee = ServiceLocator.Current.GetInstance<Employee>();
 

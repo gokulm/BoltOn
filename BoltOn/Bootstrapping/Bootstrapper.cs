@@ -56,14 +56,14 @@ namespace BoltOn.Bootstrapping
 			var referencedAssemblies = _callingAssembly.GetReferencedAssemblies().ToList();
 			referencedAssemblies.Add(_callingAssembly.GetName());
 			// get BoltOn assemblies
-			var boltOnAssemblies = GetAssembliesStartsWith("BoltOn");
+			var boltOnAssemblies = GetAssemblies("BoltOn");
 			boltOnAssemblies
 				.OrderBy(o => o.Item2)
 				.ToList()
 				.ForEach(f => _assemblies.Add(f.Item1));
 			// get app assemblies
 			var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
-			var appAssemblies = GetAssembliesStartsWith(appPrefix);
+			var appAssemblies = GetAssemblies(appPrefix);
 			appAssemblies
 				.OrderBy(o => o.Item2)
 				.ToList()
@@ -71,7 +71,7 @@ namespace BoltOn.Bootstrapping
 			var assembliesToBeExcludedNames = _assembliesToBeExcluded.Select(s => s.FullName).ToList();
 			_assemblies = _assemblies.Where(a => !assembliesToBeExcludedNames.Contains(a.FullName)).Distinct().ToList();
 
-			List<Tuple<Assembly, int>> GetAssembliesStartsWith(string startsWith)
+			List<Tuple<Assembly, int>> GetAssemblies(string startsWith)
 			{
 				var temp = (from r in referencedAssemblies
 							join a in appDomainAssemblies
@@ -100,12 +100,19 @@ namespace BoltOn.Bootstrapping
 			var preRegistrationTaskTypes = (from a in _assemblies
 											from t in a.GetTypes()
 											where preRegistrationTaskType.IsAssignableFrom(t)
+			                                && t.IsClass
 											select t).ToList();
 
-			foreach (var type in preRegistrationTaskTypes)
-			{
-				var task = Activator.CreateInstance(type) as IBootstrapperPreRegistrationTask;
-				task.Run();
+			try{
+				foreach (var type in preRegistrationTaskTypes)
+				{
+					var task = Activator.CreateInstance(type) as IBootstrapperPreRegistrationTask;
+					task.Run();
+				}
+				
+			}
+			catch(Exception ex){
+				var test = ex;
 			}
 		}
 
@@ -115,6 +122,7 @@ namespace BoltOn.Bootstrapping
 			var registrationTaskTypes = (from a in _assemblies
 										 from t in a.GetTypes()
 										 where registrationTaskType.IsAssignableFrom(t)
+			                             && t.IsClass
 										 select t).ToList();
 
 			foreach (var type in registrationTaskTypes)
@@ -132,6 +140,7 @@ namespace BoltOn.Bootstrapping
 			var registrationTaskTypes = (from a in _assemblies
 										 from t in a.GetTypes()
 										 where registrationTaskType.IsAssignableFrom(t)
+			                             && t.IsClass
 										 select t).ToList();
 
 			foreach (var type in registrationTaskTypes)
