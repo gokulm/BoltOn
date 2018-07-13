@@ -10,6 +10,7 @@ namespace BoltOn.Bootstrapping
 	{
 		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
 		private IBoltOnContainer _container;
+		private IBoltOnContainerFactory _containerFactory;
 		private List<Assembly> _assemblies = new List<Assembly>();
 		private bool _isDisposed;
 		private Assembly _callingAssembly;
@@ -37,11 +38,10 @@ namespace BoltOn.Bootstrapping
 		/// This method can be used if a container needs to be created with customization specific to 
 		/// the DI framework/library
 		/// </summary>
-		public Bootstrapper CreateContainer<TContainer>(TContainer container) 
-			where TContainer : IBoltOnContainer
+		public Bootstrapper SetContainerFactory<TContainer>(TContainer containerFactory) 
+			where TContainer : IBoltOnContainerFactory
 		{
-			_container = container;
-			ServiceLocator.SetContainer(_container);
+			_containerFactory = containerFactory;
 			return this;
 		}
 
@@ -96,7 +96,7 @@ namespace BoltOn.Bootstrapping
 			RunPreRegistrationTasks();
 			RunRegistrationTasks();
 			_container.LockRegistration();
-			RunPostRegistrationTasks();
+			//RunPostRegistrationTasks();
 		}
 
 		private void RunPreRegistrationTasks()
@@ -150,24 +150,31 @@ namespace BoltOn.Bootstrapping
 
 		private void RunPostRegistrationTasks()
 		{
-			var postRegistrationTasks = _container.GetAllInstances<IBootstrapperPostRegistrationTask>().ToList();
-			postRegistrationTasks.ForEach(t => t.Run());
+			var postRegistrationTasks = _container.GetAllInstances<IBootstrapperPostRegistrationTask>();
+			if (postRegistrationTasks != null)
+			{
+				postRegistrationTasks.ToList().ForEach(t => t.Run());
+			}
 		}
 
 		private void CreateContainer()
 		{
-			if(_container == null)
+			if(_containerFactory == null)
 			{
 				var containerFactoryInterfaceType = typeof(IBoltOnContainerFactory);
-				// only one container factory will be if there are many DI libraries included
 				var containerFactoryType = (from a in _assemblies
 											 from t in a.GetTypes()
 											 where containerFactoryInterfaceType.IsAssignableFrom(t)
 											 && t.IsClass
-				                            select t).First();
+				                            select t).Last();
 				var task = Activator.CreateInstance(containerFactoryType) as IBoltOnContainerFactory;
 				_container = task.Create();
 			}
+			else
+			{
+				_container = _containerFactory.Create();
+			}
+			ServiceLocator.SetContainer(_container);
 		}
 
 		protected virtual void Dispose(bool disposing)

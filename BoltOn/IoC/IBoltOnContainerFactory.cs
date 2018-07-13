@@ -1,8 +1,6 @@
-﻿using BoltOn.Bootstrapping;
-
-namespace BoltOn.IoC
+﻿namespace BoltOn.IoC
 {
-    public interface IBoltOnContainerFactory
+	public interface IBoltOnContainerFactory
     {
         IBoltOnContainer Create();
     }

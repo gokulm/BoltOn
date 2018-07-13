@@ -10,9 +10,9 @@ namespace BoltOn.IoC.NetStandardBolt
 		private IServiceProvider _serviceProvider;
 		private bool _isDisposed;
 
-		public NetStandardContainerAdapter()
+		internal NetStandardContainerAdapter(ServiceCollection serviceCollection)
 		{
-			_serviceCollection = new ServiceCollection();
+			_serviceCollection = serviceCollection;
 		}
 
 		public void LockRegistration()

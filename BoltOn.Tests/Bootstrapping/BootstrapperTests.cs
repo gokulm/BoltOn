@@ -17,26 +17,54 @@ namespace BoltOn.Tests.Bootstrapping
 	public class BootstrapperTests : IDisposable
 	{
 		[Fact, TestPriority(1)]
-		public void Container_CallContainerBeforeCreating_ThrowsException()
+		public void Container_CallContainerBeforeInitializingFactory_ThrowsException()
 		{
 			// act and assert
 			Assert.Throws<Exception>(() => Bootstrapper.Instance.Container);
 		}
 
 		[Fact, TestPriority(2)]
-		public void CreateContainer_NetStandard_CreatesContainer()
+		public void Container_CallContainerAfterInitializingFactory_ThrowsException()
+		{
+			// arrange
+			var containerFactory = new NetStandardContainerFactory();
+
+			// act 
+			Bootstrapper
+				.Instance
+				.SetContainerFactory(containerFactory);
+
+			// assert
+			Assert.Throws<Exception>(() => Bootstrapper.Instance.Container);
+		}
+
+		[Fact, TestPriority(3)]
+		public void Container_CallContainerAfterRun_ReturnsContainer()
 		{
 			// act 
 			Bootstrapper
 				.Instance
-				.CreateContainer(new NetStandardContainerAdapter());
+				.Run();
+
+			// assert
+			Assert.NotNull(Bootstrapper.Instance.Container);
+		}
+
+		[Fact, TestPriority(4)]
+		public void Container_CallContainerAfterRunWithSetContainerFactory_ReturnsNetStandardContainer()
+		{
+			// act 
+			Bootstrapper
+				.Instance
+				.SetContainerFactory(new NetStandardContainerFactory())
+				.Run();
 
 			// assert
 			Assert.NotNull(Bootstrapper.Instance.Container);
 			Assert.IsType<NetStandardContainerAdapter>(Bootstrapper.Instance.Container);
 		}
 
-		[Fact, TestPriority(3)]
+		[Fact, TestPriority(4)]
 		public void Run_IncludeAllReferencedAssemblies_RunsRegistrationTasks()
 		{
 			// arrange

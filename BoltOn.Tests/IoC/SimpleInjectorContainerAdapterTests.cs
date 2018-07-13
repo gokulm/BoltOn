@@ -15,7 +15,9 @@ namespace BoltOn.Tests.IoC
 		[Fact]
 		public void GetInstance_RegisterTransient_ResolvesDependencies()
 		{
-			_container = new SimpleInjectorContainerAdapter();
+			// arrang
+			var containerFactory = new SimpleInjectoryContainerFactory();
+			_container = containerFactory.Create();
 			_container.RegisterTransient<ITestService, TestService>();
 			_container.LockRegistration();
 
@@ -33,7 +35,8 @@ namespace BoltOn.Tests.IoC
 		public void GetInstance_RegisterSingleton_ResolvesDependencies()
 		{
 			// arrange
-			_container = new SimpleInjectorContainerAdapter();
+			var containerFactory = new SimpleInjectoryContainerFactory();
+			_container = containerFactory.Create();
 			_container.RegisterSingleton<ITestService, TestService>();
 			_container.LockRegistration();
 
@@ -52,7 +55,8 @@ namespace BoltOn.Tests.IoC
 		{
 			// arrange
 			var simpleInjectorContainer = new Container();
-			_container = new SimpleInjectorContainerAdapter();
+			var containerFactory = new SimpleInjectoryContainerFactory(simpleInjectorContainer);
+			_container = containerFactory.Create();
 			_container.RegisterScoped<ITestService, TestService>();
 			_container.LockRegistration();
 
@@ -73,7 +77,8 @@ namespace BoltOn.Tests.IoC
 		public void GetInstance_RegisterTransientAndInjectService_ResolvesDependencies()
 		{
 			// arrange
-			_container = new SimpleInjectorContainerAdapter();
+			var containerFactory = new SimpleInjectoryContainerFactory();
+			_container = containerFactory.Create();
 			var autoMocker = new AutoMocker();
 			var employee = autoMocker.CreateInstance<Employee>();
 			var testService = autoMocker.GetMock<ITestService>();
@@ -93,7 +98,9 @@ namespace BoltOn.Tests.IoC
 		[Fact]
 		public void ServiceLocatorGetInstance_RegisterTransient_ResolvesDependencies()
 		{
-			_container = new SimpleInjectorContainerAdapter();
+			// arrange
+			var containerFactory = new SimpleInjectoryContainerFactory();
+			_container = containerFactory.Create();
 			ServiceLocator.SetContainer(_container);
 			_container.RegisterTransient<ITestService, TestService>();
 			_container.LockRegistration();

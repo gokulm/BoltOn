@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using SimpleInjector;
-using System.Reflection;
-using System.Linq;
-using SimpleInjector.Advanced;
-using SimpleInjector.Lifestyles;
 
 namespace BoltOn.IoC.SimpleInjector
 {
@@ -13,11 +9,9 @@ namespace BoltOn.IoC.SimpleInjector
 		private Container _container;
 		private bool _isDisposed;
 
-		public SimpleInjectorContainerAdapter(ScopedLifestyle defaultScopedLifestyle = null)
+		internal SimpleInjectorContainerAdapter(Container container)
 		{
-			_container = new Container(); 
-			_container.Options.ConstructorResolutionBehavior = new FewParameterizedConstructorBehavior();
-			_container.Options.DefaultScopedLifestyle = defaultScopedLifestyle ?? new AsyncScopedLifestyle();
+			_container = container; 
 		}
 
 		public IEnumerable<TService> GetAllInstances<TService>() where TService : class
@@ -97,14 +91,5 @@ namespace BoltOn.IoC.SimpleInjector
 				_isDisposed = true;
 			}
 		}
-	}
-
-	public class FewParameterizedConstructorBehavior : IConstructorResolutionBehavior
-	{
-		public ConstructorInfo GetConstructor(Type implementationType) => (
-						from ctor in implementationType.GetConstructors()
-						orderby ctor.GetParameters().Length ascending
-						select ctor)
-					.First();
 	}
 }

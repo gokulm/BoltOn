@@ -11,11 +11,17 @@ namespace BoltOn.Tests.IoC
     {
 		private IBoltOnContainer _container;
 
+		public NetStandardContainerAdapterTests()
+		{
+			var containerFactory = new NetStandardContainerFactory();
+			_container = containerFactory.Create();
+			ServiceLocator.SetContainer(_container);
+		}
+
 		[Fact]
 		public void GetInstance_RegisterTransient_ResolvesDependencies()
 		{
-			_container = new NetStandardContainerAdapter();
-			ServiceLocator.SetContainer(_container);
+			// arrange
 			_container.RegisterTransient<ITestService, TestService>();
 			_container.LockRegistration();
 
@@ -33,8 +39,6 @@ namespace BoltOn.Tests.IoC
 		public void GetInstance_RegisterSingleton_ResolvesDependencies()
 		{
 			// arrange
-			_container = new NetStandardContainerAdapter();
-			ServiceLocator.SetContainer(_container);
 			_container.RegisterSingleton<ITestService, TestService>();
 			_container.LockRegistration();
 
@@ -52,8 +56,6 @@ namespace BoltOn.Tests.IoC
 		public void GetInstance_RegisterScoped_ResolvesDependencies()
 		{
 			// arrange
-			_container = new NetStandardContainerAdapter();
-			ServiceLocator.SetContainer(_container);
 			_container.RegisterScoped<ITestService, TestService>();
 			_container.LockRegistration();
 
@@ -71,8 +73,6 @@ namespace BoltOn.Tests.IoC
 		public void GetInstance_RegisterTransientAndInjectService_ResolvesDependencies()
 		{
 			// arrange
-			_container = new NetStandardContainerAdapter();
-			ServiceLocator.SetContainer(_container);
 			var autoMocker = new AutoMocker();
 			var employee = autoMocker.CreateInstance<Employee>();
 			var testService = autoMocker.GetMock<ITestService>();
@@ -92,8 +92,7 @@ namespace BoltOn.Tests.IoC
 		[Fact]
 		public void ServiceLocatorGetInstance_RegisterTransient_ResolvesDependencies()
 		{
-			_container = new NetStandardContainerAdapter();
-			ServiceLocator.SetContainer(_container);
+			// arrange
 			_container.RegisterTransient<ITestService, TestService>();
 			_container.LockRegistration();
 
