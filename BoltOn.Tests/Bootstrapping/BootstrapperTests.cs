@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Reflection;
 using BoltOn.Bootstrapping;
 using BoltOn.IoC;
 using BoltOn.IoC.NetStandardBolt;
 using BoltOn.IoC.SimpleInjector;
 using BoltOn.Logging;
-using BoltOn.Logging.NetStandard;
 using BoltOn.Tests.Common;
 using Moq;
-using SimpleInjector.Lifestyles;
 using Xunit;
 
 namespace BoltOn.Tests.Bootstrapping
@@ -53,10 +50,14 @@ namespace BoltOn.Tests.Bootstrapping
 		[Fact, TestPriority(4)]
 		public void Container_CallContainerAfterRunWithSetContainerFactory_ReturnsNetStandardContainer()
 		{
+			// arrange 
+			Bootstrapper
+				.Instance
+				.SetContainerFactory(new NetStandardContainerFactory());
+
 			// act 
 			Bootstrapper
 				.Instance
-				.SetContainerFactory(new NetStandardContainerFactory())
 				.Run();
 
 			// assert
@@ -65,20 +66,71 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact, TestPriority(4)]
-		public void Run_IncludeAllReferencedAssemblies_RunsRegistrationTasks()
+		public void Run_ExcludeAllDIAssemblies_ThrowsException()
+		{
+			// arrange 
+			Bootstrapper
+				.Instance
+				.ExcludeAssemblies(typeof(NetStandardContainerFactory).Assembly, 
+				                   typeof(SimpleInjectorContainerAdapter).Assembly);
+
+			// act 
+			var ex = Record.Exception(() => Bootstrapper.Instance.Run());
+
+			// assert
+			Assert.NotNull(ex);
+			Assert.Same("No IoC Container Adapter referenced", ex.Message);
+		}
+
+		[Fact, TestPriority(5)]
+		public void Container_CallContainerExcludeNetStandard_ReturnsSimpleInjectorContainer()
+		{
+			// arrange 
+			Bootstrapper
+				.Instance
+				// if other DI frameworks/libraries are added, they should be excluded too
+				.ExcludeAssemblies(typeof(NetStandardContainerFactory).Assembly);
+
+			// act
+			Bootstrapper
+				.Instance
+				.Run();
+
+			// assert
+			Assert.NotNull(Bootstrapper.Instance.Container);
+			Assert.IsType<SimpleInjectorContainerAdapter>(Bootstrapper.Instance.Container);
+		}
+
+		[Fact, TestPriority(6)]
+		public void Run_ExcludeAssemblyWithRegistrationTask_ThrowsException()
 		{
 			// arrange
 			Bootstrapper
 				.Instance
-				//.CreateContainer(new NetStandardContainerAdapter())
-				//.ExcludeAssemblies(typeof(NetStandardLoggerAdapter<>).Assembly)
+				.ExcludeAssemblies(typeof(BootstrapperTests).Assembly)
 				.Run();
-			var employee = ServiceLocator.Current.GetInstance<Employee>();
 
-			// act
-			var name = employee.GetName();
+			// act 
+			// as this could throw any exception specific to the DI framework, using record
+			var ex = Record.Exception(() => ServiceLocator.Current.GetInstance<Employee>());
 
 			// assert
+			Assert.NotNull(ex);
+		}
+
+		[Fact, TestPriority(7)]
+		public void Run_DefaultRunWithAllTheAssemblies_RunsRegistrationTasksAndResolvesDependencies()
+		{
+			// arrange
+			Bootstrapper
+				.Instance
+				.Run();
+
+			// act
+			var employee = ServiceLocator.Current.GetInstance<Employee>();
+
+			// assert
+			var name = employee.GetName();
 			Assert.Equal("John", name);
 		}
 
@@ -99,8 +151,6 @@ namespace BoltOn.Tests.Bootstrapping
 					 .RegisterTransient(() => loggerMock.Object);
 		}
 	}
-
-
 
 	public class Employee
 	{

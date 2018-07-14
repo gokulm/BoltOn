@@ -11,13 +11,15 @@ namespace BoltOn.Bootstrapping
 		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
 		private IBoltOnContainer _container;
 		private IBoltOnContainerFactory _containerFactory;
-		private List<Assembly> _assemblies = new List<Assembly>();
+		private List<Assembly> _assemblies;
 		private bool _isDisposed;
 		private Assembly _callingAssembly;
-		private HashSet<Assembly> _assembliesToBeExcluded = new HashSet<Assembly>();
+		private HashSet<Assembly> _assembliesToBeExcluded;
 
 		private Bootstrapper()
 		{
+			_assemblies = new List<Assembly>();
+			_assembliesToBeExcluded = new HashSet<Assembly>();
 		}
 
 		public static Bootstrapper Instance => _instance.Value;
@@ -166,7 +168,10 @@ namespace BoltOn.Bootstrapping
 											 from t in a.GetTypes()
 											 where containerFactoryInterfaceType.IsAssignableFrom(t)
 											 && t.IsClass
-				                            select t).Last();
+				                            select t).LastOrDefault();
+				if (containerFactoryType == null)
+					throw new Exception("No IoC Container Adapter referenced");
+				
 				var task = Activator.CreateInstance(containerFactoryType) as IBoltOnContainerFactory;
 				_container = task.Create();
 			}
@@ -179,18 +184,21 @@ namespace BoltOn.Bootstrapping
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_isDisposed)
+			if (disposing)
 			{
-				if (disposing)
+				if (_container != null)
 				{
-					if (_container != null)
+					// this can be used to clear all the managed and unmanaged resources
+					if (!_isDisposed)
 					{
 						_container.Dispose();
-						_container = null;
+						_isDisposed = true;
 					}
+					_container = null;
 				}
-
-				_isDisposed = true;
+				_containerFactory = null;
+				_assemblies.Clear();
+				_assembliesToBeExcluded.Clear();
 			}
 		}
 
