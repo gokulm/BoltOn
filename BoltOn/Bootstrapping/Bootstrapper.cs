@@ -36,12 +36,17 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
+		public Bootstrapper SetContainer(IBoltOnContainer boltOnContainer)
+		{
+			_container = boltOnContainer;
+			return this;
+		}
+
 		/// <summary>
 		/// This method can be used if a container needs to be created with customization specific to 
 		/// the DI framework/library
 		/// </summary>
-		public Bootstrapper SetContainerFactory<TContainer>(TContainer containerFactory) 
-			where TContainer : IBoltOnContainerFactory
+		public Bootstrapper SetContainerFactory(IBoltOnContainerFactory containerFactory) 
 		{
 			_containerFactory = containerFactory;
 			return this;
@@ -161,24 +166,38 @@ namespace BoltOn.Bootstrapping
 
 		private void CreateContainer()
 		{
-			if(_containerFactory == null)
+			if(_container == null)
 			{
-				var containerFactoryInterfaceType = typeof(IBoltOnContainerFactory);
-				var containerFactoryType = (from a in _assemblies
+				var containerInterfaceType = typeof(IBoltOnContainer);
+				var containerType = (from a in _assemblies
 											 from t in a.GetTypes()
-											 where containerFactoryInterfaceType.IsAssignableFrom(t)
+											 where containerInterfaceType.IsAssignableFrom(t)
 											 && t.IsClass
 				                            select t).LastOrDefault();
-				if (containerFactoryType == null)
+				if (containerType == null)
 					throw new Exception("No IoC Container Adapter referenced");
+
+				_container = Activator.CreateInstance(containerType) as IBoltOnContainer;
+			}
+
+			//if(_containerFactory == null)
+			//{
+			//	var containerFactoryInterfaceType = typeof(IBoltOnContainerFactory);
+			//	var containerFactoryType = (from a in _assemblies
+			//								 from t in a.GetTypes()
+			//								 where containerFactoryInterfaceType.IsAssignableFrom(t)
+			//								 && t.IsClass
+			//	                            select t).LastOrDefault();
+			//	if (containerFactoryType == null)
+			//		throw new Exception("No IoC Container Adapter referenced");
 				
-				var task = Activator.CreateInstance(containerFactoryType) as IBoltOnContainerFactory;
-				_container = task.Create();
-			}
-			else
-			{
-				_container = _containerFactory.Create();
-			}
+			//	var task = Activator.CreateInstance(containerFactoryType) as IBoltOnContainerFactory;
+			//	_container = task.Create();
+			//}
+			//else
+			//{
+			//	_container = _containerFactory.Create();
+			//}
 			ServiceLocator.SetContainer(_container);
 		}
 

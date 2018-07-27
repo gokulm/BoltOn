@@ -1,0 +1,5 @@
+﻿RequestProcessor
+- should be able to inject anywhere - web, from within another handler
+- should support request/response, publish (and subscribe too)
+- should support UoW
+- publishing to queue should be as simple as calling an handler

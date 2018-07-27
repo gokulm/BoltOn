@@ -13,8 +13,7 @@ namespace BoltOn.Tests.IoC
 
 		public NetStandardContainerAdapterTests()
 		{
-			var containerFactory = new NetStandardContainerFactory();
-			_container = containerFactory.Create();
+			_container = new NetStandardContainerAdapter();
 			ServiceLocator.SetContainer(_container);
 		}
 

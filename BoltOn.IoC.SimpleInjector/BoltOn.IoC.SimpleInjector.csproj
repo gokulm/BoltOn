@@ -10,4 +10,7 @@
   <ItemGroup>
     <PackageReference Include="SimpleInjector" Version="4.3.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="SimpleInjectoryContainerFactory.cs" />
+  </ItemGroup>
 </Project>

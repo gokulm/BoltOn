@@ -10,7 +10,12 @@ namespace BoltOn.IoC.NetStandardBolt
 		private IServiceProvider _serviceProvider;
 		private bool _isDisposed;
 
-		internal NetStandardContainerAdapter(ServiceCollection serviceCollection)
+		public NetStandardContainerAdapter()
+		{
+			_serviceCollection = new ServiceCollection();
+		}
+
+		public NetStandardContainerAdapter(ServiceCollection serviceCollection)
 		{
 			_serviceCollection = serviceCollection;
 		}

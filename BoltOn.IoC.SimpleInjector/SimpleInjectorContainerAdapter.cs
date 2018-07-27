@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SimpleInjector;
+using SimpleInjector.Lifestyles;
 
 namespace BoltOn.IoC.SimpleInjector
 {
@@ -9,7 +10,14 @@ namespace BoltOn.IoC.SimpleInjector
 		private Container _container;
 		private bool _isDisposed;
 
-		internal SimpleInjectorContainerAdapter(Container container)
+		public SimpleInjectorContainerAdapter()
+		{
+			_container = new Container();
+			_container.Options.ConstructorResolutionBehavior = new FewParameterizedConstructorBehavior();
+			_container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+		}
+
+		public SimpleInjectorContainerAdapter(Container container)
 		{
 			_container = container; 
 		}

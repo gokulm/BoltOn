@@ -15,9 +15,8 @@ namespace BoltOn.Tests.IoC
 		[Fact]
 		public void GetInstance_RegisterTransient_ResolvesDependencies()
 		{
-			// arrang
-			var containerFactory = new SimpleInjectoryContainerFactory();
-			_container = containerFactory.Create();
+			// arrange
+			_container = new SimpleInjectorContainerAdapter();
 			_container.RegisterTransient<ITestService, TestService>();
 			_container.LockRegistration();
 
@@ -35,8 +34,7 @@ namespace BoltOn.Tests.IoC
 		public void GetInstance_RegisterSingleton_ResolvesDependencies()
 		{
 			// arrange
-			var containerFactory = new SimpleInjectoryContainerFactory();
-			_container = containerFactory.Create();
+			_container = new SimpleInjectorContainerAdapter();
 			_container.RegisterSingleton<ITestService, TestService>();
 			_container.LockRegistration();
 
@@ -55,8 +53,8 @@ namespace BoltOn.Tests.IoC
 		{
 			// arrange
 			var simpleInjectorContainer = new Container();
-			var containerFactory = new SimpleInjectoryContainerFactory(simpleInjectorContainer);
-			_container = containerFactory.Create();
+			simpleInjectorContainer.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+			_container = new SimpleInjectorContainerAdapter(simpleInjectorContainer);
 			_container.RegisterScoped<ITestService, TestService>();
 			_container.LockRegistration();
 
@@ -77,8 +75,7 @@ namespace BoltOn.Tests.IoC
 		public void GetInstance_RegisterTransientAndInjectService_ResolvesDependencies()
 		{
 			// arrange
-			var containerFactory = new SimpleInjectoryContainerFactory();
-			_container = containerFactory.Create();
+			_container = new SimpleInjectorContainerAdapter();
 			var autoMocker = new AutoMocker();
 			var employee = autoMocker.CreateInstance<Employee>();
 			var testService = autoMocker.GetMock<ITestService>();
@@ -99,8 +96,7 @@ namespace BoltOn.Tests.IoC
 		public void ServiceLocatorGetInstance_RegisterTransient_ResolvesDependencies()
 		{
 			// arrange
-			var containerFactory = new SimpleInjectoryContainerFactory();
-			_container = containerFactory.Create();
+			_container = new SimpleInjectorContainerAdapter();
 			ServiceLocator.SetContainer(_container);
 			_container.RegisterTransient<ITestService, TestService>();
 			_container.LockRegistration();

@@ -21,18 +21,18 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact, TestPriority(2)]
-		public void Container_CallContainerAfterInitializingFactory_ThrowsException()
+		public void Container_CallContainerAfterInitializingContainer_ReturnsContainer()
 		{
 			// arrange
-			var containerFactory = new NetStandardContainerFactory();
+			var container = new NetStandardContainerAdapter();
 
 			// act 
 			Bootstrapper
 				.Instance
-				.SetContainerFactory(containerFactory);
+				.SetContainer(container);
 
 			// assert
-			Assert.Throws<Exception>(() => Bootstrapper.Instance.Container);
+			Assert.NotNull(Bootstrapper.Instance.Container);
 		}
 
 		[Fact, TestPriority(3)]
@@ -48,12 +48,12 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact, TestPriority(4)]
-		public void Container_CallContainerAfterRunWithSetContainerFactory_ReturnsNetStandardContainer()
+		public void Container_CallContainerAfterRunWithSetContainer_ReturnsNetStandardContainer()
 		{
 			// arrange 
 			Bootstrapper
 				.Instance
-				.SetContainerFactory(new NetStandardContainerFactory());
+				.SetContainer(new NetStandardContainerAdapter());
 
 			// act 
 			Bootstrapper
@@ -71,7 +71,7 @@ namespace BoltOn.Tests.Bootstrapping
 			// arrange 
 			Bootstrapper
 				.Instance
-				.ExcludeAssemblies(typeof(NetStandardContainerFactory).Assembly, 
+				.ExcludeAssemblies(typeof(NetStandardContainerAdapter).Assembly, 
 				                   typeof(SimpleInjectorContainerAdapter).Assembly);
 
 			// act 
@@ -89,7 +89,7 @@ namespace BoltOn.Tests.Bootstrapping
 			Bootstrapper
 				.Instance
 				// if other DI frameworks/libraries are added, they should be excluded too
-				.ExcludeAssemblies(typeof(NetStandardContainerFactory).Assembly);
+				.ExcludeAssemblies(typeof(NetStandardContainerAdapter).Assembly);
 
 			// act
 			Bootstrapper
