@@ -99,5 +99,11 @@ namespace BoltOn.IoC.SimpleInjector
 				_isDisposed = true;
 			}
 		}
+
+		public IBoltOnContainer RegisterTransientCollection(Type serviceType, IEnumerable<Type> serviceTypes)
+		{
+			_container.Collection.Register(serviceType, serviceTypes);
+			return this;
+		}
 	}
 }

@@ -14,7 +14,7 @@ namespace BoltOn.Tests.Bootstrapping
 	public class BootstrapperTests : IDisposable
 	{
 		[Fact, TestPriority(1)]
-		public void Container_CallContainerBeforeInitializingFactory_ThrowsException()
+		public void Container_CallContainerBeforeInitializingContainer_ThrowsException()
 		{
 			// act and assert
 			Assert.Throws<Exception>(() => Bootstrapper.Instance.Container);

@@ -96,6 +96,15 @@ namespace BoltOn.IoC.NetStandardBolt
 				_isDisposed = true;
 			}
 		}
+
+		public IBoltOnContainer RegisterTransientCollection(Type serviceType, IEnumerable<Type> serviceTypes)
+		{
+			foreach (var tempServiceType in serviceTypes)
+			{
+				_serviceCollection.AddTransient(serviceType, tempServiceType);
+			}
+			return this;
+		}
 	}
 
 }

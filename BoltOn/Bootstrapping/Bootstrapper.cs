@@ -10,7 +10,6 @@ namespace BoltOn.Bootstrapping
 	{
 		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
 		private IBoltOnContainer _container;
-		private IBoltOnContainerFactory _containerFactory;
 		private List<Assembly> _assemblies;
 		private bool _isDisposed;
 		private Assembly _callingAssembly;
@@ -39,16 +38,6 @@ namespace BoltOn.Bootstrapping
 		public Bootstrapper SetContainer(IBoltOnContainer boltOnContainer)
 		{
 			_container = boltOnContainer;
-			return this;
-		}
-
-		/// <summary>
-		/// This method can be used if a container needs to be created with customization specific to 
-		/// the DI framework/library
-		/// </summary>
-		public Bootstrapper SetContainerFactory(IBoltOnContainerFactory containerFactory) 
-		{
-			_containerFactory = containerFactory;
 			return this;
 		}
 
@@ -103,7 +92,7 @@ namespace BoltOn.Bootstrapping
 			RunPreRegistrationTasks();
 			RunRegistrationTasks();
 			_container.LockRegistration();
-			//RunPostRegistrationTasks();
+			RunPostRegistrationTasks();
 		}
 
 		private void RunPreRegistrationTasks()
@@ -149,10 +138,11 @@ namespace BoltOn.Bootstrapping
 			                             && t.IsClass
 										 select t).ToList();
 
-			foreach (var type in registrationTaskTypes)
-			{
-				_container.RegisterTransient(registrationTaskType, type);
-			}
+			//foreach (var type in registrationTaskTypes)
+			//{
+			//	_container.RegisterTransient(registrationTaskType, type);
+			//}
+			_container.RegisterTransientCollection(registrationTaskType, registrationTaskTypes);
 		}
 
 		private void RunPostRegistrationTasks()
@@ -180,24 +170,6 @@ namespace BoltOn.Bootstrapping
 				_container = Activator.CreateInstance(containerType) as IBoltOnContainer;
 			}
 
-			//if(_containerFactory == null)
-			//{
-			//	var containerFactoryInterfaceType = typeof(IBoltOnContainerFactory);
-			//	var containerFactoryType = (from a in _assemblies
-			//								 from t in a.GetTypes()
-			//								 where containerFactoryInterfaceType.IsAssignableFrom(t)
-			//								 && t.IsClass
-			//	                            select t).LastOrDefault();
-			//	if (containerFactoryType == null)
-			//		throw new Exception("No IoC Container Adapter referenced");
-				
-			//	var task = Activator.CreateInstance(containerFactoryType) as IBoltOnContainerFactory;
-			//	_container = task.Create();
-			//}
-			//else
-			//{
-			//	_container = _containerFactory.Create();
-			//}
 			ServiceLocator.SetContainer(_container);
 		}
 
@@ -215,7 +187,6 @@ namespace BoltOn.Bootstrapping
 					}
 					_container = null;
 				}
-				_containerFactory = null;
 				_assemblies.Clear();
 				_assembliesToBeExcluded.Clear();
 			}
