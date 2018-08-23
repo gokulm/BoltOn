@@ -32,6 +32,11 @@ namespace BoltOn.IoC.SimpleInjector
 			return _container.GetInstance<TService>();
 		}
 
+		public object GetInstance(Type type)
+		{
+			return _container.GetInstance(type);
+		}
+
 		public void LockRegistration()
 		{
 		}

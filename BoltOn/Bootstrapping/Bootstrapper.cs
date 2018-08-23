@@ -198,19 +198,4 @@ namespace BoltOn.Bootstrapping
 			GC.SuppressFinalize(this);
 		}
 	}
-
-	public interface IBootstrapperPreRegistrationTask
-	{
-		void Run();
-	}
-
-	public interface IBootstrapperRegistrationTask
-	{
-		void Run(IBoltOnContainer container);
-	}
-
-	public interface IBootstrapperPostRegistrationTask
-	{
-		void Run();
-	}
 }

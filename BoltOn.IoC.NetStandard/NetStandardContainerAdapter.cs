@@ -35,6 +35,11 @@ namespace BoltOn.IoC.NetStandardBolt
 			return _serviceProvider.GetService<TService>();
 		}
 
+		public object GetInstance(Type type)
+		{
+			return _serviceProvider.GetService(type);
+		}
+
 		public IBoltOnContainer RegisterScoped<TService, TImplementation>()
 			where TService : class
 			where TImplementation : class, TService

@@ -7,6 +7,7 @@ namespace BoltOn.IoC
 	{
 		IEnumerable<TService> GetAllInstances<TService>() where TService : class;
 		TService GetInstance<TService>() where TService : class;
+		object GetInstance(Type type);
 	}
 
 	public static class ServiceLocator
