@@ -62,6 +62,7 @@ namespace BoltOn.Bootstrapping
 				.ToList()
 				.ForEach(f => _assemblies.Add(f.Item1));
 			// get app assemblies
+			// todo (medium): should allow custom app prefix. to accomodate solutions with different project names
 			var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
 			var appAssemblies = GetAssemblies(appPrefix);
 			appAssemblies
@@ -123,7 +124,7 @@ namespace BoltOn.Bootstrapping
 			foreach (var type in registrationTaskTypes)
 			{
 				var task = Activator.CreateInstance(type) as IBootstrapperRegistrationTask;
-				task.Run(_container);
+				task.Run(_container, _assemblies);
 			}
 
 			RegisterPostRegistrationTasks();

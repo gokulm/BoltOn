@@ -26,7 +26,7 @@ namespace BoltOn.MediatorModule
 
 	public interface IMediator
 	{
-		StandardDtoReponse<TResponse> Process<TResponse>(IRequest<TResponse> request);
+		StandardDtoReponse<TResponse> Get<TResponse>(IRequest<TResponse> request);
 	}
 
 	public class Mediator
@@ -40,7 +40,7 @@ namespace BoltOn.MediatorModule
 			_serviceLocator = serviceLocator;
 		}
 
-		public StandardDtoReponse<TResponse> Process<TResponse>(IRequest<TResponse> request)
+		public StandardDtoReponse<TResponse> Get<TResponse>(IRequest<TResponse> request)
 		{
 			try
 			{
@@ -49,6 +49,8 @@ namespace BoltOn.MediatorModule
 					genericRequestHandlerType.MakeGenericType(request.GetType(), typeof(TResponse));
 				dynamic handler = _serviceLocator.GetInstance(interfaceHandlerType);
 				var response = handler.Handle(request);
+				if (response is StandardDtoReponse<TResponse>)
+					return response;
 				return new StandardDtoReponse<TResponse> { Data = response };
 			}
 			catch (Exception ex)
@@ -62,7 +64,6 @@ namespace BoltOn.MediatorModule
 			}
 			finally
 			{
-
 			}
 		}
 	}

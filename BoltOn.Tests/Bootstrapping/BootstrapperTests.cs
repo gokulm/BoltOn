@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using BoltOn.Bootstrapping;
 using BoltOn.IoC;
 using BoltOn.IoC.NetStandardBolt;
@@ -144,7 +146,7 @@ namespace BoltOn.Tests.Bootstrapping
 
 	public class TestBootstrapperRegistrationTask : IBootstrapperRegistrationTask
 	{
-		public void Run(IBoltOnContainer container)
+		public void Run(IBoltOnContainer container, IEnumerable<Assembly> assemblies)
 		{
 			var loggerMock = new Mock<IBoltOnLogger<Employee>>();
 			container.RegisterTransient<Employee>()

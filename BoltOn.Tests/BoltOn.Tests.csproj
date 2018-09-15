@@ -21,6 +21,7 @@
     <Folder Include="IoC\" />
     <Folder Include="Bootstrapping\" />
     <Folder Include="Common\" />
+    <Folder Include="Mediator\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
@@ -28,5 +29,6 @@
     <ProjectReference Include="..\BoltOn.IoC.SimpleInjector\BoltOn.IoC.SimpleInjector.csproj" />
     <ProjectReference Include="..\BoltOn.Logging.NLog\BoltOn.Logging.NLog.csproj" />
     <ProjectReference Include="..\BoltOn.Logging.NetStandard\BoltOn.Logging.NetStandard.csproj" />
+    <ProjectReference Include="..\BoltOn.Mediator\BoltOn.Mediator.csproj" />
   </ItemGroup>
 </Project>
