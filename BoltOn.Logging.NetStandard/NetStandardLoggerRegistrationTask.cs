@@ -11,7 +11,8 @@ namespace BoltOn.Logging.NetStandard
         public void Run(IBoltOnContainer container, IEnumerable<Assembly> assemblies)
         {
             container.RegisterTransient<ILoggerFactory, LoggerFactory>();
-            container.RegisterTransient<IBoltOnLoggerFactory, NetStandardLoggerAdapterFactory>();
+            //container.RegisterTransient<IBoltOnLoggerFactory, NetStandardLoggerAdapterFactory>();
+			container.RegisterTransient(typeof(IBoltOnLogger<>), typeof(NetStandardLoggerAdapter<>));
         }
 	}
 }

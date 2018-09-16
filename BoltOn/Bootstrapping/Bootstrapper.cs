@@ -127,6 +127,8 @@ namespace BoltOn.Bootstrapping
 				task.Run(_container, _assemblies);
 			}
 
+			_container.RegisterSingleton(typeof(IoC.IServiceProvider), new ServiceProvider(_container));
+
 			RegisterPostRegistrationTasks();
 		}
 

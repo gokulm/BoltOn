@@ -4,6 +4,7 @@ using Xunit;
 using BoltOn.Mediator;
 using BoltOn.IoC;
 using BoltOn.IoC.SimpleInjector;
+using BoltOn.Logging.NLog;
 
 namespace BoltOn.Tests.Mediator
 {
@@ -15,14 +16,16 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			Bootstrapper
 				.Instance
-				.ExcludeAssemblies(typeof(SimpleInjectorContainerAdapter).Assembly)
+				// as mediator is register as scoped, and we cannot resolve scoped dependencies in simple
+				// injector directly 
+				.ExcludeAssemblies(typeof(SimpleInjectorContainerAdapter).Assembly, typeof(NLogLoggerAdapter<>).Assembly)
 				.Run();
 
 			// act
-			var mediator = ServiceLocator.Current.GetInstance<BoltOn.Mediator.IMediator>();
+			var mediator = ServiceLocator.Current.GetInstance<IMediator>();
 			mediator.Get(new TestRequest());
 
-			// assert
+			// assert 
 		}
     }
 

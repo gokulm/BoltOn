@@ -148,9 +148,9 @@ namespace BoltOn.Tests.Bootstrapping
 	{
 		public void Run(IBoltOnContainer container, IEnumerable<Assembly> assemblies)
 		{
-			var loggerMock = new Mock<IBoltOnLogger<Employee>>();
-			container.RegisterTransient<Employee>()
-					 .RegisterTransient(() => loggerMock.Object);
+			//var loggerMock = new Mock<IBoltOnLogger<Employee>>();
+			container.RegisterTransient<Employee>();
+					 //.RegisterTransient(() => loggerMock.Object);
 		}
 	}
 

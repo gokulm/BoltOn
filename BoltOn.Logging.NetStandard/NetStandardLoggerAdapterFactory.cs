@@ -13,7 +13,7 @@ namespace BoltOn.Logging.NetStandard
 
         public IBoltOnLogger<TType> Create<TType>()
         {
-            return new NetStandardLoggerAdapter<TType>(_loggerFactory.CreateLogger<TType>());
+			return new NetStandardLoggerAdapter<TType>(_loggerFactory);
         }
     }
 }

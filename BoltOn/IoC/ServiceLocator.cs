@@ -1,32 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace BoltOn.IoC
 {
-	public interface IServiceLocator
+	public class ServiceLocator 
 	{
-		IEnumerable<TService> GetAllInstances<TService>() where TService : class;
-		TService GetInstance<TService>() where TService : class;
-		object GetInstance(Type type);
-	}
+		static IServiceProvider _serviceProvider;
 
-	public static class ServiceLocator
-	{
-		static IServiceLocator _serviceLocator;
-
-		public static IServiceLocator Current
+		public static IServiceProvider Current
 		{
 			get
 			{
-				if (_serviceLocator == null)
+				if (_serviceProvider == null)
 					throw new Exception("ServiceLocator not initialized");
-				return _serviceLocator;
+				return _serviceProvider;
 			}
 		}
 
 		internal static void SetContainer(IBoltOnContainer boltOnContainer)
 		{
-			_serviceLocator = boltOnContainer;
+			_serviceProvider = boltOnContainer;
 		}
 	}
 }

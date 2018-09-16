@@ -7,7 +7,7 @@ namespace BoltOn.IoC.NetStandardBolt
 	public class NetStandardContainerAdapter : IBoltOnContainer
 	{
 		private ServiceCollection _serviceCollection;
-		private IServiceProvider _serviceProvider;
+		private System.IServiceProvider _serviceProvider;
 		private bool _isDisposed;
 
 		public NetStandardContainerAdapter()
@@ -53,6 +53,12 @@ namespace BoltOn.IoC.NetStandardBolt
 			where TImplementation : class, TService
 		{
 			_serviceCollection.AddSingleton<TService, TImplementation>();
+			return this;
+		}
+
+		public IBoltOnContainer RegisterSingleton(Type service, object implementationInstance)
+		{
+			_serviceCollection.AddSingleton(service, implementationInstance);
 			return this;
 		}
 

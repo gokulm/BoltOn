@@ -69,6 +69,12 @@ namespace BoltOn.IoC.SimpleInjector
 			return this;
 		}
 
+		public IBoltOnContainer RegisterSingleton(Type service, object implementationInstance)
+		{
+			_container.RegisterInstance(service, implementationInstance);
+			return this;
+		}
+
 		public IBoltOnContainer RegisterTransient<TService, TImplementation>()
 			where TService : class
 			where TImplementation : class, TService

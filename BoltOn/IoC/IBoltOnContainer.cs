@@ -3,14 +3,15 @@ using System.Collections.Generic;
 
 namespace BoltOn.IoC
 {
-	public interface IBoltOnContainer : IServiceLocator, IDisposable
+	public interface IBoltOnContainer : IServiceProvider, IDisposable
     {
         IBoltOnContainer RegisterScoped<TService, TImplementation>() where TService : class
             where TImplementation : class, TService;
         IBoltOnContainer RegisterTransient<TService, TImplementation>() where TService : class
             where TImplementation : class, TService;
         IBoltOnContainer RegisterSingleton<TService, TImplementation>() where TService : class
-            where TImplementation : class, TService;
+			where TImplementation : class, TService;
+		IBoltOnContainer RegisterSingleton(Type service, object implementationInstance);
         IBoltOnContainer RegisterTransient<TService>() where TService : class;
         IBoltOnContainer RegisterTransient(Type serviceType, Type implementation);
         IBoltOnContainer RegisterTransient<TService>(Func<TService> implementationFactory) where TService : class;
