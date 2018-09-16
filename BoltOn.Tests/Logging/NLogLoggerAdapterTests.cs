@@ -2,6 +2,7 @@
 using NLog;
 using Xunit;
 using Moq.AutoMock;
+using BoltOn.Tests.Common;
 
 namespace BoltOn.Tests.Logging
 {

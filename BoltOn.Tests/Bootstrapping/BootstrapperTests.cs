@@ -5,7 +5,6 @@ using BoltOn.Bootstrapping;
 using BoltOn.IoC;
 using BoltOn.IoC.NetStandardBolt;
 using BoltOn.IoC.SimpleInjector;
-using BoltOn.Logging;
 using BoltOn.Tests.Common;
 using Moq;
 using Xunit;
@@ -114,13 +113,30 @@ namespace BoltOn.Tests.Bootstrapping
 
 			// act 
 			// as this could throw any exception specific to the DI framework, using record
-			var ex = Record.Exception(() => ServiceLocator.Current.GetInstance<Employee>());
+			var ex = Record.Exception(() => ServiceLocator.Current.GetInstance<ITestInterface>());
 
 			// assert
 			Assert.NotNull(ex);
 		}
 
 		[Fact, TestPriority(7)]
+		public void Run_ConcreteClassWithoutRegistrationButResolvableDependencies_ReturnsInstance()
+		{
+			// arrange
+			Bootstrapper
+				.Instance
+				.ExcludeAssemblies(typeof(BootstrapperTests).Assembly)
+				.Run();
+
+			// act 
+			// as this could throw any exception specific to the DI framework, using record
+			var employee = ServiceLocator.Current.GetInstance<Employee>();
+
+			// assert
+			Assert.NotNull(employee);
+		}
+
+		[Fact, TestPriority(8)]
 		public void Run_DefaultRunWithAllTheAssemblies_RunsRegistrationTasksAndResolvesDependencies()
 		{
 			// arrange
@@ -149,25 +165,18 @@ namespace BoltOn.Tests.Bootstrapping
 		public void Run(IBoltOnContainer container, IEnumerable<Assembly> assemblies)
 		{
 			//var loggerMock = new Mock<IBoltOnLogger<Employee>>();
-			container.RegisterTransient<Employee>();
+			container.RegisterTransient<Employee>()
+					 .RegisterTransient<ITestInterface, TestImplementation>();
 					 //.RegisterTransient(() => loggerMock.Object);
 		}
 	}
 
-	public class Employee
+	public interface ITestInterface
 	{
-		readonly IBoltOnLogger<Employee> _logger;
+	}
 
-		public Employee(IBoltOnLogger<Employee> logger)
-		{
-			_logger = logger;
-			_logger.Info("Employee instantiated...");
-		}
-
-		public string GetName()
-		{
-			_logger.Debug("getting name...");
-			return "John";
-		}
+	public class TestImplementation : ITestInterface
+	{
+		
 	}
 }

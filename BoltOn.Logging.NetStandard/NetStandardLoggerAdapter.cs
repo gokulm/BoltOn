@@ -17,7 +17,7 @@ namespace BoltOn.Logging.NetStandard
 			// just to keep it unit testable instead of using LogDebug, used Log method which is part of the
 			// ILogger and other methods are extension methods
 			//_logger.LogDebug(message);
-			_logger.Log(LogLevel.Debug, 0, message, null,  null);
+			_logger.LogDebug(message);
 
 		}
 

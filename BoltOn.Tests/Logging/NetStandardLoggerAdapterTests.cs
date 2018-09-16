@@ -2,7 +2,6 @@ using BoltOn.Logging.NetStandard;
 using Xunit;
 using Microsoft.Extensions.Logging;
 using Moq.AutoMock;
-using Moq;
 using System;
 
 namespace BoltOn.Tests.Logging
@@ -14,19 +13,18 @@ namespace BoltOn.Tests.Logging
         {
 			// arrange
 			var autoMocker = new AutoMocker();
-			var sut = autoMocker.CreateInstance<NetStandardLoggerAdapter<Employee>>();
-			var logger = autoMocker.GetMock<ILogger<Employee>>();
-			var logMessage = "test";
+			var sut = new NetStandardLoggerAdapter<LoggerTest> (new LoggerFactory());
+ 			var logMessage = "test";
 
 			// act
 			sut.Debug(logMessage);
-
-			// assert 
-			logger.Verify(v => v.Log(LogLevel.Debug, 0, logMessage, null, It.IsAny<Func<object, Exception, string>>()));
+			sut.Error(new Exception());
+			sut.Info(logMessage);
+			sut.Warn(logMessage);
         }
     }
 
-	public class Employee
+	public class LoggerTest
 	{
 	}
 }
