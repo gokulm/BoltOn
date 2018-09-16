@@ -1,5 +1,4 @@
 ﻿using System;
-using BoltOn.IoC;
 using BoltOn.Logging;
 
 namespace BoltOn.Mediator
@@ -14,7 +13,6 @@ namespace BoltOn.Mediator
 		private readonly IoC.IServiceProvider _serviceProvider;
 		private readonly IBoltOnLogger<Mediator> _logger;
 
-		//public Mediator(IServiceLocator serviceLocator, IBoltOnLogger<Mediator> logger)
 		public Mediator(IoC.IServiceProvider serviceProvider, IBoltOnLogger<Mediator> logger)
 		{
 			_logger = logger;
@@ -25,18 +23,25 @@ namespace BoltOn.Mediator
 		{
 			try
 			{
+				var requestType = request.GetType();
+				_logger.Debug($"Resolving handler for request: {requestType}");
 				var genericRequestHandlerType = typeof(IRequestHandler<,>);
 				var interfaceHandlerType =
 					genericRequestHandlerType.MakeGenericType(request.GetType(), typeof(TResponse));
 				dynamic handler = _serviceProvider.GetInstance(interfaceHandlerType);
+				_logger.Debug($"Resolved handler: {handler.GetType()}");
 				var response = handler.Handle(request);
 				if (response is StandardDtoReponse<TResponse>)
 					return response;
-				return new StandardDtoReponse<TResponse> { Data = response };
+				return new StandardDtoReponse<TResponse> 
+				{ 
+					Data = response, 
+					IsSuccessful = true 
+				};
 			}
 			catch (Exception ex)
 			{
-				//_logger.Error(ex);
+				_logger.Error(ex);
 				return new StandardDtoReponse<TResponse>
 				{
 					IsSuccessful = false,

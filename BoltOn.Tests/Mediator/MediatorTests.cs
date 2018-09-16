@@ -5,14 +5,13 @@ using BoltOn.Mediator;
 using BoltOn.IoC;
 using BoltOn.IoC.SimpleInjector;
 using BoltOn.Logging.NLog;
-using BoltOn.Tests.Common;
 
 namespace BoltOn.Tests.Mediator
 {
 	public class MediatorTests : IDisposable
 	{
-		[Fact, TestPriority(9)]
-		public void GetInstance_RegisterTransient_ResolvesDependencies()
+		[Fact]
+		public void Get_BootstrapWithDefaults_ResolvesHandlerAndExecutesIt()
 		{
 			// arrange
 			// as there is conflict with Container_CallContainerAfterRun_ReturnsContainer test, added some delay
@@ -26,9 +25,11 @@ namespace BoltOn.Tests.Mediator
 
 			// act
 			var mediator = ServiceLocator.Current.GetInstance<IMediator>();
-			mediator.Get(new TestRequest());
+			var result = mediator.Get(new TestRequest());
 
 			// assert 
+			Assert.True(result.IsSuccessful);
+			Assert.True(result.Data);
 		}
 
 		public void Dispose()
