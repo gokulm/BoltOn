@@ -136,6 +136,23 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.NotNull(employee);
 		}
 
+		[Fact, TestPriority(7)]
+		public void Run_ConcreteClassWithoutRegistrationButNotResolvableDependencies_ThrowsException()
+		{
+			// arrange
+			Bootstrapper
+				.Instance
+				.ExcludeAssemblies(typeof(BootstrapperTests).Assembly)
+				.Run();
+
+			// act 
+			// as this could throw any exception specific to the DI framework, using record
+			var ex = Record.Exception(() => ServiceLocator.Current.GetInstance<ClassWithInjectedDependency>());
+
+			// assert
+			Assert.NotNull(ex);
+		}
+
 		[Fact, TestPriority(8)]
 		public void Run_DefaultRunWithAllTheAssemblies_RunsRegistrationTasksAndResolvesDependencies()
 		{
@@ -177,6 +194,13 @@ namespace BoltOn.Tests.Bootstrapping
 
 	public class TestImplementation : ITestInterface
 	{
-		
+	}
+
+	public class ClassWithInjectedDependency
+	{
+		public ClassWithInjectedDependency(ITestInterface testInterface)
+		{
+
+		}
 	}
 }
