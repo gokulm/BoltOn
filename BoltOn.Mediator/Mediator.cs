@@ -1,5 +1,6 @@
 ﻿using System;
 using BoltOn.Logging;
+using BoltOn.Utilities;
 
 namespace BoltOn.Mediator
 {
@@ -29,10 +30,9 @@ namespace BoltOn.Mediator
 				var interfaceHandlerType =
 					genericRequestHandlerType.MakeGenericType(request.GetType(), typeof(TResponse));
 				dynamic handler = _serviceProvider.GetInstance(interfaceHandlerType);
+				Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
 				_logger.Debug($"Resolved handler: {handler.GetType()}");
 				var response = handler.Handle(request);
-				if (response is StandardDtoReponse<TResponse>)
-					return response;
 				return new StandardDtoReponse<TResponse> 
 				{ 
 					Data = response, 

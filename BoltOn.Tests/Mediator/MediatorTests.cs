@@ -13,7 +13,7 @@ namespace BoltOn.Tests.Mediator
 	public class MediatorTests : IDisposable
 	{
 		[Fact, Trait("Category", "Integration")]
-		public void Get_BootstrapWithDefaults_HandlerIsSuccessful()
+		public void Get_BootstrapWithDefaults_ReturnsSuccessfulResult()
 		{
 			// arrange
 			// as there is conflict with Container_CallContainerAfterRun_ReturnsContainer test, added some delay
@@ -35,7 +35,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Get_MediatorWithRegisteredHandler_ReturnsSuccessulResult()
+		public void Get_RegisteredHandlerThatReturnsBool_ReturnsSuccessulResult()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -56,7 +56,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Get_MediatorWithRegisteredHandler_ReturnsUnsuccessfulResult()
+		public void Get_RegisteredHandlerThatThrowsException_ReturnsUnsuccessfulResult()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -76,6 +76,29 @@ namespace BoltOn.Tests.Mediator
 			Assert.False(result.Data);
 			Assert.NotNull(result.Exception);
 			Assert.Equal("handler failed", result.Exception.Message);
+		}
+
+		[Fact]
+		public void Get_UnregisteredHandler_ReturnsUnsuccessfulResult()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
+			var serviceProvider = autoMocker.GetMock<BoltOn.IoC.IServiceProvider>();
+			var testHandler = new Mock<TestHandler>();
+			serviceProvider.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
+			               .Returns(null);
+			var request = new TestRequest();
+
+			// act
+			var result = sut.Get(request);
+
+			// assert 
+			Assert.False(result.IsSuccessful);
+			Assert.False(result.Data);
+			Assert.NotNull(result.Exception);
+			Assert.Equal(string.Format(Constants.ExceptionMessages.
+			                           HANDLER_NOT_FOUND, request), result.Exception.Message);
 		}
 
 		public void Dispose()
