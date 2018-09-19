@@ -15,6 +15,7 @@ namespace BoltOn.IoC.SimpleInjector
 			_container = new Container();
 			_container.Options.ConstructorResolutionBehavior = new FewParameterizedConstructorBehavior();
 			_container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+			_container.Options.AllowOverridingRegistrations = true;
 		}
 
 		public SimpleInjectorContainerAdapter(Container container)

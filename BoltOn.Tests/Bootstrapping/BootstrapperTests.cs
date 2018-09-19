@@ -113,7 +113,7 @@ namespace BoltOn.Tests.Bootstrapping
 
 			// act 
 			// as this could throw any exception specific to the DI framework, using record
-			var ex = Record.Exception(() => ServiceLocator.Current.GetInstance<ITestInterface>());
+			var ex = Record.Exception(() => ServiceLocator.Current.GetInstance<ITestService>());
 
 			// assert
 			Assert.NotNull(ex);
@@ -169,6 +169,39 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.Equal("John", name);
 		}
 
+		[Fact, TestPriority(9)]
+		public void Run_DefaultRunWithAllTheAssemblies_ResolvesDependenciesRegisteredByConvention()
+		{
+			// arrange
+			Bootstrapper
+				.Instance
+				.Run();
+
+			// act
+			var result = ServiceLocator.Current.GetInstance<ITestService>();
+
+			// assert
+			var name = result.GetName();
+			Assert.Equal("test", name);
+		}
+
+		[Fact]
+		public void Run_ClassNotRegisteredByConvention_ThrowsException()
+		{
+			// arrange
+			Bootstrapper
+				.Instance
+				.ExcludeAssemblies(typeof(BootstrapperTests).Assembly)
+				.Run();
+
+			// act 
+			// as this could throw any exception specific to the DI framework, using record
+			var ex = Record.Exception(() => ServiceLocator.Current.GetInstance<ITestService>());
+
+			// assert
+			Assert.NotNull(ex);
+		}
+
 		public void Dispose()
 		{
 			Bootstrapper
@@ -181,26 +214,35 @@ namespace BoltOn.Tests.Bootstrapping
 	{
 		public void Run(IBoltOnContainer container, IEnumerable<Assembly> assemblies)
 		{
-			//var loggerMock = new Mock<IBoltOnLogger<Employee>>();
 			container.RegisterTransient<Employee>()
-					 .RegisterTransient<ITestInterface, TestImplementation>();
-					 //.RegisterTransient(() => loggerMock.Object);
+					 .RegisterTransient<ClassWithInjectedDependency>();
 		}
 	}
 
-	public interface ITestInterface
+	public interface ITestService
 	{
+		string GetName();
 	}
 
-	public class TestImplementation : ITestInterface
+	public class TestService : ITestService
 	{
+		public string GetName()
+		{
+			return "test";
+		}
 	}
 
 	public class ClassWithInjectedDependency
 	{
-		public ClassWithInjectedDependency(ITestInterface testInterface)
+		public ClassWithInjectedDependency(ITestService testService)
 		{
+			Name = testService.GetName();
+		}
 
+		public string Name
+		{
+			get;
+			set;
 		}
 	}
 }

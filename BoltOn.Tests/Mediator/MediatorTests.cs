@@ -17,7 +17,7 @@ namespace BoltOn.Tests.Mediator
 		{
 			// arrange
 			// as there is conflict with Container_CallContainerAfterRun_ReturnsContainer test, added some delay
-			System.Threading.Thread.Sleep(250);
+			//System.Threading.Thread.Sleep(250);
 			Bootstrapper
 				.Instance
 				// as mediator is register as scoped, and we cannot resolve scoped dependencies in simple
