@@ -4,9 +4,9 @@ namespace BoltOn.IoC
 {
 	public class ServiceLocator 
 	{
-		static IServiceProvider _serviceProvider;
+		static IBoltOnServiceProvider _serviceProvider;
 
-		public static IServiceProvider Current
+		public static IBoltOnServiceProvider Current
 		{
 			get
 			{

@@ -3,18 +3,18 @@ using System.Collections.Generic;
 
 namespace BoltOn.IoC
 {
-	public interface IServiceProvider
+	public interface IBoltOnServiceProvider
 	{
 		IEnumerable<TService> GetAllInstances<TService>() where TService : class;
 		TService GetInstance<TService>() where TService : class;
 		object GetInstance(Type type);
 	}
 
-    public class ServiceProvider : IServiceProvider
+    public class BoltOnServiceProvider : IBoltOnServiceProvider
     {
         private readonly IBoltOnContainer _boltOnContainer;
 
-        public ServiceProvider(IBoltOnContainer boltOnContainer)
+        public BoltOnServiceProvider(IBoltOnContainer boltOnContainer)
         {
             _boltOnContainer = boltOnContainer;
         }

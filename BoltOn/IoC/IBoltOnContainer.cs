@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BoltOn.IoC
 {
-	public interface IBoltOnContainer : IServiceProvider, IDisposable
+	public interface IBoltOnContainer : IBoltOnServiceProvider, IDisposable
     {
         IBoltOnContainer RegisterScoped<TService, TImplementation>() where TService : class
             where TImplementation : class, TService;

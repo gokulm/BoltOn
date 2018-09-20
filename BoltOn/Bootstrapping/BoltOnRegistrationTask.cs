@@ -10,7 +10,7 @@ namespace BoltOn.Bootstrapping
         public void Run(IBoltOnContainer container, IEnumerable<Assembly> assemblies)
 		{
 			RegisterByConvention(container, assemblies);
-            container.RegisterSingleton(typeof(IServiceProvider), new ServiceProvider(container));
+            container.RegisterSingleton(typeof(IBoltOnServiceProvider), new BoltOnServiceProvider(container));
         }
 
         private void RegisterByConvention(IBoltOnContainer container, IEnumerable<Assembly> assemblies)

@@ -11,10 +11,10 @@ namespace BoltOn.Mediator
 
 	public class Mediator : IMediator
 	{
-		private readonly IoC.IServiceProvider _serviceProvider;
+		private readonly IoC.IBoltOnServiceProvider _serviceProvider;
 		private readonly IBoltOnLogger<Mediator> _logger;
 
-		public Mediator(IoC.IServiceProvider serviceProvider, IBoltOnLogger<Mediator> logger)
+		public Mediator(IoC.IBoltOnServiceProvider serviceProvider, IBoltOnLogger<Mediator> logger)
 		{
 			_logger = logger;
 			_serviceProvider = serviceProvider;

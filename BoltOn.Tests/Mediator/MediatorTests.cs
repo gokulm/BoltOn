@@ -40,7 +40,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
-			var serviceProvider = autoMocker.GetMock<BoltOn.IoC.IServiceProvider>();
+			var serviceProvider = autoMocker.GetMock<BoltOn.IoC.IBoltOnServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
 			serviceProvider.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
 			               .Returns(testHandler.Object);
@@ -61,7 +61,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
-			var serviceProvider = autoMocker.GetMock<BoltOn.IoC.IServiceProvider>();
+			var serviceProvider = autoMocker.GetMock<BoltOn.IoC.IBoltOnServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
 			serviceProvider.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
 						   .Returns(testHandler.Object);
@@ -84,7 +84,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
-			var serviceProvider = autoMocker.GetMock<BoltOn.IoC.IServiceProvider>();
+			var serviceProvider = autoMocker.GetMock<BoltOn.IoC.IBoltOnServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
 			serviceProvider.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
 			               .Returns(null);
