@@ -8,12 +8,14 @@
     <Compile Remove="Class1.cs" />
     <Compile Remove="Logging\BoltOnLoggerDecorator.cs" />
     <Compile Remove="MediatorModule\Mediator.cs" />
+    <Compile Remove="IoC\IBoltOnContainerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Logging\" />
     <Folder Include="IoC\" />
     <Folder Include="Bootstrapping\" />
     <Folder Include="Utilities\" />
+    <Folder Include="UoW\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />

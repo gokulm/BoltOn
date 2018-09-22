@@ -4,21 +4,21 @@ namespace BoltOn.IoC
 {
 	public class ServiceLocator 
 	{
-		static IBoltOnServiceProvider _serviceProvider;
+		static IServiceFactory _serviceFactory;
 
-		public static IBoltOnServiceProvider Current
+		public static IServiceFactory Current
 		{
 			get
 			{
-				if (_serviceProvider == null)
+				if (_serviceFactory == null)
 					throw new Exception("ServiceLocator not initialized");
-				return _serviceProvider;
+				return _serviceFactory;
 			}
 		}
 
 		internal static void SetContainer(IBoltOnContainer boltOnContainer)
 		{
-			_serviceProvider = boltOnContainer;
+			_serviceFactory = boltOnContainer;
 		}
 	}
 }

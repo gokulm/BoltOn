@@ -14,11 +14,13 @@ namespace BoltOn.Bootstrapping
 		private bool _isDisposed;
 		private Assembly _callingAssembly;
 		private HashSet<Assembly> _assembliesToBeExcluded;
+		private HashSet<Type> _typesToBeExcluded;
 
 		private Bootstrapper()
 		{
 			_assemblies = new List<Assembly>();
 			_assembliesToBeExcluded = new HashSet<Assembly>();
+			_typesToBeExcluded = new HashSet<Type>();
 		}
 
 		public static Bootstrapper Instance => _instance.Value;
@@ -46,6 +48,15 @@ namespace BoltOn.Bootstrapping
 			assemblies.ToList().ForEach(a =>
 			{
 				_assembliesToBeExcluded.Add(a);
+			});
+			return this;
+		}
+
+		public Bootstrapper ExcludeType(params Type[] types)
+		{
+			types.ToList().ForEach(a =>
+			{
+				_typesToBeExcluded.Add(a);
 			});
 			return this;
 		}

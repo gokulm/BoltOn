@@ -11,13 +11,13 @@ namespace BoltOn.Mediator
 
 	public class Mediator : IMediator
 	{
-		private readonly IoC.IBoltOnServiceProvider _serviceProvider;
+		private readonly IoC.IServiceFactory _serviceFactory;
 		private readonly IBoltOnLogger<Mediator> _logger;
 
-		public Mediator(IoC.IBoltOnServiceProvider serviceProvider, IBoltOnLogger<Mediator> logger)
+		public Mediator(IoC.IServiceFactory serviceProvider, IBoltOnLogger<Mediator> logger)
 		{
 			_logger = logger;
-			_serviceProvider = serviceProvider;
+			_serviceFactory = serviceProvider;
 		}
 
 		public StandardDtoReponse<TResponse> Get<TResponse>(IRequest<TResponse> request)
@@ -29,7 +29,7 @@ namespace BoltOn.Mediator
 				var genericRequestHandlerType = typeof(IRequestHandler<,>);
 				var interfaceHandlerType =
 					genericRequestHandlerType.MakeGenericType(request.GetType(), typeof(TResponse));
-				dynamic handler = _serviceProvider.GetInstance(interfaceHandlerType);
+				dynamic handler = _serviceFactory.GetInstance(interfaceHandlerType);
 				Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
 				_logger.Debug($"Resolved handler: {handler.GetType()}");
 				var response = handler.Handle(request);

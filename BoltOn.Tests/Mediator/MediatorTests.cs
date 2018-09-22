@@ -40,9 +40,9 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
-			var serviceProvider = autoMocker.GetMock<BoltOn.IoC.IBoltOnServiceProvider>();
+			var serviceFactory = autoMocker.GetMock<BoltOn.IoC.IServiceFactory>();
 			var testHandler = new Mock<TestHandler>();
-			serviceProvider.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
+			serviceFactory.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
 			               .Returns(testHandler.Object);
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
@@ -61,9 +61,9 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
-			var serviceProvider = autoMocker.GetMock<BoltOn.IoC.IBoltOnServiceProvider>();
+			var serviceFactory = autoMocker.GetMock<BoltOn.IoC.IServiceFactory>();
 			var testHandler = new Mock<TestHandler>();
-			serviceProvider.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
+			serviceFactory.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
 						   .Returns(testHandler.Object);
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Throws(new Exception("handler failed"));
@@ -84,9 +84,9 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
-			var serviceProvider = autoMocker.GetMock<BoltOn.IoC.IBoltOnServiceProvider>();
+			var serviceFactory = autoMocker.GetMock<BoltOn.IoC.IServiceFactory>();
 			var testHandler = new Mock<TestHandler>();
-			serviceProvider.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
+			serviceFactory.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
 			               .Returns(null);
 			var request = new TestRequest();
 
@@ -114,6 +114,18 @@ namespace BoltOn.Tests.Mediator
 	}
 
 	public class TestHandler : IRequestHandler<TestRequest, bool>
+	{
+		public virtual bool Handle(IRequest<bool> request)
+		{
+			return true;
+		}
+	} 
+
+	public class TestCommand : ICommand<bool>
+	{
+	}
+
+	public class TestCommandHandler : IRequestHandler<TestRequest, bool>
 	{
 		public virtual bool Handle(IRequest<bool> request)
 		{
