@@ -11,7 +11,7 @@ namespace BoltOn.Mediator
 		public void Run(IBoltOnContainer container, IEnumerable<Assembly> assemblies)
 		{
 			container.RegisterScoped<IMediator, Mediator>();
-			//container.RegisterTransient<Mediator>();
+			container.RegisterTransientCollection(typeof(IMiddleware<,>), new[] {typeof(PerformanceMiddleware<,>)});
 			RegisterHandlers(container, assemblies);
 		}
 

@@ -22,25 +22,22 @@ namespace BoltOn.Mediator
             _serviceFactory = serviceFactory;
         }
 
-        public StandardDtoReponse<TResponse> Handle<TResponse>(IRequest<TResponse> request)
+        public StandardDtoReponse<TResponse> Get<TResponse>(IRequest<TResponse> request)
         {
-			return RunMiddleware<TResponse>(request, Get);
+			return RunMiddleware<TResponse>(request, Handle);
         }
 
 		private StandardDtoReponse<TResponse> RunMiddleware<TResponse>(IRequest<TResponse> request, 
-			Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> handleRequestHandlerCall) 
+			Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> handle) 
         {
-            Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> next = null;
 			var middlewares = (IEnumerable<IMiddleware<IRequest<TResponse>, TResponse>>)
                 _serviceFactory.GetInstance(typeof(IEnumerable<IMiddleware<IRequest<TResponse>, TResponse>>));
-
-            next = middlewares.Reverse().Aggregate(handleRequestHandlerCall, (requestDelegate, middleware) =>
+            var next = middlewares.Reverse().Aggregate(handle, (requestDelegate, middleware) =>
                 ((req) => middleware.Run(req, requestDelegate)));
-
             return next.Invoke(request);
         }
 
-        public StandardDtoReponse<TResponse> Get<TResponse>(IRequest<TResponse> request)
+        private StandardDtoReponse<TResponse> Handle<TResponse>(IRequest<TResponse> request)
         {
             try
             {

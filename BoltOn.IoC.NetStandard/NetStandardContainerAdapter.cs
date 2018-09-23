@@ -116,6 +116,11 @@ namespace BoltOn.IoC.NetStandardBolt
 			}
 			return this;
 		}
+
+		public IBoltOnContainer RegisterTransientCollection<TService>(IEnumerable<Type> serviceTypes)
+		{
+			return RegisterTransientCollection(typeof(TService), serviceTypes);
+		}
 	}
 
 }

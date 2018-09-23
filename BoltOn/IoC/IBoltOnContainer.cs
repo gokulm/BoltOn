@@ -15,7 +15,8 @@ namespace BoltOn.IoC
         IBoltOnContainer RegisterTransient<TService>() where TService : class;
         IBoltOnContainer RegisterTransient(Type serviceType, Type implementation);
         IBoltOnContainer RegisterTransient<TService>(Func<TService> implementationFactory) where TService : class;
-		IBoltOnContainer RegisterTransientCollection(Type serviceType, IEnumerable<Type> serviceTypes);
+		IBoltOnContainer RegisterTransientCollection(Type serviceType, IEnumerable<Type> implementationTypes);
+		IBoltOnContainer RegisterTransientCollection<TService>(IEnumerable<Type> implementationTypes);
         void LockRegistration();
     }
 }
