@@ -1,10 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using BoltOn.Bootstrapping;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 
 namespace BoltOn.IoC.SimpleInjector
 {
+	public static class SimpleInjectorExtensions
+	{
+		public static Bootstrapper BoltOnSimpleInjector(this Bootstrapper bootstrapper, 
+		                                        Action<BoltOnIoCOptions> optionsAction = null)
+		{
+			var container = new Container();
+			bootstrapper.SetContainer(new SimpleInjectorContainerAdapter(container));
+			var boltOnIoCOptions = new BoltOnIoCOptions(bootstrapper);
+			optionsAction?.Invoke(boltOnIoCOptions);
+			//boltOnIoCOptions.PopulateAssembliesByConvention(bootstrapper);
+			return bootstrapper;
+		}
+	}
+
 	public class SimpleInjectorContainerAdapter : IBoltOnContainer
 	{
 		private Container _container;
@@ -20,7 +35,7 @@ namespace BoltOn.IoC.SimpleInjector
 
 		public SimpleInjectorContainerAdapter(Container container)
 		{
-			_container = container; 
+			_container = container;
 		}
 
 		public IEnumerable<TService> GetAllInstances<TService>() where TService : class

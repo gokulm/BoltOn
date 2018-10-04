@@ -7,6 +7,9 @@ using BoltOn.IoC.SimpleInjector;
 using BoltOn.Logging.NLog;
 using Moq.AutoMock;
 using Moq;
+using System.Collections.Generic;
+using BoltOn.Logging;
+using System.Reflection;
 
 namespace BoltOn.Tests.Mediator
 {
@@ -22,8 +25,40 @@ namespace BoltOn.Tests.Mediator
 				.Instance
 				// as mediator is register as scoped, and we cannot resolve scoped dependencies in simple
 				// injector directly 
-				.ExcludeAssemblies(typeof(SimpleInjectorContainerAdapter).Assembly, typeof(NLogLoggerAdapter<>).Assembly)
-				.Run();
+				//.ExcludeAssemblies(typeof(SimpleInjectorContainerAdapter).Assembly, typeof(NLogLoggerAdapter<>).Assembly)
+				.BoltOnSimpleInjector(b =>
+				{
+					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					{
+						AssembliesToBeExcluded = new List<Assembly>() { typeof(NLogLoggerAdapter<>).Assembly },
+					};
+				})
+				.BoltOnMediator();
+
+			// act
+			var mediator = ServiceLocator.Current.GetInstance<IMediator>();
+			var result = mediator.Get(new TestRequest());
+
+			// assert 
+			Assert.True(result.IsSuccessful);
+			Assert.True(result.Data);
+		}
+
+		[Fact, Trait("Category", "Integration")]
+		public void Get_MediatorWithMiddleware_ExecutesMiddleware()
+		{
+			// arrange
+			Bootstrapper
+				.Instance
+				// as mediator is register as scoped, and we cannot resolve scoped dependencies in simple
+				// injector directly 
+				//.ExcludeAssemblies(typeof(SimpleInjectorContainerAdapter).Assembly, typeof(NLogLoggerAdapter<>).Assembly)
+				//.BoltOnSimpleInjector(b =>
+				//{
+				//	b.AssembliesToBeExcluded.Add(typeof(NLogLoggerAdapter<>).Assembly);
+				//	b.AssembliesToBeExcluded.Add(typeof(SimpleInjectorContainerAdapter).Assembly);
+				//})
+				.BoltOnSimpleInjector();
 
 			// act
 			var mediator = ServiceLocator.Current.GetInstance<IMediator>();
@@ -40,10 +75,12 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
-			var serviceFactory = autoMocker.GetMock<BoltOn.IoC.IServiceFactory>();
+			var serviceFactory = autoMocker.GetMock<IServiceFactory>();
 			var testHandler = new Mock<TestHandler>();
 			serviceFactory.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
-			               .Returns(testHandler.Object);
+						  .Returns(testHandler.Object);
+			serviceFactory.Setup(s => s.GetInstance(typeof(IEnumerable<IMiddleware>)))
+						  .Returns(new List<IMiddleware>());
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
 
@@ -61,10 +98,12 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
-			var serviceFactory = autoMocker.GetMock<BoltOn.IoC.IServiceFactory>();
+			var serviceFactory = autoMocker.GetMock<IServiceFactory>();
 			var testHandler = new Mock<TestHandler>();
 			serviceFactory.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
 						   .Returns(testHandler.Object);
+			serviceFactory.Setup(s => s.GetInstance(typeof(IEnumerable<IMiddleware>)))
+						  .Returns(new List<IMiddleware>());
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Throws(new Exception("handler failed"));
 
@@ -84,10 +123,12 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
-			var serviceFactory = autoMocker.GetMock<BoltOn.IoC.IServiceFactory>();
+			var serviceFactory = autoMocker.GetMock<IServiceFactory>();
 			var testHandler = new Mock<TestHandler>();
 			serviceFactory.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
-			               .Returns(null);
+						  .Returns(null);
+			serviceFactory.Setup(s => s.GetInstance(typeof(IEnumerable<IMiddleware>)))
+						  .Returns(new List<IMiddleware>());
 			var request = new TestRequest();
 
 			// act
@@ -98,7 +139,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.False(result.Data);
 			Assert.NotNull(result.Exception);
 			Assert.Equal(string.Format(Constants.ExceptionMessages.
-			                           HANDLER_NOT_FOUND, request), result.Exception.Message);
+									   HANDLER_NOT_FOUND, request), result.Exception.Message);
 		}
 
 		public void Dispose()
@@ -107,7 +148,7 @@ namespace BoltOn.Tests.Mediator
 				.Instance
 				.Dispose();
 		}
-    }
+	}
 
 	public class TestRequest : IRequest<bool>
 	{
@@ -119,7 +160,7 @@ namespace BoltOn.Tests.Mediator
 		{
 			return true;
 		}
-	} 
+	}
 
 	public class TestCommand : ICommand<bool>
 	{
@@ -131,5 +172,33 @@ namespace BoltOn.Tests.Mediator
 		{
 			return true;
 		}
-	} 
+	}
+
+	public class TestMiddleware : IMiddleware
+	{
+		private readonly IBoltOnLogger<TestMiddleware> _logger;
+
+		public TestMiddleware(IBoltOnLogger<TestMiddleware> logger)
+		{
+			_logger = logger;
+		}
+
+		public StandardDtoReponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request,
+																	 Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> next)
+		   where TRequest : IRequest<TResponse>
+		{
+			_logger.Debug($"TestMiddleware Started");
+			var response = next.Invoke(request);
+			_logger.Debug($"StopwatchMiddleware Ended");
+			return response;
+		}
+	}
+
+	public class MediatorTestsRegistrationTask : IBootstrapperRegistrationTask
+	{
+		public void Run(IBoltOnContainer container, IEnumerable<Assembly> assemblies)
+		{
+			container.RegisterTransientCollection(typeof(IMiddleware), new[] { typeof(TestMiddleware) });
+		}
+	}
 }

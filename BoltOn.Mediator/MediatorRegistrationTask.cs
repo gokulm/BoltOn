@@ -11,7 +11,7 @@ namespace BoltOn.Mediator
 		public void Run(IBoltOnContainer container, IEnumerable<Assembly> assemblies)
 		{
 			container.RegisterScoped<IMediator, Mediator>();
-			container.RegisterTransientCollection(typeof(IMiddleware<,>), new[] {typeof(PerformanceMiddleware<,>)});
+			//container.RegisterTransientCollection(typeof(IMiddleware<,>), new[] {typeof(StopwatchMiddleware<,>)});
 			RegisterHandlers(container, assemblies);
 		}
 
@@ -24,11 +24,8 @@ namespace BoltOn.Mediator
 							where i.IsGenericType &&
 								requestHandlerInterfaceType.IsAssignableFrom(i.GetGenericTypeDefinition())
 							select new { Interface = i, Implementation = t }).ToList();
-
 			foreach (var handler in handlers)
-			{
 				container.RegisterTransient(handler.Interface, handler.Implementation);
-			}
 		}
 	}
 }

@@ -6,33 +6,36 @@ using BoltOn.IoC;
 
 namespace BoltOn.Bootstrapping
 {
-    public class Bootstrapper : IDisposable
+	public class Bootstrapper : IDisposable
     {
         private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
         private IBoltOnContainer _container;
         private List<Assembly> _assemblies;
         private bool _isDisposed;
         private Assembly _callingAssembly;
-        private HashSet<Assembly> _assembliesToBeExcluded;
-        private HashSet<Type> _typesToBeExcluded;
 
-        private Bootstrapper()
+		public Assembly CallingAssembly
+		{
+			get;
+			private set;
+		}
+
+		public IReadOnlyCollection<Assembly> Assemblies { get; internal set; }
+
+		private Bootstrapper()
         {
             _assemblies = new List<Assembly>();
-            _assembliesToBeExcluded = new HashSet<Assembly>();
-            _typesToBeExcluded = new HashSet<Type>();
+			CallingAssembly = Assembly.GetCallingAssembly();
         }
 
         public static Bootstrapper Instance => _instance.Value;
 
-        internal IBoltOnContainer Container
+		public IBoltOnContainer Container
         {
             get
             {
                 if (_container == null)
-                {
                     throw new Exception("Container not created");
-                }
                 return _container;
             }
         }
@@ -45,19 +48,7 @@ namespace BoltOn.Bootstrapping
 
         public Bootstrapper ExcludeAssemblies(params Assembly[] assemblies)
         {
-            assemblies.ToList().ForEach(a =>
-            {
-                _assembliesToBeExcluded.Add(a);
-            });
-            return this;
-        }
-
-        public Bootstrapper ExcludeType(params Type[] types)
-        {
-            types.ToList().ForEach(a =>
-            {
-                _typesToBeExcluded.Add(a);
-            });
+            //assemblies.ToList().ForEach(a => _assembliesToBeExcluded.Add(a));
             return this;
         }
 
@@ -80,8 +71,8 @@ namespace BoltOn.Bootstrapping
                 .OrderBy(o => o.Item2)
                 .ToList()
                 .ForEach(f => _assemblies.Add(f.Item1));
-            var assembliesToBeExcludedNames = _assembliesToBeExcluded.Select(s => s.FullName).ToList();
-            _assemblies = _assemblies.Where(a => !assembliesToBeExcludedNames.Contains(a.FullName)).Distinct().ToList();
+			//var assembliesToBeExcludedNames = _boltOnOptions.AssembliesToBeExcluded.Select(s => s.FullName).ToList();
+			//_assemblies = _assemblies.Where(a => !assembliesToBeExcludedNames.Contains(a.FullName)).Distinct().ToList();
 
             List<Tuple<Assembly, int>> GetAssemblies(string startsWith)
             {
@@ -96,75 +87,70 @@ namespace BoltOn.Bootstrapping
             }
         }
 
-        public void Run()
-        {
-            _callingAssembly = Assembly.GetCallingAssembly();
-            PopulateAssembliesByConvention();
-            CreateContainer();
-            RunPreRegistrationTasks();
-            RunRegistrationTasks();
-            _container.LockRegistration();
-            RunPostRegistrationTasks();
-        }
+        //public void BoltOn()
+        //{
+        //    _callingAssembly = Assembly.GetCallingAssembly();
+        //    PopulateAssembliesByConvention();
+        //    CreateContainer();
+        //    RunPreRegistrationTasks();
+        //    RunRegistrationTasks();
+        //    _container.LockRegistration();
+        //    RunPostRegistrationTasks();
+        //}
 
-        private void RunPreRegistrationTasks()
-        {
-            var preRegistrationTaskType = typeof(IBootstrapperPreRegistrationTask);
-            var preRegistrationTaskTypes = (from a in _assemblies
-                                            from t in a.GetTypes()
-                                            where preRegistrationTaskType.IsAssignableFrom(t)
-                                            && t.IsClass
-                                            select t).ToList();
+        //private void RunPreRegistrationTasks()
+        //{
+        //    var preRegistrationTaskType = typeof(IBootstrapperPreRegistrationTask);
+        //    var preRegistrationTaskTypes = (from a in _assemblies
+        //                                    from t in a.GetTypes()
+        //                                    where preRegistrationTaskType.IsAssignableFrom(t)
+        //                                    && t.IsClass
+        //                                    select t).ToList();
+        //    foreach (var type in preRegistrationTaskTypes)
+        //    {
+        //        var task = Activator.CreateInstance(type) as IBootstrapperPreRegistrationTask;
+        //        task.Run();
+        //    }
+        //}
 
-            foreach (var type in preRegistrationTaskTypes)
-            {
-                var task = Activator.CreateInstance(type) as IBootstrapperPreRegistrationTask;
-                task.Run();
-            }
-        }
+        //private void RunRegistrationTasks()
+        //{
+        //    var registrationTaskType = typeof(IBootstrapperRegistrationTask);
+        //    var registrationTaskTypes = (from a in _assemblies
+        //                                 from t in a.GetTypes()
+        //                                 where registrationTaskType.IsAssignableFrom(t)
+        //                                 && t.IsClass
+        //                                 select t).ToList();
+        //    foreach (var type in registrationTaskTypes)
+        //    {
+        //        var task = Activator.CreateInstance(type) as IBootstrapperRegistrationTask;
+        //        task.Run(_container, _assemblies);
+        //    }
+        //    RegisterPostRegistrationTasks();
+        //}
 
-        private void RunRegistrationTasks()
-        {
-            var registrationTaskType = typeof(IBootstrapperRegistrationTask);
-            var registrationTaskTypes = (from a in _assemblies
-                                         from t in a.GetTypes()
-                                         where registrationTaskType.IsAssignableFrom(t)
-                                         && t.IsClass
-                                         select t).ToList();
+        //private void RegisterPostRegistrationTasks()
+        //{
+        //    var registrationTaskType = typeof(IBootstrapperPostRegistrationTask);
+        //    var registrationTaskTypes = (from a in _assemblies
+        //                                 from t in a.GetTypes()
+        //                                 where registrationTaskType.IsAssignableFrom(t)
+        //                                 && t.IsClass
+        //                                 select t).ToList();
 
-            foreach (var type in registrationTaskTypes)
-            {
-                var task = Activator.CreateInstance(type) as IBootstrapperRegistrationTask;
-                task.Run(_container, _assemblies);
-            }
+        //    //foreach (var type in registrationTaskTypes)
+        //    //{
+        //    //	_container.RegisterTransient(registrationTaskType, type);
+        //    //}
+        //    _container.RegisterTransientCollection<IBootstrapperPostRegistrationTask>(registrationTaskTypes);
+        //}
 
-            RegisterPostRegistrationTasks();
-        }
-
-        private void RegisterPostRegistrationTasks()
-        {
-            var registrationTaskType = typeof(IBootstrapperPostRegistrationTask);
-            var registrationTaskTypes = (from a in _assemblies
-                                         from t in a.GetTypes()
-                                         where registrationTaskType.IsAssignableFrom(t)
-                                         && t.IsClass
-                                         select t).ToList();
-
-            //foreach (var type in registrationTaskTypes)
-            //{
-            //	_container.RegisterTransient(registrationTaskType, type);
-            //}
-            _container.RegisterTransientCollection<IBootstrapperPostRegistrationTask>(registrationTaskTypes);
-        }
-
-        private void RunPostRegistrationTasks()
-        {
-            var postRegistrationTasks = _container.GetAllInstances<IBootstrapperPostRegistrationTask>();
-            if (postRegistrationTasks != null)
-            {
-                postRegistrationTasks.ToList().ForEach(t => t.Run());
-            }
-        }
+        //private void RunPostRegistrationTasks()
+        //{
+        //    var postRegistrationTasks = _container.GetAllInstances<IBootstrapperPostRegistrationTask>();
+        //    if (postRegistrationTasks != null)
+        //        postRegistrationTasks.ToList().ForEach(t => t.Run());
+        //}
 
         private void CreateContainer()
         {
@@ -181,7 +167,6 @@ namespace BoltOn.Bootstrapping
 
                 _container = Activator.CreateInstance(containerType) as IBoltOnContainer;
             }
-
             ServiceLocator.SetContainer(_container);
         }
 
@@ -200,7 +185,7 @@ namespace BoltOn.Bootstrapping
                     _container = null;
                 }
                 _assemblies.Clear();
-                _assembliesToBeExcluded.Clear();
+                //_assembliesToBeExcluded.Clear();
             }
         }
 
