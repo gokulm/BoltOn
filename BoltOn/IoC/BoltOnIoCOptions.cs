@@ -40,7 +40,7 @@ namespace BoltOn.IoC
 			set
 			{
 				_assemblyOptions = value;
-				PopulateAssembliesByConvention();
+				PopulateAssembliesByConvention(); 
 			}
 		}
 

@@ -1,8 +1,19 @@
 ﻿using System;
+using BoltOn.Bootstrapping;
 using Microsoft.Extensions.Logging;
 
 namespace BoltOn.Logging.NetStandard
 {
+	public class BoltOnLoggerOptions
+	{
+		private readonly Bootstrapper _bootstrapper;
+
+		public BoltOnLoggerOptions(Bootstrapper bootstrapper)
+		{
+			_bootstrapper = bootstrapper;
+		}
+	}
+
 	public class NetStandardLoggerAdapter<TType> : IBoltOnLogger<TType>
 	{
 		readonly ILogger<TType> _logger;

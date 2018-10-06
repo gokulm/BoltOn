@@ -10,6 +10,7 @@ using Moq;
 using System.Collections.Generic;
 using BoltOn.Logging;
 using System.Reflection;
+using BoltOn.Logging.NetStandard;
 
 namespace BoltOn.Tests.Mediator
 {
@@ -33,6 +34,7 @@ namespace BoltOn.Tests.Mediator
 						AssembliesToBeExcluded = new List<Assembly> { typeof(NLogLoggerAdapter<>).Assembly },
 					};
 				})
+				.BoltOnNetStandardLogger()
 				.BoltOnMediator();
 
 			// act
