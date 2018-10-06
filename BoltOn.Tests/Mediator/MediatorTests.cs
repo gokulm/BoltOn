@@ -30,7 +30,7 @@ namespace BoltOn.Tests.Mediator
 				{
 					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
 					{
-						AssembliesToBeExcluded = new List<Assembly>() { typeof(NLogLoggerAdapter<>).Assembly },
+						AssembliesToBeExcluded = new List<Assembly> { typeof(NLogLoggerAdapter<>).Assembly },
 					};
 				})
 				.BoltOnMediator();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using BoltOn.Bootstrapping;
 using BoltOn.IoC;
 using BoltOn.IoC.NetStandardBolt;
@@ -69,9 +70,9 @@ namespace BoltOn.Tests.Bootstrapping
 		{
 			// arrange 
 			//Bootstrapper
-				//.Instance
-				//.ExcludeAssemblies(typeof(NetStandardContainerAdapter).Assembly,
-								   //typeof(SimpleInjectorContainerAdapter).Assembly);
+			//.Instance
+			//.ExcludeAssemblies(typeof(NetStandardContainerAdapter).Assembly,
+			//typeof(SimpleInjectorContainerAdapter).Assembly);
 
 			// arrange & act 
 			var ex = Record.Exception(() =>
@@ -80,8 +81,14 @@ namespace BoltOn.Tests.Bootstrapping
 					.Instance
 					.BoltOnSimpleInjector(b =>
 					{
-						b.AssembliesToBeExcluded.Add(typeof(NetStandardContainerAdapter).Assembly);
-						b.AssembliesToBeExcluded.Add(typeof(SimpleInjectorContainerAdapter).Assembly);
+						b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+						{
+							AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+							{
+								typeof(NetStandardContainerAdapter).Assembly,
+								typeof(SimpleInjectorContainerAdapter).Assembly
+							}
+						};
 					});
 			});
 
@@ -125,7 +132,7 @@ namespace BoltOn.Tests.Bootstrapping
 		//		//	o.AssembliesToBeExcluded.Add(typeof(BootstrapperTests).Assembly);
 		//		//})
 		//		.BoltOn(b => b.AssembliesToBeExcluded.Add(typeof(BootstrapperTests).Assembly));
-			
+
 		//	// act 
 		//	// as this could throw any exception specific to the DI framework, using record
 		//	var ex = Record.Exception(() => ServiceLocator.Current.GetInstance<ITestService>());

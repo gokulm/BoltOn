@@ -25,11 +25,11 @@ namespace BoltOn.Mediator
 
 	public static class MediatorExtensions
 	{
-		public static void BoltOnMediator(this Bootstrapper bootstrapper, Action<MediatorOptions> optionsAction = null)
+		public static void BoltOnMediator(this Bootstrapper bootstrapper, Action<MediatorOptions> action = null)
 		{
 			Contract.Requires(bootstrapper.Container != null, "Bolt on DI before bolting on Mediator");
 			var newOptions = new MediatorOptions();
-			optionsAction?.Invoke(newOptions);
+			action?.Invoke(newOptions);
 			bootstrapper.Container.RegisterScoped<IMediator, Mediator>();
 			bootstrapper.Container.RegisterTransientCollection(typeof(IMiddleware), newOptions.Middlewares);
 			RegisterHandlers(bootstrapper);

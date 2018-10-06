@@ -16,9 +16,9 @@ namespace BoltOn.IoC
 			}
 		}
 
-		internal static void SetContainer(IBoltOnContainer boltOnContainer)
+		internal static void SetServiceFactory(IServiceFactory serviceFactory)
 		{
-			_serviceFactory = boltOnContainer;
+			_serviceFactory = serviceFactory;
 		}
 	}
-}
+} 

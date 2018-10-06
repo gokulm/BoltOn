@@ -14,7 +14,7 @@ namespace BoltOn.Tests.IoC
 		public NetStandardContainerAdapterTests()
 		{
 			_container = new NetStandardContainerAdapter();
-			ServiceLocator.SetContainer(_container);
+			ServiceLocator.SetServiceFactory(_container);
 		}
 
 		[Fact]

@@ -9,13 +9,22 @@ namespace BoltOn.IoC.SimpleInjector
 	public static class SimpleInjectorExtensions
 	{
 		public static Bootstrapper BoltOnSimpleInjector(this Bootstrapper bootstrapper, 
-		                                        Action<BoltOnIoCOptions> optionsAction = null)
+		                                        Action<BoltOnIoCOptions> action = null)
 		{
-			var container = new Container();
-			bootstrapper.SetContainer(new SimpleInjectorContainerAdapter(container));
 			var boltOnIoCOptions = new BoltOnIoCOptions(bootstrapper);
-			optionsAction?.Invoke(boltOnIoCOptions);
-			//boltOnIoCOptions.PopulateAssembliesByConvention(bootstrapper);
+			if(action == null)
+			{
+				boltOnIoCOptions.Container = new SimpleInjectorContainerAdapter();
+			}
+			else
+			{
+				action(boltOnIoCOptions);
+				if(boltOnIoCOptions.Container == null)
+				{
+					boltOnIoCOptions.Container = new SimpleInjectorContainerAdapter();
+				}
+			}
+			boltOnIoCOptions.RegisterByConvention();
 			return bootstrapper;
 		}
 	}
