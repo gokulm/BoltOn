@@ -8,20 +8,20 @@ namespace BoltOn.IoC.SimpleInjector
         public static Bootstrapper BoltOnSimpleInjector(this Bootstrapper bootstrapper,
                                                 Action<BoltOnIoCOptions> action = null)
         {
-            var options = new BoltOnIoCOptions(bootstrapper);
+            var boltOnIoCOptions = new BoltOnIoCOptions(bootstrapper);
             if (action == null)
             {
-                options.Container = new SimpleInjectorContainerAdapter();
+                boltOnIoCOptions.Container = new SimpleInjectorContainerAdapter();
             }
             else
             {
-                action(options);
-                if (options.Container == null)
+                action(boltOnIoCOptions);
+                if (boltOnIoCOptions.Container == null)
                 {
-                    options.Container = new SimpleInjectorContainerAdapter();
+                    boltOnIoCOptions.Container = new SimpleInjectorContainerAdapter();
                 }
             }
-            options.RegisterByConvention();
+            boltOnIoCOptions.RegisterByConvention();
             return bootstrapper;
         }
     }

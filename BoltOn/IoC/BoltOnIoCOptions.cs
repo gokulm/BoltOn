@@ -6,6 +6,19 @@ using BoltOn.Bootstrapping;
 
 namespace BoltOn.IoC
 {
+	public static class BoltOnIoCExtensions
+	{
+		public static Bootstrapper ConfigureIoC(this Bootstrapper bootstrapper,
+												Action<BoltOnIoCOptions> action = null)
+		{
+			var options = new BoltOnIoCOptions(bootstrapper);
+			action?.Invoke(options);
+			bootstrapper.AddOptions(options);
+			//options.RegisterByConvention();
+			return bootstrapper;
+		}
+	}
+
 	public class BoltOnIoCOptions
 	{
 		private BoltOnIoCAssemblyOptions _assemblyOptions;
@@ -44,7 +57,7 @@ namespace BoltOn.IoC
 			}
 		}
 
-		public void PopulateAssembliesByConvention()
+		internal void PopulateAssembliesByConvention()
 		{
 			var assemblies = new List<Assembly>();
 			var callingAssembly = _bootstrapper.CallingAssembly;

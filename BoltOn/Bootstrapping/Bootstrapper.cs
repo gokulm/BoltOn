@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -12,7 +13,8 @@ namespace BoltOn.Bootstrapping
 		private IBoltOnContainer _container;
 		private List<Assembly> _assemblies;
 		private bool _isDisposed;
-		private static Assembly _callingAssembly;
+		private Assembly _callingAssembly;
+		private Hashtable _boltOnOptions;
 
 		internal Assembly CallingAssembly
 		{
@@ -27,6 +29,7 @@ namespace BoltOn.Bootstrapping
 		private Bootstrapper()
 		{
 			_assemblies = new List<Assembly>();
+			_boltOnOptions = new Hashtable();
 			//CallingAssembly = Assembly.GetCallingAssembly();
 		}
 
@@ -34,9 +37,19 @@ namespace BoltOn.Bootstrapping
 		{
 			get
 			{
-				_callingAssembly = Assembly.GetCallingAssembly();
 				return _instance.Value;
 			}
+		}
+
+		public void AddOptions<TOptionType>(TOptionType options) where TOptionType : class
+		{
+			_boltOnOptions.Add(typeof(TOptionType).Name, options);
+		}
+
+		public TOptionType GetOptions<TOptionType>() where TOptionType : class
+		{
+			var configValue = _boltOnOptions[typeof(TOptionType).Name];
+			return (TOptionType)Convert.ChangeType(configValue, typeof(TOptionType));
 		}
 
 		public IBoltOnContainer Container
@@ -65,50 +78,104 @@ namespace BoltOn.Bootstrapping
 			return this;
 		}
 
-		//     private void PopulateAssembliesByConvention()
-		//     {
-		//         var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-		//         var referencedAssemblies = _callingAssembly.GetReferencedAssemblies().ToList();
-		//         referencedAssemblies.Add(_callingAssembly.GetName());
-		//         // get BoltOn assemblies
-		//         var boltOnAssemblies = GetAssemblies("BoltOn");
-		//         boltOnAssemblies
-		//             .OrderBy(o => o.Item2)
-		//             .ToList()
-		//             .ForEach(f => _assemblies.Add(f.Item1));
-		//         // get app assemblies
-		//         // todo (medium): should allow custom app prefix. to accomodate solutions with different project names
-		//         var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
-		//         var appAssemblies = GetAssemblies(appPrefix);
-		//         appAssemblies
-		//             .OrderBy(o => o.Item2)
-		//             .ToList()
-		//             .ForEach(f => _assemblies.Add(f.Item1));
-		////var assembliesToBeExcludedNames = _boltOnOptions.AssembliesToBeExcluded.Select(s => s.FullName).ToList();
-		////_assemblies = _assemblies.Where(a => !assembliesToBeExcludedNames.Contains(a.FullName)).Distinct().ToList();
+		//private void PopulateAssembliesByConvention()
+		//{
+		//	var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+		//	var referencedAssemblies = _callingAssembly.GetReferencedAssemblies().ToList();
+		//	referencedAssemblies.Add(_callingAssembly.GetName());
+		//	// get BoltOn assemblies
+		//	var boltOnAssemblies = GetAssemblies("BoltOn");
+		//	boltOnAssemblies
+		//		.OrderBy(o => o.Item2)
+		//		.ToList()
+		//		.ForEach(f => _assemblies.Add(f.Item1));
+		//	// get app assemblies
+		//	// todo (medium): should allow custom app prefix. to accomodate solutions with different project names
+		//	var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
+		//	var appAssemblies = GetAssemblies(appPrefix);
+		//	appAssemblies
+		//		.OrderBy(o => o.Item2)
+		//		.ToList()
+		//		.ForEach(f => _assemblies.Add(f.Item1));
+		//	//var assembliesToBeExcludedNames = _boltOnOptions.AssembliesToBeExcluded.Select(s => s.FullName).ToList();
+		//	//_assemblies = _assemblies.Where(a => !assembliesToBeExcludedNames.Contains(a.FullName)).Distinct().ToList();
 
-		//    List<Tuple<Assembly, int>> GetAssemblies(string startsWith)
-		//    {
-		//        var temp = (from r in referencedAssemblies
-		//                    join a in appDomainAssemblies
-		//                    on r.FullName equals a.FullName
-		//                    where r.Name.StartsWith(startsWith, StringComparison.Ordinal)
-		//                    let orderAttribute = a.GetCustomAttribute<AssemblyRegistrationOrderAttribute>()
-		//                    select new Tuple<Assembly, int>
-		//                    (a, orderAttribute != null ? orderAttribute.Order : int.MaxValue)).Distinct().ToList();
-		//        return temp;
-		//    }
+		//	List<Tuple<Assembly, int>> GetAssemblies(string startsWith)
+		//	{
+		//		var temp = (from r in referencedAssemblies
+		//					join a in appDomainAssemblies
+		//					on r.FullName equals a.FullName
+		//					where r.Name.StartsWith(startsWith, StringComparison.Ordinal)
+		//					let orderAttribute = a.GetCustomAttribute<AssemblyRegistrationOrderAttribute>()
+		//					select new Tuple<Assembly, int>
+		//					(a, orderAttribute != null ? orderAttribute.Order : int.MaxValue)).Distinct().ToList();
+		//		return temp;
+		//	}
 		//}
 
-		public void Bootstrap()
+		public void BoltOn()
 		{
-			//_callingAssembly = Assembly.GetCallingAssembly();
-			//PopulateAssembliesByConvention();
+			_callingAssembly = Assembly.GetCallingAssembly();
+			PopulateAssembliesByConvention();
 			//CreateContainer();
 			//RunPreRegistrationTasks();
 			RunRegistrationTasks();
 			_container.LockRegistration();
 			//RunPostRegistrationTasks();
+		}
+
+		private void PopulateAssembliesByConvention()
+		{
+			var boltOnIoCOptions = GetOptions<BoltOnIoCOptions>();
+			var assemblyOptions = boltOnIoCOptions.AssemblyOptions;
+			var assemblies = new List<Assembly>();
+			var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+			var referencedAssemblies = _callingAssembly.GetReferencedAssemblies().ToList();
+
+			// BoltOn
+			referencedAssemblies.Add(_callingAssembly.GetName());
+			var boltOnAssembly = this.GetType().Assembly;
+			assemblies.Add(boltOnAssembly);
+			referencedAssemblies.Remove(boltOnAssembly.GetName());
+			// BoltOn.IoC.<implementation>
+			var iocAssemblies = GetAssemblies("BoltOn.IoC.");
+			assemblies.AddRange(iocAssemblies);
+			iocAssemblies.ForEach(a => referencedAssemblies.Remove(a.GetName()));
+			// BoltOn.Logging.<implementation>
+			var loggingAssemblies = GetAssemblies("BoltOn.Logging.");
+			assemblies.AddRange(loggingAssemblies);
+			loggingAssemblies.ForEach(a => referencedAssemblies.Remove(a.GetName()));
+
+
+			var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
+
+
+			assemblyOptions.AssembliesThatStartWith = (from a in assemblyOptions.AssembliesThatStartWith
+														where !a.StartsWith("BoltOn", StringComparison.Ordinal)
+														 && !a.StartsWith(appPrefix, StringComparison.Ordinal)
+														select a).ToList();
+			assemblyOptions.AssembliesThatStartWith.Add(appPrefix);
+			// get BoltOn assemblies
+			var boltOnAssemblies = GetAssemblies("BoltOn");
+			boltOnAssemblies.ForEach(a => assemblies.Add(a));
+			//foreach (var assemblyThatStartsWith in _assemblyOptions.AssembliesThatStartWith)
+			//{
+			//	var appAssemblies = GetAssemblies(assemblyThatStartsWith);
+			//	appAssemblies.ForEach(a => assemblies.Add(a));
+			//}
+			//var assembliesToBeExcludedNames = _assemblyOptions.AssembliesToBeExcluded.Select(s => s.FullName).ToList();
+			//assemblies = assemblies.Where(a => !assembliesToBeExcludedNames.Contains(a.FullName)).Distinct().ToList();
+			////_bootstrapper.Assemblies = assemblies.AsReadOnly();
+
+			List<Assembly> GetAssemblies(string startsWith)
+			{
+				var temp = (from r in referencedAssemblies
+							join a in appDomainAssemblies
+							on r.FullName equals a.FullName
+							where r.Name.StartsWith(startsWith, StringComparison.Ordinal)
+							select a).Distinct().ToList();
+				return temp;
+			}
 		}
 
 		//private void RunPreRegistrationTasks()
