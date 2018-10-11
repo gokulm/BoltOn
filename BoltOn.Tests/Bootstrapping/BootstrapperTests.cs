@@ -35,17 +35,17 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.NotNull(Bootstrapper.Instance.Container);
 		}
 
-		//[Fact, TestPriority(3)]
-		//public void Container_CallContainerAfterRun_ReturnsContainer()
-		//{
-		//	// act 
-		//	Bootstrapper
-		//		.Instance
-		//		.BoltOn();
+		[Fact, TestPriority(3)]
+		public void Container_CallContainerAfterRun_ReturnsContainer()
+		{
+			// act 
+			Bootstrapper
+				.Instance
+				.BoltOn();
 
-		//	// assert
-		//	Assert.NotNull(Bootstrapper.Instance.Container);
-		//}
+			// assert
+			Assert.NotNull(Bootstrapper.Instance.Container);
+		}
 
 		//[Fact, TestPriority(4)]
 		//public void Container_CallContainerAfterRunWithSetContainer_ReturnsNetStandardContainer()

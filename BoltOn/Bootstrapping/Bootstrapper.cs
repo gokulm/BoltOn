@@ -116,7 +116,8 @@ namespace BoltOn.Bootstrapping
 		public void BoltOn()
 		{
 			_callingAssembly = Assembly.GetCallingAssembly();
-			PopulateAssembliesByConvention();
+			LoadAssemblies();
+			//PopulateAssembliesByConvention();
 			//CreateContainer();
 			//RunPreRegistrationTasks();
 			RunRegistrationTasks();
@@ -124,16 +125,73 @@ namespace BoltOn.Bootstrapping
 			//RunPostRegistrationTasks();
 		}
 
+		private void LoadAssemblies()
+		{
+			var boltOnIoCOptions = GetOptions<BoltOnIoCOptions>() ?? new BoltOnIoCOptions(this);
+			var referencedAssemblyNames = _callingAssembly.GetReferencedAssemblies().ToList();
+			var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+			var assembliesToBeExcluded = boltOnIoCOptions.AssemblyOptions.AssembliesToBeExcluded.Select(s => s.GetName());
+			_assemblies = GetAssembliesThatStartsWith("BoltOn");
+			var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
+			var appAssemblies = GetAssembliesThatStartsWith(appPrefix);
+			_assemblies.AddRange(appAssemblies);
+			_assemblies.Add(_callingAssembly);
+			_assemblies = _assemblies.Distinct().ToList();
+
+			foreach (var assembly in _assemblies)
+			{
+				if (assembliesToBeExcluded.Contains(assembly.GetName()))
+					_assemblies.Remove(assembly);
+			}
+
+			if (boltOnIoCOptions.Container == null)
+				_container = CreateContainer();
+			else
+				_container = boltOnIoCOptions.Container;
+			ServiceLocator.SetServiceFactory(_container);
+
+			var sortedAssemblies = new List<Assembly>();
+			var assemblyNames = _assemblies.Select(s => s.GetName());
+			foreach (var assembly in _assemblies)
+			{
+				var tempRefs = GetReferencedAssemblies(assembly);
+				if (tempRefs.Intersect(_assemblies).Count() == 0)
+				{
+					sortedAssemblies.Add(assembly);
+					_assemblies.Remove(assembly);
+				}
+			}
+
+			List<Assembly> GetReferencedAssemblies(Assembly assembly)
+			{
+				return (from r in assembly.GetReferencedAssemblies()
+							join a in appDomainAssemblies
+							on r.FullName equals a.FullName
+							select a).Distinct().ToList();
+			}
+
+
+			List<Assembly> GetAssembliesThatStartsWith(string startsWith)
+			{
+				var temp = (from r in referencedAssemblyNames
+							join a in appDomainAssemblies
+							on r.FullName equals a.FullName
+							where r.Name.StartsWith(startsWith, StringComparison.Ordinal)
+							select a).Distinct().ToList();
+				return temp;
+			}
+		}
+
 		private void PopulateAssembliesByConvention()
 		{
-			var boltOnIoCOptions = GetOptions<BoltOnIoCOptions>();
+			var boltOnIoCOptions = GetOptions<BoltOnIoCOptions>() ?? new BoltOnIoCOptions(this);
 			var assemblyOptions = boltOnIoCOptions.AssemblyOptions;
 			var assemblies = new List<Assembly>();
 			var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 			var referencedAssemblies = _callingAssembly.GetReferencedAssemblies().ToList();
 
 			// BoltOn
-			referencedAssemblies.Add(_callingAssembly.GetName());
+			//referencedAssemblies.Add(_callingAssembly.GetName());
 			var boltOnAssembly = this.GetType().Assembly;
 			assemblies.Add(boltOnAssembly);
 			referencedAssemblies.Remove(boltOnAssembly.GetName());
@@ -145,15 +203,13 @@ namespace BoltOn.Bootstrapping
 			var loggingAssemblies = GetAssemblies("BoltOn.Logging.");
 			assemblies.AddRange(loggingAssemblies);
 			loggingAssemblies.ForEach(a => referencedAssemblies.Remove(a.GetName()));
-
-
 			var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
 
 
 			assemblyOptions.AssembliesThatStartWith = (from a in assemblyOptions.AssembliesThatStartWith
-														where !a.StartsWith("BoltOn", StringComparison.Ordinal)
-														 && !a.StartsWith(appPrefix, StringComparison.Ordinal)
-														select a).ToList();
+													   where !a.StartsWith("BoltOn", StringComparison.Ordinal)
+														&& !a.StartsWith(appPrefix, StringComparison.Ordinal)
+													   select a).ToList();
 			assemblyOptions.AssembliesThatStartWith.Add(appPrefix);
 			// get BoltOn assemblies
 			var boltOnAssemblies = GetAssemblies("BoltOn");
@@ -232,23 +288,19 @@ namespace BoltOn.Bootstrapping
 		//        postRegistrationTasks.ToList().ForEach(t => t.Run());
 		//}
 
-		//private void CreateContainer()
-		//{
-		//    if (_container == null)
-		//    {
-		//        var containerInterfaceType = typeof(IBoltOnContainer);
-		//        var containerType = (from a in _assemblies
-		//                             from t in a.GetTypes()
-		//                             where containerInterfaceType.IsAssignableFrom(t)
-		//                             && t.IsClass
-		//                             select t).LastOrDefault();
-		//        if (containerType == null)
-		//            throw new Exception("No IoC Container Adapter referenced");
-
-		//        _container = Activator.CreateInstance(containerType) as IBoltOnContainer;
-		//    }
-		//    ServiceLocator.SetContainer(_container);
-		//}
+		private IBoltOnContainer CreateContainer()
+		{
+			var containerInterfaceType = typeof(IBoltOnContainer);
+			var containerType = (from a in _assemblies.Where(a => a.GetName().Name.StartsWith("BoltOn", StringComparison.Ordinal))
+ 								 from t in a.GetTypes()
+								 where containerInterfaceType.IsAssignableFrom(t)
+								 && t.IsClass
+								 select t).LastOrDefault();
+			if (containerType == null)
+				throw new Exception("No IoC Container Adapter referenced");
+			var container = Activator.CreateInstance(containerType) as IBoltOnContainer;
+			return container;
+		}
 
 		protected virtual void Dispose(bool disposing)
 		{
