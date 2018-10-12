@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using BoltOn.IoC;
@@ -11,7 +12,7 @@ namespace BoltOn.Bootstrapping
 	{
 		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
 		private IBoltOnContainer _container;
-		private List<Assembly> _assemblies;
+		//private List<Assembly> _assemblies;
 		private bool _isDisposed;
 		private Assembly _callingAssembly;
 		private Hashtable _boltOnOptions;
@@ -28,7 +29,7 @@ namespace BoltOn.Bootstrapping
 
 		private Bootstrapper()
 		{
-			_assemblies = new List<Assembly>();
+			//_assemblies = new List<Assembly>();
 			_boltOnOptions = new Hashtable();
 			//CallingAssembly = Assembly.GetCallingAssembly();
 		}
@@ -117,8 +118,6 @@ namespace BoltOn.Bootstrapping
 		{
 			_callingAssembly = Assembly.GetCallingAssembly();
 			LoadAssemblies();
-			//PopulateAssembliesByConvention();
-			//CreateContainer();
 			//RunPreRegistrationTasks();
 			RunRegistrationTasks();
 			_container.LockRegistration();
@@ -131,36 +130,63 @@ namespace BoltOn.Bootstrapping
 			var referencedAssemblyNames = _callingAssembly.GetReferencedAssemblies().ToList();
 			var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 			var assembliesToBeExcluded = boltOnIoCOptions.AssemblyOptions.AssembliesToBeExcluded.Select(s => s.GetName());
-			_assemblies = GetAssembliesThatStartsWith("BoltOn");
+			var assemblies = GetAssembliesThatStartsWith("BoltOn");
 			var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
 			var appAssemblies = GetAssembliesThatStartsWith(appPrefix);
-			_assemblies.AddRange(appAssemblies);
-			_assemblies.Add(_callingAssembly);
-			_assemblies = _assemblies.Distinct().ToList();
+			assemblies.AddRange(appAssemblies);
+			assemblies.Add(_callingAssembly);
+			assemblies = assemblies.Distinct().ToList();
 
-			foreach (var assembly in _assemblies)
+			foreach (var assembly in assemblies)
 			{
 				if (assembliesToBeExcluded.Contains(assembly.GetName()))
-					_assemblies.Remove(assembly);
+					assemblies.Remove(assembly);
 			}
 
+
+
+			var sortedAssemblies = new List<Assembly>();
+			var assemblyNames = assemblies.Select(s => s.GetName());
+			var boltOnAssembly = assemblies.First(a => a.GetName().Name.Equals("BoltOn"));
+			sortedAssemblies.Add(boltOnAssembly);
+			assemblies.Remove(boltOnAssembly);
+			var iocAssemblies = assemblies.Where(a => a.GetName().Name.
+			                                      StartsWith("BoltOn.IoC.", StringComparison.Ordinal)).ToList();
+			Contract.Requires(iocAssemblies.Count > 0, "No IoC Container Adapter referenced");
+			iocAssemblies.ForEach(f =>
+			{
+				sortedAssemblies.Add(f);
+				assemblies.Remove(f);
+			});
+			var loggingAssemblies = assemblies.Where(a => a.GetName().Name.
+			                                          StartsWith("BoltOn.Logging.", StringComparison.Ordinal)).ToList();
+			Contract.Requires(loggingAssemblies.Count > 0, "No logging framework referenced");
+			loggingAssemblies.ForEach(f =>
+			{
+				sortedAssemblies.Add(f);
+				assemblies.Remove(f);
+			});
+
+			var index = 0;
+			while (assemblies.Count != 0)
+			{
+				var tempRefs = GetReferencedAssemblies(assemblies[index]);
+				if (tempRefs.Intersect(assemblies).Count() == 0)
+				{
+					sortedAssemblies.Add(assemblies[index]);
+					assemblies.Remove(assemblies[index]);
+					index = 0;
+				}
+				else
+					index += 1;
+			}
+			Assemblies = sortedAssemblies.AsReadOnly();
 			if (boltOnIoCOptions.Container == null)
 				_container = CreateContainer();
 			else
 				_container = boltOnIoCOptions.Container;
 			ServiceLocator.SetServiceFactory(_container);
 
-			var sortedAssemblies = new List<Assembly>();
-			var assemblyNames = _assemblies.Select(s => s.GetName());
-			foreach (var assembly in _assemblies)
-			{
-				var tempRefs = GetReferencedAssemblies(assembly);
-				if (tempRefs.Intersect(_assemblies).Count() == 0)
-				{
-					sortedAssemblies.Add(assembly);
-					_assemblies.Remove(assembly);
-				}
-			}
 
 			List<Assembly> GetReferencedAssemblies(Assembly assembly)
 			{
@@ -169,7 +195,6 @@ namespace BoltOn.Bootstrapping
 							on r.FullName equals a.FullName
 							select a).Distinct().ToList();
 			}
-
 
 			List<Assembly> GetAssembliesThatStartsWith(string startsWith)
 			{
@@ -252,7 +277,7 @@ namespace BoltOn.Bootstrapping
 		private void RunRegistrationTasks()
 		{
 			var registrationTaskType = typeof(IBootstrapperRegistrationTask);
-			var registrationTaskTypes = (from a in _assemblies
+			var registrationTaskTypes = (from a in Assemblies
 										 from t in a.GetTypes()
 										 where registrationTaskType.IsAssignableFrom(t)
 										 && t.IsClass
@@ -260,7 +285,7 @@ namespace BoltOn.Bootstrapping
 			foreach (var type in registrationTaskTypes)
 			{
 				var task = Activator.CreateInstance(type) as IBootstrapperRegistrationTask;
-				task.Run(_container, _assemblies);
+				task.Run(_container, Assemblies);
 			}
 			//RegisterPostRegistrationTasks();
 		}
@@ -291,7 +316,7 @@ namespace BoltOn.Bootstrapping
 		private IBoltOnContainer CreateContainer()
 		{
 			var containerInterfaceType = typeof(IBoltOnContainer);
-			var containerType = (from a in _assemblies.Where(a => a.GetName().Name.StartsWith("BoltOn", StringComparison.Ordinal))
+			var containerType = (from a in Assemblies.Where(a => a.GetName().Name.StartsWith("BoltOn.IoC.", StringComparison.Ordinal))
  								 from t in a.GetTypes()
 								 where containerInterfaceType.IsAssignableFrom(t)
 								 && t.IsClass
@@ -316,7 +341,7 @@ namespace BoltOn.Bootstrapping
 					}
 					_container = null;
 				}
-				_assemblies.Clear();
+				Assemblies = new List<Assembly>().AsReadOnly();
 				//_assembliesToBeExcluded.Clear();
 			}
 		}
