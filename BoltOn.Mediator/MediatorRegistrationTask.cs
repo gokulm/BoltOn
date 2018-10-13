@@ -8,11 +8,14 @@ namespace BoltOn.Mediator
 {
 	public class MediatorRegistrationTask : IBootstrapperRegistrationTask
 	{
-		public void Run(IBoltOnContainer container, IEnumerable<Assembly> assemblies)
+		public void Run(RegistrationTaskContext context)
 		{
-			container.RegisterScoped<IMediator, Mediator>();
+			var container = context.Container;
+			container.RegisterTransient<IMediator, Mediator>();
+			var options = context.GetOptions<MediatorOptions>();
+			container.RegisterTransientCollection(typeof(IMiddleware), options.Middlewares);
 			//container.RegisterTransientCollection(typeof(IMiddleware<,>), new[] {typeof(StopwatchMiddleware<,>)});
-			RegisterHandlers(container, assemblies);
+			RegisterHandlers(container, context.Assemblies);
 		}
 
 		private void RegisterHandlers(IBoltOnContainer container, IEnumerable<Assembly> assemblies)

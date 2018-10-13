@@ -7,10 +7,10 @@ namespace BoltOn.Bootstrapping
 {
     public class BoltOnRegistrationTask : IBootstrapperRegistrationTask
     {
-        public void Run(IBoltOnContainer container, IEnumerable<Assembly> assemblies)
+		public void Run(RegistrationTaskContext context)
 		{
-			RegisterByConvention(container, assemblies);
-            container.RegisterSingleton(typeof(IServiceFactory), new ServiceFactory(container));
+			RegisterByConvention(context.Container, context.Assemblies);
+			RegisterOtherTypes(context.Container);
         }
 
         private void RegisterByConvention(IBoltOnContainer container, IEnumerable<Assembly> assemblies)
@@ -29,5 +29,11 @@ namespace BoltOn.Bootstrapping
 
 			registrations.ForEach(f => container.RegisterTransient(f.Interface, f.Implementation));
         }
+
+		private void RegisterOtherTypes(IBoltOnContainer container)
+		{
+			ServiceLocator.SetServiceFactory(container);
+			container.RegisterSingleton(typeof(IServiceFactory), new ServiceFactory(container));
+		}
     }
 }

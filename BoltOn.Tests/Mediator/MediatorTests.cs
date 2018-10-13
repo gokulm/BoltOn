@@ -24,18 +24,19 @@ namespace BoltOn.Tests.Mediator
 			//System.Threading.Thread.Sleep(250);
 			Bootstrapper
 				.Instance
+				.BoltOn();
 				// as mediator is register as scoped, and we cannot resolve scoped dependencies in simple
 				// injector directly 
 				//.ExcludeAssemblies(typeof(SimpleInjectorContainerAdapter).Assembly, typeof(NLogLoggerAdapter<>).Assembly)
-				.BoltOnSimpleInjector(b =>
-				{
-					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-					{
-						AssembliesToBeExcluded = new List<Assembly> { typeof(NLogLoggerAdapter<>).Assembly },
-					};
-				})
-				.BoltOnNetStandardLogger()
-				.BoltOnMediator();
+				//.BoltOnSimpleInjector(b =>
+				//{
+				//	b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+				//	{
+				//		AssembliesToBeExcluded = new List<Assembly> { typeof(NLogLoggerAdapter<>).Assembly },
+				//	};
+				//})
+				//.BoltOnNetStandardLogger()
+				//.BoltOnMediator();
 
 			// act
 			var mediator = ServiceLocator.Current.GetInstance<IMediator>();
@@ -52,6 +53,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			Bootstrapper
 				.Instance
+				.BoltOn();
 				// as mediator is register as scoped, and we cannot resolve scoped dependencies in simple
 				// injector directly 
 				//.ExcludeAssemblies(typeof(SimpleInjectorContainerAdapter).Assembly, typeof(NLogLoggerAdapter<>).Assembly)
@@ -60,7 +62,7 @@ namespace BoltOn.Tests.Mediator
 				//	b.AssembliesToBeExcluded.Add(typeof(NLogLoggerAdapter<>).Assembly);
 				//	b.AssembliesToBeExcluded.Add(typeof(SimpleInjectorContainerAdapter).Assembly);
 				//})
-				.BoltOnSimpleInjector();
+				//.BoltOnSimpleInjector();
 
 			// act
 			var mediator = ServiceLocator.Current.GetInstance<IMediator>();
@@ -198,9 +200,9 @@ namespace BoltOn.Tests.Mediator
 
 	public class MediatorTestsRegistrationTask : IBootstrapperRegistrationTask
 	{
-		public void Run(IBoltOnContainer container, IEnumerable<Assembly> assemblies)
+		public void Run(RegistrationTaskContext context)
 		{
-			container.RegisterTransientCollection(typeof(IMiddleware), new[] { typeof(TestMiddleware) });
+			context.Container.RegisterTransientCollection(typeof(IMiddleware), new[] { typeof(TestMiddleware) });
 		}
 	}
 }

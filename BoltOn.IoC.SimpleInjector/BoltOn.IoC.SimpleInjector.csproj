@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="SimpleInjectoryContainerFactory.cs" />
+    <Compile Remove="SimpleInjectorExtensions.cs" />
   </ItemGroup>
 </Project>

@@ -8,8 +8,9 @@ namespace BoltOn.Logging.NetStandard
 {
     public class NetStandardLoggerRegistrationTask : IBootstrapperRegistrationTask
     {
-        public void Run(IBoltOnContainer container, IEnumerable<Assembly> assemblies)
+		public void Run(RegistrationTaskContext context)
         {
+			var container = context.Container;
             container.RegisterTransient<ILoggerFactory, LoggerFactory>();
             //container.RegisterTransient<IBoltOnLoggerFactory, NetStandardLoggerAdapterFactory>();
 			container.RegisterTransient(typeof(IBoltOnLogger<>), typeof(NetStandardLoggerAdapter<>));

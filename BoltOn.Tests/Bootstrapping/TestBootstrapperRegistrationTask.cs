@@ -8,9 +8,9 @@ namespace BoltOn.Tests.Bootstrapping
 {
     public class TestBootstrapperRegistrationTask : IBootstrapperRegistrationTask
     {
-        public void Run(IBoltOnContainer container, IEnumerable<Assembly> assemblies)
+		public void Run(RegistrationTaskContext context)
         {
-            container.RegisterTransient<Employee>()
+			context.Container.RegisterTransient<Employee>()
                      .RegisterTransient<ClassWithInjectedDependency>();
         }
     }

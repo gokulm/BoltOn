@@ -21,7 +21,6 @@ namespace BoltOn.IoC.SimpleInjector
                     boltOnIoCOptions.Container = new SimpleInjectorContainerAdapter();
                 }
             }
-            boltOnIoCOptions.RegisterByConvention();
             return bootstrapper;
         }
     }
