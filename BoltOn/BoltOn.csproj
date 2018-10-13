@@ -9,6 +9,7 @@
     <Compile Remove="Logging\BoltOnLoggerDecorator.cs" />
     <Compile Remove="MediatorModule\Mediator.cs" />
     <Compile Remove="IoC\IBoltOnContainerFactory.cs" />
+    <Compile Remove="AssemblyRegistrationOrderAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Logging\" />

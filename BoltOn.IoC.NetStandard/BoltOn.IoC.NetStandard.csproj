@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="NetStandardContainerFactory.cs" />
+    <Compile Remove="AssemblyInfo.cs" />
   </ItemGroup>
 </Project>

@@ -8,7 +8,7 @@ namespace BoltOn.IoC
 {
 	public static class BoltOnIoCExtensions
 	{
-		public static Bootstrapper ConfigureIoC(this Bootstrapper bootstrapper,
+		public static Bootstrapper Configure(this Bootstrapper bootstrapper,
 												Action<BoltOnIoCOptions> action = null)
 		{
 			var options = new BoltOnIoCOptions(bootstrapper);

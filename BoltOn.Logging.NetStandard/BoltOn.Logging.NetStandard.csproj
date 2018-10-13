@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="NetStandardLoggerAdapterFactory.cs" />
+    <Compile Remove="AssemblyInfo.cs" />
   </ItemGroup>
 </Project>

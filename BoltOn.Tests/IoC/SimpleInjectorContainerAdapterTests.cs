@@ -97,7 +97,7 @@ namespace BoltOn.Tests.IoC
 		{
 			// arrange
 			_container = new SimpleInjectorContainerAdapter();
-			ServiceLocator.SetServiceFactory(_container);
+			//ServiceLocator.SetServiceFactory(_container);
 			_container.RegisterTransient<ITestService, TestService>();
 			_container.LockRegistration();
 

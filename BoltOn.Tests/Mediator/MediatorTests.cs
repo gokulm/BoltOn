@@ -24,6 +24,7 @@ namespace BoltOn.Tests.Mediator
 			//System.Threading.Thread.Sleep(250);
 			Bootstrapper
 				.Instance
+				//.Configure(a => a.Middlewares = )
 				.BoltOn();
 				// as mediator is register as scoped, and we cannot resolve scoped dependencies in simple
 				// injector directly 

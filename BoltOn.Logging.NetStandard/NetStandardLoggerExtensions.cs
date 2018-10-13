@@ -11,8 +11,8 @@ namespace BoltOn.Logging.NetStandard
         {
             var options = new BoltOnLoggerOptions(bootstrapper);
             action?.Invoke(options);
-            bootstrapper.Container.RegisterTransient<ILoggerFactory, LoggerFactory>();
-            bootstrapper.Container.RegisterTransient(typeof(IBoltOnLogger<>), typeof(NetStandardLoggerAdapter<>));
+            //bootstrapper.Container.RegisterTransient<ILoggerFactory, LoggerFactory>();
+            //bootstrapper.Container.RegisterTransient(typeof(IBoltOnLogger<>), typeof(NetStandardLoggerAdapter<>));
             return bootstrapper;
         }
     }
