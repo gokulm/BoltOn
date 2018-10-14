@@ -15,6 +15,7 @@ namespace BoltOn.Bootstrapping
 		private bool _isDisposed;
 		private Assembly _callingAssembly;
 		private Hashtable _boltOnOptions;
+		private bool _isBolted;
 
 		private Bootstrapper()
 		{
@@ -47,14 +48,22 @@ namespace BoltOn.Bootstrapping
 
 		internal IReadOnlyCollection<Assembly> Assemblies { get; set; }
 
-		internal TOptionType GetOptions<TOptionType>() where TOptionType : class
+		internal TOptionType GetOptions<TOptionType>() where TOptionType : class, new()
 		{
 			var configValue = _boltOnOptions[typeof(TOptionType).Name];
+			if (configValue == null)
+			{
+				var options = new TOptionType();
+				AddOptions(options);
+				return options;
+			}
+
 			return (TOptionType)Convert.ChangeType(configValue, typeof(TOptionType));
 		}
 
 		public void BoltOn()
 		{
+			Contract.Requires(!_isBolted, "Components are already bolted!");
 			_callingAssembly = Assembly.GetCallingAssembly();
 			LoadAssemblies();
 			RunRegistrationTasks();
@@ -69,10 +78,11 @@ namespace BoltOn.Bootstrapping
 
 		private void LoadAssemblies()
 		{
-			var boltOnIoCOptions = GetOptions<BoltOnIoCOptions>() ?? new BoltOnIoCOptions(this);
+			var boltOnIoCOptions = GetOptions<BoltOnIoCOptions>();
 			var referencedAssemblyNames = _callingAssembly.GetReferencedAssemblies().ToList();
 			var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-			var assembliesToBeExcluded = boltOnIoCOptions.AssemblyOptions.AssembliesToBeExcluded.Select(s => s.GetName());
+			var assembliesToBeExcluded = boltOnIoCOptions.AssemblyOptions
+			                                             .AssembliesToBeExcluded.Select(s => s.GetName().FullName).ToList();
 			var assemblies = GetAssembliesThatStartsWith("BoltOn");
 			var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
 			var appAssemblies = GetAssembliesThatStartsWith(appPrefix);
@@ -80,12 +90,7 @@ namespace BoltOn.Bootstrapping
 			assemblies.AddRange(appAssemblies);
 			assemblies.Add(_callingAssembly);
 			assemblies = assemblies.Distinct().ToList();
-
-			foreach (var assembly in assemblies)
-			{
-				if (assembliesToBeExcluded.Contains(assembly.GetName()))
-					assemblies.Remove(assembly);
-			}
+			assemblies.RemoveAll(a => assembliesToBeExcluded.Contains(a.GetName().FullName));
 
 			var sortedAssemblies = new List<Assembly>();
 			var assemblyNames = assemblies.Select(s => s.GetName());
@@ -127,10 +132,8 @@ namespace BoltOn.Bootstrapping
 			}
 
 			Assemblies = sortedAssemblies.AsReadOnly();
-			if (boltOnIoCOptions.Container == null)
+			if (_container == null)
 				_container = CreateContainer();
-			else
-				_container = boltOnIoCOptions.Container;
 
 			List<Assembly> GetReferencedAssemblies(Assembly assembly)
 			{
@@ -142,12 +145,11 @@ namespace BoltOn.Bootstrapping
 
 			List<Assembly> GetAssembliesThatStartsWith(string startsWith)
 			{
-				var temp = (from r in referencedAssemblyNames
-							join a in appDomainAssemblies
-							on r.FullName equals a.FullName
-							where r.Name.StartsWith(startsWith, StringComparison.Ordinal)
-							select a).Distinct().ToList();
-				return temp;
+				return (from r in referencedAssemblyNames
+						join a in appDomainAssemblies
+						on r.FullName equals a.FullName
+						where r.Name.StartsWith(startsWith, StringComparison.Ordinal)
+						select a).Distinct().ToList();
 			}
 		}
 
@@ -159,7 +161,7 @@ namespace BoltOn.Bootstrapping
 										 where registrationTaskType.IsAssignableFrom(t)
 										 && t.IsClass
 										 select t).ToList();
-			
+
 			var registrationTaskContext = new RegistrationTaskContext(this);
 			foreach (var type in registrationTaskTypes)
 			{
@@ -201,8 +203,10 @@ namespace BoltOn.Bootstrapping
 								 where containerInterfaceType.IsAssignableFrom(t)
 								 && t.IsClass
 								 select t).LastOrDefault();
+			
 			if (containerType == null)
 				throw new Exception("No IoC Container Adapter referenced");
+			
 			var container = Activator.CreateInstance(containerType) as IBoltOnContainer;
 			return container;
 		}
@@ -222,7 +226,7 @@ namespace BoltOn.Bootstrapping
 					_container = null;
 				}
 				Assemblies = null;
-				_boltOnOptions = null;
+				_boltOnOptions.Clear();
 			}
 		}
 

@@ -2,4 +2,4 @@
 using BoltOn;
 
 //[assembly: AssemblyRegistrationOrder(0)]
-//[assembly: InternalsVisibleTo("BoltOn.Tests")]
+[assembly: InternalsVisibleTo("BoltOn.Tests")]

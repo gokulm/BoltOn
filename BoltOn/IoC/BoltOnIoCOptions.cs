@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using BoltOn.Bootstrapping;
 
 namespace BoltOn.IoC
@@ -9,10 +6,10 @@ namespace BoltOn.IoC
 	public static class BoltOnIoCExtensions
 	{
 		public static Bootstrapper Configure(this Bootstrapper bootstrapper,
-												Action<BoltOnIoCOptions> action = null)
+												Action<BoltOnIoCOptions> action)
 		{
-			var options = new BoltOnIoCOptions(bootstrapper);
-			action?.Invoke(options);
+			var options = new BoltOnIoCOptions();
+			action(options);
 			bootstrapper.AddOptions(options);
 			return bootstrapper;
 		}
@@ -20,39 +17,24 @@ namespace BoltOn.IoC
 
 	public class BoltOnIoCOptions
 	{
-		private BoltOnIoCAssemblyOptions _assemblyOptions;
-		private readonly Bootstrapper _bootstrapper;
-		private IBoltOnContainer _boltOnContainer;
 
-		public BoltOnIoCOptions(Bootstrapper bootstrapper)
+		public BoltOnIoCOptions()
 		{
-			_bootstrapper = bootstrapper;
 			AssemblyOptions = new BoltOnIoCAssemblyOptions();
 		}
 
 		public IBoltOnContainer Container
 		{
-			get
-			{
-				return _boltOnContainer;
-			}
 			set
 			{
-				_boltOnContainer = value;
-				_bootstrapper.Container = _boltOnContainer;
+				Bootstrapper.Instance.Container = value;
 			}
 		}
 
 		public BoltOnIoCAssemblyOptions AssemblyOptions
 		{
-			get
-			{
-				return _assemblyOptions;
-			}
-			set
-			{
-				_assemblyOptions = value;
-			}
+			get;
+			set;
 		}
 	}
 }

@@ -13,30 +13,34 @@ namespace BoltOn.Tests.Bootstrapping
 	[TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
 	public class BootstrapperTests : IDisposable
 	{
-		//[Fact, TestPriority(1)]
-		//public void Container_CallContainerBeforeInitializingContainer_ThrowsException()
-		//{
-		//	// act and assert
-		//	Assert.Throws<Exception>(() => Bootstrapper.Instance.Container);
-		//}
+		[Fact, TestPriority(1)]
+		public void Container_CallContainerBeforeInitializingContainer_ThrowsException()
+		{
+			// arrange
+			var bootstrapper = Bootstrapper.Instance;
 
-		//[Fact, TestPriority(2)]
-		//public void Container_CallContainerAfterInitializingContainer_ReturnsContainer()
-		//{
-		//	// arrange
-		//	var container = new NetStandardContainerAdapter();
+			// act and assert
+			Assert.Throws<Exception>(() => Bootstrapper.Instance.Container);
+		}
 
-		//	// act 
-		//	Bootstrapper
-		//		.Instance
-		//		.SetContainer(container);
+		[Fact, TestPriority(2)]
+		public void Container_CallContainerAfterInitializingContainer_ReturnsContainer()
+		{
+			// arrange
+			var container = new NetStandardContainerAdapter();
 
-		//	// assert
-		//	Assert.NotNull(Bootstrapper.Instance.Container);
-		//}
+			// act 
+			Bootstrapper
+				.Instance
+				.Configure(c => c.Container = container)
+				.BoltOn();
+
+			// assert
+			Assert.NotNull(Bootstrapper.Instance.Container);
+		}
 
 		[Fact, TestPriority(3)]
-		public void Container_CallContainerAfterRun_ReturnsContainer()
+		public void Container_CallContainerAfterBoltOn_ReturnsDefaultContainer()
 		{
 			// act 
 			Bootstrapper
@@ -44,53 +48,47 @@ namespace BoltOn.Tests.Bootstrapping
 				.BoltOn();
 			
 			// assert
-			//Assert.NotNull(Bootstrapper.Instance.Container);
+			Assert.NotNull(Bootstrapper.Instance.Container);
 		}
 
-		//[Fact, TestPriority(4)]
-		//public void Container_CallContainerAfterRunWithSetContainer_ReturnsNetStandardContainer()
-		//{
-		//	// arrange 
-		//	Bootstrapper
-		//		.Instance
-		//		.SetContainer(new NetStandardContainerAdapter());
+		[Fact, TestPriority(4)]
+		public void Container_CallContainerAfterRunWithSetContainer_ReturnsNetStandardContainer()
+		{
+			// arrange 
+			Bootstrapper
+				.Instance
+				.Configure(c => c.Container = new NetStandardContainerAdapter());
 
-		//	// act 
-		//	Bootstrapper
-		//		.Instance
-		//		.BoltOn();
+			// act 
+			Bootstrapper
+				.Instance
+				.BoltOn();
 
-		//	// assert
-		//	Assert.NotNull(Bootstrapper.Instance.Container);
-		//	Assert.IsType<NetStandardContainerAdapter>(Bootstrapper.Instance.Container);
-		//}
+			// assert
+			Assert.NotNull(Bootstrapper.Instance.Container);
+			Assert.IsType<NetStandardContainerAdapter>(Bootstrapper.Instance.Container);
+		}
 
 		[Fact, TestPriority(4)]
 		public void Run_ExcludeAllDIAssemblies_ThrowsException()
 		{
-			// arrange 
-			//Bootstrapper
-			//.Instance
-			//.ExcludeAssemblies(typeof(NetStandardContainerAdapter).Assembly,
-			//typeof(SimpleInjectorContainerAdapter).Assembly);
-
 			// arrange & act 
 			var ex = Record.Exception(() =>
 			{
 				Bootstrapper
 					.Instance
+					.Configure(b =>
+					{
+						b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+						{
+							AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+							{
+								typeof(NetStandardContainerAdapter).Assembly,
+								typeof(SimpleInjectorContainerAdapter).Assembly
+							}
+						};
+					})
 					.BoltOn();
-					//.BoltOnSimpleInjector(b =>
-					//{
-					//	b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-					//	{
-					//		AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-					//		{
-					//			typeof(NetStandardContainerAdapter).Assembly,
-					//			typeof(SimpleInjectorContainerAdapter).Assembly
-					//		}
-					//	};
-					//});
 			});
 
 			// assert

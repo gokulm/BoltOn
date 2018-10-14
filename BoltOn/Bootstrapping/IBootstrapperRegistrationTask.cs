@@ -34,7 +34,7 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
-		public TOptionType GetOptions<TOptionType>() where TOptionType : class
+		public TOptionType GetOptions<TOptionType>() where TOptionType : class, new()
 		{
 			return _bootstrapper.GetOptions<TOptionType>();
 		}
