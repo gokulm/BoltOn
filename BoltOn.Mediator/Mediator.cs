@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using BoltOn.Logging;
+using BoltOn.Utilities;
 
 namespace BoltOn.Mediator
 {
@@ -47,7 +48,7 @@ namespace BoltOn.Mediator
                 var interfaceHandlerType =
                     genericRequestHandlerType.MakeGenericType(request.GetType(), typeof(TResponse));
                 dynamic handler = _serviceFactory.GetInstance(interfaceHandlerType);
-				Contract.Requires<Exception>(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
+				Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
                 _logger.Debug($"Resolved handler: {handler.GetType()}");
                 var response = handler.Handle(request);
                 return new StandardDtoReponse<TResponse>

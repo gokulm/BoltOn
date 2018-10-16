@@ -5,6 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using BoltOn.IoC;
+using BoltOn.Utilities;
 
 namespace BoltOn.Bootstrapping
 {
@@ -63,12 +64,13 @@ namespace BoltOn.Bootstrapping
 
 		public void BoltOn()
 		{
-			Contract.Requires(!_isBolted, "Components are already bolted!");
+			Check.Requires(!_isBolted, "Components are already bolted!");
 			_callingAssembly = Assembly.GetCallingAssembly();
 			LoadAssemblies();
 			RunRegistrationTasks();
 			_container.LockRegistration();
 			RunPostRegistrationTasks();
+			_isBolted = true;
 		}
 
 		public void AddOptions<TOptionType>(TOptionType options) where TOptionType : class
@@ -100,7 +102,7 @@ namespace BoltOn.Bootstrapping
 
 			var iocAssemblies = assemblies.Where(a => a.GetName().Name.
 												  StartsWith("BoltOn.IoC.", StringComparison.Ordinal)).ToList();
-			Contract.Requires(iocAssemblies.Count > 0, "No IoC Container Adapter referenced");
+			Check.Requires(iocAssemblies.Count > 0, "No IoC Container Adapter referenced");
 			iocAssemblies.ForEach(f =>
 			{
 				sortedAssemblies.Add(f);
