@@ -5,11 +5,21 @@ namespace BoltOn.Mediator
 {
     public class MediatorOptions
     {
-        public List<Type> Middlewares { get; set; } = new List<Type>();
+		internal List<Type> Middlewares { get; set; } = new List<Type>();
 
         public MediatorOptions()
         {
-            Middlewares.Add(typeof(StopwatchMiddleware));
+			RegisterMiddleware<StopwatchMiddleware>();
         }
+
+		public void RegisterMiddleware<TMiddleware>()
+		{
+			Middlewares.Add(typeof(TMiddleware));
+		}
+
+		public void ClearMiddlewares()
+		{
+			Middlewares.Clear();
+		}
     }
 }

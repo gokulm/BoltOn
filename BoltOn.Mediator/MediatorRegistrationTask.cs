@@ -14,7 +14,6 @@ namespace BoltOn.Mediator
 			container.RegisterTransient<IMediator, Mediator>();
 			var options = context.GetOptions<MediatorOptions>();
 			container.RegisterTransientCollection(typeof(IMiddleware), options.Middlewares);
-			//container.RegisterTransientCollection(typeof(IMiddleware<,>), new[] {typeof(StopwatchMiddleware<,>)});
 			RegisterHandlers(container, context.Assemblies);
 		}
 

@@ -35,32 +35,6 @@ namespace BoltOn.Tests.Mediator
 			Assert.True(result.Data);
 		}
 
-		[Fact, Trait("Category", "Integration")]
-		public void Get_MediatorWithMiddleware_ExecutesMiddleware()
-		{
-			// arrange
-			Bootstrapper
-				.Instance
-				.BoltOn();
-				// as mediator is register as scoped, and we cannot resolve scoped dependencies in simple
-				// injector directly 
-				//.ExcludeAssemblies(typeof(SimpleInjectorContainerAdapter).Assembly, typeof(NLogLoggerAdapter<>).Assembly)
-				//.BoltOnSimpleInjector(b =>
-				//{
-				//	b.AssembliesToBeExcluded.Add(typeof(NLogLoggerAdapter<>).Assembly);
-				//	b.AssembliesToBeExcluded.Add(typeof(SimpleInjectorContainerAdapter).Assembly);
-				//})
-				//.BoltOnSimpleInjector();
-
-			// act
-			var mediator = ServiceLocator.Current.GetInstance<IMediator>();
-			var result = mediator.Get(new TestRequest());
-
-			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
-		}
-
 		[Fact]
 		public void Get_RegisteredHandlerThatReturnsBool_ReturnsSuccessulResult()
 		{
@@ -82,6 +56,33 @@ namespace BoltOn.Tests.Mediator
 			// assert 
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data);
+		}
+
+		[Fact]
+		public void Get_MediatorWithMiddleware_ExecutesMiddleware()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
+			var serviceFactory = autoMocker.GetMock<IServiceFactory>();
+			var testHandler = new Mock<TestHandler>();
+			var middleware = new Mock<IMiddleware>();
+			var logger = new Mock<IBoltOnLogger<TestMiddleware>>();
+			serviceFactory.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
+						  .Returns(testHandler.Object);
+			serviceFactory.Setup(s => s.GetInstance(typeof(IEnumerable<IMiddleware>)))
+						  .Returns(new List<IMiddleware> { new TestMiddleware(logger.Object) });
+			var request = new TestRequest();
+			testHandler.Setup(s => s.Handle(request)).Returns(true);
+
+			// act
+			var result = sut.Get(request);
+
+			// assert 
+			Assert.True(result.IsSuccessful);
+			Assert.True(result.Data);
+			logger.Verify(l => l.Debug("TestMiddleware Started"));
+			logger.Verify(l => l.Debug("TestMiddleware Ended"));
 		}
 
 		[Fact]
@@ -181,16 +182,16 @@ namespace BoltOn.Tests.Mediator
 		{
 			_logger.Debug($"TestMiddleware Started");
 			var response = next.Invoke(request);
-			_logger.Debug($"StopwatchMiddleware Ended");
+			_logger.Debug($"TestMiddleware Ended");
 			return response;
 		}
 	}
 
-	public class MediatorTestsRegistrationTask : IBootstrapperRegistrationTask
-	{
-		public void Run(RegistrationTaskContext context)
-		{
-			context.Container.RegisterTransientCollection(typeof(IMiddleware), new[] { typeof(TestMiddleware) });
-		}
-	}
+	//public class MediatorTestsRegistrationTask : IBootstrapperRegistrationTask
+	//{
+	//	public void Run(RegistrationTaskContext context)
+	//	{
+	//		context.Container.RegisterTransientCollection(typeof(IMiddleware), new[] { typeof(TestMiddleware) });
+	//	}
+	//}
 }

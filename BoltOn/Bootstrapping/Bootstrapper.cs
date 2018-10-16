@@ -229,6 +229,7 @@ namespace BoltOn.Bootstrapping
 				}
 				Assemblies = null;
 				_boltOnOptions.Clear();
+				_isBolted = false;
 			}
 		}
 
