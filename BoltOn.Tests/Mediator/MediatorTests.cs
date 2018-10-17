@@ -3,38 +3,15 @@ using BoltOn.Bootstrapping;
 using Xunit;
 using BoltOn.Mediator;
 using BoltOn.IoC;
-using BoltOn.IoC.SimpleInjector;
-using BoltOn.Logging.NLog;
 using Moq.AutoMock;
 using Moq;
 using System.Collections.Generic;
 using BoltOn.Logging;
-using System.Reflection;
-using BoltOn.Logging.NetStandard;
 
 namespace BoltOn.Tests.Mediator
 {
 	public class MediatorTests : IDisposable
 	{
-		[Fact, Trait("Category", "Integration")]
-		public void Get_BootstrapWithDefaults_ReturnsSuccessfulResult()
-		{
-			// arrange
-			// as there is conflict with Container_CallContainerAfterRun_ReturnsContainer test, added some delay
-			//System.Threading.Thread.Sleep(250);
-			Bootstrapper
-				.Instance
-				.BoltOn();
-
-			// act
-			var mediator = ServiceLocator.Current.GetInstance<IMediator>();
-			var result = mediator.Get(new TestRequest());
-
-			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
-		}
-
 		[Fact]
 		public void Get_RegisteredHandlerThatReturnsBool_ReturnsSuccessulResult()
 		{
@@ -45,8 +22,8 @@ namespace BoltOn.Tests.Mediator
 			var testHandler = new Mock<TestHandler>();
 			serviceFactory.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
 						  .Returns(testHandler.Object);
-			serviceFactory.Setup(s => s.GetInstance(typeof(IEnumerable<IMiddleware>)))
-						  .Returns(new List<IMiddleware>());
+			serviceFactory.Setup(s => s.GetInstance(typeof(IEnumerable<IMediatorMiddleware>)))
+						  .Returns(new List<IMediatorMiddleware>());
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
 
@@ -66,12 +43,12 @@ namespace BoltOn.Tests.Mediator
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
 			var serviceFactory = autoMocker.GetMock<IServiceFactory>();
 			var testHandler = new Mock<TestHandler>();
-			var middleware = new Mock<IMiddleware>();
+			var middleware = new Mock<IMediatorMiddleware>();
 			var logger = new Mock<IBoltOnLogger<TestMiddleware>>();
 			serviceFactory.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
 						  .Returns(testHandler.Object);
-			serviceFactory.Setup(s => s.GetInstance(typeof(IEnumerable<IMiddleware>)))
-						  .Returns(new List<IMiddleware> { new TestMiddleware(logger.Object) });
+			serviceFactory.Setup(s => s.GetInstance(typeof(IEnumerable<IMediatorMiddleware>)))
+						  .Returns(new List<IMediatorMiddleware> { new TestMiddleware(logger.Object) });
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
 
@@ -95,8 +72,8 @@ namespace BoltOn.Tests.Mediator
 			var testHandler = new Mock<TestHandler>();
 			serviceFactory.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
 						   .Returns(testHandler.Object);
-			serviceFactory.Setup(s => s.GetInstance(typeof(IEnumerable<IMiddleware>)))
-						  .Returns(new List<IMiddleware>());
+			serviceFactory.Setup(s => s.GetInstance(typeof(IEnumerable<IMediatorMiddleware>)))
+						  .Returns(new List<IMediatorMiddleware>());
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Throws(new Exception("handler failed"));
 
@@ -120,8 +97,8 @@ namespace BoltOn.Tests.Mediator
 			var testHandler = new Mock<TestHandler>();
 			serviceFactory.Setup(s => s.GetInstance(typeof(IRequestHandler<TestRequest, bool>)))
 						  .Returns(null);
-			serviceFactory.Setup(s => s.GetInstance(typeof(IEnumerable<IMiddleware>)))
-						  .Returns(new List<IMiddleware>());
+			serviceFactory.Setup(s => s.GetInstance(typeof(IEnumerable<IMediatorMiddleware>)))
+						  .Returns(new List<IMediatorMiddleware>());
 			var request = new TestRequest();
 
 			// act
@@ -133,6 +110,24 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(result.Exception);
 			Assert.Equal(string.Format(Constants.ExceptionMessages.
 									   HANDLER_NOT_FOUND, request), result.Exception.Message);
+		}
+
+		[Fact, Trait("Category", "Integration")]
+		public void Get_BootstrapWithDefaults_ReturnsSuccessfulResult()
+		{
+			// arrange
+			Bootstrapper
+				.Instance
+				.ConfigureMediator(m => m.RegisterMiddleware<TestMiddleware>())
+				.BoltOn();
+
+			// act
+			var mediator = ServiceLocator.Current.GetInstance<IMediator>();
+			var result = mediator.Get(new TestRequest());
+
+			// assert 
+			Assert.True(result.IsSuccessful);
+			Assert.True(result.Data);
 		}
 
 		public void Dispose()
@@ -167,7 +162,7 @@ namespace BoltOn.Tests.Mediator
 		}
 	}
 
-	public class TestMiddleware : IMiddleware
+	public class TestMiddleware : IMediatorMiddleware
 	{
 		private readonly IBoltOnLogger<TestMiddleware> _logger;
 
@@ -186,12 +181,4 @@ namespace BoltOn.Tests.Mediator
 			return response;
 		}
 	}
-
-	//public class MediatorTestsRegistrationTask : IBootstrapperRegistrationTask
-	//{
-	//	public void Run(RegistrationTaskContext context)
-	//	{
-	//		context.Container.RegisterTransientCollection(typeof(IMiddleware), new[] { typeof(TestMiddleware) });
-	//	}
-	//}
 }

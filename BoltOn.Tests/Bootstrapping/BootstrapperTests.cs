@@ -32,7 +32,7 @@ namespace BoltOn.Tests.Bootstrapping
 			// act 
 			Bootstrapper
 				.Instance
-				.Configure(c => c.Container = container)
+				.ConfigureIoC(c => c.Container = container)
 				.BoltOn();
 
 			// assert
@@ -57,7 +57,7 @@ namespace BoltOn.Tests.Bootstrapping
 			// arrange 
 			Bootstrapper
 				.Instance
-				.Configure(c => c.Container = new NetStandardContainerAdapter());
+				.ConfigureIoC(c => c.Container = new NetStandardContainerAdapter());
 
 			// act 
 			Bootstrapper
@@ -77,7 +77,7 @@ namespace BoltOn.Tests.Bootstrapping
 			{
 				Bootstrapper
 					.Instance
-					.Configure(b =>
+					.ConfigureIoC(b =>
 					{
 						b.AssemblyOptions = new BoltOnIoCAssemblyOptions
 						{
@@ -102,7 +102,7 @@ namespace BoltOn.Tests.Bootstrapping
 			// arrange 
 			Bootstrapper
 				.Instance
-				.Configure(b =>
+				.ConfigureIoC(b =>
 				{
 					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
 					{
@@ -129,7 +129,7 @@ namespace BoltOn.Tests.Bootstrapping
 			// arrange
 			Bootstrapper
 			.Instance
-			.Configure(b =>
+			.ConfigureIoC(b =>
 			{
 				b.AssemblyOptions = new BoltOnIoCAssemblyOptions
 				{
@@ -158,7 +158,7 @@ namespace BoltOn.Tests.Bootstrapping
 			// arrange
 			Bootstrapper
 				.Instance
-				.Configure(b =>
+				.ConfigureIoC(b =>
 				{
 					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
 					{
@@ -184,7 +184,7 @@ namespace BoltOn.Tests.Bootstrapping
 			// arrange
 			Bootstrapper
 				.Instance
-				.Configure(b =>
+				.ConfigureIoC(b =>
 				{
 					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
 					{
@@ -242,7 +242,7 @@ namespace BoltOn.Tests.Bootstrapping
 			// arrange
 			Bootstrapper
 				.Instance
-				.Configure(b =>
+				.ConfigureIoC(b =>
 				{
 					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
 					{

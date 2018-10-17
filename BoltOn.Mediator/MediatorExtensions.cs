@@ -5,7 +5,7 @@ namespace BoltOn.Mediator
 {
 	public static class MediatorExtensions
     {
-		public static Bootstrapper ConfigureMediator(this Bootstrapper bootstrapper, Action<MediatorOptions> action)
+        public static Bootstrapper ConfigureMediator(this Bootstrapper bootstrapper, Action<MediatorOptions> action)
         {
             var options = new MediatorOptions();
 			action(options);

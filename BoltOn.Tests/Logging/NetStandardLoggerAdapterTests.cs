@@ -17,6 +17,7 @@ namespace BoltOn.Tests.Logging
  			var logMessage = "test";
 
 			// act
+			// as all the NetStandard log methods are extensions methods, they cannot be asserted
 			sut.Debug(logMessage);
 			sut.Error(new Exception());
 			sut.Info(logMessage);

@@ -75,6 +75,7 @@ namespace BoltOn.Bootstrapping
 
 		public void AddOptions<TOptionType>(TOptionType options) where TOptionType : class
 		{
+			Check.Requires(!_isBolted, "Components are already bolted! Options cannot be added");
 			_boltOnOptions.Add(typeof(TOptionType).Name, options);
 		}
 
