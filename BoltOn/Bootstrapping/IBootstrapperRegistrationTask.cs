@@ -1,42 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using BoltOn.IoC;
-
-namespace BoltOn.Bootstrapping
+﻿namespace BoltOn.Bootstrapping
 {
-    public interface IBootstrapperRegistrationTask
-    {
-		void Run(RegistrationTaskContext context);
-    }
-
-	public sealed class RegistrationTaskContext
+	public interface IBootstrapperRegistrationTask
 	{
-		private readonly Bootstrapper _bootstrapper;
-
-		public RegistrationTaskContext(Bootstrapper bootstrapper)
-		{
-			_bootstrapper = bootstrapper;
-		}
-
-		public IBoltOnContainer Container
-		{
-			get
-			{
-				return _bootstrapper.Container;
-			}
-		}
-
-		public IReadOnlyCollection<Assembly> Assemblies
-		{
-			get
-			{
-				return _bootstrapper.Assemblies;
-			}
-		}
-
-		public TOptionType GetOptions<TOptionType>() where TOptionType : class, new()
-		{
-			return _bootstrapper.GetOptions<TOptionType>();
-		}
+		void Run(RegistrationTaskContext context);
 	}
 }

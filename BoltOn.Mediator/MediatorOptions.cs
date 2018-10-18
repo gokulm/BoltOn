@@ -10,6 +10,7 @@ namespace BoltOn.Mediator
         public MediatorOptions()
         {
 			RegisterMiddleware<StopwatchMiddleware>();
+			RegisterMiddleware<UnitOfWorkMiddleware>();
         }
 
 		public void RegisterMiddleware<TMiddleware>()

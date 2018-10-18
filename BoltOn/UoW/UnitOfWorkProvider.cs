@@ -13,7 +13,7 @@ namespace BoltOn.UoW
 
 		public IUnitOfWork Get(IsolationLevel isolationLevel)
 		{
-			return _unitOfWork ?? (_unitOfWork = new TestUnitOfWork(isolationLevel));
+			return _unitOfWork ?? (_unitOfWork = new UnitOfWork(isolationLevel));
 		}
 	}
 }

@@ -5,17 +5,16 @@ namespace BoltOn.UoW
 	public interface IUnitOfWork : IDisposable
 	{
 		void Begin();
-
 		void Commit();
 	}
 
-	public class TestUnitOfWork : IUnitOfWork
+	public class UnitOfWork : IUnitOfWork
 	{
 		private TransactionScope _transactionScope;
 		private bool _isStarted;
 		private readonly IsolationLevel _isolationLevel;
 
-		internal TestUnitOfWork(IsolationLevel isolationLevel)
+		internal UnitOfWork(IsolationLevel isolationLevel)
 		{
 			_isolationLevel = isolationLevel;
 		}

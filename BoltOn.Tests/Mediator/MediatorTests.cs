@@ -180,5 +180,9 @@ namespace BoltOn.Tests.Mediator
 			_logger.Debug($"TestMiddleware Ended");
 			return response;
 		}
+
+		public void Dispose()
+		{
+		}
 	}
 }
