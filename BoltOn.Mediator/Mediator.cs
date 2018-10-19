@@ -35,27 +35,9 @@ namespace BoltOn.Mediator
 				_serviceFactory.GetInstance(typeof(IEnumerable<IMediatorMiddleware>));
 			var next = middlewares.Reverse().Aggregate(handle,
 				   (requestDelegate, middleware) => ((req) => middleware.Run<IRequest<TResponse>, TResponse>(req, requestDelegate)));
-			return next.Invoke(request);
-		}
-
-		private StandardDtoReponse<TResponse> Handle<TResponse>(IRequest<TResponse> request)
-		{
 			try
 			{
-				var requestType = request.GetType();
-				_logger.Debug($"Resolving handler for request: {requestType}");
-				var genericRequestHandlerType = typeof(IRequestHandler<,>);
-				var interfaceHandlerType =
-					genericRequestHandlerType.MakeGenericType(request.GetType(), typeof(TResponse));
-				dynamic handler = _serviceFactory.GetInstance(interfaceHandlerType);
-				Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
-				_logger.Debug($"Resolved handler: {handler.GetType()}");
-				var response = handler.Handle(request);
-				return new StandardDtoReponse<TResponse>
-				{
-					Data = response,
-					IsSuccessful = true
-				};
+				return next.Invoke(request);
 			}
 			catch (Exception ex)
 			{
@@ -68,7 +50,26 @@ namespace BoltOn.Mediator
 			}
 			finally
 			{
+				middlewares.ToList().ForEach(m => m.Dispose());
 			}
+		}
+
+		private StandardDtoReponse<TResponse> Handle<TResponse>(IRequest<TResponse> request)
+		{
+			var requestType = request.GetType();
+			_logger.Debug($"Resolving handler for request: {requestType}");
+			var genericRequestHandlerType = typeof(IRequestHandler<,>);
+			var interfaceHandlerType =
+				genericRequestHandlerType.MakeGenericType(request.GetType(), typeof(TResponse));
+			dynamic handler = _serviceFactory.GetInstance(interfaceHandlerType);
+			Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
+			_logger.Debug($"Resolved handler: {handler.GetType()}");
+			var response = handler.Handle(request);
+			return new StandardDtoReponse<TResponse>
+			{
+				Data = response,
+				IsSuccessful = true
+			};
 		}
 	}
 }

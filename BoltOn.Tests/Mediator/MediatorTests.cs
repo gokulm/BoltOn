@@ -118,7 +118,11 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			Bootstrapper
 				.Instance
-				.ConfigureMediator(m => m.RegisterMiddleware<TestMiddleware>())
+				.ConfigureMediator(m =>
+				{
+					m.RegisterMiddleware<TestMiddleware>();
+					m.RegisterMiddleware<UnitOfWorkMiddleware>();
+				})
 				.BoltOn();
 
 			// act
@@ -138,7 +142,7 @@ namespace BoltOn.Tests.Mediator
 		}
 	}
 
-	public class TestRequest : IRequest<bool>
+	public class TestRequest : IRequest<bool>, IEnableUnitOfWorkMediatorMiddleware
 	{
 	}
 

@@ -10,6 +10,7 @@ namespace BoltOn.Mediator
 	public class UnitOfWorkMiddleware : IMediatorMiddleware
 	{
 		private readonly IUnitOfWorkProvider _unitOfWorkProvider;
+		private IUnitOfWork _unitOfWork;
 
 		public UnitOfWorkMiddleware(IUnitOfWorkProvider unitOfWorkProvider)
 		{
@@ -23,15 +24,30 @@ namespace BoltOn.Mediator
 			if (!(request is IEnableUnitOfWorkMediatorMiddleware))
 				return next.Invoke(request);
 
-			var unitOfWork = _unitOfWorkProvider.Get(System.Transactions.IsolationLevel.ReadUncommitted);
-			unitOfWork.Begin();
+			System.Transactions.IsolationLevel isolationLevel;
+			switch(request)
+			{
+				case ICommand<TResponse> c:
+					isolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
+					break;
+				case IQuery<TResponse> q:
+					isolationLevel = System.Transactions.IsolationLevel.ReadUncommitted;
+					break;
+				default:
+					isolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
+					break;
+			}
+
+			_unitOfWork = _unitOfWorkProvider.Get(isolationLevel);
+			_unitOfWork.Begin();
 			var response = next.Invoke(request);
-			unitOfWork.Commit();
+			_unitOfWork.Commit();
 			return response;
 		}
 
 		public void Dispose()
 		{
+			_unitOfWork?.Dispose();
 		}
 	}
 }
