@@ -142,7 +142,7 @@ namespace BoltOn.Tests.Mediator
 		}
 	}
 
-	public class TestRequest : IRequest<bool>, IEnableUnitOfWorkMediatorMiddleware
+	public class TestRequest : IRequest<bool>, IEnableUnitOfWorkMiddleware
 	{
 	}
 

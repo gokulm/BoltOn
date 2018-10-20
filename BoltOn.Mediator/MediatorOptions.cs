@@ -6,9 +6,11 @@ namespace BoltOn.Mediator
     public class MediatorOptions
     {
 		internal List<Type> Middlewares { get; set; } = new List<Type>();
+		public UnitOfWorkOptions UnitOfWorkOptions { get; set; }
 
         public MediatorOptions()
         {
+			UnitOfWorkOptions = new UnitOfWorkOptions();
 			RegisterMiddleware<StopwatchMiddleware>();
 			RegisterMiddleware<UnitOfWorkMiddleware>();
         }

@@ -3,7 +3,7 @@ using BoltOn.UoW;
 
 namespace BoltOn.Mediator
 {
-	public interface IEnableUnitOfWorkMediatorMiddleware
+	public interface IEnableUnitOfWorkMiddleware
 	{
 	}
 
@@ -21,8 +21,10 @@ namespace BoltOn.Mediator
 																	  Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> next)
 			where TRequest : IRequest<TResponse>
 		{
-			if (!(request is IEnableUnitOfWorkMediatorMiddleware))
+			if (!(request is IEnableUnitOfWorkMiddleware))
 				return next.Invoke(request);
+
+			// retrieve mediator options and set the isolation level
 
 			System.Transactions.IsolationLevel isolationLevel;
 			switch(request)

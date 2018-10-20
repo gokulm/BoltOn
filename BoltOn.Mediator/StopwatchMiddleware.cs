@@ -4,6 +4,10 @@ using BoltOn.Logging;
 
 namespace BoltOn.Mediator
 {
+	public interface IEnableStopwatchMiddleware
+	{
+	}
+
     public class StopwatchMiddleware : IMediatorMiddleware
     {
         private readonly IBoltOnLogger<StopwatchMiddleware> _logger;
@@ -31,8 +35,4 @@ namespace BoltOn.Mediator
 		{
 		}
     }
-
-	public interface IEnableStopwatchMiddleware
-	{
-	}
 }
