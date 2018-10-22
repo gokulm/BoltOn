@@ -7,6 +7,7 @@ using Moq.AutoMock;
 using Moq;
 using System.Collections.Generic;
 using BoltOn.Logging;
+using BoltOn.IoC.SimpleInjector;
 
 namespace BoltOn.Tests.Mediator
 {
@@ -117,11 +118,19 @@ namespace BoltOn.Tests.Mediator
 		{
 			// arrange
 			Bootstrapper
-				.Instance
+				.Instance.ConfigureIoC(b =>
+				{
+					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					{
+						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+							{
+								typeof(SimpleInjectorContainerAdapter).Assembly
+							}
+					};
+				})
 				.ConfigureMediator(m =>
 				{
 					m.RegisterMiddleware<TestMiddleware>();
-					m.RegisterMiddleware<UnitOfWorkMiddleware>();
 				})
 				.BoltOn();
 

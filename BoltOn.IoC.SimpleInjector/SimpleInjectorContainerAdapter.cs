@@ -122,5 +122,11 @@ namespace BoltOn.IoC.SimpleInjector
 		{
 			return RegisterTransientCollection(typeof(TService), serviceTypes);
 		}
+
+		public IBoltOnContainer RegisterScoped<TService>(Func<TService> implementationFactory) where TService : class
+		{
+			_container.Register(typeof(TService), implementationFactory, Lifestyle.Scoped);
+			return this;
+		}
 	}
 }

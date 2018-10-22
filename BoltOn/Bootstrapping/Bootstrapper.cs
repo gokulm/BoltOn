@@ -193,9 +193,10 @@ namespace BoltOn.Bootstrapping
 
 		private void RunPostRegistrationTasks()
 		{
+			var registrationTaskContext = new RegistrationTaskContext(this);
 			var postRegistrationTasks = _container.GetAllInstances<IBootstrapperPostRegistrationTask>();
 			if (postRegistrationTasks != null)
-				postRegistrationTasks.ToList().ForEach(t => t.Run());
+				postRegistrationTasks.ToList().ForEach(t => t.Run(registrationTaskContext));
 		}
 
 		private IBoltOnContainer CreateContainer()

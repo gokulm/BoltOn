@@ -10,11 +10,13 @@ namespace BoltOn.Mediator
 	public class UnitOfWorkMiddleware : IMediatorMiddleware
 	{
 		private readonly IUnitOfWorkProvider _unitOfWorkProvider;
+		private readonly IContextRetriever _contextRetriever;
 		private IUnitOfWork _unitOfWork;
 
-		public UnitOfWorkMiddleware(IUnitOfWorkProvider unitOfWorkProvider)
+		public UnitOfWorkMiddleware(IUnitOfWorkProvider unitOfWorkProvider, IContextRetriever contextRetriever)
 		{
 			_unitOfWorkProvider = unitOfWorkProvider;
+			_contextRetriever = contextRetriever;
 		}
 
 		public StandardDtoReponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request,
@@ -24,19 +26,18 @@ namespace BoltOn.Mediator
 			if (!(request is IEnableUnitOfWorkMiddleware))
 				return next.Invoke(request);
 
-			// retrieve mediator options and set the isolation level
-
+			var mediatorContext = _contextRetriever.Get<MediatorContext>(ContextScope.App);
 			System.Transactions.IsolationLevel isolationLevel;
 			switch(request)
 			{
 				case ICommand<TResponse> c:
-					isolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
+					isolationLevel = mediatorContext.DefaultCommandIsolationLevel;
 					break;
 				case IQuery<TResponse> q:
-					isolationLevel = System.Transactions.IsolationLevel.ReadUncommitted;
+					isolationLevel = mediatorContext.DefaultQueryIsolationLevel;
 					break;
 				default:
-					isolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
+					isolationLevel = mediatorContext.DefaultIsolationLevel;
 					break;
 			}
 

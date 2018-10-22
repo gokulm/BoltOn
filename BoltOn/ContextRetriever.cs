@@ -9,19 +9,39 @@ namespace BoltOn
 		Request
 	}
 
+	//public interface IContextRetrieverFactory
+	//{
+	//	IContextRetriever Get();
+	//}
+
+	//public class ContextRetrieverFactory : IContextRetrieverFactory
+	//{
+	//	private readonly IAppContextRetriever _appContextRetriever;
+
+	//	internal ContextRetrieverFactory(IAppContextRetriever appContextRetriever)
+	//	{
+	//		_appContextRetriever = appContextRetriever;
+	//	}
+
+	//	public IContextRetriever Get()
+	//	{
+	//		return new ContextRetriever(_appContextRetriever);
+	//	}
+	//}
+
 	public interface IContextRetriever
 	{
 		TContext Get<TContext>(ContextScope contextScope = ContextScope.Request);
 		void Set<TContext>(TContext context, ContextScope contextScope = ContextScope.Request);
 	}
 
-	public interface IAppContextRetriever
+	internal interface IAppContextRetriever
 	{
 		TContext Get<TContext>();
 		void Set<TContext>(TContext context);
 	}
 
-	public sealed class AppContextRetriever : IAppContextRetriever
+	internal sealed class AppContextRetriever : IAppContextRetriever
 	{
 		private readonly Hashtable _contexts;
 
@@ -49,7 +69,7 @@ namespace BoltOn
 		private readonly Hashtable _contexts;
 		private readonly IAppContextRetriever _appContextRetriever;
 
-		public ContextRetriever(IAppContextRetriever appContextRetriever)
+		internal ContextRetriever(IAppContextRetriever appContextRetriever)
 		{
 			_contexts = new Hashtable();
 			_appContextRetriever = appContextRetriever;

@@ -121,6 +121,12 @@ namespace BoltOn.IoC.NetStandardBolt
 		{
 			return RegisterTransientCollection(typeof(TService), serviceTypes);
 		}
+
+		public IBoltOnContainer RegisterScoped<TService>(Func<TService> implementationFactory) where TService : class
+		{
+			_serviceCollection.AddScoped(typeof(TService), s => implementationFactory());
+			return this;
+		}
 	}
 
 }

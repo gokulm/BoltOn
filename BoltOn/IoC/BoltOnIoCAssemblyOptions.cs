@@ -13,7 +13,7 @@ namespace BoltOn.IoC
 
 		public BoltOnIoCAssemblyOptions()
 		{
-			AddTypesToBeExcluded(typeof(UnitOfWork));
+			AddTypesToBeExcluded(typeof(UnitOfWork), typeof(ContextRetriever), typeof(AppContextRetriever));
 		}
 
 		public void AddTypesToBeExcluded(params Type[] types)

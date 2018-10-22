@@ -36,6 +36,7 @@ namespace BoltOn.Bootstrapping
 			ServiceLocator.SetServiceFactory(container);
 			container.RegisterSingleton(typeof(IServiceFactory), new ServiceFactory(container));
 			container.RegisterSingleton<IAppContextRetriever, AppContextRetriever>();
+			container.RegisterScoped<IContextRetriever>(() => new ContextRetriever(container.GetInstance<IAppContextRetriever>()));
 		}
 	}
 }
