@@ -6,6 +6,8 @@ using BoltOn.IoC.NetStandardBolt;
 using BoltOn.IoC.SimpleInjector;
 using BoltOn.Tests.Common;
 using Moq;
+using SimpleInjector;
+using SimpleInjector.Lifestyles;
 using Xunit;
 
 namespace BoltOn.Tests.Bootstrapping
@@ -45,6 +47,16 @@ namespace BoltOn.Tests.Bootstrapping
 			// act 
 			Bootstrapper
 				.Instance
+					.ConfigureIoC(b =>
+					{
+						b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+						{
+							AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+							{
+								typeof(SimpleInjectorContainerAdapter).Assembly
+							}
+						};
+					})
 				.BoltOn();
 
 			// assert
@@ -67,6 +79,41 @@ namespace BoltOn.Tests.Bootstrapping
 			// assert
 			Assert.NotNull(Bootstrapper.Instance.Container);
 			Assert.IsType<NetStandardContainerAdapter>(Bootstrapper.Instance.Container);
+		}
+
+		[Fact, TestPriority(5)]
+		public void Container_CallContainerExcludeNetStandard_ReturnsSimpleInjectorContainer()
+		{
+			// arrange 
+			var container = new Container();
+			container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+			container.Options.AllowOverridingRegistrations = true;
+			container.Options.ConstructorResolutionBehavior = new FewParameterizedConstructorBehavior();
+			Bootstrapper
+				.Instance
+				.ConfigureIoC(b =>
+				{
+					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					{
+						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+							{
+								typeof(NetStandardContainerAdapter).Assembly
+							}
+					};
+					b.Container = new SimpleInjectorContainerAdapter(container);
+				});
+
+			// act
+			using (AsyncScopedLifestyle.BeginScope(container))
+			{
+				Bootstrapper
+					.Instance
+					.BoltOn();
+			}
+
+			// assert
+			Assert.NotNull(Bootstrapper.Instance.Container);
+			Assert.IsType<SimpleInjectorContainerAdapter>(Bootstrapper.Instance.Container);
 		}
 
 		[Fact, TestPriority(4)]
@@ -96,37 +143,14 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.Same("No IoC Container Adapter referenced", ex.Message);
 		}
 
-		[Fact, TestPriority(5)]
-		public void Container_CallContainerExcludeNetStandard_ReturnsSimpleInjectorContainer()
-		{
-			// arrange 
-			Bootstrapper
-				.Instance
-				.ConfigureIoC(b =>
-				{
-					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-					{
-						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-							{
-								typeof(NetStandardContainerAdapter).Assembly
-							}
-					};
-				});
-
-			// act
-			Bootstrapper
-				.Instance
-				.BoltOn();
-
-			// assert
-			Assert.NotNull(Bootstrapper.Instance.Container);
-			Assert.IsType<SimpleInjectorContainerAdapter>(Bootstrapper.Instance.Container);
-		}
-
 		[Fact, TestPriority(6)]
 		public void BoltOn_ExcludeAssemblyWithRegistrationTask_ThrowsException()
 		{
-			// arrange
+			// arrange	
+			var container = new Container();
+			container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+			container.Options.AllowOverridingRegistrations = true;
+			container.Options.ConstructorResolutionBehavior = new FewParameterizedConstructorBehavior();
 			Bootstrapper
 			.Instance
 			.ConfigureIoC(b =>
@@ -136,20 +160,26 @@ namespace BoltOn.Tests.Bootstrapping
 					AssembliesToBeExcluded = new List<System.Reflection.Assembly>
 						{
 					typeof(BootstrapperTests).Assembly,
+						typeof(NetStandardContainerAdapter).Assembly
 						}
 				};
+				b.Container = new SimpleInjectorContainerAdapter(container);
 			});
 
-			Bootstrapper
-				.Instance
-				.BoltOn();
+			using (AsyncScopedLifestyle.BeginScope(container))
+			{
+				Bootstrapper
+					.Instance
+					.BoltOn();
 
-			// act 
-			// as this could throw any exception specific to the DI framework, using record
-			var ex = Record.Exception(() => ServiceLocator.Current.GetInstance<ITestService>());
 
-			// assert
-			Assert.NotNull(ex);
+				// act 
+				// as this could throw any exception specific to the DI framework, using record
+				var ex = Record.Exception(() => ServiceLocator.Current.GetInstance<ITestService>());
+
+				// assert
+				Assert.NotNull(ex);
+			}
 		}
 
 		[Fact, TestPriority(7)]
@@ -164,14 +194,13 @@ namespace BoltOn.Tests.Bootstrapping
 					{
 						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
 						{
-							typeof(BootstrapperTests).Assembly,
+								typeof(SimpleInjectorContainerAdapter).Assembly
 						}
 					};
 				})
 				.BoltOn();
 
 			// act 
-			// as this could throw any exception specific to the DI framework, using record
 			var employee = ServiceLocator.Current.GetInstance<Employee>();
 
 			// assert
@@ -179,7 +208,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact, TestPriority(7)]
-		public void BoltOn_ConcreteClassWithoutRegistrationButNotResolvableDependencies_ThrowsException()
+		public void BoltOn_ConcreteClassWithoutRegistrationButNotResolvableDependenciesNetStandardContainer_ThrowsException()
 		{
 			// arrange
 			Bootstrapper
@@ -190,18 +219,18 @@ namespace BoltOn.Tests.Bootstrapping
 					{
 						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
 						{
-							typeof(BootstrapperTests).Assembly,
+						typeof(BootstrapperTests).Assembly,
+						typeof(SimpleInjectorContainerAdapter).Assembly,
 						}
 					};
 				})
 				.BoltOn();
 
 			// act 
-			// as this could throw any exception specific to the DI framework, using record
-			var ex = Record.Exception(() => ServiceLocator.Current.GetInstance<ClassWithInjectedDependency>());
+			var instance = ServiceLocator.Current.GetInstance<ClassWithInjectedDependency>();
 
 			// assert
-			Assert.NotNull(ex);
+			Assert.Null(instance);
 		}
 
 		[Fact, TestPriority(8)]
@@ -210,6 +239,16 @@ namespace BoltOn.Tests.Bootstrapping
 			// arrange
 			Bootstrapper
 				.Instance
+				.ConfigureIoC(b =>
+				{
+					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					{
+						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+						{
+						typeof(SimpleInjectorContainerAdapter).Assembly,
+						}
+					};
+				})
 				.BoltOn();
 
 			// act
@@ -226,6 +265,16 @@ namespace BoltOn.Tests.Bootstrapping
 			// arrange
 			Bootstrapper
 				.Instance
+				.ConfigureIoC(b =>
+				{
+					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					{
+						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+						{
+						typeof(SimpleInjectorContainerAdapter).Assembly,
+						}
+					};
+				})
 				.BoltOn();
 
 			// act
@@ -237,7 +286,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact]
-		public void BoltOn_ClassNotRegisteredByConvention_ThrowsException()
+		public void BoltOn_ClassNotRegisteredByConventionUsingNetStandardContainer_ReturnsNull()
 		{
 			// arrange
 			Bootstrapper
@@ -249,17 +298,54 @@ namespace BoltOn.Tests.Bootstrapping
 						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
 						{
 							typeof(BootstrapperTests).Assembly,
+							typeof(SimpleInjectorContainerAdapter).Assembly,
 						}
 					};
 				})
 				.BoltOn();
 
 			// act 
-			// as this could throw any exception specific to the DI framework, using record
-			var ex = Record.Exception(() => ServiceLocator.Current.GetInstance<ITestService>());
+			var instance = ServiceLocator.Current.GetInstance<ITestService>();
 
 			// assert
-			Assert.NotNull(ex);
+			Assert.Null(instance);
+		}
+
+		[Fact]
+		public void BoltOn_ClassNotRegisteredByConventionUsingSimpleInjector_ThrowsException()
+		{
+			// arrange
+
+			var container = new Container();
+			container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+			container.Options.AllowOverridingRegistrations = true;
+			container.Options.ConstructorResolutionBehavior = new FewParameterizedConstructorBehavior();
+
+			// act 
+			using (AsyncScopedLifestyle.BeginScope(container))
+			{
+				Bootstrapper
+				.Instance
+				.ConfigureIoC(b =>
+				{
+					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					{
+						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+						{
+							typeof(BootstrapperTests).Assembly,
+							typeof(NetStandardContainerAdapter).Assembly,
+						}
+					};
+					b.Container = new SimpleInjectorContainerAdapter(container);
+				})
+				.BoltOn();
+
+				// as this could throw any exception specific to the DI framework, using record
+				var ex = Record.Exception(() => ServiceLocator.Current.GetInstance<ITestService>());
+
+				// assert
+				Assert.NotNull(ex);
+			}
 		}
 
 		[Fact]
@@ -268,6 +354,16 @@ namespace BoltOn.Tests.Bootstrapping
 			// arrange
 			Bootstrapper
 				.Instance
+				.ConfigureIoC(b =>
+				{
+					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					{
+						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+						{
+							typeof(SimpleInjectorContainerAdapter).Assembly,
+						}
+					};
+				})
 				.BoltOn();
 
 			// act and assert
