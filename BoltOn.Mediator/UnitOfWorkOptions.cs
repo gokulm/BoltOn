@@ -1,4 +1,5 @@
-﻿using System.Transactions;
+﻿using System;
+using System.Transactions;
 
 namespace BoltOn.Mediator
 {
@@ -7,6 +8,7 @@ namespace BoltOn.Mediator
 		public IsolationLevel DefaultIsolationLevel { get; set; }
 		public IsolationLevel DefaultCommandIsolationLevel { get; set; }
 		public IsolationLevel DefaultQueryIsolationLevel { get; set; }
+		public TimeSpan? DefaultTransactionTimeout { get; set; }
 
 		public UnitOfWorkOptions()
 		{
@@ -21,5 +23,6 @@ namespace BoltOn.Mediator
 		public IsolationLevel DefaultIsolationLevel { get; set; }
 		public IsolationLevel DefaultCommandIsolationLevel { get; set; }
 		public IsolationLevel DefaultQueryIsolationLevel { get; set; }
+		public TimeSpan? DefaultTransactionTimeout { get; set; }
 	}
 }

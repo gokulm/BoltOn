@@ -128,10 +128,10 @@ namespace BoltOn.Tests.Mediator
 							}
 					};
 				})
-				.ConfigureMediator(m =>
-				{
-					m.RegisterMiddleware<TestMiddleware>();
-				})
+				//.ConfigureMediator(m =>
+				//{
+				//	m.RegisterMiddleware<TestMiddleware>();
+				//})
 				.BoltOn();
 
 			// act

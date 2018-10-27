@@ -17,7 +17,6 @@ namespace BoltOn.Tests.Logging
 			var logger = autoMocker.GetMock<ILogger>();
 			var logMessage = "test";
 
-
 			// act
 			sut.Debug(logMessage);
 

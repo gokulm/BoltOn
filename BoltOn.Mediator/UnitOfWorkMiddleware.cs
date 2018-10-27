@@ -7,7 +7,7 @@ namespace BoltOn.Mediator
 	{
 	}
 
-	public class UnitOfWorkMiddleware : IMediatorMiddleware
+	public class UnitOfWorkMiddleware : BaseRequestSpecificMiddleware<IEnableUnitOfWorkMiddleware>
 	{
 		private readonly IUnitOfWorkProvider _unitOfWorkProvider;
 		private readonly IContextRetriever _contextRetriever;
@@ -19,16 +19,11 @@ namespace BoltOn.Mediator
 			_contextRetriever = contextRetriever;
 		}
 
-		public StandardDtoReponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request,
-																	  Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> next)
-			where TRequest : IRequest<TResponse>
+		public override StandardDtoReponse<TResponse> Execute<TRequest, TResponse>(IRequest<TResponse> request, Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> next)
 		{
-			if (!(request is IEnableUnitOfWorkMiddleware))
-				return next.Invoke(request);
-
 			var mediatorContext = _contextRetriever.Get<MediatorContext>(ContextScope.App);
 			System.Transactions.IsolationLevel isolationLevel;
-			switch(request)
+			switch (request)
 			{
 				case ICommand<TResponse> c:
 					isolationLevel = mediatorContext.DefaultCommandIsolationLevel;
@@ -41,14 +36,14 @@ namespace BoltOn.Mediator
 					break;
 			}
 
-			_unitOfWork = _unitOfWorkProvider.Get(isolationLevel);
+			_unitOfWork = _unitOfWorkProvider.Get(isolationLevel, mediatorContext.DefaultTransactionTimeout);
 			_unitOfWork.Begin();
 			var response = next.Invoke(request);
 			_unitOfWork.Commit();
 			return response;
 		}
 
-		public void Dispose()
+		public override void Dispose()
 		{
 			_unitOfWork?.Dispose();
 		}
