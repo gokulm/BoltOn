@@ -10,7 +10,6 @@ namespace BoltOn.Mediator
         {
             if (!(request is T))
                 return next.Invoke(request);
-
             return Execute<IRequest<TResponse>, TResponse>(request, next);
         }
 

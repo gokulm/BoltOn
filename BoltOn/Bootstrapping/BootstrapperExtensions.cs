@@ -1,10 +1,9 @@
 ﻿using System;
 using BoltOn.Bootstrapping;
-using BoltOn.UoW;
 
 namespace BoltOn.IoC
 {
-    public static class BootstrapperExtensions
+	public static class BootstrapperExtensions
     {
         public static Bootstrapper ConfigureIoC(this Bootstrapper bootstrapper,
                                                 Action<BoltOnIoCOptions> action)

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Transactions;
+using BoltOn.Other;
+
 namespace BoltOn.UoW
 {
 	public interface IUnitOfWork : IDisposable
@@ -8,6 +10,7 @@ namespace BoltOn.UoW
 		void Commit();
 	}
 
+	[ExcludeFromRegistration]
 	public class UnitOfWork : IUnitOfWork
 	{
 		private TransactionScope _transactionScope;

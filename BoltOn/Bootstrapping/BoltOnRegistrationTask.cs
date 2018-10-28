@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using BoltOn.Context;
 using BoltOn.IoC;
+using BoltOn.Other;
 
 namespace BoltOn.Bootstrapping
 {
@@ -15,7 +16,6 @@ namespace BoltOn.Bootstrapping
 		private void RegisterByConvention(RegistrationTaskContext context)
 		{
 			var boltOnIoCOptions = context.GetOptions<BoltOnIoCOptions>();
-			var typesToBeExcluded = boltOnIoCOptions.AssemblyOptions.TypesToBeExcluded;
 			var interfaces = (from assembly in context.Assemblies
 							  from type in assembly.GetTypes()
 							  where type.IsInterface
@@ -26,7 +26,7 @@ namespace BoltOn.Bootstrapping
 								 where !type.IsAbstract
 									   && type.IsClass && @interface.IsAssignableFrom(type)
 									   && type.Name.Equals(@interface.Name.Substring(1))
-								       && !typesToBeExcluded.Contains(type)
+								 && !type.GetCustomAttributes(typeof(ExcludeFromRegistrationAttribute), true).Any()
 								 select new { Interface = @interface, Implementation = type }).ToList();
 
 			registrations.ForEach(f => context.Container.RegisterTransient(f.Interface, f.Implementation));

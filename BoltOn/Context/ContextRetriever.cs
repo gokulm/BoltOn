@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using BoltOn.Other;
 
 namespace BoltOn.Context
 {
@@ -10,6 +11,7 @@ namespace BoltOn.Context
 		void Set<TContext>(TContext context, ContextScope contextScope = ContextScope.Request);
 	}
 
+	[ExcludeFromRegistration]
 	public sealed class ContextRetriever : IContextRetriever
 	{
 		private readonly Hashtable _contexts;
