@@ -18,6 +18,7 @@
     <Folder Include="Bootstrapping\" />
     <Folder Include="Utilities\" />
     <Folder Include="UoW\" />
+    <Folder Include="Context\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />

@@ -285,7 +285,7 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.Equal("test", name);
 		}
 
-		[Fact]
+		[Fact, TestPriority(10)]
 		public void BoltOn_ClassNotRegisteredByConventionUsingNetStandardContainer_ReturnsNull()
 		{
 			// arrange
@@ -311,7 +311,7 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.Null(instance);
 		}
 
-		[Fact]
+		[Fact, TestPriority(11)]
 		public void BoltOn_ClassNotRegisteredByConventionUsingSimpleInjector_ThrowsException()
 		{
 			// arrange
@@ -348,7 +348,7 @@ namespace BoltOn.Tests.Bootstrapping
 			}
 		}
 
-		[Fact]
+		[Fact, TestPriority(12)]
 		public void BoltOn_BoltOnCalledMoreThanOnce_ThrowsException()
 		{
 			// arrange

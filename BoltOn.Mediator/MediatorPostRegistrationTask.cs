@@ -1,4 +1,5 @@
 ﻿using BoltOn.Bootstrapping;
+using BoltOn.Context;
 
 namespace BoltOn.Mediator
 {

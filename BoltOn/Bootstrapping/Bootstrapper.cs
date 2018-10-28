@@ -22,7 +22,8 @@ namespace BoltOn.Bootstrapping
 		{
 			_boltOnOptions = new Hashtable();
 			Assemblies = new List<Assembly>().AsReadOnly();
-			_boltOnOptions = new Hashtable();
+			_isBolted = false;
+			_container = null;
 		}
 
 		public static Bootstrapper Instance

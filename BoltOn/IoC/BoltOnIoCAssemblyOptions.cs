@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using BoltOn.Context;
 using BoltOn.UoW;
 
 namespace BoltOn.IoC

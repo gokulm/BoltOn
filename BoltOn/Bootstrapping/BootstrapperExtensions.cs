@@ -14,13 +14,5 @@ namespace BoltOn.IoC
             bootstrapper.AddOptions(options);
             return bootstrapper;
         }
-
-		//public static Bootstrapper ConfigureUoW(this Bootstrapper bootstrapper, Action<UnitOfWorkOptions> action)
-		//{
-		//	var options = new UnitOfWorkOptions();
-		//	action(options);
-		//	bootstrapper.AddOptions(options);
-		//	return bootstrapper;
-		//}
     }
 }

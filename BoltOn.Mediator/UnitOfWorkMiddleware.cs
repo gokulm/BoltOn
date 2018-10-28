@@ -1,4 +1,5 @@
 ﻿using System;
+using BoltOn.Context;
 using BoltOn.UoW;
 
 namespace BoltOn.Mediator

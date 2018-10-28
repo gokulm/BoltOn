@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using BoltOn.Context;
 using BoltOn.IoC;
 
 namespace BoltOn.Bootstrapping
