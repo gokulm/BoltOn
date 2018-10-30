@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using BoltOn.Bootstrapping;
-using BoltOn.IoC;
 
 namespace BoltOn.Mediator
 {

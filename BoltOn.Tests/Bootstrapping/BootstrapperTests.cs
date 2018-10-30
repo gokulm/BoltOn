@@ -29,6 +29,7 @@ namespace BoltOn.Tests.Bootstrapping
 		public void Container_CallContainerAfterInitializingContainer_ReturnsContainer()
 		{
 			// arrange
+			System.Threading.Thread.Sleep(200);
 			var container = new NetStandardContainerAdapter();
 
 			// act 

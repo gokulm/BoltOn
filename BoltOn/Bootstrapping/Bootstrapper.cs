@@ -77,6 +77,7 @@ namespace BoltOn.Bootstrapping
 		public void AddOptions<TOptionType>(TOptionType options) where TOptionType : class
 		{
 			Check.Requires(!_isBolted, "Components are already bolted! Options cannot be added");
+			//if (!_boltOnOptions.ContainsKey(typeof(TOptionType).Name))
 			_boltOnOptions.Add(typeof(TOptionType).Name, options);
 		}
 
@@ -86,7 +87,7 @@ namespace BoltOn.Bootstrapping
 			var referencedAssemblyNames = _callingAssembly.GetReferencedAssemblies().ToList();
 			var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 			var assembliesToBeExcluded = boltOnIoCOptions.AssemblyOptions
-			                                             .AssembliesToBeExcluded.Select(s => s.GetName().FullName).ToList();
+														 .AssembliesToBeExcluded.Select(s => s.GetName().FullName).ToList();
 			var assemblies = GetAssembliesThatStartsWith("BoltOn");
 			var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
 			var appAssemblies = GetAssembliesThatStartsWith(appPrefix);
@@ -184,11 +185,6 @@ namespace BoltOn.Bootstrapping
 										 where registrationTaskType.IsAssignableFrom(t)
 										 && t.IsClass
 										 select t).ToList();
-
-			//foreach (var type in registrationTaskTypes)
-			//{
-			//	_container.RegisterTransient(registrationTaskType, type);
-			//}
 			_container.RegisterTransientCollection<IBootstrapperPostRegistrationTask>(registrationTaskTypes);
 		}
 
@@ -208,10 +204,10 @@ namespace BoltOn.Bootstrapping
 								 where containerInterfaceType.IsAssignableFrom(t)
 								 && t.IsClass
 								 select t).LastOrDefault();
-			
+
 			if (containerType == null)
 				throw new Exception("No IoC Container Adapter referenced");
-			
+
 			var container = Activator.CreateInstance(containerType) as IBoltOnContainer;
 			return container;
 		}

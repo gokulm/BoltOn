@@ -3,7 +3,7 @@ using BoltOn.Bootstrapping;
 
 namespace BoltOn.Mediator
 {
-	public static class MediatorExtensions
+	public static class BootstrapperExtensions
     {
         public static Bootstrapper ConfigureMediator(this Bootstrapper bootstrapper, Action<MediatorOptions> action)
         {
