@@ -3,3 +3,8 @@
 - should support request/response, publish (and subscribe too)
 - should support UoW
 - publishing to queue should be as simple as calling an handler
+
+
+todo
+- uow tests
+- configure transaction timeout per request

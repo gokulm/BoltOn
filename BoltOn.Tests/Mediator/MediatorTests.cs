@@ -366,10 +366,6 @@ namespace BoltOn.Tests.Mediator
 
 	public class LoggerDebugStatementContainer
 	{
-		public static List<string> Statements
-		{
-			get;
-			set;
-		} = new List<string>();
+		public static List<string> Statements { get; set; } = new List<string>();
 	}
 }

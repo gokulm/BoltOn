@@ -16,13 +16,12 @@ namespace BoltOn.Bootstrapping
 		private bool _isDisposed;
 		private Assembly _callingAssembly;
 		private Hashtable _boltOnOptions;
-		private bool _isBolted;
 
 		private Bootstrapper()
 		{
 			_boltOnOptions = new Hashtable();
 			Assemblies = new List<Assembly>().AsReadOnly();
-			_isBolted = false;
+			IsBolted = false;
 			_container = null;
 		}
 
@@ -49,6 +48,7 @@ namespace BoltOn.Bootstrapping
 		}
 
 		internal IReadOnlyCollection<Assembly> Assemblies { get; set; }
+		public bool IsBolted { get; private set; }
 
 		internal TOptionType GetOptions<TOptionType>() where TOptionType : class, new()
 		{
@@ -65,18 +65,18 @@ namespace BoltOn.Bootstrapping
 
 		public void BoltOn()
 		{
-			Check.Requires(!_isBolted, "Components are already bolted!");
+			Check.Requires(!IsBolted, "Components are already bolted!");
 			_callingAssembly = Assembly.GetCallingAssembly();
 			LoadAssemblies();
 			RunRegistrationTasks();
 			_container.LockRegistration();
 			RunPostRegistrationTasks();
-			_isBolted = true;
+			IsBolted = true;
 		}
 
 		public void AddOptions<TOptionType>(TOptionType options) where TOptionType : class
 		{
-			Check.Requires(!_isBolted, "Components are already bolted! Options cannot be added");
+			Check.Requires(!IsBolted, "Components are already bolted! Options cannot be added");
 			//if (!_boltOnOptions.ContainsKey(typeof(TOptionType).Name))
 			_boltOnOptions.Add(typeof(TOptionType).Name, options);
 		}
@@ -228,7 +228,7 @@ namespace BoltOn.Bootstrapping
 				}
 				Assemblies = null;
 				_boltOnOptions.Clear();
-				_isBolted = false;
+				IsBolted = false;
 			}
 		}
 

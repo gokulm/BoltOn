@@ -7,7 +7,7 @@ namespace BoltOn.Mediator
     {
 		internal List<Type> Middlewares { get; set; } = new List<Type>();
 		public UnitOfWorkOptions UnitOfWorkOptions { get; set; }
-		internal bool IsMiddlewaresCustomized { get; set; } 
+		internal bool IsMiddlewaresCustomized { get; private set; } 
 
         public MediatorOptions()
         {

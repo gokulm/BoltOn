@@ -1,5 +1,6 @@
 ﻿using System;
 using BoltOn.Bootstrapping;
+using BoltOn.Utilities;
 
 namespace BoltOn.IoC
 {
@@ -7,7 +8,8 @@ namespace BoltOn.IoC
     {
         public static Bootstrapper ConfigureIoC(this Bootstrapper bootstrapper,
                                                 Action<BoltOnIoCOptions> action)
-        {
+		{
+			Check.Requires(!bootstrapper.IsBolted, "Components are already bolted! IoC cannot be configured now");
             var options = new BoltOnIoCOptions();
             action(options);
             bootstrapper.AddOptions(options);
