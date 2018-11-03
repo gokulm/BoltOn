@@ -47,7 +47,7 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
-		internal IReadOnlyCollection<Assembly> Assemblies { get; set; }
+		internal IReadOnlyList<Assembly> Assemblies { get; set; }
 		public bool IsBolted { get; private set; }
 
 		internal TOptionType GetOptions<TOptionType>() where TOptionType : class, new()
@@ -63,10 +63,10 @@ namespace BoltOn.Bootstrapping
 			return (TOptionType)Convert.ChangeType(configValue, typeof(TOptionType));
 		}
 
-		public void BoltOn()
+		public void BoltOn(Assembly callingAssembly = null)
 		{
 			Check.Requires(!IsBolted, "Components are already bolted!");
-			_callingAssembly = Assembly.GetCallingAssembly();
+			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
 			LoadAssemblies();
 			RunRegistrationTasks();
 			_container.LockRegistration();
@@ -86,12 +86,12 @@ namespace BoltOn.Bootstrapping
 			var boltOnIoCOptions = GetOptions<BoltOnIoCOptions>();
 			var referencedAssemblyNames = _callingAssembly.GetReferencedAssemblies().ToList();
 			var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-			var assembliesToBeExcluded = boltOnIoCOptions.AssemblyOptions
+			var assembliesToBeExcluded = boltOnIoCOptions
 														 .AssembliesToBeExcluded.Select(s => s.GetName().FullName).ToList();
 			var assemblies = GetAssembliesThatStartsWith("BoltOn");
 			var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
 			var appAssemblies = GetAssembliesThatStartsWith(appPrefix);
-			assemblies.AddRange(boltOnIoCOptions.AssemblyOptions.AssembliesToBeIncluded);
+			assemblies.AddRange(boltOnIoCOptions.AssembliesToBeIncluded);
 			assemblies.AddRange(appAssemblies);
 			assemblies.Add(_callingAssembly);
 			assemblies = assemblies.Distinct().ToList();
@@ -105,7 +105,8 @@ namespace BoltOn.Bootstrapping
 
 			var iocAssemblies = assemblies.Where(a => a.GetName().Name.
 												  StartsWith("BoltOn.IoC.", StringComparison.Ordinal)).ToList();
-			Check.Requires(iocAssemblies.Count > 0, "No IoC Container Adapter referenced");
+			Check.Requires(iocAssemblies.Count == 1, $"{iocAssemblies.Count} IoC Container Adapters referenced. " +
+			               "There should be atleast and utmost one");
 			iocAssemblies.ForEach(f =>
 			{
 				sortedAssemblies.Add(f);
@@ -203,10 +204,9 @@ namespace BoltOn.Bootstrapping
 								 from t in a.GetTypes()
 								 where containerInterfaceType.IsAssignableFrom(t)
 								 && t.IsClass
-								 select t).LastOrDefault();
-
-			if (containerType == null)
-				throw new Exception("No IoC Container Adapter referenced");
+			                      select t).First();
+			//if (containerType == null)
+				//throw new Exception("No IoC Container Adapter referenced");
 
 			var container = Activator.CreateInstance(containerType) as IBoltOnContainer;
 			return container;

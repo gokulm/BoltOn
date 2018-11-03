@@ -11,6 +11,7 @@ using BoltOn.IoC.SimpleInjector;
 using BoltOn.Utilities;
 using System.Linq;
 using BoltOn.Tests.Common;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Tests.Mediator
 {
@@ -154,19 +155,34 @@ namespace BoltOn.Tests.Mediator
 		public void Get_BootstrapWithDefaults_InvokesAllTheMiddlewaresAndReturnsSuccessfulResult()
 		{
 			// arrange
-			Bootstrapper
-				.Instance
-				.ConfigureIoC(b =>
-				{
-					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-					{
-						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-							{
-								typeof(SimpleInjectorContainerAdapter).Assembly
-							}
-					};
-				})
-				.BoltOn();
+			//Bootstrapper
+			//.Instance
+			//.ConfigureIoC(b =>
+			//{
+			//	b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+			//	{
+			//		AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+			//			{
+			//				typeof(SimpleInjectorContainerAdapter).Assembly
+			//			}
+			//	};
+			//})
+			//.BoltOn();
+			//var serviceCollection = new ServiceCollection();
+			//serviceCollection
+				//.BoltOnIoC(b =>
+				//{
+				//	b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+				//	{
+				//		AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+				//			{
+				//				typeof(SimpleInjectorContainerAdapter).Assembly
+				//			}
+				//	};
+				//})
+				//.LockBolts();
+
+
 			var currentDateTimeRetriever = ServiceLocator.Current.GetInstance<ICurrentDateTimeRetriever>();
 
 			// act
@@ -190,19 +206,20 @@ namespace BoltOn.Tests.Mediator
 				.Instance
 				.ConfigureIoC(b =>
 				{
-					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-					{
-						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-							{
-								typeof(SimpleInjectorContainerAdapter).Assembly
-							}
-					};
+					//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					//{
+					//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+					//		{
+					//			typeof(SimpleInjectorContainerAdapter).Assembly
+					//		}
+					//};
 				})
 				.ConfigureMediator(m =>
 				{
 					m.RegisterMiddleware<TestMiddleware>();
 				})
 				.BoltOn();
+
 			var currentDateTimeRetriever = ServiceLocator.Current.GetInstance<ICurrentDateTimeRetriever>();
 
 			// act
@@ -231,13 +248,13 @@ namespace BoltOn.Tests.Mediator
 				.Instance
 				.ConfigureIoC(b =>
 				{
-					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-					{
-						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-							{
-								typeof(SimpleInjectorContainerAdapter).Assembly
-							}
-					};
+					//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					//{
+					//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+					//		{
+					//			typeof(SimpleInjectorContainerAdapter).Assembly
+					//		}
+					//};
 				})
 				.ConfigureMediator(m =>
 				{
@@ -245,6 +262,40 @@ namespace BoltOn.Tests.Mediator
 					m.RegisterMiddleware<TestMiddleware>();
 				})
 				.BoltOn();
+			var currentDateTimeRetriever = ServiceLocator.Current.GetInstance<ICurrentDateTimeRetriever>();
+
+			// act
+			var mediator = ServiceLocator.Current.GetInstance<IMediator>();
+			var result = mediator.Get(new TestRequest());
+
+			// assert 
+			Assert.True(result.IsSuccessful);
+			Assert.True(result.Data);
+			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(f => f == "TestMiddleware Started"));
+			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(f => f == "TestMiddleware Ended"));
+			Assert.Null(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {currentDateTimeRetriever.Get()}"));
+			Assert.Null(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware ended at {currentDateTimeRetriever.Get()}. Time elapsed: 0"));
+		}
+
+		[Fact, Trait("Category", "Integration"), TestPriority(20)]
+		public void Get_BoltOnWithServiceCollectionCustomMiddlewaresAndClear_InvokesOnlyCustomMiddlewareAndReturnsSuccessfulResult()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			serviceCollection
+				.BoltOn(bo =>
+				{
+					bo.ConfigureIoC(i =>
+					{
+						i.ExcludeAssemblies(typeof(SimpleInjectorContainerAdapter).Assembly);
+					});
+					bo.ConfigureMediator(m =>
+					 {
+						 m.ClearMiddlewares();
+						 m.RegisterMiddleware<TestMiddleware>();
+					 });
+				});
+
 			var currentDateTimeRetriever = ServiceLocator.Current.GetInstance<ICurrentDateTimeRetriever>();
 
 			// act

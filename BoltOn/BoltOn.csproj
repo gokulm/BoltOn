@@ -11,6 +11,7 @@
     <Compile Remove="IoC\IBoltOnContainerFactory.cs" />
     <Compile Remove="AssemblyRegistrationOrderAttribute.cs" />
     <Compile Remove="Bootstrapping\BootstrapperOptions.cs" />
+    <Compile Remove="Bootstrapping\BoltOnOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Logging\" />
@@ -23,5 +24,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+      <HintPath>..\..\..\..\..\..\usr\local\share\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.dependencyinjection.abstractions\2.1.1\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

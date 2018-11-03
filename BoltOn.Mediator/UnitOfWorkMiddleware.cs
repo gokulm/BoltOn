@@ -37,6 +37,8 @@ namespace BoltOn.Mediator
 					break;
 			}
 
+
+
 			_unitOfWork = _unitOfWorkProvider.Get(isolationLevel, mediatorContext.DefaultTransactionTimeout);
 			_unitOfWork.Begin();
 			var response = next.Invoke(request);

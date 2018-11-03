@@ -5,6 +5,7 @@ using BoltOn.IoC;
 using BoltOn.IoC.NetStandardBolt;
 using BoltOn.IoC.SimpleInjector;
 using BoltOn.Tests.Common;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
@@ -50,13 +51,13 @@ namespace BoltOn.Tests.Bootstrapping
 				.Instance
 					.ConfigureIoC(b =>
 					{
-						b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-						{
-							AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-							{
-								typeof(SimpleInjectorContainerAdapter).Assembly
-							}
-						};
+						//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+						//{
+						//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+						//	{
+						//		typeof(SimpleInjectorContainerAdapter).Assembly
+						//	}
+						//};
 					})
 				.BoltOn();
 
@@ -94,13 +95,13 @@ namespace BoltOn.Tests.Bootstrapping
 				.Instance
 				.ConfigureIoC(b =>
 				{
-					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-					{
-						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-							{
-								typeof(NetStandardContainerAdapter).Assembly
-							}
-					};
+					//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					//{
+					//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+					//		{
+					//			typeof(NetStandardContainerAdapter).Assembly
+					//		}
+					//};
 					b.Container = new SimpleInjectorContainerAdapter(container);
 				});
 
@@ -127,14 +128,14 @@ namespace BoltOn.Tests.Bootstrapping
 					.Instance
 					.ConfigureIoC(b =>
 					{
-						b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-						{
-							AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-							{
-								typeof(NetStandardContainerAdapter).Assembly,
-								typeof(SimpleInjectorContainerAdapter).Assembly
-							}
-						};
+						//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+						//{
+						//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+						//	{
+						//		typeof(NetStandardContainerAdapter).Assembly,
+						//		typeof(SimpleInjectorContainerAdapter).Assembly
+						//	}
+						//};
 					})
 					.BoltOn();
 			});
@@ -156,14 +157,14 @@ namespace BoltOn.Tests.Bootstrapping
 			.Instance
 			.ConfigureIoC(b =>
 			{
-				b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-				{
-					AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-						{
-					typeof(BootstrapperTests).Assembly,
-						typeof(NetStandardContainerAdapter).Assembly
-						}
-				};
+				//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+				//{
+				//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+				//		{
+				//	typeof(BootstrapperTests).Assembly,
+				//		typeof(NetStandardContainerAdapter).Assembly
+				//		}
+				//};
 				b.Container = new SimpleInjectorContainerAdapter(container);
 			});
 
@@ -191,13 +192,13 @@ namespace BoltOn.Tests.Bootstrapping
 				.Instance
 				.ConfigureIoC(b =>
 				{
-					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-					{
-						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-						{
-								typeof(SimpleInjectorContainerAdapter).Assembly
-						}
-					};
+					//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					//{
+					//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+					//	{
+					//			typeof(SimpleInjectorContainerAdapter).Assembly
+					//	}
+					//};
 				})
 				.BoltOn();
 
@@ -216,14 +217,14 @@ namespace BoltOn.Tests.Bootstrapping
 				.Instance
 				.ConfigureIoC(b =>
 				{
-					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-					{
-						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-						{
-						typeof(BootstrapperTests).Assembly,
-						typeof(SimpleInjectorContainerAdapter).Assembly,
-						}
-					};
+					//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					//{
+					//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+					//	{
+					//	typeof(BootstrapperTests).Assembly,
+					//	typeof(SimpleInjectorContainerAdapter).Assembly,
+					//	}
+					//};
 				})
 				.BoltOn();
 
@@ -242,13 +243,13 @@ namespace BoltOn.Tests.Bootstrapping
 				.Instance
 				.ConfigureIoC(b =>
 				{
-					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-					{
-						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-						{
-						typeof(SimpleInjectorContainerAdapter).Assembly,
-						}
-					};
+					//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					//{
+					//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+					//	{
+					//	typeof(SimpleInjectorContainerAdapter).Assembly,
+					//	}
+					//};
 				})
 				.BoltOn();
 
@@ -268,13 +269,13 @@ namespace BoltOn.Tests.Bootstrapping
 				.Instance
 				.ConfigureIoC(b =>
 				{
-					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-					{
-						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-						{
-						typeof(SimpleInjectorContainerAdapter).Assembly,
-						}
-					};
+					//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					//{
+					//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+					//	{
+					//	typeof(SimpleInjectorContainerAdapter).Assembly,
+					//	}
+					//};
 				})
 				.BoltOn();
 
@@ -294,14 +295,14 @@ namespace BoltOn.Tests.Bootstrapping
 				.Instance
 				.ConfigureIoC(b =>
 				{
-					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-					{
-						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-						{
-							typeof(BootstrapperTests).Assembly,
-							typeof(SimpleInjectorContainerAdapter).Assembly,
-						}
-					};
+					//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					//{
+					//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+					//	{
+					//		typeof(BootstrapperTests).Assembly,
+					//		typeof(SimpleInjectorContainerAdapter).Assembly,
+					//	}
+					//};
 				})
 				.BoltOn();
 
@@ -329,14 +330,14 @@ namespace BoltOn.Tests.Bootstrapping
 				.Instance
 				.ConfigureIoC(b =>
 				{
-					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-					{
-						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-						{
-							typeof(BootstrapperTests).Assembly,
-							typeof(NetStandardContainerAdapter).Assembly,
-						}
-					};
+					//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					//{
+					//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+					//	{
+					//		typeof(BootstrapperTests).Assembly,
+					//		typeof(NetStandardContainerAdapter).Assembly,
+					//	}
+					//};
 					b.Container = new SimpleInjectorContainerAdapter(container);
 				})
 				.BoltOn();
@@ -357,19 +358,35 @@ namespace BoltOn.Tests.Bootstrapping
 				.Instance
 				.ConfigureIoC(b =>
 				{
-					b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-					{
-						AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-						{
-							typeof(SimpleInjectorContainerAdapter).Assembly,
-						}
-					};
+					//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
+					//{
+					//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+					//	{
+					//		typeof(SimpleInjectorContainerAdapter).Assembly,
+					//	}
+					//};
 				})
 				.BoltOn();
 
 			// act and assert
 			Assert.Throws<Exception>(() => Bootstrapper.Instance.BoltOn());
 		}
+
+		//public void BoltOnIoC_ConfigureIoC_BootstrapsApp()
+		//{
+		//	ServiceCollection serviceCollection = new ServiceCollection();
+		//	serviceCollection.BoltOnIoC(options =>
+		//	{
+		//		options.AssemblyOptions = new BoltOnIoCAssemblyOptions
+		//		{
+		//			AssembliesToBeExcluded = new List<System.Reflection.Assembly>
+		//				{
+		//					typeof(SimpleInjectorContainerAdapter).Assembly,
+		//				}
+		//		};
+		//	});
+		//}
+
 
 		public void Dispose()
 		{
