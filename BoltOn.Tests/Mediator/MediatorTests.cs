@@ -295,11 +295,14 @@ namespace BoltOn.Tests.Mediator
 						 m.RegisterMiddleware<TestMiddleware>();
 					 });
 				});
+			var serviceProvider = serviceCollection.BuildServiceProvider();
 
-			var currentDateTimeRetriever = ServiceLocator.Current.GetInstance<ICurrentDateTimeRetriever>();
+			//var currentDateTimeRetriever = ServiceLocator.Current.GetInstance<ICurrentDateTimeRetriever>();
+			var currentDateTimeRetriever = serviceProvider.GetRequiredService<ICurrentDateTimeRetriever>();
 
 			// act
-			var mediator = ServiceLocator.Current.GetInstance<IMediator>();
+			//var mediator = ServiceLocator.Current.GetInstance<IMediator>();
+			var mediator = serviceProvider.GetRequiredService<IMediator>();
 			var result = mediator.Get(new TestRequest());
 
 			// assert 

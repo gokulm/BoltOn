@@ -15,10 +15,15 @@ namespace BoltOn.Mediator
 	{
 		private readonly IoC.IServiceFactory _serviceFactory;
 		private readonly IBoltOnLogger<Mediator> _logger;
+		private readonly IServiceProvider _serviceProvider;
+		private readonly IEnumerable<IMediatorMiddleware> _middlewares;
 
-		public Mediator(IoC.IServiceFactory serviceFactory, IBoltOnLogger<Mediator> logger)
+		public Mediator(IoC.IServiceFactory serviceFactory, IBoltOnLogger<Mediator> logger, IServiceProvider serviceProvider,
+		                IEnumerable<IMediatorMiddleware> middlewares)
 		{
 			_logger = logger;
+			this._serviceProvider = serviceProvider;
+			this._middlewares = middlewares;
 			_serviceFactory = serviceFactory;
 		}
 
@@ -31,9 +36,7 @@ namespace BoltOn.Mediator
 			Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> handle)
 		{
 			_logger.Debug("Running middlewares...");
-			var middlewares = (IEnumerable<IMediatorMiddleware>)
-				_serviceFactory.GetInstance(typeof(IEnumerable<IMediatorMiddleware>));
-			var next = middlewares.Reverse().Aggregate(handle,
+			var next = _middlewares.Reverse().Aggregate(handle,
 				   (requestDelegate, middleware) => ((req) => middleware.Run<IRequest<TResponse>, TResponse>(req, requestDelegate)));
 			try
 			{
@@ -50,7 +53,7 @@ namespace BoltOn.Mediator
 			}
 			finally
 			{
-				middlewares.ToList().ForEach(m => m.Dispose());
+				_middlewares.ToList().ForEach(m => m.Dispose());
 			}
 		}
 
@@ -61,7 +64,10 @@ namespace BoltOn.Mediator
 			var genericRequestHandlerType = typeof(IRequestHandler<,>);
 			var interfaceHandlerType =
 				genericRequestHandlerType.MakeGenericType(request.GetType(), typeof(TResponse));
-			dynamic handler = _serviceFactory.GetInstance(interfaceHandlerType);
+			//dynamic handler = _serviceFactory.GetInstance(interfaceHandlerType);
+			// todo (med): try to get rid of dynamic
+			dynamic handler = _serviceProvider.GetService(interfaceHandlerType);
+			//var test = handler as IRequestHandler<
 			Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
 			_logger.Debug($"Resolved handler: {handler.GetType()}");
 			var response = handler.Handle(request);

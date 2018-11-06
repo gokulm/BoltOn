@@ -40,4 +40,4 @@ namespace BoltOn.Bootstrapping
 			container.RegisterScoped<IContextRetriever>(() => new ContextRetriever(container.GetInstance<IAppContextRetriever>()));
 		}
 	}
-}
+} 

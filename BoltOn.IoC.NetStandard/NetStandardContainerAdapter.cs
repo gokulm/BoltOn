@@ -22,7 +22,7 @@ namespace BoltOn.IoC.NetStandardBolt
 
 		public void LockRegistration()
 		{
-			_serviceProvider = _serviceCollection.BuildServiceProvider();
+			//_serviceProvider = _serviceCollection.BuildServiceProvider();
 		}
 
 		public IEnumerable<TService> GetAllInstances<TService>() where TService : class

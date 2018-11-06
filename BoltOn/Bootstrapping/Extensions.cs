@@ -33,6 +33,7 @@ namespace BoltOn.IoC
 			var options = new BoltOnOptions();
 			action(options);
 			options.ServiceCollection = serviceCollection;
+			Bootstrapper.Instance.ServiceCollection = serviceCollection;
 			Bootstrapper.Instance.BoltOn(Assembly.GetCallingAssembly());
 			return serviceCollection;
 		}

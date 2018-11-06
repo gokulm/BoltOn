@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using BoltOn.IoC;
 using BoltOn.Utilities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
 {
@@ -16,6 +17,7 @@ namespace BoltOn.Bootstrapping
 		private bool _isDisposed;
 		private Assembly _callingAssembly;
 		private Hashtable _boltOnOptions;
+		private IServiceCollection _serviceCollection;
 
 		private Bootstrapper()
 		{
@@ -23,6 +25,7 @@ namespace BoltOn.Bootstrapping
 			Assemblies = new List<Assembly>().AsReadOnly();
 			IsBolted = false;
 			_container = null;
+			_serviceCollection = null;
 		}
 
 		public static Bootstrapper Instance
@@ -47,6 +50,21 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
+		internal IServiceCollection ServiceCollection
+		{
+			get
+			{
+				if (_serviceCollection == null)
+					throw new Exception("ServiceCollection not created");
+				return _serviceCollection;
+			}
+			set
+			{
+				_serviceCollection = value;
+			}
+		}
+
+		//internal IServiceCollection ServiceCollection { get; set; }
 		internal IReadOnlyList<Assembly> Assemblies { get; set; }
 		public bool IsBolted { get; private set; }
 
@@ -70,7 +88,7 @@ namespace BoltOn.Bootstrapping
 			LoadAssemblies();
 			RunRegistrationTasks();
 			_container.LockRegistration();
-			RunPostRegistrationTasks();
+			//RunPostRegistrationTasks();
 			IsBolted = true;
 		}
 
@@ -208,7 +226,7 @@ namespace BoltOn.Bootstrapping
 			//if (containerType == null)
 				//throw new Exception("No IoC Container Adapter referenced");
 
-			var container = Activator.CreateInstance(containerType) as IBoltOnContainer;
+			var container = Activator.CreateInstance(containerType, ServiceCollection) as IBoltOnContainer;
 			return container;
 		}
 
