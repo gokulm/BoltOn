@@ -295,10 +295,16 @@ namespace BoltOn.Tests.Mediator
 						 m.RegisterMiddleware<TestMiddleware>();
 					 });
 				});
+
+			//serviceCollection.AddTransient<IBootstrapperPostRegistrationTask, MediatorPostRegistrationTask>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.BoltOn();
+			var test = serviceProvider.GetService<IBootstrapperPostRegistrationTask>();
+			var test2 = serviceProvider.GetService<IEnumerable<IBootstrapperPostRegistrationTask>>();
 
 			//var currentDateTimeRetriever = ServiceLocator.Current.GetInstance<ICurrentDateTimeRetriever>();
-			var currentDateTimeRetriever = serviceProvider.GetRequiredService<ICurrentDateTimeRetriever>();
+			var currentDateTimeRetriever = serviceProvider.GetService<ICurrentDateTimeRetriever>();
+			var currentDateTimeRetrievers = serviceProvider.GetServices<ICurrentDateTimeRetriever>();
 
 			// act
 			//var mediator = ServiceLocator.Current.GetInstance<IMediator>();

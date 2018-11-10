@@ -10,7 +10,7 @@ namespace BoltOn.Bootstrapping
 		public void Run(RegistrationTaskContext context)
 		{
 			RegisterByConvention(context);
-			RegisterOtherTypes(context.Container);
+			RegisterOtherTypes(context);
 		}
 
 		private void RegisterByConvention(RegistrationTaskContext context)
@@ -32,12 +32,14 @@ namespace BoltOn.Bootstrapping
 			registrations.ForEach(f => context.Container.RegisterTransient(f.Interface, f.Implementation));
 		}
 
-		private void RegisterOtherTypes(IBoltOnContainer container)
+		private void RegisterOtherTypes(RegistrationTaskContext context)
 		{
+			var container = context.Container;
 			ServiceLocator.SetServiceFactory(container);
 			container.RegisterSingleton(typeof(IServiceFactory), new ServiceFactory(container));
 			container.RegisterSingleton<IAppContextRetriever, AppContextRetriever>();
-			container.RegisterScoped<IContextRetriever>(() => new ContextRetriever(container.GetInstance<IAppContextRetriever>()));
+			container.RegisterScoped<IContextRetriever>(() => 
+			                                            new ContextRetriever(context.ServiceProvider.GetService(typeof(IAppContextRetriever)) as IAppContextRetriever));
 		}
 	}
 } 

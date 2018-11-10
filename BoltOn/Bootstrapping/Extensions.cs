@@ -32,15 +32,19 @@ namespace BoltOn.IoC
 			Check.Requires(!Bootstrapper.Instance.IsBolted, "Components are already bolted! IoC cannot be configured now");
 			var options = new BoltOnOptions();
 			action(options);
-			options.ServiceCollection = serviceCollection;
 			Bootstrapper.Instance.ServiceCollection = serviceCollection;
 			Bootstrapper.Instance.BoltOn(Assembly.GetCallingAssembly());
 			return serviceCollection;
 		}
+
+		public static void BoltOn(this IServiceProvider serviceProvider)
+		{
+			Bootstrapper.Instance.RunPostRegistrationTasks(serviceProvider);
+		}
+
     }
 
 	public class BoltOnOptions
 	{
-		internal IServiceCollection ServiceCollection { get; set; }
 	}
 }

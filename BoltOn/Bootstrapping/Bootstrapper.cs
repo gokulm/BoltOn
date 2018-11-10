@@ -64,7 +64,7 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
-		//internal IServiceCollection ServiceCollection { get; set; }
+		internal IServiceProvider ServiceProvider { get; set; }
 		internal IReadOnlyList<Assembly> Assemblies { get; set; }
 		public bool IsBolted { get; private set; }
 
@@ -88,7 +88,6 @@ namespace BoltOn.Bootstrapping
 			LoadAssemblies();
 			RunRegistrationTasks();
 			_container.LockRegistration();
-			//RunPostRegistrationTasks();
 			IsBolted = true;
 		}
 
@@ -97,6 +96,14 @@ namespace BoltOn.Bootstrapping
 			Check.Requires(!IsBolted, "Components are already bolted! Options cannot be added");
 			//if (!_boltOnOptions.ContainsKey(typeof(TOptionType).Name))
 			_boltOnOptions.Add(typeof(TOptionType).Name, options);
+		}
+
+		internal void RunPostRegistrationTasks(IServiceProvider serviceProvider)
+		{
+			ServiceProvider = serviceProvider;
+			var registrationTaskContext = new RegistrationTaskContext(this);
+			var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IBootstrapperPostRegistrationTask>>();
+			postRegistrationTasks.ToList().ForEach(t => t.Run(registrationTaskContext));
 		}
 
 		private void LoadAssemblies()
@@ -124,7 +131,7 @@ namespace BoltOn.Bootstrapping
 			var iocAssemblies = assemblies.Where(a => a.GetName().Name.
 												  StartsWith("BoltOn.IoC.", StringComparison.Ordinal)).ToList();
 			Check.Requires(iocAssemblies.Count == 1, $"{iocAssemblies.Count} IoC Container Adapters referenced. " +
-			               "There should be atleast and utmost one");
+						   "There should be atleast and utmost one");
 			iocAssemblies.ForEach(f =>
 			{
 				sortedAssemblies.Add(f);
@@ -205,14 +212,22 @@ namespace BoltOn.Bootstrapping
 										 && t.IsClass
 										 select t).ToList();
 			_container.RegisterTransientCollection<IBootstrapperPostRegistrationTask>(registrationTaskTypes);
+			//registrationTaskTypes.ForEach(r => _serviceCollection.AddTransient(registrationTaskType, r));
 		}
 
 		private void RunPostRegistrationTasks()
 		{
+			//var registrationTaskContext = new RegistrationTaskContext(this);
+			//var postRegistrationTasks = _container.GetAllInstances<IBootstrapperPostRegistrationTask>();
+			//if (postRegistrationTasks != null)
+			//postRegistrationTasks.ToList().ForEach(t => t.Run(registrationTaskContext));
+
 			var registrationTaskContext = new RegistrationTaskContext(this);
-			var postRegistrationTasks = _container.GetAllInstances<IBootstrapperPostRegistrationTask>();
-			if (postRegistrationTasks != null)
-				postRegistrationTasks.ToList().ForEach(t => t.Run(registrationTaskContext));
+			var postRegistrationTasks = ServiceProvider.GetService<IEnumerable<IBootstrapperPostRegistrationTask>>().ToList();
+			//if (postRegistrationTasks.Count > 0)
+			//{
+			//	postRegistrationTasks.First().ToList().ForEach(t => t.Run(registrationTaskContext));
+			//}
 		}
 
 		private IBoltOnContainer CreateContainer()
@@ -222,9 +237,9 @@ namespace BoltOn.Bootstrapping
 								 from t in a.GetTypes()
 								 where containerInterfaceType.IsAssignableFrom(t)
 								 && t.IsClass
-			                      select t).First();
+								 select t).First();
 			//if (containerType == null)
-				//throw new Exception("No IoC Container Adapter referenced");
+			//throw new Exception("No IoC Container Adapter referenced");
 
 			var container = Activator.CreateInstance(containerType, ServiceCollection) as IBoltOnContainer;
 			return container;

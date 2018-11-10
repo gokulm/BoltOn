@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using BoltOn.IoC;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +31,15 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
-        public IReadOnlyCollection<Assembly> Assemblies
+		public IServiceProvider ServiceProvider
+		{
+			get
+			{
+				return _bootstrapper.ServiceProvider;
+			}
+		}
+
+		public IReadOnlyCollection<Assembly> Assemblies
         {
             get
             {
