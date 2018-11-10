@@ -15,13 +15,13 @@ namespace BoltOn.Bootstrapping
             _bootstrapper = bootstrapper;
         }
 
-        public IBoltOnContainer Container
-        {
-            get
-            {
-                return _bootstrapper.Container;
-            }
-        }
+        //public IBoltOnContainer Container
+        //{
+        //    get
+        //    {
+        //        return _bootstrapper.Container;
+        //    }
+        //}
 
 		public IServiceCollection ServiceCollection
 		{

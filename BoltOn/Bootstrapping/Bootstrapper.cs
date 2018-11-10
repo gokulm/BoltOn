@@ -13,7 +13,7 @@ namespace BoltOn.Bootstrapping
 	public class Bootstrapper : IDisposable
 	{
 		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
-		private IBoltOnContainer _container;
+		//private IBoltOnContainer _container;
 		private bool _isDisposed;
 		private Assembly _callingAssembly;
 		private Hashtable _boltOnOptions;
@@ -24,7 +24,7 @@ namespace BoltOn.Bootstrapping
 			_boltOnOptions = new Hashtable();
 			Assemblies = new List<Assembly>().AsReadOnly();
 			IsBolted = false;
-			_container = null;
+			//_container = null;
 			_serviceCollection = null;
 		}
 
@@ -36,19 +36,19 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
-		internal IBoltOnContainer Container
-		{
-			get
-			{
-				if (_container == null)
-					throw new Exception("Container not created");
-				return _container;
-			}
-			set
-			{
-				_container = value;
-			}
-		}
+		//internal IBoltOnContainer Container
+		//{
+		//	get
+		//	{
+		//		if (_container == null)
+		//			throw new Exception("Container not created");
+		//		return _container;
+		//	}
+		//	set
+		//	{
+		//		_container = value;
+		//	}
+		//}
 
 		internal IServiceCollection ServiceCollection
 		{
@@ -81,13 +81,14 @@ namespace BoltOn.Bootstrapping
 			return (TOptionType)Convert.ChangeType(configValue, typeof(TOptionType));
 		}
 
-		public void BoltOn(Assembly callingAssembly = null)
+		public void BoltOn(IServiceCollection serviceCollection, Assembly callingAssembly = null)
 		{
 			Check.Requires(!IsBolted, "Components are already bolted!");
+			_serviceCollection = serviceCollection;
 			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
 			LoadAssemblies();
 			RunRegistrationTasks();
-			_container.LockRegistration();
+			//_container.LockRegistration();
 			IsBolted = true;
 		}
 
@@ -128,19 +129,19 @@ namespace BoltOn.Bootstrapping
 			sortedAssemblies.Add(boltOnAssembly);
 			assemblies.Remove(boltOnAssembly);
 
-			var iocAssemblies = assemblies.Where(a => a.GetName().Name.
-												  StartsWith("BoltOn.IoC.", StringComparison.Ordinal)).ToList();
-			Check.Requires(iocAssemblies.Count == 1, $"{iocAssemblies.Count} IoC Container Adapters referenced. " +
-						   "There should be atleast and utmost one");
-			iocAssemblies.ForEach(f =>
-			{
-				sortedAssemblies.Add(f);
-				assemblies.Remove(f);
-			});
+			//var iocAssemblies = assemblies.Where(a => a.GetName().Name.
+			//									  StartsWith("BoltOn.IoC.", StringComparison.Ordinal)).ToList();
+			//Check.Requires(iocAssemblies.Count == 1, $"{iocAssemblies.Count} IoC Container Adapters referenced. " +
+			//			   "There should be atleast and utmost one");
+			//iocAssemblies.ForEach(f =>
+			//{
+			//	sortedAssemblies.Add(f);
+			//	assemblies.Remove(f);
+			//});
 
 			var loggingAssemblies = assemblies.Where(a => a.GetName().Name.
 													  StartsWith("BoltOn.Logging.", StringComparison.Ordinal)).ToList();
-			Contract.Requires(loggingAssemblies.Count > 0, "No logging framework referenced");
+			Check.Requires(loggingAssemblies.Count > 0, "No logging framework referenced");
 			loggingAssemblies.ForEach(f =>
 			{
 				sortedAssemblies.Add(f);
@@ -163,8 +164,8 @@ namespace BoltOn.Bootstrapping
 			}
 
 			Assemblies = sortedAssemblies.AsReadOnly();
-			if (_container == null)
-				_container = CreateContainer();
+			//if (_container == null)
+				//_container = CreateContainer();
 
 			List<Assembly> GetReferencedAssemblies(Assembly assembly)
 			{
@@ -211,53 +212,62 @@ namespace BoltOn.Bootstrapping
 										 where registrationTaskType.IsAssignableFrom(t)
 										 && t.IsClass
 										 select t).ToList();
-			_container.RegisterTransientCollection<IBootstrapperPostRegistrationTask>(registrationTaskTypes);
-			//registrationTaskTypes.ForEach(r => _serviceCollection.AddTransient(registrationTaskType, r));
+			//_container.RegisterTransientCollection<IBootstrapperPostRegistrationTask>(registrationTaskTypes);
+			registrationTaskTypes.ForEach(r => _serviceCollection.AddTransient(registrationTaskType, r));
 		}
 
-		private void RunPostRegistrationTasks()
-		{
-			//var registrationTaskContext = new RegistrationTaskContext(this);
-			//var postRegistrationTasks = _container.GetAllInstances<IBootstrapperPostRegistrationTask>();
-			//if (postRegistrationTasks != null)
-			//postRegistrationTasks.ToList().ForEach(t => t.Run(registrationTaskContext));
+		//private void RunPostRegistrationTasks()
+		//{
+		//	//var registrationTaskContext = new RegistrationTaskContext(this);
+		//	//var postRegistrationTasks = _container.GetAllInstances<IBootstrapperPostRegistrationTask>();
+		//	//if (postRegistrationTasks != null)
+		//	//postRegistrationTasks.ToList().ForEach(t => t.Run(registrationTaskContext));
 
-			var registrationTaskContext = new RegistrationTaskContext(this);
-			var postRegistrationTasks = ServiceProvider.GetService<IEnumerable<IBootstrapperPostRegistrationTask>>().ToList();
-			//if (postRegistrationTasks.Count > 0)
-			//{
-			//	postRegistrationTasks.First().ToList().ForEach(t => t.Run(registrationTaskContext));
-			//}
-		}
+		//	var registrationTaskContext = new RegistrationTaskContext(this);
+		//	var postRegistrationTasks = ServiceProvider.GetService<IEnumerable<IBootstrapperPostRegistrationTask>>().ToList();
+		//	//if (postRegistrationTasks.Count > 0)
+		//	//{
+		//	//	postRegistrationTasks.First().ToList().ForEach(t => t.Run(registrationTaskContext));
+		//	//}
+		//}
 
-		private IBoltOnContainer CreateContainer()
-		{
-			var containerInterfaceType = typeof(IBoltOnContainer);
-			var containerType = (from a in Assemblies.Where(a => a.GetName().Name.StartsWith("BoltOn.IoC.", StringComparison.Ordinal))
-								 from t in a.GetTypes()
-								 where containerInterfaceType.IsAssignableFrom(t)
-								 && t.IsClass
-								 select t).First();
-			//if (containerType == null)
-			//throw new Exception("No IoC Container Adapter referenced");
+		//private IBoltOnContainer CreateContainer()
+		//{
+		//	var containerInterfaceType = typeof(IBoltOnContainer);
+		//	var containerType = (from a in Assemblies.Where(a => a.GetName().Name.StartsWith("BoltOn.IoC.", StringComparison.Ordinal))
+		//						 from t in a.GetTypes()
+		//						 where containerInterfaceType.IsAssignableFrom(t)
+		//						 && t.IsClass
+		//						 select t).First();
+		//	//if (containerType == null)
+		//	//throw new Exception("No IoC Container Adapter referenced");
 
-			var container = Activator.CreateInstance(containerType, ServiceCollection) as IBoltOnContainer;
-			return container;
-		}
+		//	var container = Activator.CreateInstance(containerType, ServiceCollection) as IBoltOnContainer;
+		//	return container;
+		//}
 
 		protected virtual void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
-				if (_container != null)
+				//if (_container != null)
+				//{
+				//	// this can be used to clear all the managed and unmanaged resources
+				//	if (!_isDisposed)
+				//	{
+				//		_container.Dispose();
+				//		_isDisposed = true;
+				//	}
+				//	_container = null;
+				//}
+				if (_serviceCollection != null)
 				{
 					// this can be used to clear all the managed and unmanaged resources
 					if (!_isDisposed)
 					{
-						_container.Dispose();
 						_isDisposed = true;
 					}
-					_container = null;
+					_serviceCollection = null;
 				}
 				Assemblies = null;
 				_boltOnOptions.Clear();

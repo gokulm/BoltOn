@@ -2,6 +2,7 @@
 using BoltOn.Context;
 using BoltOn.IoC;
 using BoltOn.Other;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
 {
@@ -29,17 +30,16 @@ namespace BoltOn.Bootstrapping
 								 && !type.GetCustomAttributes(typeof(ExcludeFromRegistrationAttribute), true).Any()
 								 select new { Interface = @interface, Implementation = type }).ToList();
 
-			registrations.ForEach(f => context.Container.RegisterTransient(f.Interface, f.Implementation));
+			registrations.ForEach(f => context.ServiceCollection.AddTransient(f.Interface, f.Implementation));
+
 		}
 
 		private void RegisterOtherTypes(RegistrationTaskContext context)
 		{
-			var container = context.Container;
-			ServiceLocator.SetServiceFactory(container);
-			container.RegisterSingleton(typeof(IServiceFactory), new ServiceFactory(container));
-			container.RegisterSingleton<IAppContextRetriever, AppContextRetriever>();
-			container.RegisterScoped<IContextRetriever>(() => 
-			                                            new ContextRetriever(context.ServiceProvider.GetService(typeof(IAppContextRetriever)) as IAppContextRetriever));
+			var serviceCollection = context.ServiceCollection;
+			serviceCollection.AddSingleton<IAppContextRetriever, AppContextRetriever>();
+			serviceCollection.AddScoped<IContextRetriever>((serviceProvider) => 
+			                                            new ContextRetriever(serviceProvider.GetService(typeof(IAppContextRetriever)) as IAppContextRetriever));
 		}
 	}
 } 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BoltOn.Bootstrapping;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Mediator
 {
@@ -9,13 +10,17 @@ namespace BoltOn.Mediator
 	{
 		public void Run(RegistrationTaskContext context)
 		{
-			var container = context.Container;
-			container.RegisterTransient<IMediator, Mediator>();
+			var serviceCollection = context.ServiceCollection;
+			serviceCollection.AddTransient<IMediator, Mediator>();
 			var options = context.GetOptions<MediatorOptions>();
 			if (!options.IsMiddlewaresCustomized)
+			{
 				RegisterMiddlewares(context, options.Middlewares);
+			}
 			else
-				container.RegisterTransientCollection(typeof(IMediatorMiddleware), options.Middlewares);
+			{
+				options.Middlewares.ForEach(m => serviceCollection.AddTransient(typeof(IMediatorMiddleware), m));
+			}
 			RegisterHandlers(context);
 		}
 
@@ -28,7 +33,7 @@ namespace BoltOn.Mediator
 							   where mediatorMiddlewareType.IsAssignableFrom(t) && t.IsClass && !t.IsAbstract
 							   select t).ToList();
 			defaultMiddlewareTypes.AddRange(middlewares);
-			context.Container.RegisterTransientCollection(typeof(IMediatorMiddleware), defaultMiddlewareTypes);
+			defaultMiddlewareTypes.ForEach(m => context.ServiceCollection.AddTransient(typeof(IMediatorMiddleware), m));
 		}
 
 		private void RegisterHandlers(RegistrationTaskContext context)
@@ -41,7 +46,7 @@ namespace BoltOn.Mediator
 								requestHandlerInterfaceType.IsAssignableFrom(i.GetGenericTypeDefinition())
 							select new { Interface = i, Implementation = t }).ToList();
 			foreach (var handler in handlers)
-				context.Container.RegisterTransient(handler.Interface, handler.Implementation);
+				context.ServiceCollection.AddTransient(handler.Interface, handler.Implementation);
 		}
 	}
 }

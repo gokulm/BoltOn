@@ -15,13 +15,13 @@ namespace BoltOn.IoC
 			_assembliesToBeIncluded = new List<Assembly>();
 		}
 
-		public IBoltOnContainer Container
-		{
-			set
-			{
-				Bootstrapper.Instance.Container = value;
-			}
-		}
+		//public IBoltOnContainer Container
+		//{
+		//	set
+		//	{
+		//		Bootstrapper.Instance.Container = value;
+		//	}
+		//}
 
 		internal IReadOnlyList<Assembly> AssembliesToBeIncluded => _assembliesToBeIncluded.AsReadOnly();
 		internal IReadOnlyList<Assembly> AssembliesToBeExcluded => _assembliesToBeExcluded.AsReadOnly();

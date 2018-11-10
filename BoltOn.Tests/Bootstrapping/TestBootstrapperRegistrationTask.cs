@@ -1,5 +1,6 @@
 ﻿using BoltOn.Bootstrapping;
 using BoltOn.Tests.Common;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Tests.Bootstrapping
 {
@@ -7,8 +8,9 @@ namespace BoltOn.Tests.Bootstrapping
     {
 		public void Run(RegistrationTaskContext context)
         {
-			context.Container.RegisterTransient<Employee>()
-			       .RegisterTransient<ClassWithInjectedDependency>();
+			context.ServiceCollection
+			       .AddTransient<Employee>()
+			       .AddTransient<ClassWithInjectedDependency>();
         }
     }
 }

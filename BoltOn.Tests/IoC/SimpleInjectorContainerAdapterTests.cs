@@ -12,104 +12,104 @@ namespace BoltOn.Tests.IoC
     {
 		private IBoltOnContainer _container;
 
-		[Fact]
-		public void GetInstance_RegisterTransient_ResolvesDependencies()
-		{
-			// arrange
-			_container = new SimpleInjectorContainerAdapter();
-			_container.RegisterTransient<ITestService, TestService>();
-			_container.LockRegistration();
+		//[Fact]
+		//public void GetInstance_RegisterTransient_ResolvesDependencies()
+		//{
+		//	// arrange
+		//	_container = new SimpleInjectorContainerAdapter();
+		//	_container.RegisterTransient<ITestService, TestService>();
+		//	_container.LockRegistration();
 
-			// act
-			var service1 = _container.GetInstance<ITestService>();
-			service1.SetName("abc");
-			var service2 = _container.GetInstance<ITestService>();
-			var name = service2.GetName();
+		//	// act
+		//	var service1 = _container.GetInstance<ITestService>();
+		//	service1.SetName("abc");
+		//	var service2 = _container.GetInstance<ITestService>();
+		//	var name = service2.GetName();
 
-			// assert
-			Assert.Equal("Test", name);
-		}
+		//	// assert
+		//	Assert.Equal("Test", name);
+		//}
 
-		[Fact]
-		public void GetInstance_RegisterSingleton_ResolvesDependencies()
-		{
-			// arrange
-			_container = new SimpleInjectorContainerAdapter();
-			_container.RegisterSingleton<ITestService, TestService>();
-			_container.LockRegistration();
+		//[Fact]
+		//public void GetInstance_RegisterSingleton_ResolvesDependencies()
+		//{
+		//	// arrange
+		//	_container = new SimpleInjectorContainerAdapter();
+		//	_container.RegisterSingleton<ITestService, TestService>();
+		//	_container.LockRegistration();
 
-			// act
-			var service1 = _container.GetInstance<ITestService>();
-			service1.SetName("abc");
-			var service2 = _container.GetInstance<ITestService>();
-			var name = service2.GetName();
+		//	// act
+		//	var service1 = _container.GetInstance<ITestService>();
+		//	service1.SetName("abc");
+		//	var service2 = _container.GetInstance<ITestService>();
+		//	var name = service2.GetName();
 
-			// assert
-			Assert.Equal("abc", name);
-		}
+		//	// assert
+		//	Assert.Equal("abc", name);
+		//}
 
-		[Fact]
-		public void GetInstance_RegisterScoped_ResolvesDependencies()
-		{
-			// arrange
-			var simpleInjectorContainer = new Container();
-			simpleInjectorContainer.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
-			_container = new SimpleInjectorContainerAdapter(simpleInjectorContainer);
-			_container.RegisterScoped<ITestService, TestService>();
-			_container.LockRegistration();
+		//[Fact]
+		//public void GetInstance_RegisterScoped_ResolvesDependencies()
+		//{
+		//	// arrange
+		//	var simpleInjectorContainer = new Container();
+		//	simpleInjectorContainer.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+		//	_container = new SimpleInjectorContainerAdapter(simpleInjectorContainer);
+		//	_container.RegisterScoped<ITestService, TestService>();
+		//	_container.LockRegistration();
 
-			// act & assert
-			using (AsyncScopedLifestyle.BeginScope(simpleInjectorContainer))
-			{
-				var service1 = _container.GetInstance<ITestService>();
-				service1.SetName("abc");
-				var service2 = _container.GetInstance<ITestService>();
-				var name = service2.GetName();
+		//	// act & assert
+		//	using (AsyncScopedLifestyle.BeginScope(simpleInjectorContainer))
+		//	{
+		//		var service1 = _container.GetInstance<ITestService>();
+		//		service1.SetName("abc");
+		//		var service2 = _container.GetInstance<ITestService>();
+		//		var name = service2.GetName();
 
-				// assert
-				Assert.Equal("abc", name);
-			}
-		}
+		//		// assert
+		//		Assert.Equal("abc", name);
+		//	}
+		//}
 
-		[Fact]
-		public void GetInstance_RegisterTransientAndInjectService_ResolvesDependencies()
-		{
-			// arrange
-			_container = new SimpleInjectorContainerAdapter();
-			var autoMocker = new AutoMocker();
-			var employee = autoMocker.CreateInstance<Employee>();
-			var testService = autoMocker.GetMock<ITestService>();
-			testService.Setup(s => s.GetName()).Returns("Test");
+		//[Fact]
+		//public void GetInstance_RegisterTransientAndInjectService_ResolvesDependencies()
+		//{
+		//	// arrange
+		//	_container = new SimpleInjectorContainerAdapter();
+		//	var autoMocker = new AutoMocker();
+		//	var employee = autoMocker.CreateInstance<Employee>();
+		//	var testService = autoMocker.GetMock<ITestService>();
+		//	testService.Setup(s => s.GetName()).Returns("Test");
 
-			// act
-			_container.RegisterTransient(() => employee);
-			_container.LockRegistration();
-			var resolvedEmployee = _container.GetInstance<Employee>();
-			var name = resolvedEmployee.GetName();
+		//	// act
+		//	_container.RegisterTransient(() => employee);
+		//	_container.LockRegistration();
+		//	var resolvedEmployee = _container.GetInstance<Employee>();
+		//	var name = resolvedEmployee.GetName();
 
-			// assert
-			Assert.Equal("Test", name);
-			testService.Verify(v => v.GetName());
-		}
+		//	// assert
+		//	Assert.Equal("Test", name);
+		//	testService.Verify(v => v.GetName());
+		//}
 
-		[Fact]
-		public void ServiceLocatorGetInstance_RegisterTransient_ResolvesDependencies()
-		{
-			// arrange
-			_container = new SimpleInjectorContainerAdapter();
-			ServiceLocator.SetServiceFactory(_container);
-			_container.RegisterTransient<ITestService, TestService>();
-			_container.LockRegistration();
+		//[Fact]
+		//public void ServiceLocatorGetInstance_RegisterTransient_ResolvesDependencies()
+		//{
+		//	// arrange
+		//	_container = new SimpleInjectorContainerAdapter();
+		//	ServiceLocator.SetServiceFactory(_container);
+		//	_container.RegisterTransient<ITestService, TestService>();
+		//	_container.LockRegistration();
 
-			// act
-			var service1 = ServiceLocator.Current.GetInstance<ITestService>();
-			service1.SetName("abc");
-			var service2 = ServiceLocator.Current.GetInstance<ITestService>();
-			var name = service2.GetName();
+		//	// act
+		//	var service1 = ServiceLocator.Current.GetInstance<ITestService>();
+		//	service1.SetName("abc");
+		//	var service2 = ServiceLocator.Current.GetInstance<ITestService>();
+		//	var name = service2.GetName();
 
-			// assert
-			Assert.Equal("Test", name);
-		}
+		//	// assert
+		//	Assert.Equal("Test", name);
+		//}
 
 
 		public void Dispose()
