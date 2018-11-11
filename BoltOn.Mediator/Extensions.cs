@@ -12,7 +12,7 @@ namespace BoltOn.Mediator
 			Check.Requires(!bootstrapper.IsBolted, "Components are already bolted! Mediator cannot be configured now");
             var options = new MediatorOptions();
 			action(options);
-			bootstrapper.AddOptions(options);
+			//bootstrapper.AddOptions(options);
 			return bootstrapper;
 		}
 
@@ -21,7 +21,7 @@ namespace BoltOn.Mediator
 			Check.Requires(!Bootstrapper.Instance.IsBolted, "Components are already bolted! Mediator cannot be configured now");
 			var options = new MediatorOptions();
 			action(options);
-			Bootstrapper.Instance.AddOptions(options);
+			//Bootstrapper.Instance.AddOptions(options);
 			return serviceCollection;
 		}
 
@@ -30,7 +30,7 @@ namespace BoltOn.Mediator
 			Check.Requires(!Bootstrapper.Instance.IsBolted, "Components are already bolted! Mediator cannot be configured now");
 			var options = new MediatorOptions();
 			action(options);
-			Bootstrapper.Instance.AddOptions(options);
+			//Bootstrapper.Instance.AddOptions(options);
 			return boltOnOptions;
 		}
     }

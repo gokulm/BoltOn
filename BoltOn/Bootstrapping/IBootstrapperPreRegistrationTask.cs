@@ -2,6 +2,6 @@
 {
     public interface IBootstrapperPreRegistrationTask
     {
-        void Run();
+		void Run(PreRegistrationTaskContext context);
     }
 }

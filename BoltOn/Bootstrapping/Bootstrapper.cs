@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using BoltOn.IoC;
@@ -13,19 +12,19 @@ namespace BoltOn.Bootstrapping
 	public class Bootstrapper : IDisposable
 	{
 		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
-		//private IBoltOnContainer _container;
 		private bool _isDisposed;
 		private Assembly _callingAssembly;
 		private Hashtable _boltOnOptions;
 		private IServiceCollection _serviceCollection;
+		private IServiceProvider _serviceProvider;
 
 		private Bootstrapper()
 		{
 			_boltOnOptions = new Hashtable();
 			Assemblies = new List<Assembly>().AsReadOnly();
 			IsBolted = false;
-			//_container = null;
 			_serviceCollection = null;
+			_serviceProvider = null;
 		}
 
 		public static Bootstrapper Instance
@@ -36,26 +35,11 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
-		//internal IBoltOnContainer Container
-		//{
-		//	get
-		//	{
-		//		if (_container == null)
-		//			throw new Exception("Container not created");
-		//		return _container;
-		//	}
-		//	set
-		//	{
-		//		_container = value;
-		//	}
-		//}
-
 		internal IServiceCollection ServiceCollection
 		{
 			get
 			{
-				if (_serviceCollection == null)
-					throw new Exception("ServiceCollection not created");
+				Check.Requires(_serviceCollection != null, "ServiceCollection not initialized");
 				return _serviceCollection;
 			}
 			set
@@ -64,7 +48,6 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
-		internal IServiceProvider ServiceProvider { get; set; }
 		internal IReadOnlyList<Assembly> Assemblies { get; set; }
 		public bool IsBolted { get; private set; }
 
@@ -87,21 +70,24 @@ namespace BoltOn.Bootstrapping
 			_serviceCollection = serviceCollection;
 			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
 			LoadAssemblies();
+			RunPreRegistrationTasks();
 			RunRegistrationTasks();
-			//_container.LockRegistration();
 			IsBolted = true;
 		}
 
-		public void AddOptions<TOptionType>(TOptionType options) where TOptionType : class
+		internal void AddOptions<TOptionType>(TOptionType options) where TOptionType : class
 		{
 			Check.Requires(!IsBolted, "Components are already bolted! Options cannot be added");
-			//if (!_boltOnOptions.ContainsKey(typeof(TOptionType).Name))
-			_boltOnOptions.Add(typeof(TOptionType).Name, options);
+			var typeName = typeof(TOptionType).Name;
+			if (_boltOnOptions.ContainsKey(typeName))
+				_boltOnOptions[typeName] = options;
+			else
+				_boltOnOptions.Add(typeName, options);
 		}
 
 		internal void RunPostRegistrationTasks(IServiceProvider serviceProvider)
 		{
-			ServiceProvider = serviceProvider;
+			_serviceProvider = serviceProvider;
 			var registrationTaskContext = new RegistrationTaskContext(this);
 			var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IBootstrapperPostRegistrationTask>>();
 			postRegistrationTasks.ToList().ForEach(t => t.Run(registrationTaskContext));
@@ -129,16 +115,6 @@ namespace BoltOn.Bootstrapping
 			sortedAssemblies.Add(boltOnAssembly);
 			assemblies.Remove(boltOnAssembly);
 
-			//var iocAssemblies = assemblies.Where(a => a.GetName().Name.
-			//									  StartsWith("BoltOn.IoC.", StringComparison.Ordinal)).ToList();
-			//Check.Requires(iocAssemblies.Count == 1, $"{iocAssemblies.Count} IoC Container Adapters referenced. " +
-			//			   "There should be atleast and utmost one");
-			//iocAssemblies.ForEach(f =>
-			//{
-			//	sortedAssemblies.Add(f);
-			//	assemblies.Remove(f);
-			//});
-
 			var loggingAssemblies = assemblies.Where(a => a.GetName().Name.
 													  StartsWith("BoltOn.Logging.", StringComparison.Ordinal)).ToList();
 			Check.Requires(loggingAssemblies.Count > 0, "No logging framework referenced");
@@ -164,8 +140,6 @@ namespace BoltOn.Bootstrapping
 			}
 
 			Assemblies = sortedAssemblies.AsReadOnly();
-			//if (_container == null)
-				//_container = CreateContainer();
 
 			List<Assembly> GetReferencedAssemblies(Assembly assembly)
 			{
@@ -182,6 +156,22 @@ namespace BoltOn.Bootstrapping
 						on r.FullName equals a.FullName
 						where r.Name.StartsWith(startsWith, StringComparison.Ordinal)
 						select a).Distinct().ToList();
+			}
+		}
+
+		private void RunPreRegistrationTasks()
+		{
+			var preRegistrationTaskType = typeof(IBootstrapperPreRegistrationTask);
+			var preRegistrationTaskTypes = (from a in Assemblies
+											from t in a.GetTypes()
+											where preRegistrationTaskType.IsAssignableFrom(t)
+											&& t.IsClass
+											select t).ToList();
+			var context = new PreRegistrationTaskContext(this);
+			foreach (var type in preRegistrationTaskTypes)
+			{
+				var task = Activator.CreateInstance(type) as IBootstrapperPreRegistrationTask;
+				task.Run(context);
 			}
 		}
 
@@ -212,66 +202,19 @@ namespace BoltOn.Bootstrapping
 										 where registrationTaskType.IsAssignableFrom(t)
 										 && t.IsClass
 										 select t).ToList();
-			//_container.RegisterTransientCollection<IBootstrapperPostRegistrationTask>(registrationTaskTypes);
 			registrationTaskTypes.ForEach(r => _serviceCollection.AddTransient(registrationTaskType, r));
 		}
 
-		//private void RunPostRegistrationTasks()
-		//{
-		//	//var registrationTaskContext = new RegistrationTaskContext(this);
-		//	//var postRegistrationTasks = _container.GetAllInstances<IBootstrapperPostRegistrationTask>();
-		//	//if (postRegistrationTasks != null)
-		//	//postRegistrationTasks.ToList().ForEach(t => t.Run(registrationTaskContext));
-
-		//	var registrationTaskContext = new RegistrationTaskContext(this);
-		//	var postRegistrationTasks = ServiceProvider.GetService<IEnumerable<IBootstrapperPostRegistrationTask>>().ToList();
-		//	//if (postRegistrationTasks.Count > 0)
-		//	//{
-		//	//	postRegistrationTasks.First().ToList().ForEach(t => t.Run(registrationTaskContext));
-		//	//}
-		//}
-
-		//private IBoltOnContainer CreateContainer()
-		//{
-		//	var containerInterfaceType = typeof(IBoltOnContainer);
-		//	var containerType = (from a in Assemblies.Where(a => a.GetName().Name.StartsWith("BoltOn.IoC.", StringComparison.Ordinal))
-		//						 from t in a.GetTypes()
-		//						 where containerInterfaceType.IsAssignableFrom(t)
-		//						 && t.IsClass
-		//						 select t).First();
-		//	//if (containerType == null)
-		//	//throw new Exception("No IoC Container Adapter referenced");
-
-		//	var container = Activator.CreateInstance(containerType, ServiceCollection) as IBoltOnContainer;
-		//	return container;
-		//}
-
 		protected virtual void Dispose(bool disposing)
 		{
-			if (disposing)
+			if (disposing & !_isDisposed)
 			{
-				//if (_container != null)
-				//{
-				//	// this can be used to clear all the managed and unmanaged resources
-				//	if (!_isDisposed)
-				//	{
-				//		_container.Dispose();
-				//		_isDisposed = true;
-				//	}
-				//	_container = null;
-				//}
-				if (_serviceCollection != null)
-				{
-					// this can be used to clear all the managed and unmanaged resources
-					if (!_isDisposed)
-					{
-						_isDisposed = true;
-					}
-					_serviceCollection = null;
-				}
+				_serviceCollection = null;
+				_serviceProvider = null;
 				Assemblies = null;
 				_boltOnOptions.Clear();
 				IsBolted = false;
+				_isDisposed = true;
 			}
 		}
 
@@ -280,20 +223,5 @@ namespace BoltOn.Bootstrapping
 			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
-
-		//private void RunPreRegistrationTasks()
-		//{
-		//    var preRegistrationTaskType = typeof(IBootstrapperPreRegistrationTask);
-		//    var preRegistrationTaskTypes = (from a in _assemblies
-		//                                    from t in a.GetTypes()
-		//                                    where preRegistrationTaskType.IsAssignableFrom(t)
-		//                                    && t.IsClass
-		//                                    select t).ToList();
-		//    foreach (var type in preRegistrationTaskTypes)
-		//    {
-		//        var task = Activator.CreateInstance(type) as IBootstrapperPreRegistrationTask;
-		//        task.Run();
-		//    }
-		//}
 	}
 }

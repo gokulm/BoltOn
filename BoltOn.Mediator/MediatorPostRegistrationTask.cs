@@ -24,4 +24,13 @@ namespace BoltOn.Mediator
             _contextRetriever.Set(mediatorContext, ContextScope.App);
         }
     }
+
+	public class MediatorPreRegistrationTask : IBootstrapperPreRegistrationTask
+	{
+		public void Run(PreRegistrationTaskContext context)
+		{
+			var options = new MediatorOptions();
+			context.AddOptions(options);
+		}
+	}
 }

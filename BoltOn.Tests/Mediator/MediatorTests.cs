@@ -281,27 +281,23 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var serviceCollection = new ServiceCollection();
 			serviceCollection
-				.BoltOn(bo =>
-				{
-					bo.ConfigureMediator(m =>
-					 {
-						 m.ClearMiddlewares();
-						 m.RegisterMiddleware<TestMiddleware>();
-					 });
-				});
+			.BoltOn(bo =>
+			{
+				bo.ConfigureMediator(m =>
+				 {
+					 m.ClearMiddlewares();
+					 m.RegisterMiddleware<TestMiddleware>();
+				 });
+			});
+			//serviceCollection.BoltOn(b => b);
 
-			//serviceCollection.AddTransient<IBootstrapperPostRegistrationTask, MediatorPostRegistrationTask>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.BoltOn();
-			var test = serviceProvider.GetService<IBootstrapperPostRegistrationTask>();
-			var test2 = serviceProvider.GetService<IEnumerable<IBootstrapperPostRegistrationTask>>();
 
-			//var currentDateTimeRetriever = ServiceLocator.Current.GetInstance<ICurrentDateTimeRetriever>();
 			var currentDateTimeRetriever = serviceProvider.GetService<ICurrentDateTimeRetriever>();
 			var currentDateTimeRetrievers = serviceProvider.GetServices<ICurrentDateTimeRetriever>();
 
 			// act
-			//var mediator = ServiceLocator.Current.GetInstance<IMediator>();
 			var mediator = serviceProvider.GetRequiredService<IMediator>();
 			var result = mediator.Get(new TestRequest());
 
@@ -340,6 +336,17 @@ namespace BoltOn.Tests.Mediator
 			stopWatchMiddlewareLogger.Setup(s => s.Debug(It.IsAny<string>()))
 									 .Callback<string>(st => LoggerDebugStatementContainer.Statements.Add(st));
 			context.ServiceCollection.AddTransient((s) => stopWatchMiddlewareLogger.Object);
+		}
+	}
+
+	public class TestPreRegistrationTask : IBootstrapperPreRegistrationTask
+	{
+		public void Run(PreRegistrationTaskContext context)
+		{
+			var mediatorOptions = new MediatorOptions();
+			mediatorOptions.ClearMiddlewares();
+			mediatorOptions.RegisterMiddleware<TestMiddleware>();
+			context.AddOptions(mediatorOptions);
 		}
 	}
 
