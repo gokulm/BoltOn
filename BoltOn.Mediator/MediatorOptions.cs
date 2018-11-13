@@ -12,8 +12,8 @@ namespace BoltOn.Mediator
         public MediatorOptions()
         {
 			UnitOfWorkOptions = new UnitOfWorkOptions();
-			Middlewares.Add(typeof(StopwatchMiddleware));
-			Middlewares.Add(typeof(UnitOfWorkMiddleware));
+			//Middlewares.Add(typeof(StopwatchMiddleware));
+			//Middlewares.Add(typeof(UnitOfWorkMiddleware));
         }
 
 		public void RegisterMiddleware<TMiddleware>()

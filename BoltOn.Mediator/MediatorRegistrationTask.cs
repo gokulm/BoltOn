@@ -12,15 +12,16 @@ namespace BoltOn.Mediator
 		{
 			var serviceCollection = context.ServiceCollection;
 			serviceCollection.AddTransient<IMediator, Mediator>();
+
 			var options = context.GetOptions<MediatorOptions>();
-			if (!options.IsMiddlewaresCustomized)
-			{
-				RegisterMiddlewares(context, options.Middlewares);
-			}
-			else
-			{
+			//if (!options.IsMiddlewaresCustomized)
+			//{
+			//	RegisterMiddlewares(context, options.Middlewares);
+			//}
+			//else
+			//{
 				options.Middlewares.ForEach(m => serviceCollection.AddTransient(typeof(IMediatorMiddleware), m));
-			}
+			//}
 			RegisterHandlers(context);
 		}
 

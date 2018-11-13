@@ -1,5 +1,6 @@
 ﻿using BoltOn.Bootstrapping;
 using BoltOn.Context;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Mediator
 {
@@ -29,8 +30,14 @@ namespace BoltOn.Mediator
 	{
 		public void Run(PreRegistrationTaskContext context)
 		{
-			var options = new MediatorOptions();
-			context.AddOptions(options);
+			context.Configure<MediatorOptions>(m =>
+			{
+				m.ClearMiddlewares();
+				m.RegisterMiddleware<StopwatchMiddleware>();
+				m.RegisterMiddleware<UnitOfWorkMiddleware>();
+			});
+
+
 		}
 	}
 }

@@ -48,7 +48,7 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
-		internal IReadOnlyList<Assembly> Assemblies { get; set; }
+		internal IReadOnlyList<Assembly> Assemblies { get; private set; }
 		public bool IsBolted { get; private set; }
 
 		internal TOptionType GetOptions<TOptionType>() where TOptionType : class, new()

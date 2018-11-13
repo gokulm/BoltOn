@@ -27,11 +27,21 @@ namespace BoltOn.IoC
 			return boltOnOptions;
 		}
 
-		public static IServiceCollection BoltOn(this IServiceCollection serviceCollection, Action<BoltOnOptions> action)
+		//public static IServiceCollection BoltOn(this IServiceCollection serviceCollection, Action<BoltOnOptions> action)
+		//{
+		//	Check.Requires(!Bootstrapper.Instance.IsBolted, "Components are already bolted! IoC cannot be configured now");
+		//	var options = new BoltOnOptions();
+		//	action(options);
+		//	Bootstrapper.Instance.BoltOn(serviceCollection, Assembly.GetCallingAssembly());
+		//	return serviceCollection;
+		//}
+
+		public static IServiceCollection BoltOn(this IServiceCollection serviceCollection, Action<BoltOnIoCOptions> action = null)
 		{
 			Check.Requires(!Bootstrapper.Instance.IsBolted, "Components are already bolted! IoC cannot be configured now");
-			var options = new BoltOnOptions();
-			action(options);
+			var options = new BoltOnIoCOptions();
+			action?.Invoke(options);
+			Bootstrapper.Instance.AddOptions(options);
 			Bootstrapper.Instance.BoltOn(serviceCollection, Assembly.GetCallingAssembly());
 			return serviceCollection;
 		}

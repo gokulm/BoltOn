@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -49,8 +50,18 @@ namespace BoltOn.Bootstrapping
 			_bootstrapper = bootstrapper;
 		}
 
-		public void AddOptions<TOptionType>(TOptionType options) where TOptionType : class
+		public IServiceCollection ServiceCollection
 		{
+			get
+			{
+				return _bootstrapper.ServiceCollection;
+			}
+		}
+
+		public void Configure<TOptionType>(Action<TOptionType> action) where TOptionType : class, new()
+		{
+			var options = new TOptionType();
+			action(options);
 			_bootstrapper.AddOptions(options);
 		}
 	}
