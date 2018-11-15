@@ -13,4 +13,7 @@
     </Reference>
     <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=2.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Extensions.cs" />
+  </ItemGroup>
 </Project>

@@ -1,10 +1,9 @@
 ﻿using BoltOn.Bootstrapping;
 using BoltOn.Context;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Mediator
 {
-    public class MediatorPostRegistrationTask : IBootstrapperPostRegistrationTask
+	public class MediatorPostRegistrationTask : IBootstrapperPostRegistrationTask
     {
         private readonly IContextRetriever _contextRetriever;
 
@@ -25,19 +24,4 @@ namespace BoltOn.Mediator
             _contextRetriever.Set(mediatorContext, ContextScope.App);
         }
     }
-
-	public class MediatorPreRegistrationTask : IBootstrapperPreRegistrationTask
-	{
-		public void Run(PreRegistrationTaskContext context)
-		{
-			context.Configure<MediatorOptions>(m =>
-			{
-				m.ClearMiddlewares();
-				m.RegisterMiddleware<StopwatchMiddleware>();
-				m.RegisterMiddleware<UnitOfWorkMiddleware>();
-			});
-
-
-		}
-	}
 }

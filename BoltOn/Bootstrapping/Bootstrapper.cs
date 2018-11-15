@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
 {
-	public class Bootstrapper : IDisposable
+	internal class Bootstrapper : IDisposable
 	{
 		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
 		private bool _isDisposed;
@@ -17,6 +17,7 @@ namespace BoltOn.Bootstrapping
 		private Hashtable _boltOnOptions;
 		private IServiceCollection _serviceCollection;
 		private IServiceProvider _serviceProvider;
+		private BoltOnIoCOptions _iocOptions;
 
 		private Bootstrapper()
 		{
@@ -25,9 +26,10 @@ namespace BoltOn.Bootstrapping
 			IsBolted = false;
 			_serviceCollection = null;
 			_serviceProvider = null;
+			_iocOptions = null;
 		}
 
-		public static Bootstrapper Instance
+		internal static Bootstrapper Instance
 		{
 			get
 			{
@@ -49,7 +51,7 @@ namespace BoltOn.Bootstrapping
 		}
 
 		internal IReadOnlyList<Assembly> Assemblies { get; private set; }
-		public bool IsBolted { get; private set; }
+		internal bool IsBolted { get; private set; }
 
 		internal TOptionType GetOptions<TOptionType>() where TOptionType : class, new()
 		{
@@ -64,10 +66,11 @@ namespace BoltOn.Bootstrapping
 			return (TOptionType)Convert.ChangeType(configValue, typeof(TOptionType));
 		}
 
-		public void BoltOn(IServiceCollection serviceCollection, Assembly callingAssembly = null)
+		internal void BoltOn(IServiceCollection serviceCollection, BoltOnIoCOptions options, Assembly callingAssembly = null)
 		{
 			Check.Requires(!IsBolted, "Components are already bolted!");
 			_serviceCollection = serviceCollection;
+			_iocOptions = options;
 			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
 			LoadAssemblies();
 			RunPreRegistrationTasks();
@@ -95,15 +98,13 @@ namespace BoltOn.Bootstrapping
 
 		private void LoadAssemblies()
 		{
-			var boltOnIoCOptions = GetOptions<BoltOnIoCOptions>();
 			var referencedAssemblyNames = _callingAssembly.GetReferencedAssemblies().ToList();
 			var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-			var assembliesToBeExcluded = boltOnIoCOptions
-														 .AssembliesToBeExcluded.Select(s => s.GetName().FullName).ToList();
+			var assembliesToBeExcluded = _iocOptions.AssembliesToBeExcluded.Select(s => s.GetName().FullName).ToList();
 			var assemblies = GetAssembliesThatStartsWith("BoltOn");
 			var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
 			var appAssemblies = GetAssembliesThatStartsWith(appPrefix);
-			assemblies.AddRange(boltOnIoCOptions.AssembliesToBeIncluded);
+			assemblies.AddRange(_iocOptions.AssembliesToBeIncluded);
 			assemblies.AddRange(appAssemblies);
 			assemblies.Add(_callingAssembly);
 			assemblies = assemblies.Distinct().ToList();

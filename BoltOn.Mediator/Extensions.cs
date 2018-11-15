@@ -16,22 +16,22 @@ namespace BoltOn.Mediator
 			return bootstrapper;
 		}
 
-		public static IServiceCollection BoltOnMediator(this IServiceCollection serviceCollection, Action<MediatorOptions> action)
-		{
-			Check.Requires(!Bootstrapper.Instance.IsBolted, "Components are already bolted! Mediator cannot be configured now");
-			var options = new MediatorOptions();
-			action(options);
-			//Bootstrapper.Instance.AddOptions(options);
-			return serviceCollection;
-		}
+		//public static IServiceCollection BoltOnMediator(this IServiceCollection serviceCollection, Action<MediatorOptions> action)
+		//{
+		//	Check.Requires(!Bootstrapper.Instance.IsBolted, "Components are already bolted! Mediator cannot be configured now");
+		//	var options = new MediatorOptions();
+		//	action(options);
+		//	//Bootstrapper.Instance.AddOptions(options);
+		//	return serviceCollection;
+		//}
 
-		public static BoltOn.IoC.BoltOnOptions ConfigureMediator(this BoltOn.IoC.BoltOnOptions boltOnOptions, Action<MediatorOptions> action)
-		{
-			Check.Requires(!Bootstrapper.Instance.IsBolted, "Components are already bolted! Mediator cannot be configured now");
-			var options = new MediatorOptions();
-			action(options);
-			//Bootstrapper.Instance.AddOptions(options);
-			return boltOnOptions;
-		}
+		//public static BoltOn.IoC.BoltOnOptions ConfigureMediator(this BoltOn.IoC.BoltOnOptions boltOnOptions, Action<MediatorOptions> action)
+		//{
+		//	Check.Requires(!Bootstrapper.Instance.IsBolted, "Components are already bolted! Mediator cannot be configured now");
+		//	var options = new MediatorOptions();
+		//	action(options);
+		//	//Bootstrapper.Instance.AddOptions(options);
+		//	return boltOnOptions;
+		//}
     }
 }

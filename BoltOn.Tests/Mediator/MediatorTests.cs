@@ -7,7 +7,6 @@ using BoltOn.Logging;
 using BoltOn.Mediator;
 using BoltOn.Tests.Common;
 using BoltOn.Utilities;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -281,17 +280,8 @@ namespace BoltOn.Tests.Mediator
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
-			//serviceCollection
-			//.BoltOn(bo =>
-			//{
-			//	bo.ConfigureMediator(m =>
-			//	 {
-			//		 m.ClearMiddlewares();
-			//		 m.RegisterMiddleware<TestMiddleware>();
-			//	 });
-			//});
+			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
-
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.BoltOn();
@@ -325,8 +315,6 @@ namespace BoltOn.Tests.Mediator
 	{
 		public void Run(RegistrationTaskContext context)
 		{
-			//context.ServiceCollection.Configure<MediatorOptions>(m => m.)
-
 			var currentDateTimeRetriever = new Mock<ICurrentDateTimeRetriever>();
 			var currentDateTime = DateTime.Parse("10/27/2018 12:51:59 PM");
 			currentDateTimeRetriever.Setup(s => s.Get()).Returns(currentDateTime);

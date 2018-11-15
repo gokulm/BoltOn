@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using BoltOn.Context;
 using BoltOn.IoC;
+using BoltOn.Logging;
 using BoltOn.Other;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -38,6 +39,8 @@ namespace BoltOn.Bootstrapping
 		{
 			var serviceCollection = context.ServiceCollection;
 			serviceCollection.AddSingleton<IAppContextRetriever, AppContextRetriever>();
+			serviceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(NetStandardLoggerAdapter<>));
+			serviceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
 			serviceCollection.AddScoped<IContextRetriever>((serviceProvider) => 
 			                                            new ContextRetriever(serviceProvider.GetService(typeof(IAppContextRetriever)) as IAppContextRetriever));
 		}

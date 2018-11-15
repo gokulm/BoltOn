@@ -15,6 +15,7 @@
     <PackageReference Include="Moq" Version="4.8.3" />
     <PackageReference Include="Moq.AutoMock" Version="1.1.0.96" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,7 +28,6 @@
   <ItemGroup>
     <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
     <ProjectReference Include="..\BoltOn.Logging.NLog\BoltOn.Logging.NLog.csproj" />
-    <ProjectReference Include="..\BoltOn.Logging.NetStandard\BoltOn.Logging.NetStandard.csproj" />
     <ProjectReference Include="..\BoltOn.Mediator\BoltOn.Mediator.csproj" />
   </ItemGroup>
   <ItemGroup>

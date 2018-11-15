@@ -9,7 +9,7 @@ namespace BoltOn.Bootstrapping
     {
         private readonly Bootstrapper _bootstrapper;
 
-        public RegistrationTaskContext(Bootstrapper bootstrapper)
+		internal RegistrationTaskContext(Bootstrapper bootstrapper)
         {
             _bootstrapper = bootstrapper;
         }
@@ -45,7 +45,7 @@ namespace BoltOn.Bootstrapping
 	{
 		private readonly Bootstrapper _bootstrapper;
 
-		public PreRegistrationTaskContext(Bootstrapper bootstrapper)
+		internal PreRegistrationTaskContext(Bootstrapper bootstrapper)
 		{
 			_bootstrapper = bootstrapper;
 		}
