@@ -6,12 +6,12 @@ namespace BoltOn.Mediator
     {
         public void Run(PreRegistrationTaskContext context)
         {
-            context.Configure<MediatorOptions>(m =>
-            {
-                m.ClearMiddlewares();
-                m.RegisterMiddleware<StopwatchMiddleware>();
-                m.RegisterMiddleware<UnitOfWorkMiddleware>();
-            });
+            //context.Configure<MediatorOptions>(m =>
+            //{
+            //    m.ClearMiddlewares();
+            //    m.RegisterMiddleware<StopwatchMiddleware>();
+            //    m.RegisterMiddleware<UnitOfWorkMiddleware>();
+            //});
         }
     }
 }

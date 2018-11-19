@@ -7,25 +7,22 @@ namespace BoltOn.Mediator
     {
 		internal List<Type> Middlewares { get; set; } = new List<Type>();
 		public UnitOfWorkOptions UnitOfWorkOptions { get; set; }
-		internal bool IsMiddlewaresCustomized { get; private set; }
 
         public MediatorOptions()
         {
 			UnitOfWorkOptions = new UnitOfWorkOptions();
-			//Middlewares.Add(typeof(StopwatchMiddleware));
-			//Middlewares.Add(typeof(UnitOfWorkMiddleware));
+			Middlewares.Add(typeof(StopwatchMiddleware));
+			Middlewares.Add(typeof(UnitOfWorkMiddleware));
         }
 
 		public void RegisterMiddleware<TMiddleware>()
 		{
 			Middlewares.Add(typeof(TMiddleware));
-			IsMiddlewaresCustomized = true;
 		}
 
 		public void ClearMiddlewares()
 		{
 			Middlewares.Clear();
-			IsMiddlewaresCustomized = true;
 		}
     }
 }
