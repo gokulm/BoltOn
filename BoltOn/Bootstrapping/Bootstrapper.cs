@@ -12,7 +12,6 @@ namespace BoltOn.Bootstrapping
 	internal class Bootstrapper : IDisposable
 	{
 		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
-		private bool _isDisposed;
 		private Assembly _callingAssembly;
 		private Hashtable _boltOnOptions;
 		private IServiceCollection _serviceCollection;
@@ -208,14 +207,13 @@ namespace BoltOn.Bootstrapping
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (disposing & !_isDisposed)
+			if (disposing)
 			{
 				_serviceCollection = null;
 				_serviceProvider = null;
 				Assemblies = null;
 				_boltOnOptions.Clear();
 				IsBolted = false;
-				_isDisposed = true;
 			}
 		}
 
