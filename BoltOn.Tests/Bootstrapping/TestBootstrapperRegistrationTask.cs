@@ -8,7 +8,7 @@ namespace BoltOn.Tests.Bootstrapping
     {
 		public void Run(RegistrationTaskContext context)
         {
-			context.ServiceCollection
+			context.Container
 			       .AddTransient<Employee>()
 			       .AddTransient<ClassWithInjectedDependency>();
         }

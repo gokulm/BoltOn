@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -13,19 +12,17 @@ namespace BoltOn.Bootstrapping
 	{
 		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
 		private Assembly _callingAssembly;
-		private Hashtable _boltOnOptions;
 		private IServiceCollection _serviceCollection;
 		private IServiceProvider _serviceProvider;
-		private BoltOnIoCOptions _iocOptions;
+		private BoltOnOptions _options;
 
 		private Bootstrapper()
 		{
-			_boltOnOptions = new Hashtable();
 			Assemblies = new List<Assembly>().AsReadOnly();
 			IsBolted = false;
 			_serviceCollection = null;
 			_serviceProvider = null;
-			_iocOptions = null;
+			_options = null;
 		}
 
 		internal static Bootstrapper Instance
@@ -52,39 +49,16 @@ namespace BoltOn.Bootstrapping
 		internal IReadOnlyList<Assembly> Assemblies { get; private set; }
 		internal bool IsBolted { get; private set; }
 
-		internal TOptionType GetOptions<TOptionType>() where TOptionType : class, new()
-		{
-			var configValue = _boltOnOptions[typeof(TOptionType).Name];
-			if (configValue == null)
-			{
-				var options = new TOptionType();
-				AddOptions(options);
-				return options;
-			}
-
-			return (TOptionType)Convert.ChangeType(configValue, typeof(TOptionType));
-		}
-
-		internal void BoltOn(IServiceCollection serviceCollection, BoltOnIoCOptions options, Assembly callingAssembly = null)
+		internal void BoltOn(IServiceCollection serviceCollection, BoltOnOptions options, Assembly callingAssembly = null)
 		{
 			Check.Requires(!IsBolted, "Components are already bolted!");
 			_serviceCollection = serviceCollection;
-			_iocOptions = options;
+			_options = options;
 			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
 			LoadAssemblies();
 			RunPreRegistrationTasks();
 			RunRegistrationTasks();
 			IsBolted = true;
-		}
-
-		internal void AddOptions<TOptionType>(TOptionType options) where TOptionType : class
-		{
-			Check.Requires(!IsBolted, "Components are already bolted! Options cannot be added");
-			var typeName = typeof(TOptionType).Name;
-			if (_boltOnOptions.ContainsKey(typeName))
-				_boltOnOptions[typeName] = options;
-			else
-				_boltOnOptions.Add(typeName, options);
 		}
 
 		internal void RunPostRegistrationTasks(IServiceProvider serviceProvider)
@@ -99,11 +73,11 @@ namespace BoltOn.Bootstrapping
 		{
 			var referencedAssemblyNames = _callingAssembly.GetReferencedAssemblies().ToList();
 			var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-			var assembliesToBeExcluded = _iocOptions.AssembliesToBeExcluded.Select(s => s.GetName().FullName).ToList();
+			var assembliesToBeExcluded = _options.AssembliesToBeExcluded.Select(s => s.GetName().FullName).ToList();
 			var assemblies = GetAssembliesThatStartsWith("BoltOn");
 			var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
 			var appAssemblies = GetAssembliesThatStartsWith(appPrefix);
-			assemblies.AddRange(_iocOptions.AssembliesToBeIncluded);
+			assemblies.AddRange(_options.AssembliesToBeIncluded);
 			assemblies.AddRange(appAssemblies);
 			assemblies.Add(_callingAssembly);
 			assemblies = assemblies.Distinct().ToList();
@@ -115,14 +89,14 @@ namespace BoltOn.Bootstrapping
 			sortedAssemblies.Add(boltOnAssembly);
 			assemblies.Remove(boltOnAssembly);
 
-			var loggingAssemblies = assemblies.Where(a => a.GetName().Name.
-													  StartsWith("BoltOn.Logging.", StringComparison.Ordinal)).ToList();
-			Check.Requires(loggingAssemblies.Count > 0, "No logging framework referenced");
-			loggingAssemblies.ForEach(f =>
-			{
-				sortedAssemblies.Add(f);
-				assemblies.Remove(f);
-			});
+			//var loggingAssemblies = assemblies.Where(a => a.GetName().Name.
+			//										  StartsWith("BoltOn.Logging.", StringComparison.Ordinal)).ToList();
+			//Check.Requires(loggingAssemblies.Count > 0, "No logging framework referenced");
+			//loggingAssemblies.ForEach(f =>
+			//{
+			//	sortedAssemblies.Add(f);
+			//	assemblies.Remove(f);
+			//});
 
 			// load assemblies in the order of dependency
 			var index = 0;
@@ -212,7 +186,6 @@ namespace BoltOn.Bootstrapping
 				_serviceCollection = null;
 				_serviceProvider = null;
 				Assemblies = null;
-				_boltOnOptions.Clear();
 				IsBolted = false;
 			}
 		}

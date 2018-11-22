@@ -254,16 +254,21 @@ namespace BoltOn.Tests.Mediator
 			var currentDateTimeRetriever = new Mock<ICurrentDateTimeRetriever>();
 			var currentDateTime = DateTime.Parse("10/27/2018 12:51:59 PM");
 			currentDateTimeRetriever.Setup(s => s.Get()).Returns(currentDateTime);
-			context.ServiceCollection.AddTransient((s) => currentDateTimeRetriever.Object);
+			context.Container.AddTransient((s) => currentDateTimeRetriever.Object);
 
 			var testMiddlewareLogger = new Mock<IBoltOnLogger<TestMiddleware>>();
 			testMiddlewareLogger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => LoggerDebugStatementContainer.Statements.Add(st));
-			context.ServiceCollection.AddTransient((s) => testMiddlewareLogger.Object);
+			context.Container.AddTransient((s) => testMiddlewareLogger.Object);
 			var stopWatchMiddlewareLogger = new Mock<IBoltOnLogger<StopwatchMiddleware>>();
 			stopWatchMiddlewareLogger.Setup(s => s.Debug(It.IsAny<string>()))
 									 .Callback<string>(st => LoggerDebugStatementContainer.Statements.Add(st));
-			context.ServiceCollection.AddTransient((s) => stopWatchMiddlewareLogger.Object);
+			context.Container.AddTransient((s) => stopWatchMiddlewareLogger.Object);
+
+			
+			if (LoggerDebugStatementContainer.IsClearMiddlewares)
+				context.Container.RemoveAllMiddlewares();
+			context.Container.AddMiddleware<TestMiddleware>();
 		}
 	}
 
@@ -271,15 +276,6 @@ namespace BoltOn.Tests.Mediator
 	{
 		public void Run(PreRegistrationTaskContext context)
 		{
-			//context.Configure<MediatorOptions>(m =>
-			//{
-			//	if (LoggerDebugStatementContainer.IsClearMiddlewares)
-			//		m.ClearMiddlewares();
-			//	m.RegisterMiddleware<TestMiddleware>();
-			//});
-			if (LoggerDebugStatementContainer.IsClearMiddlewares)
-				context.ServiceCollection.ClearMiddlewares();
-			context.ServiceCollection.RegisterMiddleware<TestMiddleware>();
 		}
 	}
 

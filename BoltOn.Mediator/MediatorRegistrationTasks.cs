@@ -1,16 +1,16 @@
 ﻿using System.Linq;
 using BoltOn.Bootstrapping;
-using BoltOn.Context;
 using Microsoft.Extensions.DependencyInjection;
+using System.Transactions;
 
 namespace BoltOn.Mediator
 {
-    public class MediatorPreRegistrationTask : IBootstrapperPreRegistrationTask
+	public class MediatorPreRegistrationTask : IBootstrapperPreRegistrationTask
     {
         public void Run(PreRegistrationTaskContext context)
         {
-			context.ServiceCollection.AddTransient<IMediatorMiddleware, StopwatchMiddleware>();
-			context.ServiceCollection.AddTransient<IMediatorMiddleware, UnitOfWorkMiddleware>();
+			context.Container.AddTransient<IMediatorMiddleware, StopwatchMiddleware>();
+			context.Container.AddTransient<IMediatorMiddleware, UnitOfWorkMiddleware>();
 		}
     }
 
@@ -18,18 +18,14 @@ namespace BoltOn.Mediator
 	{
 		public void Run(RegistrationTaskContext context)
 		{
-			var serviceCollection = context.ServiceCollection;
+			var serviceCollection = context.Container;
 			serviceCollection.AddTransient<IMediator, Mediator>();
 
-			var mediatorOptions = context.GetOptions<MediatorOptions>();
-			//mediatorOptions.Middlewares.ForEach(m => serviceCollection.AddTransient(typeof(IMediatorMiddleware), m));
-
-			context.ServiceCollection.Configure<UnitOfWorkOptions>(u =>
+			context.Container.Configure<UnitOfWorkOptions>(u =>
 			{
-				u.DefaultCommandIsolationLevel = mediatorOptions.UnitOfWorkOptions.DefaultCommandIsolationLevel;
-				u.DefaultIsolationLevel = mediatorOptions.UnitOfWorkOptions.DefaultIsolationLevel;
-				u.DefaultQueryIsolationLevel = mediatorOptions.UnitOfWorkOptions.DefaultQueryIsolationLevel;
-				u.DefaultTransactionTimeout = mediatorOptions.UnitOfWorkOptions.DefaultTransactionTimeout;
+				u.DefaultCommandIsolationLevel = IsolationLevel.ReadCommitted;
+				u.DefaultIsolationLevel = IsolationLevel.ReadCommitted;
+				u.DefaultQueryIsolationLevel = IsolationLevel.ReadUncommitted;
 			});
 
 			RegisterHandlers(context);
@@ -45,31 +41,7 @@ namespace BoltOn.Mediator
 								requestHandlerInterfaceType.IsAssignableFrom(i.GetGenericTypeDefinition())
 							select new { Interface = i, Implementation = t }).ToList();
 			foreach (var handler in handlers)
-				context.ServiceCollection.AddTransient(handler.Interface, handler.Implementation);
-		}
-	}
-
-
-	public class MediatorPostRegistrationTask : IBootstrapperPostRegistrationTask
-	{
-		private readonly IContextRetriever _contextRetriever;
-
-		public MediatorPostRegistrationTask(IContextRetriever contextRetriever)
-		{
-			_contextRetriever = contextRetriever;
-		}
-
-		public void Run(RegistrationTaskContext context)
-		{
-			var options = context.GetOptions<MediatorOptions>();
-			var mediatorContext = new MediatorContext
-			{
-				DefaultCommandIsolationLevel = options.UnitOfWorkOptions.DefaultCommandIsolationLevel,
-				DefaultQueryIsolationLevel = options.UnitOfWorkOptions.DefaultQueryIsolationLevel,
-				DefaultIsolationLevel = options.UnitOfWorkOptions.DefaultIsolationLevel
-			};
-
-			_contextRetriever.Set(mediatorContext, ContextScope.App);
+				context.Container.AddTransient(handler.Interface, handler.Implementation);
 		}
 	}
 }

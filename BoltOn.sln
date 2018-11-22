@@ -4,8 +4,6 @@ VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn", "BoltOn\BoltOn.csproj", "{5F868378-090A-4CD3-A8B9-6C6AFA1E8CE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Logging.NLog", "BoltOn.Logging.NLog\BoltOn.Logging.NLog.csproj", "{6CCD9266-8EEE-4E96-BC19-FD060BAFE36F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Tests", "BoltOn.Tests\BoltOn.Tests.csproj", "{5D271ECA-826B-427F-9DCA-B930A230D3A2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Mediator", "BoltOn.Mediator\BoltOn.Mediator.csproj", "{AF354657-8CD8-4F14-A795-B269C28AB35D}"
@@ -20,10 +18,6 @@ Global
 		{5F868378-090A-4CD3-A8B9-6C6AFA1E8CE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F868378-090A-4CD3-A8B9-6C6AFA1E8CE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F868378-090A-4CD3-A8B9-6C6AFA1E8CE3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6CCD9266-8EEE-4E96-BC19-FD060BAFE36F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6CCD9266-8EEE-4E96-BC19-FD060BAFE36F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6CCD9266-8EEE-4E96-BC19-FD060BAFE36F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6CCD9266-8EEE-4E96-BC19-FD060BAFE36F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5D271ECA-826B-427F-9DCA-B930A230D3A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5D271ECA-826B-427F-9DCA-B930A230D3A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D271ECA-826B-427F-9DCA-B930A230D3A2}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -14,7 +14,7 @@ namespace BoltOn.Bootstrapping
             _bootstrapper = bootstrapper;
         }
 
-		public IServiceCollection ServiceCollection
+		public IServiceCollection Container
 		{
 			get
 			{
@@ -29,16 +29,6 @@ namespace BoltOn.Bootstrapping
                 return _bootstrapper.Assemblies;
             }
         }
-
-        public TOptionType GetOptions<TOptionType>() where TOptionType : class, new()
-        {
-            return _bootstrapper.GetOptions<TOptionType>();
-        }
-
-		public void AddOptions<TOptionType>(TOptionType options) where TOptionType : class
-		{
-			_bootstrapper.AddOptions(options);
-		}
 	}
 
 	public sealed class PreRegistrationTaskContext
@@ -50,19 +40,12 @@ namespace BoltOn.Bootstrapping
 			_bootstrapper = bootstrapper;
 		}
 
-		public IServiceCollection ServiceCollection
+		public IServiceCollection Container
 		{
 			get
 			{
 				return _bootstrapper.ServiceCollection;
 			}
-		}
-
-		public void Configure<TOptionType>(Action<TOptionType> action) where TOptionType : class, new()
-		{
-			var options = new TOptionType();
-			action(options);
-			_bootstrapper.AddOptions(options);
 		}
 	}
 }

@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using BoltOn.Context;
-using BoltOn.IoC;
 using BoltOn.Logging;
 using BoltOn.Other;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +16,6 @@ namespace BoltOn.Bootstrapping
 
 		private void RegisterByConvention(RegistrationTaskContext context)
 		{
-			var boltOnIoCOptions = context.GetOptions<BoltOnIoCOptions>();
 			var interfaces = (from assembly in context.Assemblies
 							  from type in assembly.GetTypes()
 							  where type.IsInterface
@@ -31,13 +29,12 @@ namespace BoltOn.Bootstrapping
 								 && !type.GetCustomAttributes(typeof(ExcludeFromRegistrationAttribute), true).Any()
 								 select new { Interface = @interface, Implementation = type }).ToList();
 
-			registrations.ForEach(f => context.ServiceCollection.AddTransient(f.Interface, f.Implementation));
-
+			registrations.ForEach(f => context.Container.AddTransient(f.Interface, f.Implementation));
 		}
 
 		private void RegisterOtherTypes(RegistrationTaskContext context)
 		{
-			var serviceCollection = context.ServiceCollection;
+			var serviceCollection = context.Container;
 			serviceCollection.AddSingleton<IAppContextRetriever, AppContextRetriever>();
 			serviceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(NetStandardLoggerAdapter<>));
 			serviceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();

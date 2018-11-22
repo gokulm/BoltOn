@@ -1,15 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using BoltOn.IoC;
 
-namespace BoltOn.Bootstrapping
+namespace BoltOn.IoC
 {
 	public class BoltOnOptions
 	{
-		public List<Assembly> AssembliesToBeExcluded { get; set; } = new List<Assembly>();
-		public IBoltOnContainer Container { get; set; }
-		public List<Assembly> Assemblies { get; set; } = new List<Assembly>();
-		public Assembly CallingAssembly { get; internal set; }
+		private List<Assembly> _assembliesToBeExcluded;
+		private List<Assembly> _assembliesToBeIncluded;
 
+		public BoltOnOptions()
+		{
+			_assembliesToBeExcluded = new List<Assembly>();
+			_assembliesToBeIncluded = new List<Assembly>();
+		}
+
+		internal IReadOnlyList<Assembly> AssembliesToBeIncluded => _assembliesToBeIncluded.AsReadOnly();
+		internal IReadOnlyList<Assembly> AssembliesToBeExcluded => _assembliesToBeExcluded.AsReadOnly();
+
+		public void IncludeAssemblies(params Assembly[] assemblies)
+		{
+			_assembliesToBeIncluded.AddRange(assemblies);
+		}
+
+		public void ExcludeAssemblies(params Assembly[] assemblies)
+		{
+			_assembliesToBeExcluded.AddRange(assemblies);
+		}
 	}
 }

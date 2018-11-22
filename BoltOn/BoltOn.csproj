@@ -11,7 +11,6 @@
     <Compile Remove="IoC\IBoltOnContainerFactory.cs" />
     <Compile Remove="AssemblyRegistrationOrderAttribute.cs" />
     <Compile Remove="Bootstrapping\BootstrapperOptions.cs" />
-    <Compile Remove="Bootstrapping\BoltOnOptions.cs" />
     <Compile Remove="IoC\ServiceFactory.cs" />
     <Compile Remove="IoC\ServiceLocator.cs" />
     <Compile Remove="IoC\IBoltOnContainer.cs" />

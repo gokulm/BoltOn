@@ -27,11 +27,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
-    <ProjectReference Include="..\BoltOn.Logging.NLog\BoltOn.Logging.NLog.csproj" />
     <ProjectReference Include="..\BoltOn.Mediator\BoltOn.Mediator.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="IoC\NetStandardContainerAdapterTests.cs" />
     <Compile Remove="IoC\SimpleInjectorContainerAdapterTests.cs" />
+    <Compile Remove="Logging\NLogLoggerAdapterTests.cs" />
   </ItemGroup>
 </Project>

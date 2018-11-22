@@ -17,8 +17,6 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.1" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="MediatorRegistrationTask.cs" />
-    <Compile Remove="MediatorPostRegistrationTask.cs" />
-    <Compile Remove="MediatorPostRegistrationTask.cs" />
+    <Compile Remove="MediatorOptions.cs" />
   </ItemGroup>
 </Project>

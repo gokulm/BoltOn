@@ -2,6 +2,7 @@
 using BoltOn.Context;
 using BoltOn.UoW;
 using Microsoft.Extensions.Options;
+using System.Transactions;
 
 namespace BoltOn.Mediator
 {
@@ -28,21 +29,20 @@ namespace BoltOn.Mediator
 		                                                                           Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> next)
 		{
 			var uowOptions = _unitOfWorkOptions.Value;
-			var mediatorContext = _contextRetriever.Get<MediatorContext>(ContextScope.App);
-			System.Transactions.IsolationLevel isolationLevel;
+			IsolationLevel isolationLevel;
 			switch (request)
 			{
 				case ICommand<TResponse> c:
-					isolationLevel = mediatorContext.DefaultCommandIsolationLevel;
+					isolationLevel = uowOptions.DefaultCommandIsolationLevel;
 					break;
 				case IQuery<TResponse> q:
-					isolationLevel = mediatorContext.DefaultQueryIsolationLevel;
+					isolationLevel = uowOptions.DefaultQueryIsolationLevel;
 					break;
 				default:
-					isolationLevel = mediatorContext.DefaultIsolationLevel;
+					isolationLevel = uowOptions.DefaultIsolationLevel;
 					break;
 			}
-			_unitOfWork = _unitOfWorkProvider.Get(isolationLevel, mediatorContext.DefaultTransactionTimeout);
+			_unitOfWork = _unitOfWorkProvider.Get(isolationLevel, uowOptions.DefaultTransactionTimeout);
 			_unitOfWork.Begin();
 			var response = next.Invoke(request);
 			_unitOfWork.Commit();
