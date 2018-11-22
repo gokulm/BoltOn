@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 
-namespace BoltOn.IoC
+namespace BoltOn.Bootstrapping
 {
 	public class BoltOnOptions
 	{

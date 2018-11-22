@@ -33,7 +33,7 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
-		internal IServiceCollection ServiceCollection
+		internal IServiceCollection Container
 		{
 			get
 			{

@@ -1,5 +1,7 @@
 ﻿using System;
 using BoltOn.Bootstrapping;
+using BoltOn.Tests.Common;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace BoltOn.Tests.Bootstrapping
@@ -7,224 +9,83 @@ namespace BoltOn.Tests.Bootstrapping
 	[TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
 	public class BootstrapperTests : IDisposable
 	{
-		//[Fact, TestPriority(1)]
-		//public void Container_CallContainerBeforeInitializingContainer_ThrowsException()
-		//{
-		//	// arrange
-		//	var bootstrapper = Bootstrapper.Instance;
+		[Fact, TestPriority(1)]
+		public void Container_CallContainerBeforeInitializingContainer_ThrowsException()
+		{
+			// arrange
+			var bootstrapper = Bootstrapper.Instance;
 
-		//	// act and assert
-		//	Assert.Throws<Exception>(() => Bootstrapper.Instance.Container);
-		//}
+			// act and assert
+			Assert.Throws<Exception>(() => Bootstrapper.Instance.Container);
+		}
 
-		//[Fact, TestPriority(2)]
-		//public void Container_CallContainerAfterInitializingContainer_ReturnsContainer()
-		//{
-		//	// arrange
-		//	System.Threading.Thread.Sleep(200);
-		//	var container = new NetStandardContainerAdapter();
+		[Fact, TestPriority(2)]
+		public void Container_CallContainerAfterInitializingContainer_ReturnsContainer()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
 
-		//	// act 
-		//	Bootstrapper
-		//		.Instance
-		//		.ConfigureIoC(c => c.Container = container)
-		//		.BoltOn();
+			// act 
+			serviceCollection.BoltOn();
 
-		//	// assert
-		//	Assert.NotNull(Bootstrapper.Instance.Container);
-		//}
+			// assert
+			Assert.NotNull(Bootstrapper.Instance.Container);
+		}
 
-		//[Fact, TestPriority(3)]
-		//public void Container_CallContainerAfterBoltOn_ReturnsDefaultContainer()
-		//{
-		//	// act 
-		//	Bootstrapper
-		//		.Instance
-		//			.ConfigureIoC(b =>
-		//			{
-		//				//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-		//				//{
-		//				//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-		//				//	{
-		//				//		typeof(SimpleInjectorContainerAdapter).Assembly
-		//				//	}
-		//				//};
-		//			})
-		//		.BoltOn();
+		[Fact, TestPriority(3)]
+		public void BoltOn_ExcludeAssemblyWithRegistrationTask_ThrowsException()
+		{
+			// arrange	
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn(options =>
+			{
+				options.ExcludeAssemblies(typeof(ITestService).Assembly);
+			});
+			var serviceProvider = serviceCollection.BuildServiceProvider();
 
-		//	// assert
-		//	Assert.NotNull(Bootstrapper.Instance.Container);
-		//}
+			// act 
+			var ex = Record.Exception(() => serviceProvider.GetRequiredService<ITestService>());
 
-		//[Fact, TestPriority(4)]
-		//public void Container_CallContainerAfterBoltOnWithSetContainer_ReturnsNetStandardContainer()
-		//{
-		//	// arrange 
-		//	Bootstrapper
-		//		.Instance
-		//		.ConfigureIoC(c => c.Container = new NetStandardContainerAdapter());
+			// assert
+			Assert.NotNull(ex);
+		}
 
-		//	// act 
-		//	Bootstrapper
-		//		.Instance
-		//		.BoltOn();
+		[Fact, TestPriority(4)]
+		public void BoltOn_ConcreteClassWithoutRegistrationButResolvableDependencies_ReturnsInstance()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.AddLogging();
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
 
-		//	// assert
-		//	Assert.NotNull(Bootstrapper.Instance.Container);
-		//	Assert.IsType<NetStandardContainerAdapter>(Bootstrapper.Instance.Container);
-		//}
+			// act 
+			var employee = serviceProvider.GetRequiredService<Employee>();
 
-		//[Fact, TestPriority(5)]
-		//public void Container_CallContainerExcludeNetStandard_ReturnsSimpleInjectorContainer()
-		//{
-		//	// arrange 
-		//	var container = new Container();
-		//	container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
-		//	container.Options.AllowOverridingRegistrations = true;
-		//	container.Options.ConstructorResolutionBehavior = new FewParameterizedConstructorBehavior();
-		//	Bootstrapper
-		//		.Instance
-		//		.ConfigureIoC(b =>
-		//		{
-		//			//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-		//			//{
-		//			//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-		//			//		{
-		//			//			typeof(NetStandardContainerAdapter).Assembly
-		//			//		}
-		//			//};
-		//			b.Container = new SimpleInjectorContainerAdapter(container);
-		//		});
+			// assert
+			Assert.NotNull(employee);
+		}
 
-		//	// act
-		//	using (AsyncScopedLifestyle.BeginScope(container))
-		//	{
-		//		Bootstrapper
-		//			.Instance
-		//			.BoltOn();
-		//	}
+		[Fact, TestPriority(5)]
+		public void BoltOn_ConcreteClassWithoutRegistrationButNotResolvableDependencies_ThrowsException()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.AddLogging();
+			serviceCollection.BoltOn(options =>
+			{
+				options.ExcludeAssemblies(typeof(ITestService).Assembly);
+			});
+			var serviceProvider = serviceCollection.BuildServiceProvider();
 
-		//	// assert
-		//	Assert.NotNull(Bootstrapper.Instance.Container);
-		//	Assert.IsType<SimpleInjectorContainerAdapter>(Bootstrapper.Instance.Container);
-		//}
+			// act 
+			var instance = serviceProvider.GetService<ClassWithInjectedDependency>();
+			var ex = Record.Exception(() => serviceProvider.GetRequiredService<ClassWithInjectedDependency>());
 
-		//[Fact, TestPriority(4)]
-		//public void BoltOn_ExcludeAllDIAssemblies_ThrowsException()
-		//{
-		//	// arrange & act 
-		//	var ex = Record.Exception(() =>
-		//	{
-		//		Bootstrapper
-		//			.Instance
-		//			.ConfigureIoC(b =>
-		//			{
-		//				//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-		//				//{
-		//				//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-		//				//	{
-		//				//		typeof(NetStandardContainerAdapter).Assembly,
-		//				//		typeof(SimpleInjectorContainerAdapter).Assembly
-		//				//	}
-		//				//};
-		//			})
-		//			.BoltOn();
-		//	});
-
-		//	// assert
-		//	Assert.NotNull(ex);
-		//	Assert.Same("No IoC Container Adapter referenced", ex.Message);
-		//}
-
-		//[Fact, TestPriority(6)]
-		//public void BoltOn_ExcludeAssemblyWithRegistrationTask_ThrowsException()
-		//{
-		//	// arrange	
-		//	var container = new Container();
-		//	container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
-		//	container.Options.AllowOverridingRegistrations = true;
-		//	container.Options.ConstructorResolutionBehavior = new FewParameterizedConstructorBehavior();
-		//	Bootstrapper
-		//	.Instance
-		//	.ConfigureIoC(b =>
-		//	{
-		//		//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-		//		//{
-		//		//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-		//		//		{
-		//		//	typeof(BootstrapperTests).Assembly,
-		//		//		typeof(NetStandardContainerAdapter).Assembly
-		//		//		}
-		//		//};
-		//		b.Container = new SimpleInjectorContainerAdapter(container);
-		//	});
-
-		//	using (AsyncScopedLifestyle.BeginScope(container))
-		//	{
-		//		Bootstrapper
-		//			.Instance
-		//			.BoltOn();
-
-
-		//		// act 
-		//		// as this could throw any exception specific to the DI framework, using record
-		//		var ex = Record.Exception(() => ServiceLocator.Current.GetInstance<ITestService>());
-
-		//		// assert
-		//		Assert.NotNull(ex);
-		//	}
-		//}
-
-		//[Fact, TestPriority(7)]
-		//public void BoltOn_ConcreteClassWithoutRegistrationButResolvableDependencies_ReturnsInstance()
-		//{
-		//	// arrange
-		//	Bootstrapper
-		//		.Instance
-		//		.ConfigureIoC(b =>
-		//		{
-		//			//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-		//			//{
-		//			//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-		//			//	{
-		//			//			typeof(SimpleInjectorContainerAdapter).Assembly
-		//			//	}
-		//			//};
-		//		})
-		//		.BoltOn();
-
-		//	// act 
-		//	var employee = ServiceLocator.Current.GetInstance<Employee>();
-
-		//	// assert
-		//	Assert.NotNull(employee);
-		//}
-
-		//[Fact, TestPriority(7)]
-		//public void BoltOn_ConcreteClassWithoutRegistrationButNotResolvableDependenciesNetStandardContainer_ThrowsException()
-		//{
-		//	// arrange
-		//	Bootstrapper
-		//		.Instance
-		//		.ConfigureIoC(b =>
-		//		{
-		//			//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-		//			//{
-		//			//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-		//			//	{
-		//			//	typeof(BootstrapperTests).Assembly,
-		//			//	typeof(SimpleInjectorContainerAdapter).Assembly,
-		//			//	}
-		//			//};
-		//		})
-		//		.BoltOn();
-
-		//	// act 
-		//	var instance = ServiceLocator.Current.GetInstance<ClassWithInjectedDependency>();
-
-		//	// assert
-		//	Assert.Null(instance);
-		//}
+			// assert
+			Assert.Null(instance);
+			Assert.NotNull(ex);
+		}
 
 		//[Fact, TestPriority(8)]
 		//public void BoltOn_DefaultBoltOnWithAllTheAssemblies_RunsRegistrationTasksAndResolvesDependencies()

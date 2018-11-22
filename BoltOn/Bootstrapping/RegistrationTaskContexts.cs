@@ -18,7 +18,7 @@ namespace BoltOn.Bootstrapping
 		{
 			get
 			{
-				return _bootstrapper.ServiceCollection;
+				return _bootstrapper.Container;
 			}
 		}
 
@@ -44,7 +44,7 @@ namespace BoltOn.Bootstrapping
 		{
 			get
 			{
-				return _bootstrapper.ServiceCollection;
+				return _bootstrapper.Container;
 			}
 		}
 	}

@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <Folder Include="Logging\" />
-    <Folder Include="IoC\" />
     <Folder Include="Bootstrapping\" />
     <Folder Include="Common\" />
     <Folder Include="Mediator\" />
@@ -33,5 +32,6 @@
     <Compile Remove="IoC\NetStandardContainerAdapterTests.cs" />
     <Compile Remove="IoC\SimpleInjectorContainerAdapterTests.cs" />
     <Compile Remove="Logging\NLogLoggerAdapterTests.cs" />
+    <Compile Remove="Logging\NetStandardLoggerAdapterTests.cs" />
   </ItemGroup>
 </Project>

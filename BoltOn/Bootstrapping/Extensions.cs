@@ -4,7 +4,7 @@ using BoltOn.Bootstrapping;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BoltOn.IoC
+namespace BoltOn.Bootstrapping
 {
 	public static class Extensions
     {
