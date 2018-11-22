@@ -154,7 +154,7 @@ namespace BoltOn.Tests.Mediator
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.BoltOn();
+			serviceProvider.UseBoltOn();
 			var currentDateTimeRetriever = serviceProvider.GetService<ICurrentDateTimeRetriever>();
 			var mediator = serviceProvider.GetService<IMediator>();
 
@@ -185,7 +185,7 @@ namespace BoltOn.Tests.Mediator
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.BoltOn();
+			serviceProvider.UseBoltOn();
 			var currentDateTimeRetriever = serviceProvider.GetService<ICurrentDateTimeRetriever>();
 			var mediator = serviceProvider.GetService<IMediator>();
 
@@ -220,7 +220,7 @@ namespace BoltOn.Tests.Mediator
 			serviceCollection.BoltOn();
 			serviceCollection.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.BoltOn();
+			serviceProvider.UseBoltOn();
 			var currentDateTimeRetriever = serviceProvider.GetService<ICurrentDateTimeRetriever>();
 			var mediator = serviceProvider.GetService<IMediator>();
 
@@ -271,12 +271,15 @@ namespace BoltOn.Tests.Mediator
 	{
 		public void Run(PreRegistrationTaskContext context)
 		{
-			context.Configure<MediatorOptions>(m =>
-			{
-				if (LoggerDebugStatementContainer.IsClearMiddlewares)
-					m.ClearMiddlewares();
-				m.RegisterMiddleware<TestMiddleware>();
-			});
+			//context.Configure<MediatorOptions>(m =>
+			//{
+			//	if (LoggerDebugStatementContainer.IsClearMiddlewares)
+			//		m.ClearMiddlewares();
+			//	m.RegisterMiddleware<TestMiddleware>();
+			//});
+			if (LoggerDebugStatementContainer.IsClearMiddlewares)
+				context.ServiceCollection.ClearMiddlewares();
+			context.ServiceCollection.RegisterMiddleware<TestMiddleware>();
 		}
 	}
 

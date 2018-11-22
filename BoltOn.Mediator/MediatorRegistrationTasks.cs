@@ -1,10 +1,19 @@
 ﻿using System.Linq;
 using BoltOn.Bootstrapping;
+using BoltOn.Context;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace BoltOn.Mediator
 {
+    public class MediatorPreRegistrationTask : IBootstrapperPreRegistrationTask
+    {
+        public void Run(PreRegistrationTaskContext context)
+        {
+			context.ServiceCollection.AddTransient<IMediatorMiddleware, StopwatchMiddleware>();
+			context.ServiceCollection.AddTransient<IMediatorMiddleware, UnitOfWorkMiddleware>();
+		}
+    }
+
 	public class MediatorRegistrationTask : IBootstrapperRegistrationTask
 	{
 		public void Run(RegistrationTaskContext context)
@@ -37,6 +46,30 @@ namespace BoltOn.Mediator
 							select new { Interface = i, Implementation = t }).ToList();
 			foreach (var handler in handlers)
 				context.ServiceCollection.AddTransient(handler.Interface, handler.Implementation);
+		}
+	}
+
+
+	public class MediatorPostRegistrationTask : IBootstrapperPostRegistrationTask
+	{
+		private readonly IContextRetriever _contextRetriever;
+
+		public MediatorPostRegistrationTask(IContextRetriever contextRetriever)
+		{
+			_contextRetriever = contextRetriever;
+		}
+
+		public void Run(RegistrationTaskContext context)
+		{
+			var options = context.GetOptions<MediatorOptions>();
+			var mediatorContext = new MediatorContext
+			{
+				DefaultCommandIsolationLevel = options.UnitOfWorkOptions.DefaultCommandIsolationLevel,
+				DefaultQueryIsolationLevel = options.UnitOfWorkOptions.DefaultQueryIsolationLevel,
+				DefaultIsolationLevel = options.UnitOfWorkOptions.DefaultIsolationLevel
+			};
+
+			_contextRetriever.Set(mediatorContext, ContextScope.App);
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using BoltOn.Context;
 using BoltOn.UoW;
+using Microsoft.Extensions.Options;
 
 namespace BoltOn.Mediator
 {
@@ -13,15 +14,20 @@ namespace BoltOn.Mediator
 		private readonly IUnitOfWorkProvider _unitOfWorkProvider;
 		private readonly IContextRetriever _contextRetriever;
 		private IUnitOfWork _unitOfWork;
+		private IOptions<UnitOfWorkOptions> _unitOfWorkOptions;
 
-		public UnitOfWorkMiddleware(IUnitOfWorkProvider unitOfWorkProvider, IContextRetriever contextRetriever)
+		public UnitOfWorkMiddleware(IUnitOfWorkProvider unitOfWorkProvider, IContextRetriever contextRetriever,
+		                            IOptions<UnitOfWorkOptions> unitOfWorkOptions)
 		{
 			_unitOfWorkProvider = unitOfWorkProvider;
 			_contextRetriever = contextRetriever;
+			_unitOfWorkOptions = unitOfWorkOptions;
 		}
 
-		public override StandardDtoReponse<TResponse> Execute<TRequest, TResponse>(IRequest<TResponse> request, Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> next)
+		public override StandardDtoReponse<TResponse> Execute<TRequest, TResponse>(IRequest<TResponse> request, 
+		                                                                           Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> next)
 		{
+			var uowOptions = _unitOfWorkOptions.Value;
 			var mediatorContext = _contextRetriever.Get<MediatorContext>(ContextScope.App);
 			System.Transactions.IsolationLevel isolationLevel;
 			switch (request)
@@ -36,9 +42,6 @@ namespace BoltOn.Mediator
 					isolationLevel = mediatorContext.DefaultIsolationLevel;
 					break;
 			}
-
-
-
 			_unitOfWork = _unitOfWorkProvider.Get(isolationLevel, mediatorContext.DefaultTransactionTimeout);
 			_unitOfWork.Begin();
 			var response = next.Invoke(request);

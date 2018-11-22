@@ -17,9 +17,9 @@ namespace BoltOn.IoC
 			return serviceCollection;
 		}
 
-		public static void BoltOn(this IServiceProvider serviceProvider)
+		public static void UseBoltOn(this IServiceProvider serviceProvider)
 		{
 			Bootstrapper.Instance.RunPostRegistrationTasks(serviceProvider);
 		}
-    }
+	}
 }

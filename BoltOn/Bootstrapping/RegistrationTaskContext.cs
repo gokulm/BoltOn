@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
@@ -61,7 +60,6 @@ namespace BoltOn.Bootstrapping
 
 		public void Configure<TOptionType>(Action<TOptionType> action) where TOptionType : class, new()
 		{
-			//Check.Requires(!_bootstrapper.IsBolted, "Components are already bolted! Options cannot be added");
 			var options = new TOptionType();
 			action(options);
 			_bootstrapper.AddOptions(options);

@@ -14,6 +14,11 @@
     <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=2.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Extensions.cs" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="MediatorRegistrationTask.cs" />
+    <Compile Remove="MediatorPostRegistrationTask.cs" />
+    <Compile Remove="MediatorPostRegistrationTask.cs" />
   </ItemGroup>
 </Project>

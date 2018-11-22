@@ -21,6 +21,7 @@ namespace BoltOn.Mediator
 				DefaultQueryIsolationLevel = options.UnitOfWorkOptions.DefaultQueryIsolationLevel,
 				DefaultIsolationLevel = options.UnitOfWorkOptions.DefaultIsolationLevel
             };
+
             _contextRetriever.Set(mediatorContext, ContextScope.App);
         }
     }
