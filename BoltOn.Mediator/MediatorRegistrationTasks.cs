@@ -5,30 +5,21 @@ using System.Transactions;
 
 namespace BoltOn.Mediator
 {
-	public class MediatorPreRegistrationTask : IBootstrapperPreRegistrationTask
-    {
-        public void Run(PreRegistrationTaskContext context)
-        {
-			context.Container.AddTransient<IMediatorMiddleware, StopwatchMiddleware>();
-			context.Container.AddTransient<IMediatorMiddleware, UnitOfWorkMiddleware>();
-		}
-    }
-
 	public class MediatorRegistrationTask : IBootstrapperRegistrationTask
 	{
 		public void Run(RegistrationTaskContext context)
 		{
-			var serviceCollection = context.Container;
-			serviceCollection.AddTransient<IMediator, Mediator>();
-
-			context.Container.Configure<UnitOfWorkOptions>(u =>
-			{
-				u.DefaultCommandIsolationLevel = IsolationLevel.ReadCommitted;
-				u.DefaultIsolationLevel = IsolationLevel.ReadCommitted;
-				u.DefaultQueryIsolationLevel = IsolationLevel.ReadUncommitted;
-			});
-
+			var container = context.Container;
+			container.AddTransient<IMediator, Mediator>();
+			RegisterMiddlewares(container);
 			RegisterHandlers(context);
+			Configure(container);
+		}
+
+		private static void RegisterMiddlewares(IServiceCollection container)
+		{
+			container.AddTransient<IMediatorMiddleware, StopwatchMiddleware>();
+			container.AddTransient<IMediatorMiddleware, UnitOfWorkMiddleware>();
 		}
 
 		private void RegisterHandlers(RegistrationTaskContext context)
@@ -42,6 +33,16 @@ namespace BoltOn.Mediator
 							select new { Interface = i, Implementation = t }).ToList();
 			foreach (var handler in handlers)
 				context.Container.AddTransient(handler.Interface, handler.Implementation);
+		}
+
+		private static void Configure(IServiceCollection container)
+		{
+			container.Configure<UnitOfWorkOptions>(u =>
+			{
+				u.DefaultCommandIsolationLevel = IsolationLevel.ReadCommitted;
+				u.DefaultIsolationLevel = IsolationLevel.ReadCommitted;
+				u.DefaultQueryIsolationLevel = IsolationLevel.ReadUncommitted;
+			});
 		}
 	}
 }

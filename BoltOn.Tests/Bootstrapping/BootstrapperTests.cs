@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using BoltOn.Bootstrapping;
 using BoltOn.Tests.Common;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +11,7 @@ namespace BoltOn.Tests.Bootstrapping
 	[TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
 	public class BootstrapperTests : IDisposable
 	{
-		[Fact, TestPriority(1)]
+		[Fact]
 		public void Container_CallContainerBeforeInitializingContainer_ThrowsException()
 		{
 			// arrange
@@ -19,7 +21,7 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.Throws<Exception>(() => Bootstrapper.Instance.Container);
 		}
 
-		[Fact, TestPriority(2)]
+		[Fact]
 		public void Container_CallContainerAfterInitializingContainer_ReturnsContainer()
 		{
 			// arrange
@@ -32,7 +34,37 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.NotNull(Bootstrapper.Instance.Container);
 		}
 
-		[Fact, TestPriority(3)]
+		[Fact]
+		public void BoltOn_ExcludeAssembly_ExcludesAssemblyFromAssemblies()
+		{
+			// arrange	
+			var serviceCollection = new ServiceCollection();
+			var assemblyToBeExcluded = typeof(ITestService).Assembly;
+			serviceCollection.BoltOn(options => options.ExcludeAssemblies(assemblyToBeExcluded));
+
+			// act 
+			var result = Bootstrapper.Instance.Assemblies.Contains(assemblyToBeExcluded);
+
+			// assert
+			Assert.False(result);
+		}
+
+		[Fact]
+		public void BoltOn_IncludeAssembly_IncludesAssemblyToAssemblies()
+		{
+			// arrange	
+			var serviceCollection = new ServiceCollection();
+			var assemblyToBeIncluded = typeof(ServiceCollection).Assembly;
+			serviceCollection.BoltOn(options => options.IncludeAssemblies(assemblyToBeIncluded));
+
+			// act 
+			var result = Bootstrapper.Instance.Assemblies.Contains(assemblyToBeIncluded);
+
+			// assert
+			Assert.True(result);
+		}
+
+		[Fact]
 		public void BoltOn_ExcludeAssemblyWithRegistrationTask_ThrowsException()
 		{
 			// arrange	
@@ -87,164 +119,114 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.NotNull(ex);
 		}
 
-		//[Fact, TestPriority(8)]
-		//public void BoltOn_DefaultBoltOnWithAllTheAssemblies_RunsRegistrationTasksAndResolvesDependencies()
-		//{
-		//	// arrange
-		//	Bootstrapper
-		//		.Instance
-		//		.ConfigureIoC(b =>
-		//		{
-		//			//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-		//			//{
-		//			//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-		//			//	{
-		//			//	typeof(SimpleInjectorContainerAdapter).Assembly,
-		//			//	}
-		//			//};
-		//		})
-		//		.BoltOn();
+		[Fact, TestPriority(6)]
+		public void BoltOn_DefaultBoltOnWithAllTheAssemblies_RunsRegistrationTasksAndResolvesDependencies()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.AddLogging();
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
 
-		//	// act
-		//	var employee = ServiceLocator.Current.GetInstance<Employee>();
+			// act 
+			var employee = serviceProvider.GetRequiredService<Employee>();
 
-		//	// assert
-		//	var name = employee.GetName();
-		//	Assert.Equal("John", name);
-		//}
+			// assert
+			var name = employee.GetName();
+			Assert.Equal("John", name);
+		}
 
-		//[Fact, TestPriority(9)]
-		//public void BoltOn_DefaultBoltOnWithAllTheAssemblies_ResolvesDependenciesRegisteredByConvention()
-		//{
-		//	// arrange
-		//	Bootstrapper
-		//		.Instance
-		//		.ConfigureIoC(b =>
-		//		{
-		//			//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-		//			//{
-		//			//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-		//			//	{
-		//			//	typeof(SimpleInjectorContainerAdapter).Assembly,
-		//			//	}
-		//			//};
-		//		})
-		//		.BoltOn();
+		[Fact, TestPriority(7)]
+		public void BoltOn_DefaultBoltOnWithAllTheAssemblies_ResolvesDependenciesRegisteredByConvention()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.AddLogging();
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
 
-		//	// act
-		//	var result = ServiceLocator.Current.GetInstance<ITestService>();
+			// act 
+			var result = serviceProvider.GetRequiredService<ITestService>();
 
-		//	// assert
-		//	var name = result.GetName();
-		//	Assert.Equal("test", name);
-		//}
+			// assert
+			var name = result.GetName();
+			Assert.Equal("test", name);
+		}
 
-		//[Fact, TestPriority(10)]
-		//public void BoltOn_ClassNotRegisteredByConventionUsingNetStandardContainer_ReturnsNull()
-		//{
-		//	// arrange
-		//	Bootstrapper
-		//		.Instance
-		//		.ConfigureIoC(b =>
-		//		{
-		//			//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-		//			//{
-		//			//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-		//			//	{
-		//			//		typeof(BootstrapperTests).Assembly,
-		//			//		typeof(SimpleInjectorContainerAdapter).Assembly,
-		//			//	}
-		//			//};
-		//		})
-		//		.BoltOn();
+		[Fact, TestPriority(8)]
+		public void BoltOn_ClassNotRegisteredByConventionUsingNetStandardContainer_ReturnsNull()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.AddLogging();
+			serviceCollection.BoltOn(options => options.ExcludeAssemblies(typeof(ITestService).Assembly));
+			var serviceProvider = serviceCollection.BuildServiceProvider();
 
-		//	// act 
-		//	var instance = ServiceLocator.Current.GetInstance<ITestService>();
+			// act 
+			var result = serviceProvider.GetService<ITestService>();
 
-		//	// assert
-		//	Assert.Null(instance);
-		//}
+			// assert
+			Assert.Null(result);
+		}
 
-		//[Fact, TestPriority(11)]
-		//public void BoltOn_ClassNotRegisteredByConventionUsingSimpleInjector_ThrowsException()
-		//{
-		//	// arrange
+		[Fact, TestPriority(9)]
+		public void BoltOn_BoltOnCalledMoreThanOnce_ThrowsException()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn();
 
-		//	var container = new Container();
-		//	container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
-		//	container.Options.AllowOverridingRegistrations = true;
-		//	container.Options.ConstructorResolutionBehavior = new FewParameterizedConstructorBehavior();
+			// act and assert
+			Assert.Throws<Exception>(() => serviceCollection.BoltOn());
+		}
 
-		//	// act 
-		//	using (AsyncScopedLifestyle.BeginScope(container))
-		//	{
-		//		Bootstrapper
-		//		.Instance
-		//		.ConfigureIoC(b =>
-		//		{
-		//			//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-		//			//{
-		//			//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-		//			//	{
-		//			//		typeof(BootstrapperTests).Assembly,
-		//			//		typeof(NetStandardContainerAdapter).Assembly,
-		//			//	}
-		//			//};
-		//			b.Container = new SimpleInjectorContainerAdapter(container);
-		//		})
-		//		.BoltOn();
+		[Fact]
+		public void BoltOn_BoltOn_ExecutesPreAndRegistrationTasksInOrderAndNotPostRegistrationTask()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
 
-		//		// as this could throw any exception specific to the DI framework, using record
-		//		var ex = Record.Exception(() => ServiceLocator.Current.GetInstance<ITestService>());
+			// act 
+			serviceCollection.BoltOn();
 
-		//		// assert
-		//		Assert.NotNull(ex);
-		//	}
-		//}
+			// assert
+			var preRegistrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPreregistrationTask).Name}");
+			var registrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
+			var postRegistrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
+			Assert.True(preRegistrationTaskIndex != -1); 
+			Assert.True(registrationTaskIndex != -1);
+			Assert.True(postRegistrationTaskIndex == -1);
+			Assert.True(preRegistrationTaskIndex < registrationTaskIndex);
+		}
 
-		//[Fact, TestPriority(12)]
-		//public void BoltOn_BoltOnCalledMoreThanOnce_ThrowsException()
-		//{
-		//	// arrange
-		//	Bootstrapper
-		//		.Instance
-		//		.ConfigureIoC(b =>
-		//		{
-		//			//b.AssemblyOptions = new BoltOnIoCAssemblyOptions
-		//			//{
-		//			//	AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-		//			//	{
-		//			//		typeof(SimpleInjectorContainerAdapter).Assembly,
-		//			//	}
-		//			//};
-		//		})
-		//		.BoltOn();
+		[Fact]
+		public void BoltOn_BoltOnAndBoltOn_ExecutesAllRegistrationTasksInOrder()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
 
-		//	// act and assert
-		//	Assert.Throws<Exception>(() => Bootstrapper.Instance.BoltOn());
-		//}
+			// act 
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.UseBoltOn();
 
-		//public void BoltOnIoC_ConfigureIoC_BootstrapsApp()
-		//{
-		//	ServiceCollection serviceCollection = new ServiceCollection();
-		//	serviceCollection.BoltOnIoC(options =>
-		//	{
-		//		options.AssemblyOptions = new BoltOnIoCAssemblyOptions
-		//		{
-		//			AssembliesToBeExcluded = new List<System.Reflection.Assembly>
-		//				{
-		//					typeof(SimpleInjectorContainerAdapter).Assembly,
-		//				}
-		//		};
-		//	});
-		//}
-
+			// assert
+			var preRegistrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPreregistrationTask).Name}");
+			var registrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
+			var postRegistrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
+			Assert.True(preRegistrationTaskIndex != -1);
+			Assert.True(registrationTaskIndex != -1);
+			Assert.True(postRegistrationTaskIndex != -1);
+			Assert.True(preRegistrationTaskIndex < registrationTaskIndex);
+			Assert.True(registrationTaskIndex < postRegistrationTaskIndex);
+		}
 
 		public void Dispose()
 		{
 			Bootstrapper
 				.Instance
 				.Dispose();
+			BootstrapperRegistrationTaskTester.Tasks.Clear();
 		}
 	}
 
@@ -273,5 +255,37 @@ namespace BoltOn.Tests.Bootstrapping
 			get;
 			set;
 		}
+	}
+
+	public class TestBootstrapperPreregistrationTask : IBootstrapperPreRegistrationTask
+	{
+		public void Run(PreRegistrationTaskContext context)
+		{
+			BootstrapperRegistrationTaskTester.Tasks.Add($"Executed {this.GetType().Name}");
+		}
+	}
+
+	public class TestBootstrapperPostRegistrationTask : IBootstrapperPostRegistrationTask
+	{
+		public void Run(PostRegistrationTaskContext context)
+		{
+			BootstrapperRegistrationTaskTester.Tasks.Add($"Executed {this.GetType().Name}");
+		}
+	}
+
+	public class TestBootstrapperRegistrationTask : IBootstrapperRegistrationTask
+	{
+		public void Run(RegistrationTaskContext context)
+		{
+			BootstrapperRegistrationTaskTester.Tasks.Add($"Executed {this.GetType().Name}");
+			context.Container
+				   .AddTransient<Employee>()
+				   .AddTransient<ClassWithInjectedDependency>();
+		}
+	}
+
+	public class BootstrapperRegistrationTaskTester
+	{
+		public static List<string> Tasks { get; set; } = new List<string>();
 	}
 }

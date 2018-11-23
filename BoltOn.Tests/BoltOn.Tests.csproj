@@ -33,5 +33,6 @@
     <Compile Remove="IoC\SimpleInjectorContainerAdapterTests.cs" />
     <Compile Remove="Logging\NLogLoggerAdapterTests.cs" />
     <Compile Remove="Logging\NetStandardLoggerAdapterTests.cs" />
+    <Compile Remove="Bootstrapping\TestBootstrapperRegistrationTask.cs" />
   </ItemGroup>
 </Project>

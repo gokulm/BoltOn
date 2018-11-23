@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using BoltOn.IoC;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,11 +14,12 @@ namespace BoltOn.Bootstrapping
 		private IServiceCollection _serviceCollection;
 		private IServiceProvider _serviceProvider;
 		private BoltOnOptions _options;
+		private bool _isBolted;
 
 		private Bootstrapper()
 		{
 			Assemblies = new List<Assembly>().AsReadOnly();
-			IsBolted = false;
+			_isBolted = false;
 			_serviceCollection = null;
 			_serviceProvider = null;
 			_options = null;
@@ -47,26 +47,26 @@ namespace BoltOn.Bootstrapping
 		}
 
 		internal IReadOnlyList<Assembly> Assemblies { get; private set; }
-		internal bool IsBolted { get; private set; }
 
 		internal void BoltOn(IServiceCollection serviceCollection, BoltOnOptions options, Assembly callingAssembly = null)
 		{
-			Check.Requires(!IsBolted, "Components are already bolted!");
+			Check.Requires(!_isBolted, "Components are already bolted");
 			_serviceCollection = serviceCollection;
 			_options = options;
 			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
 			LoadAssemblies();
 			RunPreRegistrationTasks();
 			RunRegistrationTasks();
-			IsBolted = true;
+			_isBolted = true;
 		}
 
 		internal void RunPostRegistrationTasks(IServiceProvider serviceProvider)
 		{
 			_serviceProvider = serviceProvider;
-			var registrationTaskContext = new RegistrationTaskContext(this);
+			var context = new PostRegistrationTaskContext(this);
 			var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IBootstrapperPostRegistrationTask>>();
-			postRegistrationTasks.ToList().ForEach(t => t.Run(registrationTaskContext));
+			var tasks = serviceProvider.GetServices<IBootstrapperPostRegistrationTask>();
+			postRegistrationTasks.ToList().ForEach(t => t.Run(context));
 		}
 
 		private void LoadAssemblies()
@@ -88,15 +88,6 @@ namespace BoltOn.Bootstrapping
 			var boltOnAssembly = assemblies.First(a => a.GetName().Name.Equals("BoltOn"));
 			sortedAssemblies.Add(boltOnAssembly);
 			assemblies.Remove(boltOnAssembly);
-
-			//var loggingAssemblies = assemblies.Where(a => a.GetName().Name.
-			//										  StartsWith("BoltOn.Logging.", StringComparison.Ordinal)).ToList();
-			//Check.Requires(loggingAssemblies.Count > 0, "No logging framework referenced");
-			//loggingAssemblies.ForEach(f =>
-			//{
-			//	sortedAssemblies.Add(f);
-			//	assemblies.Remove(f);
-			//});
 
 			// load assemblies in the order of dependency
 			var index = 0;
@@ -186,7 +177,7 @@ namespace BoltOn.Bootstrapping
 				_serviceCollection = null;
 				_serviceProvider = null;
 				Assemblies = null;
-				IsBolted = false;
+				_isBolted = false;
 			}
 		}
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using BoltOn.Bootstrapping;
-using BoltOn.IoC;
 using BoltOn.Logging;
 using BoltOn.Mediator;
 using BoltOn.Tests.Common;
@@ -76,7 +75,7 @@ namespace BoltOn.Tests.Mediator
 			var logger2 = new Mock<IBoltOnLogger<StopwatchMiddleware>>();
 			var currentDateTimeRetriever = new Mock<ICurrentDateTimeRetriever>();
 			var currentDateTime = DateTime.Now;
-			currentDateTimeRetriever.Setup(s => s.Get()).Returns(currentDateTime);
+			currentDateTimeRetriever.Setup(s => s.Now).Returns(currentDateTime);
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, bool>)))
 				.Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware> { new TestRequestSpecificMiddleware(logger.Object),
@@ -165,15 +164,10 @@ namespace BoltOn.Tests.Mediator
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data);
 			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d ==
-																				   $"StopwatchMiddleware started at {currentDateTimeRetriever.Get()}"));
+																				   $"StopwatchMiddleware started at {currentDateTimeRetriever.Now}"));
 			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d ==
-																				   $"StopwatchMiddleware ended at {currentDateTimeRetriever.Get()}. Time elapsed: 0"));
+																				   $"StopwatchMiddleware ended at {currentDateTimeRetriever.Now}. Time elapsed: 0"));
 			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == "TestMiddleware Started"));
-
-			// clean
-			Bootstrapper
-				.Instance
-				.Dispose();
 		}
 
 		[Fact, Trait("Category", "Integration"), TestPriority(22)]
@@ -198,17 +192,12 @@ namespace BoltOn.Tests.Mediator
 			Assert.True(LoggerDebugStatementContainer.Statements.IndexOf("TestMiddleware Started") > 0);
 			Assert.True(LoggerDebugStatementContainer.Statements.IndexOf("TestMiddleware Ended") > 0);
 			Assert.True(LoggerDebugStatementContainer.Statements.IndexOf("TestRequestSpecificMiddleware Started") == -1);
-			Assert.True(LoggerDebugStatementContainer.Statements.IndexOf($"StopwatchMiddleware started at {currentDateTimeRetriever.Get()}") <
+			Assert.True(LoggerDebugStatementContainer.Statements.IndexOf($"StopwatchMiddleware started at {currentDateTimeRetriever.Now}") <
 						LoggerDebugStatementContainer.Statements.IndexOf("TestMiddleware Started"));
-			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {currentDateTimeRetriever.Get()}"));
-			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware ended at {currentDateTimeRetriever.Get()}. Time elapsed: 0"));
-			Assert.True(LoggerDebugStatementContainer.Statements.IndexOf($"StopwatchMiddleware ended at {currentDateTimeRetriever.Get()}. Time elapsed: 0") >
+			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {currentDateTimeRetriever.Now}"));
+			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware ended at {currentDateTimeRetriever.Now}. Time elapsed: 0"));
+			Assert.True(LoggerDebugStatementContainer.Statements.IndexOf($"StopwatchMiddleware ended at {currentDateTimeRetriever.Now}. Time elapsed: 0") >
 						LoggerDebugStatementContainer.Statements.IndexOf("TestMiddleware Ended"));
-
-			// clean
-			Bootstrapper
-				.Instance
-				.Dispose();
 		}
 
 		[Fact, Trait("Category", "Integration"), TestPriority(23)]
@@ -232,18 +221,16 @@ namespace BoltOn.Tests.Mediator
 			Assert.True(result.Data);
 			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(f => f == "TestMiddleware Started"));
 			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(f => f == "TestMiddleware Ended"));
-			Assert.Null(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {currentDateTimeRetriever.Get()}"));
-			Assert.Null(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware ended at {currentDateTimeRetriever.Get()}. Time elapsed: 0"));
-
-			// clean
-			Bootstrapper
-				.Instance
-				.Dispose();
+			Assert.Null(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {currentDateTimeRetriever.Now}"));
+			Assert.Null(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware ended at {currentDateTimeRetriever.Now}. Time elapsed: 0"));
 		}
 
 		public void Dispose()
 		{
 			LoggerDebugStatementContainer.Statements.Clear();
+			Bootstrapper
+				.Instance
+				.Dispose();
 		}
 	}
 
@@ -253,7 +240,7 @@ namespace BoltOn.Tests.Mediator
 		{
 			var currentDateTimeRetriever = new Mock<ICurrentDateTimeRetriever>();
 			var currentDateTime = DateTime.Parse("10/27/2018 12:51:59 PM");
-			currentDateTimeRetriever.Setup(s => s.Get()).Returns(currentDateTime);
+			currentDateTimeRetriever.Setup(s => s.Now).Returns(currentDateTime);
 			context.Container.AddTransient((s) => currentDateTimeRetriever.Object);
 
 			var testMiddlewareLogger = new Mock<IBoltOnLogger<TestMiddleware>>();
@@ -265,7 +252,7 @@ namespace BoltOn.Tests.Mediator
 									 .Callback<string>(st => LoggerDebugStatementContainer.Statements.Add(st));
 			context.Container.AddTransient((s) => stopWatchMiddlewareLogger.Object);
 
-			
+
 			if (LoggerDebugStatementContainer.IsClearMiddlewares)
 				context.Container.RemoveAllMiddlewares();
 			context.Container.AddMiddleware<TestMiddleware>();

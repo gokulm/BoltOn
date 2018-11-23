@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using BoltOn.Bootstrapping;
-using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
@@ -10,7 +8,6 @@ namespace BoltOn.Bootstrapping
     {
 		public static IServiceCollection BoltOn(this IServiceCollection serviceCollection, Action<BoltOnOptions> action = null)
 		{
-			Check.Requires(!Bootstrapper.Instance.IsBolted, "Components are already bolted! IoC cannot be configured now");
 			var options = new BoltOnOptions();
 			action?.Invoke(options);
 			Bootstrapper.Instance.BoltOn(serviceCollection, options, Assembly.GetCallingAssembly());
