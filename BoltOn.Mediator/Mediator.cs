@@ -27,10 +27,10 @@ namespace BoltOn.Mediator
 
 		public StandardDtoReponse<TResponse> Get<TResponse>(IRequest<TResponse> request)
 		{
-			return RunMiddleware(request, Handle);
+			return ExecuteMiddlewares(request, Handle);
 		}
 
-		private StandardDtoReponse<TResponse> RunMiddleware<TResponse>(IRequest<TResponse> request,
+		private StandardDtoReponse<TResponse> ExecuteMiddlewares<TResponse>(IRequest<TResponse> request,
 			Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> handle)
 		{
 			_logger.Debug("Running middlewares...");

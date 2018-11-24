@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using BoltOn.Bootstrapping;
 using BoltOn.Logging;
 using BoltOn.Mediator;
 using BoltOn.Tests.Common;
+using BoltOn.UoW;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Moq;
 using Moq.AutoMock;
 using Xunit;
@@ -93,6 +96,45 @@ namespace BoltOn.Tests.Mediator
 			logger.Verify(l => l.Debug("TestRequestSpecificMiddleware Started"), Times.Never);
 			logger.Verify(l => l.Debug("TestRequestSpecificMiddleware Ended"), Times.Never);
 			logger2.Verify(l => l.Debug($"StopwatchMiddleware started at {currentDateTime}"), Times.Once);
+		}
+
+		[Fact]
+		public void Get_MediatorWithCommandRequest_ExecutesUoWMiddlewareAndStartsTransactionsWithDefaultCommandIsolationLevel()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
+			var testHandler = new Mock<TestCommandHandler>();
+			var middleware = new Mock<IMediatorMiddleware>();
+			var logger = new Mock<IBoltOnLogger<UnitOfWorkMiddleware>>();
+			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestCommand, bool>)))
+				.Returns(testHandler.Object);
+			var uowProvider = autoMocker.GetMock<IUnitOfWorkProvider>();
+			var uow = new Mock<IUnitOfWork>();
+			uowProvider.Setup(u => u.Get(It.IsAny<IsolationLevel>(), null)).Returns(uow.Object);
+			var uowOptions = autoMocker.GetMock<IOptions<UnitOfWorkOptions>>();
+			uowOptions.Setup(u => u.Value).Returns(new UnitOfWorkOptions
+			{
+				DefaultCommandIsolationLevel = IsolationLevel.ReadCommitted,
+				DefaultQueryIsolationLevel = IsolationLevel.ReadUncommitted
+			});
+			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>
+			{
+				new UnitOfWorkMiddleware(uowProvider.Object, uowOptions.Object, logger.Object)
+			});
+			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
+			var request = new TestCommand();
+			testHandler.Setup(s => s.Handle(request)).Returns(true);
+
+			// act
+			var result = sut.Get(request);
+
+			// assert 
+			Assert.True(result.IsSuccessful);
+			Assert.True(result.Data);
+			uowProvider.Verify(u => u.Get(IsolationLevel.ReadCommitted, null));
+			logger.Verify(l => l.Debug("Getting isolation level for Command"));
+			logger.Verify(l => l.Debug("Committed UoW"));
 		}
 
 
@@ -266,7 +308,7 @@ namespace BoltOn.Tests.Mediator
 		}
 	}
 
-	public class TestRequest : IRequest<bool>, IEnableUnitOfWorkMiddleware, IEnableStopwatchMiddleware
+	public class TestRequest : IRequest<bool>, IEnableStopwatchMiddleware
 	{
 	}
 

@@ -20,7 +20,8 @@ namespace BoltOn.Mediator
 			_currentDateTimeRetriever = currentDateTimeRetriever;
 		}
 
-		public override StandardDtoReponse<TResponse> Execute<TRequest, TResponse>(IRequest<TResponse> request, Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> next)
+		public override StandardDtoReponse<TResponse> Execute<TRequest, TResponse>(IRequest<TResponse> request, 
+		                                                                           Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> next)
 		{
 			var stopwatch = new Stopwatch();
 			_logger.Debug($"StopwatchMiddleware started at {_currentDateTimeRetriever.Now}");

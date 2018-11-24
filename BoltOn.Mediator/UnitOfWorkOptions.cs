@@ -9,12 +9,5 @@ namespace BoltOn.Mediator
 		public IsolationLevel DefaultCommandIsolationLevel { get; set; }
 		public IsolationLevel DefaultQueryIsolationLevel { get; set; }
 		public TimeSpan? DefaultTransactionTimeout { get; set; }
-
-		public UnitOfWorkOptions()
-		{
-			DefaultIsolationLevel = IsolationLevel.ReadCommitted;
-			DefaultCommandIsolationLevel = IsolationLevel.ReadCommitted;
-			DefaultQueryIsolationLevel = IsolationLevel.ReadUncommitted;
-		}
     }
 }
