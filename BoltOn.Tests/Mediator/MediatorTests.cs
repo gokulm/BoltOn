@@ -104,7 +104,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
-			var testHandler = new Mock<TestCommandHandler>();
+			var testHandler = new Mock<TestHandler>();
 			var middleware = new Mock<IMediatorMiddleware>();
 			var logger = new Mock<IBoltOnLogger<UnitOfWorkMiddleware>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestCommand, bool>)))
@@ -134,7 +134,6 @@ namespace BoltOn.Tests.Mediator
 			logger.Verify(l => l.Debug($"About to begin UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
 			logger.Verify(l => l.Debug("Committed UoW"));
 		}
-
 
 		[Fact]
 		public void Get_RegisteredHandlerThatThrowsException_ReturnsUnsuccessfulResult()
@@ -184,11 +183,11 @@ namespace BoltOn.Tests.Mediator
 									   HANDLER_NOT_FOUND, request), result.Exception.Message);
 		}
 
-		[Fact, Trait("Category", "Integration"), TestPriority(21)]
+		[Fact, Trait("Category", "Integration")]
 		public void Get_BootstrapWithDefaults_InvokesAllTheMiddlewaresAndReturnsSuccessfulResult()
 		{
 			// arrange
-			LoggerDebugStatementContainer.IsClearMiddlewares = false;
+			TestHelper.IsClearMiddlewares = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
@@ -203,18 +202,18 @@ namespace BoltOn.Tests.Mediator
 			// assert 
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data);
-			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d ==
+			Assert.NotNull(TestHelper.Statements.FirstOrDefault(d => d ==
 																				   $"StopwatchMiddleware started at {currentDateTimeRetriever.Now}"));
-			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d ==
+			Assert.NotNull(TestHelper.Statements.FirstOrDefault(d => d ==
 																				   $"StopwatchMiddleware ended at {currentDateTimeRetriever.Now}. Time elapsed: 0"));
-			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == "TestMiddleware Started"));
+			Assert.NotNull(TestHelper.Statements.FirstOrDefault(d => d == "TestMiddleware Started"));
 		}
 
-		[Fact, Trait("Category", "Integration"), TestPriority(22)]
+		[Fact, Trait("Category", "Integration")]
 		public void Get_BootstrapWithCustomMiddlewares_InvokesDefaultAndCustomMiddlewareInOrderAndReturnsSuccessfulResult()
 		{
 			// arrange
-			LoggerDebugStatementContainer.IsClearMiddlewares = false;
+			TestHelper.IsClearMiddlewares = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
@@ -229,45 +228,71 @@ namespace BoltOn.Tests.Mediator
 			// assert 
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data);
-			Assert.True(LoggerDebugStatementContainer.Statements.IndexOf("TestMiddleware Started") > 0);
-			Assert.True(LoggerDebugStatementContainer.Statements.IndexOf("TestMiddleware Ended") > 0);
-			Assert.True(LoggerDebugStatementContainer.Statements.IndexOf("TestRequestSpecificMiddleware Started") == -1);
-			Assert.True(LoggerDebugStatementContainer.Statements.IndexOf($"StopwatchMiddleware started at {currentDateTimeRetriever.Now}") <
-						LoggerDebugStatementContainer.Statements.IndexOf("TestMiddleware Started"));
-			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {currentDateTimeRetriever.Now}"));
-			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware ended at {currentDateTimeRetriever.Now}. Time elapsed: 0"));
-			Assert.True(LoggerDebugStatementContainer.Statements.IndexOf($"StopwatchMiddleware ended at {currentDateTimeRetriever.Now}. Time elapsed: 0") >
-						LoggerDebugStatementContainer.Statements.IndexOf("TestMiddleware Ended"));
+			Assert.True(TestHelper.Statements.IndexOf("TestMiddleware Started") > 0);
+			Assert.True(TestHelper.Statements.IndexOf("TestMiddleware Ended") > 0);
+			Assert.True(TestHelper.Statements.IndexOf("TestRequestSpecificMiddleware Started") == -1);
+			Assert.True(TestHelper.Statements.IndexOf($"StopwatchMiddleware started at {currentDateTimeRetriever.Now}") <
+						TestHelper.Statements.IndexOf("TestMiddleware Started"));
+			Assert.NotNull(TestHelper.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {currentDateTimeRetriever.Now}"));
+			Assert.NotNull(TestHelper.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware ended at {currentDateTimeRetriever.Now}. " +
+																				   "Time elapsed: 0"));
+			Assert.True(TestHelper.Statements.IndexOf($"StopwatchMiddleware ended at {currentDateTimeRetriever.Now}. Time elapsed: 0") >
+						TestHelper.Statements.IndexOf("TestMiddleware Ended"));
 		}
 
-		[Fact, Trait("Category", "Integration"), TestPriority(23)]
+		[Fact, Trait("Category", "Integration")]
 		public void Get_BootstrapWithCustomMiddlewaresAndClear_InvokesOnlyCustomMiddlewareAndReturnsSuccessfulResult()
 		{
 			// arrange
-			LoggerDebugStatementContainer.IsClearMiddlewares = true;
+			TestHelper.IsClearMiddlewares = true;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn();
 			serviceCollection.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.UseBoltOn();
 			var currentDateTimeRetriever = serviceProvider.GetService<ICurrentDateTimeRetriever>();
-			var mediator = serviceProvider.GetService<IMediator>();
+			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = mediator.Get(new TestRequest());
+			var result = sut.Get(new TestRequest());
 
 			// assert 
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data);
-			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(f => f == "TestMiddleware Started"));
-			Assert.NotNull(LoggerDebugStatementContainer.Statements.FirstOrDefault(f => f == "TestMiddleware Ended"));
-			Assert.Null(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {currentDateTimeRetriever.Now}"));
-			Assert.Null(LoggerDebugStatementContainer.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware ended at {currentDateTimeRetriever.Now}. Time elapsed: 0"));
+			Assert.NotNull(TestHelper.Statements.FirstOrDefault(f => f == "TestMiddleware Started"));
+			Assert.NotNull(TestHelper.Statements.FirstOrDefault(f => f == "TestMiddleware Ended"));
+			Assert.Null(TestHelper.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {currentDateTimeRetriever.Now}"));
+			Assert.Null(TestHelper.Statements.FirstOrDefault(d => d == $"StopwatchMiddleware ended at {currentDateTimeRetriever.Now}. " +
+																				"Time elapsed: 0"));
+		}
+
+		[Fact, Trait("Category", "Integration")]
+		public void Get_MediatorWithQueryRequest_ExecutesUoWMiddlewareAndStartsTransactionsWithCustomizedQueryIsolationLevel()
+		{
+			// arrange
+			TestHelper.IsCustomizeIsolationLevel = true;
+			var serviceCollection = new ServiceCollection();
+			serviceCollection
+				.BoltOn()
+				.AddLogging();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.UseBoltOn();
+			var sut = serviceProvider.GetService<IMediator>();
+
+			// act
+			var result = sut.Get(new TestQuery());
+
+			// assert 
+			Assert.True(result.IsSuccessful);
+			Assert.True(result.Data);
+			//uowProvider.Verify(u => u.Get(IsolationLevel.ReadCommitted, TransactionManager.DefaultTimeout));
+			//logger.Verify(l => l.Debug($"About to begin UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
+			//logger.Verify(l => l.Debug("Committed UoW"));
 		}
 
 		public void Dispose()
 		{
-			LoggerDebugStatementContainer.Statements.Clear();
+			TestHelper.Statements.Clear();
 			Bootstrapper
 				.Instance
 				.Dispose();
@@ -285,16 +310,19 @@ namespace BoltOn.Tests.Mediator
 
 			var testMiddlewareLogger = new Mock<IBoltOnLogger<TestMiddleware>>();
 			testMiddlewareLogger.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => LoggerDebugStatementContainer.Statements.Add(st));
+								.Callback<string>(st => TestHelper.Statements.Add(st));
 			context.Container.AddTransient((s) => testMiddlewareLogger.Object);
 			var stopWatchMiddlewareLogger = new Mock<IBoltOnLogger<StopwatchMiddleware>>();
 			stopWatchMiddlewareLogger.Setup(s => s.Debug(It.IsAny<string>()))
-									 .Callback<string>(st => LoggerDebugStatementContainer.Statements.Add(st));
+									 .Callback<string>(st => TestHelper.Statements.Add(st));
 			context.Container.AddTransient((s) => stopWatchMiddlewareLogger.Object);
 
-
-			if (LoggerDebugStatementContainer.IsClearMiddlewares)
+			if (TestHelper.IsClearMiddlewares)
 				context.Container.RemoveAllMiddlewares();
+
+			if (TestHelper.IsCustomizeIsolationLevel)
+				context.Container.AddSingleton<IUnitOfWorkOptionsRetriever, CustomUnitOfWorkOptionsRetriever>();
+
 			context.Container.AddMiddleware<TestMiddleware>();
 		}
 	}
@@ -310,9 +338,20 @@ namespace BoltOn.Tests.Mediator
 	{
 	}
 
-	public class TestHandler : IRequestHandler<TestRequest, bool>
+	public class TestHandler : IRequestHandler<TestRequest, bool>, IRequestHandler<TestCommand, bool>,
+											IRequestHandler<TestQuery, bool>
 	{
 		public virtual bool Handle(TestRequest request)
+		{
+			return true;
+		}
+
+		public virtual bool Handle(TestCommand request)
+		{
+			return true;
+		}
+
+		public virtual bool Handle(TestQuery request)
 		{
 			return true;
 		}
@@ -324,14 +363,6 @@ namespace BoltOn.Tests.Mediator
 
 	public class TestQuery : IQuery<bool>
 	{
-	}
-
-	public class TestCommandHandler : IRequestHandler<TestCommand, bool>
-	{
-		public virtual bool Handle(TestCommand request)
-		{
-			return true;
-		}
 	}
 
 	public class TestMiddleware : IMediatorMiddleware
@@ -385,9 +416,36 @@ namespace BoltOn.Tests.Mediator
 		}
 	}
 
-	public class LoggerDebugStatementContainer
+	public class CustomUnitOfWorkOptionsRetriever : IUnitOfWorkOptionsRetriever
+	{
+		private readonly IBoltOnLogger<UnitOfWorkOptionsRetriever> _logger;
+
+		public CustomUnitOfWorkOptionsRetriever(IBoltOnLogger<UnitOfWorkOptionsRetriever> logger)
+		{
+			_logger = logger;
+		}
+
+		public UnitOfWorkOptions Get<TResponse>(IRequest<TResponse> request)
+		{
+			IsolationLevel isolationLevel;
+			switch (request)
+			{
+				case ICommand<TResponse> c:
+				case IQuery<TResponse> q:
+					_logger.Debug("Getting isolation level for Command");
+					isolationLevel = IsolationLevel.ReadCommitted;
+					break;
+				default:
+					throw new Exception("Request should implement ICommand<> or IQuery<> to enable Unit of Work.");
+			}
+			return new UnitOfWorkOptions { IsolationLevel = isolationLevel };
+		}
+	}
+
+	public class TestHelper
 	{
 		public static List<string> Statements { get; set; } = new List<string>();
 		public static bool IsClearMiddlewares { get; set; }
+		public static bool IsCustomizeIsolationLevel { get; set; }
 	}
 }
