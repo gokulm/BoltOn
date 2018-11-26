@@ -2,6 +2,7 @@
 using BoltOn.Bootstrapping;
 using Microsoft.Extensions.DependencyInjection;
 using System.Transactions;
+using BoltOn.Mediator.Middlewares;
 
 namespace BoltOn.Mediator
 {
@@ -13,7 +14,6 @@ namespace BoltOn.Mediator
 			container.AddTransient<IMediator, Mediator>();
 			RegisterMiddlewares(container);
 			RegisterHandlers(context);
-			Configure(container);
 		}
 
 		private static void RegisterMiddlewares(IServiceCollection container)
@@ -33,16 +33,6 @@ namespace BoltOn.Mediator
 							select new { Interface = i, Implementation = t }).ToList();
 			foreach (var handler in handlers)
 				context.Container.AddTransient(handler.Interface, handler.Implementation);
-		}
-
-		private static void Configure(IServiceCollection container)
-		{
-			container.Configure<UnitOfWorkOptions>(u =>
-			{
-				u.DefaultCommandIsolationLevel = IsolationLevel.ReadCommitted;
-				u.DefaultIsolationLevel = IsolationLevel.ReadCommitted;
-				u.DefaultQueryIsolationLevel = IsolationLevel.ReadUncommitted;
-			});
 		}
 	}
 }

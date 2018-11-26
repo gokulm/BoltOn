@@ -5,11 +5,11 @@ using System.Transactions;
 using BoltOn.Bootstrapping;
 using BoltOn.Logging;
 using BoltOn.Mediator;
+using BoltOn.Mediator.Middlewares;
 using BoltOn.Tests.Common;
 using BoltOn.UoW;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Moq;
 using Moq.AutoMock;
 using Xunit;
@@ -111,19 +111,17 @@ namespace BoltOn.Tests.Mediator
 				.Returns(testHandler.Object);
 			var uowProvider = autoMocker.GetMock<IUnitOfWorkProvider>();
 			var uow = new Mock<IUnitOfWork>();
-			uowProvider.Setup(u => u.Get(It.IsAny<IsolationLevel>(), null)).Returns(uow.Object);
-			var uowOptions = autoMocker.GetMock<IOptions<UnitOfWorkOptions>>();
-			uowOptions.Setup(u => u.Value).Returns(new UnitOfWorkOptions
-			{
-				DefaultCommandIsolationLevel = IsolationLevel.ReadCommitted,
-				DefaultQueryIsolationLevel = IsolationLevel.ReadUncommitted
-			});
+			uowProvider.Setup(u => u.Get(It.IsAny<IsolationLevel>(), It.IsAny<TimeSpan>())).Returns(uow.Object);
+			var uowOptions = autoMocker.GetMock<UnitOfWorkOptions>();
+			uowOptions.Setup(u => u.IsolationLevel).Returns(IsolationLevel.ReadCommitted);
+			var uowOptionsRetriever = autoMocker.GetMock<IUnitOfWorkOptionsRetriever>();
+			var request = new TestCommand();
+			uowOptionsRetriever.Setup(u => u.Get(request)).Returns(uowOptions.Object);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>
 			{
-				new UnitOfWorkMiddleware(uowProvider.Object, uowOptions.Object, logger.Object)
+				new UnitOfWorkMiddleware(logger.Object, uowProvider.Object, uowOptionsRetriever.Object)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
-			var request = new TestCommand();
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
 
 			// act
@@ -132,8 +130,8 @@ namespace BoltOn.Tests.Mediator
 			// assert 
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data);
-			uowProvider.Verify(u => u.Get(IsolationLevel.ReadCommitted, null));
-			logger.Verify(l => l.Debug("Getting isolation level for Command"));
+			uowProvider.Verify(u => u.Get(IsolationLevel.ReadCommitted, TransactionManager.DefaultTimeout));
+			logger.Verify(l => l.Debug($"About to begin UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
 			logger.Verify(l => l.Debug("Committed UoW"));
 		}
 
@@ -314,7 +312,7 @@ namespace BoltOn.Tests.Mediator
 
 	public class TestHandler : IRequestHandler<TestRequest, bool>
 	{
-		public virtual bool Handle(IRequest<bool> request)
+		public virtual bool Handle(TestRequest request)
 		{
 			return true;
 		}
@@ -324,9 +322,13 @@ namespace BoltOn.Tests.Mediator
 	{
 	}
 
-	public class TestCommandHandler : IRequestHandler<TestRequest, bool>
+	public class TestQuery : IQuery<bool>
 	{
-		public virtual bool Handle(IRequest<bool> request)
+	}
+
+	public class TestCommandHandler : IRequestHandler<TestCommand, bool>
+	{
+		public virtual bool Handle(TestCommand request)
 		{
 			return true;
 		}

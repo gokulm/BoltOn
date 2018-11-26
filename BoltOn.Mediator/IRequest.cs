@@ -1,4 +1,6 @@
-﻿namespace BoltOn.Mediator
+﻿using BoltOn.Mediator.Middlewares;
+
+namespace BoltOn.Mediator
 {
     public interface IRequest<out TResponse>
     {

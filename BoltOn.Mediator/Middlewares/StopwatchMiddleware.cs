@@ -3,7 +3,7 @@ using System.Diagnostics;
 using BoltOn.Logging;
 using BoltOn.Utilities;
 
-namespace BoltOn.Mediator
+namespace BoltOn.Mediator.Middlewares
 {
 	public interface IEnableStopwatchMiddleware
 	{

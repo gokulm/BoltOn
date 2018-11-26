@@ -1,6 +1,6 @@
 using System;
 
-namespace BoltOn.Mediator
+namespace BoltOn.Mediator.Middlewares
 {
 	public interface IMediatorMiddleware : IDisposable
 	{

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BoltOn.Logging;
+using BoltOn.Mediator.Middlewares;
 using BoltOn.Utilities;
 
 namespace BoltOn.Mediator
@@ -60,13 +61,15 @@ namespace BoltOn.Mediator
 			var requestType = request.GetType();
 			_logger.Debug($"Resolving handler for request: {requestType}");
 			var genericRequestHandlerType = typeof(IRequestHandler<,>);
-			var interfaceHandlerType =
-				genericRequestHandlerType.MakeGenericType(request.GetType(), typeof(TResponse));
-			// todo (med): try to get rid of dynamic
-			dynamic handler = _serviceProvider.GetService(interfaceHandlerType);
+			var interfaceHandlerType = genericRequestHandlerType.MakeGenericType(request.GetType(), typeof(TResponse));
+			var handler = _serviceProvider.GetService(interfaceHandlerType);
 			Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
 			_logger.Debug($"Resolved handler: {handler.GetType()}");
-			var response = handler.Handle(request);
+			// this is to keep the request objects in the handlers strongly typed and to make one class handle multiple classes
+			// and not inherit baserequesthandler
+			var decorator = (BaseRequestHandlerDecorator<TResponse>)Activator.CreateInstance(typeof(RequestHandlerDecorator<,>)
+			                                                                           .MakeGenericType(requestType, typeof(TResponse)), handler);
+			var response = decorator.Handle(request);
 			return new StandardDtoReponse<TResponse>
 			{
 				Data = response,

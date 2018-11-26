@@ -19,4 +19,7 @@
   <ItemGroup>
     <Compile Remove="MediatorOptions.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Middlewares\" />
+  </ItemGroup>
 </Project>
