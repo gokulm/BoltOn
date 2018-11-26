@@ -295,7 +295,7 @@ namespace BoltOn.Tests.Mediator
 			TestHelper.Statements.Clear();
 			Bootstrapper
 				.Instance
-				.Dispose(); 
+				.Dispose();
 		}
 	}
 
