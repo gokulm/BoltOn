@@ -16,10 +16,10 @@
     <Compile Remove="IoC\IBoltOnContainer.cs" />
     <Compile Remove="Bootstrapping\IBootstrapperRegistrationTask.cs" />
     <Compile Remove="Bootstrapping\IBootstrapperPostRegistrationTask.cs" />
+    <Compile Remove="IoC\BoltOnIoCAssemblyOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Logging\" />
-    <Folder Include="IoC\" />
     <Folder Include="Bootstrapping\" />
     <Folder Include="Utilities\" />
     <Folder Include="UoW\" />

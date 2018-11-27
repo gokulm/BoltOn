@@ -18,6 +18,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="MediatorOptions.cs" />
+    <Compile Remove="MediatorContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Middlewares\" />

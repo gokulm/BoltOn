@@ -16,9 +16,9 @@ namespace BoltOn.Logging
 	{
 		readonly ILogger<TType> _logger;
 
-		public NetStandardLoggerAdapter(ILoggerFactory loggerFactory)
+		public NetStandardLoggerAdapter(ILogger<TType> logger)
 		{
-			_logger = loggerFactory.CreateLogger<TType>();
+			_logger = logger;
 		}
 
 		public void Debug(string message)
