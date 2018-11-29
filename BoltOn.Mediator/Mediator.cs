@@ -9,7 +9,7 @@ namespace BoltOn.Mediator
 {
 	public interface IMediator
 	{
-		StandardDtoReponse<TResponse> Get<TResponse>(IRequest<TResponse> request);
+		MediatorResponse<TResponse> Get<TResponse>(IRequest<TResponse> request) where TResponse : class;
 	}
 
 	public class Mediator : IMediator
@@ -26,13 +26,13 @@ namespace BoltOn.Mediator
 			this._middlewares = middlewares;
 		}
 
-		public StandardDtoReponse<TResponse> Get<TResponse>(IRequest<TResponse> request)
+		public MediatorResponse<TResponse> Get<TResponse>(IRequest<TResponse> request) where TResponse : class
 		{
 			return ExecuteMiddlewares(request, Handle);
 		}
 
-		private StandardDtoReponse<TResponse> ExecuteMiddlewares<TResponse>(IRequest<TResponse> request,
-			Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> handle)
+		private MediatorResponse<TResponse> ExecuteMiddlewares<TResponse>(IRequest<TResponse> request,
+			Func<IRequest<TResponse>, MediatorResponse<TResponse>> handle) where TResponse : class
 		{
 			_logger.Debug("Running middlewares...");
 			var next = _middlewares.Reverse().Aggregate(handle,
@@ -44,7 +44,7 @@ namespace BoltOn.Mediator
 			catch (Exception ex)
 			{
 				_logger.Error(ex);
-				return new StandardDtoReponse<TResponse>
+				return new MediatorResponse<TResponse>
 				{
 					IsSuccessful = false,
 					Exception = ex
@@ -56,7 +56,7 @@ namespace BoltOn.Mediator
 			}
 		}
 
-		private StandardDtoReponse<TResponse> Handle<TResponse>(IRequest<TResponse> request)
+		private MediatorResponse<TResponse> Handle<TResponse>(IRequest<TResponse> request) where TResponse : class
 		{
 			var requestType = request.GetType();
 			_logger.Debug($"Resolving handler for request: {requestType}");
@@ -65,12 +65,12 @@ namespace BoltOn.Mediator
 			var handler = _serviceProvider.GetService(interfaceHandlerType);
 			Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
 			_logger.Debug($"Resolved handler: {handler.GetType()}");
-			// this is to keep the request objects in the handlers strongly typed and to make one class handle multiple classes
+			// this is to keep the request objects in the handlers strongly typed and to keep the handlers implement IRequestHandler
 			// and not inherit baserequesthandler
 			var decorator = (BaseRequestHandlerDecorator<TResponse>)Activator.CreateInstance(typeof(RequestHandlerDecorator<,>)
 			                                                                           .MakeGenericType(requestType, typeof(TResponse)), handler);
 			var response = decorator.Handle(request);
-			return new StandardDtoReponse<TResponse>
+			return new MediatorResponse<TResponse>
 			{
 				Data = response,
 				IsSuccessful = true

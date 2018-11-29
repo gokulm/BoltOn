@@ -4,7 +4,6 @@ using BoltOn.Other;
 
 namespace BoltOn.Context
 {
-
 	public interface IContextRetriever
 	{
 		TContext Get<TContext>(ContextScope contextScope = ContextScope.Request);

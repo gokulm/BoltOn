@@ -6,7 +6,7 @@ namespace BoltOn.Mediator
 {
 	public interface IUnitOfWorkOptionsRetriever
 	{
-		UnitOfWorkOptions Get<TResponse>(IRequest<TResponse> request);
+		UnitOfWorkOptions Get<TResponse>(IRequest<TResponse> request) where TResponse : class;
 	}
 
 	public class UnitOfWorkOptionsRetriever : IUnitOfWorkOptionsRetriever
@@ -18,7 +18,7 @@ namespace BoltOn.Mediator
 			_logger = logger;
 		}
 
-		public UnitOfWorkOptions Get<TResponse>(IRequest<TResponse> request)
+		public UnitOfWorkOptions Get<TResponse>(IRequest<TResponse> request) where TResponse : class
 		{
 			IsolationLevel isolationLevel;
 			switch (request)

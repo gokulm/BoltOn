@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
 {
-
 	public sealed class PreRegistrationTaskContext
 	{
 		private readonly Bootstrapper _bootstrapper;

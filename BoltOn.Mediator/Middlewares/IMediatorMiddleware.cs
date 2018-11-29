@@ -4,8 +4,8 @@ namespace BoltOn.Mediator.Middlewares
 {
 	public interface IMediatorMiddleware : IDisposable
 	{
-		StandardDtoReponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request, Func<IRequest<TResponse>,
-										  StandardDtoReponse<TResponse>> next)
+		MediatorResponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request, Func<IRequest<TResponse>,
+										  MediatorResponse<TResponse>> next) where TResponse : class
 			where TRequest : IRequest<TResponse>;
 	}
 }

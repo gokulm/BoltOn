@@ -2,15 +2,15 @@
 
 namespace BoltOn.Mediator
 {
-    public interface IRequest<out TResponse>
+	public interface IRequest<out TResponse> where TResponse : class
     {
     }
 
-	public interface ICommand<out TResponse> : IRequest<TResponse>, IEnableUnitOfWorkMiddleware
+	public interface ICommand<out TResponse> : IRequest<TResponse>, IEnableUnitOfWorkMiddleware where TResponse : class
 	{	
 	}
 
-	public interface IQuery<out TResponse> : IRequest<TResponse>, IEnableUnitOfWorkMiddleware
+	public interface IQuery<out TResponse> : IRequest<TResponse>, IEnableUnitOfWorkMiddleware where TResponse : class
 	{
 	}
 }

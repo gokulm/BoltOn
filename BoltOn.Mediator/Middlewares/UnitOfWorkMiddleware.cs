@@ -24,8 +24,8 @@ namespace BoltOn.Mediator.Middlewares
 			_unitOfWorkOptionsRetriever = unitOfWorkOptionsRetriever;
 		}
 
-		public override StandardDtoReponse<TResponse> Execute<TRequest, TResponse>(IRequest<TResponse> request,
-																				   Func<IRequest<TResponse>, StandardDtoReponse<TResponse>> next)
+		public override MediatorResponse<TResponse> Execute<TRequest, TResponse>(IRequest<TResponse> request,
+																				   Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)
 		{
 			var unitOfWorkOptions = _unitOfWorkOptionsRetriever.Get(request);
 			_unitOfWork = _unitOfWorkProvider.Get(unitOfWorkOptions.IsolationLevel, unitOfWorkOptions.TransactionTimeout);
