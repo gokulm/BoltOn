@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Tests", "BoltOn.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Mediator", "BoltOn.Mediator\BoltOn.Mediator.csproj", "{AF354657-8CD8-4F14-A795-B269C28AB35D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestHistory", "src\testhistory\TestHistory.csproj", "{4CF8A4B6-C340-4C8A-9704-75C8371668C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{AF354657-8CD8-4F14-A795-B269C28AB35D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF354657-8CD8-4F14-A795-B269C28AB35D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF354657-8CD8-4F14-A795-B269C28AB35D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CF8A4B6-C340-4C8A-9704-75C8371668C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CF8A4B6-C340-4C8A-9704-75C8371668C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CF8A4B6-C340-4C8A-9704-75C8371668C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CF8A4B6-C340-4C8A-9704-75C8371668C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
