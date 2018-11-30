@@ -83,7 +83,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact]
-		public void BoltOn_WithoutLogging_ThrowsException()
+		public void BoltOn_UseBoltOnWithoutLogging_ThrowsException()
 		{
 			// arrange	
 			var serviceCollection = new ServiceCollection();

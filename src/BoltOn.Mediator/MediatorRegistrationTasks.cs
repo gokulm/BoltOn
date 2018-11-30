@@ -11,7 +11,7 @@ namespace BoltOn.Mediator
 		{
 			var container = context.Container;
 			container.AddTransient<IMediator, Mediator>();
-			container.AddSingleton<IUnitOfWorkOptionsRetriever, UnitOfWorkOptionsRetriever>();
+			container.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
 			RegisterMiddlewares(container);
 			RegisterHandlers(context);
 		}

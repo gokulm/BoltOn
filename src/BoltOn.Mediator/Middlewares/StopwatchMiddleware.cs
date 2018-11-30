@@ -12,21 +12,21 @@ namespace BoltOn.Mediator.Middlewares
 	public class StopwatchMiddleware : BaseRequestSpecificMiddleware<IEnableStopwatchMiddleware>
     {
         private readonly IBoltOnLogger<StopwatchMiddleware> _logger;
-		private readonly ICurrentDateTimeRetriever _currentDateTimeRetriever;
+		private readonly IBoltOnClock _boltOnClock;
 
-		public StopwatchMiddleware(IBoltOnLogger<StopwatchMiddleware> logger, ICurrentDateTimeRetriever currentDateTimeRetriever)
+		public StopwatchMiddleware(IBoltOnLogger<StopwatchMiddleware> logger, IBoltOnClock boltOnClock)
         {
             _logger = logger;
-			_currentDateTimeRetriever = currentDateTimeRetriever;
+			_boltOnClock = boltOnClock;
 		}
 
 		public override MediatorResponse<TResponse> Execute<TRequest, TResponse>(IRequest<TResponse> request, 
 		                                                                           Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)
 		{
 			var stopwatch = new Stopwatch();
-			_logger.Debug($"StopwatchMiddleware started at {_currentDateTimeRetriever.Now}");
+			_logger.Debug($"StopwatchMiddleware started at {_boltOnClock.Now}");
 			var response = next.Invoke(request);
-			_logger.Debug($"StopwatchMiddleware ended at {_currentDateTimeRetriever.Now}. Time elapsed: {stopwatch.ElapsedMilliseconds}");
+			_logger.Debug($"StopwatchMiddleware ended at {_boltOnClock.Now}. Time elapsed: {stopwatch.ElapsedMilliseconds}");
 			return response;
 		}
 

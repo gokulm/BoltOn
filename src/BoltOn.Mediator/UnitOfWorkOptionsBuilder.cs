@@ -4,16 +4,16 @@ using BoltOn.Logging;
 
 namespace BoltOn.Mediator
 {
-	public interface IUnitOfWorkOptionsRetriever
+	public interface IUnitOfWorkOptionsBuilder
 	{
 		UnitOfWorkOptions Get<TResponse>(IRequest<TResponse> request) where TResponse : class;
 	}
 
-	public class UnitOfWorkOptionsRetriever : IUnitOfWorkOptionsRetriever
+	public class UnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
 	{
-		private readonly IBoltOnLogger<UnitOfWorkOptionsRetriever> _logger;
+		private readonly IBoltOnLogger<UnitOfWorkOptionsBuilder> _logger;
 
-		public UnitOfWorkOptionsRetriever(IBoltOnLogger<UnitOfWorkOptionsRetriever> logger)
+		public UnitOfWorkOptionsBuilder(IBoltOnLogger<UnitOfWorkOptionsBuilder> logger)
 		{
 			_logger = logger;
 		}

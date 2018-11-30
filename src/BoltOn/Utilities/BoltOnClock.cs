@@ -1,13 +1,13 @@
 ﻿using System;
 namespace BoltOn.Utilities
 {
-	public interface ICurrentDateTimeRetriever
+	public interface IBoltOnClock
 	{
 		DateTime Now { get; }
 		DateTimeOffset UtcNow { get; }
 	}
 
-    public class CurrentDateTimeRetriever : ICurrentDateTimeRetriever
+    public class BoltOnClock : IBoltOnClock
     {
 		public DateTime Now => DateTime.Now;
 

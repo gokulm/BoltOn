@@ -6,7 +6,6 @@ using BoltOn.Bootstrapping;
 using BoltOn.Logging;
 using BoltOn.Mediator;
 using BoltOn.Mediator.Middlewares;
-using BoltOn.Tests.Common;
 using BoltOn.UoW;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,13 +75,13 @@ namespace BoltOn.Tests.Mediator
 			var middleware = new Mock<IMediatorMiddleware>();
 			var logger = new Mock<IBoltOnLogger<TestMiddleware>>();
 			var logger2 = new Mock<IBoltOnLogger<StopwatchMiddleware>>();
-			var currentDateTimeRetriever = new Mock<ICurrentDateTimeRetriever>();
+			var boltOnClock = new Mock<IBoltOnClock>();
 			var currentDateTime = DateTime.Now;
-			currentDateTimeRetriever.Setup(s => s.Now).Returns(currentDateTime);
+			boltOnClock.Setup(s => s.Now).Returns(currentDateTime);
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, StandardBooleanResponse>)))
 				.Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware> { new TestRequestSpecificMiddleware(logger.Object),
-				new StopwatchMiddleware(logger2.Object, currentDateTimeRetriever.Object) });
+				new StopwatchMiddleware(logger2.Object, boltOnClock.Object) });
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Returns(new StandardBooleanResponse { IsSuccessful = true });
@@ -114,12 +113,12 @@ namespace BoltOn.Tests.Mediator
 			uowProvider.Setup(u => u.Get(It.IsAny<IsolationLevel>(), It.IsAny<TimeSpan>())).Returns(uow.Object);
 			var uowOptions = autoMocker.GetMock<UnitOfWorkOptions>();
 			uowOptions.Setup(u => u.IsolationLevel).Returns(IsolationLevel.ReadCommitted);
-			var uowOptionsRetriever = autoMocker.GetMock<IUnitOfWorkOptionsRetriever>();
+			var uowOptionsBuilder = autoMocker.GetMock<IUnitOfWorkOptionsBuilder>();
 			var request = new TestCommand();
-			uowOptionsRetriever.Setup(u => u.Get(request)).Returns(uowOptions.Object);
+			uowOptionsBuilder.Setup(u => u.Get(request)).Returns(uowOptions.Object);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>
 			{
-				new UnitOfWorkMiddleware(logger.Object, uowProvider.Object, uowOptionsRetriever.Object)
+				new UnitOfWorkMiddleware(logger.Object, uowProvider.Object, uowOptionsBuilder.Object)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
 			testHandler.Setup(s => s.Handle(request)).Returns(new StandardBooleanResponse { IsSuccessful = true });
@@ -195,7 +194,7 @@ namespace BoltOn.Tests.Mediator
 			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.UseBoltOn();
-			var currentDateTimeRetriever = serviceProvider.GetService<ICurrentDateTimeRetriever>();
+			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
 			var mediator = serviceProvider.GetService<IMediator>();
 
 			// act
@@ -205,9 +204,9 @@ namespace BoltOn.Tests.Mediator
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data.IsSuccessful);
 			Assert.NotNull(TestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchMiddleware started at {currentDateTimeRetriever.Now}"));
+																				   $"StopwatchMiddleware started at {boltOnClock.Now}"));
 			Assert.NotNull(TestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchMiddleware ended at {currentDateTimeRetriever.Now}. Time elapsed: 0"));
+																				   $"StopwatchMiddleware ended at {boltOnClock.Now}. Time elapsed: 0"));
 			Assert.NotNull(TestHelper.LoggerStatements.FirstOrDefault(d => d == "TestMiddleware Started"));
 		}
 
@@ -221,7 +220,7 @@ namespace BoltOn.Tests.Mediator
 			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.UseBoltOn();
-			var currentDateTimeRetriever = serviceProvider.GetService<ICurrentDateTimeRetriever>();
+			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
 			var mediator = serviceProvider.GetService<IMediator>();
 
 			// act
@@ -233,12 +232,12 @@ namespace BoltOn.Tests.Mediator
 			Assert.True(TestHelper.LoggerStatements.IndexOf("TestMiddleware Started") > 0);
 			Assert.True(TestHelper.LoggerStatements.IndexOf("TestMiddleware Ended") > 0);
 			Assert.True(TestHelper.LoggerStatements.IndexOf("TestRequestSpecificMiddleware Started") == -1);
-			Assert.True(TestHelper.LoggerStatements.IndexOf($"StopwatchMiddleware started at {currentDateTimeRetriever.Now}") <
+			Assert.True(TestHelper.LoggerStatements.IndexOf($"StopwatchMiddleware started at {boltOnClock.Now}") <
 						TestHelper.LoggerStatements.IndexOf("TestMiddleware Started"));
-			Assert.NotNull(TestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {currentDateTimeRetriever.Now}"));
-			Assert.NotNull(TestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchMiddleware ended at {currentDateTimeRetriever.Now}. " +
+			Assert.NotNull(TestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {boltOnClock.Now}"));
+			Assert.NotNull(TestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchMiddleware ended at {boltOnClock.Now}. " +
 																				   "Time elapsed: 0"));
-			Assert.True(TestHelper.LoggerStatements.IndexOf($"StopwatchMiddleware ended at {currentDateTimeRetriever.Now}. Time elapsed: 0") >
+			Assert.True(TestHelper.LoggerStatements.IndexOf($"StopwatchMiddleware ended at {boltOnClock.Now}. Time elapsed: 0") >
 						TestHelper.LoggerStatements.IndexOf("TestMiddleware Ended"));
 		}
 
@@ -252,7 +251,7 @@ namespace BoltOn.Tests.Mediator
 			serviceCollection.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.UseBoltOn();
-			var currentDateTimeRetriever = serviceProvider.GetService<ICurrentDateTimeRetriever>();
+			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
 			var sut = serviceProvider.GetService<IMediator>();
 			var testMiddleware = serviceProvider.GetService<TestMiddleware>();
 
@@ -264,8 +263,8 @@ namespace BoltOn.Tests.Mediator
 			Assert.True(result.Data.IsSuccessful);
 			Assert.NotNull(TestHelper.LoggerStatements.FirstOrDefault(f => f == "TestMiddleware Started"));
 			Assert.NotNull(TestHelper.LoggerStatements.FirstOrDefault(f => f == "TestMiddleware Ended"));
-			Assert.Null(TestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {currentDateTimeRetriever.Now}"));
-			Assert.Null(TestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchMiddleware ended at {currentDateTimeRetriever.Now}. " +
+			Assert.Null(TestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {boltOnClock.Now}"));
+			Assert.Null(TestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchMiddleware ended at {boltOnClock.Now}. " +
 																				"Time elapsed: 0"));
 		}
 
@@ -326,10 +325,10 @@ namespace BoltOn.Tests.Mediator
 	{
 		public void Run(RegistrationTaskContext context)
 		{
-			var currentDateTimeRetriever = new Mock<ICurrentDateTimeRetriever>();
+			var boltOnClock = new Mock<IBoltOnClock>();
 			var currentDateTime = DateTime.Parse("10/27/2018 12:51:59 PM");
-			currentDateTimeRetriever.Setup(s => s.Now).Returns(currentDateTime);
-			context.Container.AddTransient((s) => currentDateTimeRetriever.Object);
+			boltOnClock.Setup(s => s.Now).Returns(currentDateTime);
+			context.Container.AddTransient((s) => boltOnClock.Object);
 
 			var testMiddlewareLogger = new Mock<IBoltOnLogger<TestMiddleware>>();
 			testMiddlewareLogger.Setup(s => s.Debug(It.IsAny<string>()))
@@ -341,21 +340,21 @@ namespace BoltOn.Tests.Mediator
 									 .Callback<string>(st => TestHelper.LoggerStatements.Add(st));
 			context.Container.AddTransient((s) => stopWatchMiddlewareLogger.Object);
 
-			var customUoWOptionRetrieverLogger = new Mock<IBoltOnLogger<CustomUnitOfWorkOptionsRetriever>>();
-			customUoWOptionRetrieverLogger.Setup(s => s.Debug(It.IsAny<string>()))
+			var customUoWOptionsBuilder = new Mock<IBoltOnLogger<CustomUnitOfWorkOptionsBuilder>>();
+			customUoWOptionsBuilder.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => TestHelper.LoggerStatements.Add(st));
-			context.Container.AddTransient((s) => customUoWOptionRetrieverLogger.Object);
+			context.Container.AddTransient((s) => customUoWOptionsBuilder.Object);
 
-			var uowOptionsRetrieverLogger = new Mock<IBoltOnLogger<UnitOfWorkOptionsRetriever>>();
-			uowOptionsRetrieverLogger.Setup(s => s.Debug(It.IsAny<string>()))
+			var uowOptionsBuilderLogger = new Mock<IBoltOnLogger<UnitOfWorkOptionsBuilder>>();
+			uowOptionsBuilderLogger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => TestHelper.LoggerStatements.Add(st));
-			context.Container.AddTransient((s) => uowOptionsRetrieverLogger.Object);
+			context.Container.AddTransient((s) => uowOptionsBuilderLogger.Object);
 
 			if (TestHelper.IsClearMiddlewares)
 				context.Container.RemoveAllMiddlewares();
 
 			if (TestHelper.IsCustomizeIsolationLevel)
-				context.Container.AddSingleton<IUnitOfWorkOptionsRetriever, CustomUnitOfWorkOptionsRetriever>();
+				context.Container.AddSingleton<IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOptionsBuilder>();
 
 			context.Container.AddMiddleware<TestMiddleware>();
 		}
@@ -452,11 +451,11 @@ namespace BoltOn.Tests.Mediator
 		}
 	}
 
-	public class CustomUnitOfWorkOptionsRetriever : IUnitOfWorkOptionsRetriever
+	public class CustomUnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
 	{
-		private readonly IBoltOnLogger<CustomUnitOfWorkOptionsRetriever> _logger;
+		private readonly IBoltOnLogger<CustomUnitOfWorkOptionsBuilder> _logger;
 
-		public CustomUnitOfWorkOptionsRetriever(IBoltOnLogger<CustomUnitOfWorkOptionsRetriever> logger)
+		public CustomUnitOfWorkOptionsBuilder(IBoltOnLogger<CustomUnitOfWorkOptionsBuilder> logger)
 		{
 			_logger = logger;
 		}
