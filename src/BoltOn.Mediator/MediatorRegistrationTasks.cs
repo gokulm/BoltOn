@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using BoltOn.Bootstrapping;
 using Microsoft.Extensions.DependencyInjection;
-using System.Transactions;
 using BoltOn.Mediator.Middlewares;
 
 namespace BoltOn.Mediator
