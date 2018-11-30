@@ -82,6 +82,22 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.NotNull(ex);
 		}
 
+		[Fact]
+		public void BoltOn_WithoutLogging_ThrowsException()
+		{
+			// arrange	
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+
+			// act 
+			var ex = Record.Exception(() => serviceProvider.UseBoltOn());
+
+			// assert
+			Assert.NotNull(ex);
+			Assert.Equal("Add logging to the service collection", ex.Message);
+		}
+
 		[Fact, TestPriority(4)]
 		public void BoltOn_ConcreteClassWithoutRegistrationButResolvableDependencies_ReturnsInstance()
 		{
@@ -206,6 +222,7 @@ namespace BoltOn.Tests.Bootstrapping
 			var serviceCollection = new ServiceCollection();
 
 			// act 
+			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.UseBoltOn();

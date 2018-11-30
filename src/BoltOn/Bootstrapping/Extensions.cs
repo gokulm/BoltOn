@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Reflection;
+using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace BoltOn.Bootstrapping
 {
@@ -16,6 +18,8 @@ namespace BoltOn.Bootstrapping
 
 		public static void UseBoltOn(this IServiceProvider serviceProvider)
 		{
+			var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+			Check.Requires(loggerFactory != null, "Add logging to the service collection");
 			Bootstrapper.Instance.RunPostRegistrationTasks(serviceProvider);
 		}
 	}
