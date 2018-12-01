@@ -196,7 +196,7 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.Throws<Exception>(() => serviceCollection.BoltOn());
 		}
 
-		[Fact]
+		[Fact, TestPriority(10)]
 		public void BoltOn_BoltOn_ExecutesPreAndRegistrationTasksInOrderAndNotPostRegistrationTask()
 		{
 			// arrange
@@ -215,10 +215,11 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.True(preRegistrationTaskIndex < registrationTaskIndex);
 		}
 
-		[Fact]
+		[Fact, TestPriority(11)]
 		public void BoltOn_BoltOnAndBoltOn_ExecutesAllRegistrationTasksInOrder()
 		{
 			// arrange
+			BootstrapperRegistrationTaskTester.Tasks.Clear();
 			var serviceCollection = new ServiceCollection();
 
 			// act 
