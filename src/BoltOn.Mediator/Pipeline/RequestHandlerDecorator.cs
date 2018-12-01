@@ -1,4 +1,4 @@
-﻿namespace BoltOn.Mediator
+﻿namespace BoltOn.Mediator.Pipeline
 {
 	internal abstract class BaseRequestHandlerDecorator<TResponse> where TResponse : class
 	{

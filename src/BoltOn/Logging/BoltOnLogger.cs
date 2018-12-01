@@ -21,27 +21,27 @@ namespace BoltOn.Logging
 			_logger = logger;
 		}
 
-		public void Debug(string message)
+		public virtual void Debug(string message)
 		{
 			_logger.LogDebug(message);
 		}
 
-		public void Info(string message)
+		public virtual void Info(string message)
 		{
 			_logger.LogInformation(message);
 		}
 
-		public void Warn(string message)
+		public virtual void Warn(string message)
 		{
 			_logger.LogWarning(message);
 		}
 
-		public void Error(string message)
+		public virtual void Error(string message)
 		{
 			_logger.LogError(message);
 		}
 
-		public void Error(Exception exception)
+		public virtual void Error(Exception exception)
 		{
 			_logger.LogError(null, exception);
 		}

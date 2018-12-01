@@ -2,6 +2,8 @@
 using BoltOn.Bootstrapping;
 using Microsoft.Extensions.DependencyInjection;
 using BoltOn.Mediator.Middlewares;
+using BoltOn.Mediator.Pipeline;
+using BoltOn.Mediator.UoW;
 
 namespace BoltOn.Mediator
 {
@@ -10,7 +12,7 @@ namespace BoltOn.Mediator
 		public void Run(RegistrationTaskContext context)
 		{
 			var container = context.Container;
-			container.AddTransient<IMediator, Mediator>();
+			container.AddTransient<IMediator, Pipeline.Mediator>();
 			container.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
 			RegisterMiddlewares(container);
 			RegisterHandlers(context);

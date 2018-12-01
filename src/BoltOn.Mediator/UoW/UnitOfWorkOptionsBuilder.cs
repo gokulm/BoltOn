@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Transactions;
 using BoltOn.Logging;
+using BoltOn.Mediator.Pipeline;
 
-namespace BoltOn.Mediator
+namespace BoltOn.Mediator.UoW
 {
 	public interface IUnitOfWorkOptionsBuilder
 	{

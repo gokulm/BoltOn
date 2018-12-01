@@ -6,6 +6,8 @@ using BoltOn.Bootstrapping;
 using BoltOn.Logging;
 using BoltOn.Mediator;
 using BoltOn.Mediator.Middlewares;
+using BoltOn.Mediator.Pipeline;
+using BoltOn.Mediator.UoW;
 using BoltOn.UoW;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +29,7 @@ namespace BoltOn.Tests.Mediator
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, StandardBooleanResponse>)))
 						  .Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>());
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Returns(new StandardBooleanResponse { IsSuccessful = true});
 
@@ -51,7 +53,7 @@ namespace BoltOn.Tests.Mediator
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, StandardBooleanResponse>)))
 						  .Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>() { new TestMiddleware(logger.Object) });
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Returns(new StandardBooleanResponse { IsSuccessful = true });
 
@@ -82,7 +84,7 @@ namespace BoltOn.Tests.Mediator
 				.Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware> { new TestRequestSpecificMiddleware(logger.Object),
 				new StopwatchMiddleware(logger2.Object, boltOnClock.Object) });
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Returns(new StandardBooleanResponse { IsSuccessful = true });
 
@@ -120,7 +122,7 @@ namespace BoltOn.Tests.Mediator
 			{
 				new UnitOfWorkMiddleware(logger.Object, uowProvider.Object, uowOptionsBuilder.Object)
 			});
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			testHandler.Setup(s => s.Handle(request)).Returns(new StandardBooleanResponse { IsSuccessful = true });
 
 			// act
@@ -146,7 +148,7 @@ namespace BoltOn.Tests.Mediator
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, StandardBooleanResponse>)))
 						   .Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>());
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Throws(new Exception("handler failed"));
 
@@ -170,7 +172,7 @@ namespace BoltOn.Tests.Mediator
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, StandardBooleanResponse>)))
 						  .Returns(null);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>());
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
 
 			// act

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using BoltOn.Logging;
+using BoltOn.Mediator.Pipeline;
 using BoltOn.Utilities;
 
 namespace BoltOn.Mediator.Middlewares

@@ -1,6 +1,8 @@
 ﻿using System;
 using BoltOn.UoW;
 using BoltOn.Logging;
+using BoltOn.Mediator.Pipeline;
+using BoltOn.Mediator.UoW;
 
 namespace BoltOn.Mediator.Middlewares
 {

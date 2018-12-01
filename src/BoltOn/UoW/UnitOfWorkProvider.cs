@@ -9,15 +9,15 @@ namespace BoltOn.UoW
 		IUnitOfWork Get(IsolationLevel isolationLevel, TimeSpan? transactionTimeOut = null);
 	}
 
-	public class UnitOfWorkProvider : IUnitOfWorkProvider
+	public sealed class UnitOfWorkProvider : IUnitOfWorkProvider
 	{
 		private readonly IBoltOnLogger<UnitOfWorkProvider> _logger;
 		private readonly IBoltOnLoggerFactory _loggerFactory;
 		private IUnitOfWork _unitOfWork;
 
-		public UnitOfWorkProvider(IBoltOnLogger<UnitOfWorkProvider> boltOnLogger, IBoltOnLoggerFactory loggerFactory)
+		public UnitOfWorkProvider(IBoltOnLoggerFactory loggerFactory)
 		{
-			_logger = boltOnLogger;
+			_logger = loggerFactory.Create<UnitOfWorkProvider>();
 			_loggerFactory = loggerFactory;
 		}
 

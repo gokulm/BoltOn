@@ -1,4 +1,5 @@
 ﻿using System;
+using BoltOn.Mediator.Pipeline;
 
 namespace BoltOn.Mediator.Middlewares
 {

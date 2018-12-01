@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace BoltOn.Bootstrapping
 {
-	public class BoltOnOptions
+	public sealed class BoltOnOptions
 	{
 		private List<Assembly> _assembliesToBeExcluded;
 		private List<Assembly> _assembliesToBeIncluded;

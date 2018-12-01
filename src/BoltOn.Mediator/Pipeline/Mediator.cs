@@ -5,7 +5,7 @@ using BoltOn.Logging;
 using BoltOn.Mediator.Middlewares;
 using BoltOn.Utilities;
 
-namespace BoltOn.Mediator
+namespace BoltOn.Mediator.Pipeline
 {
 	public interface IMediator
 	{

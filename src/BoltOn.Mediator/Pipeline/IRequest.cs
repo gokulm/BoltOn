@@ -1,6 +1,6 @@
 ﻿using BoltOn.Mediator.Middlewares;
 
-namespace BoltOn.Mediator
+namespace BoltOn.Mediator.Pipeline
 {
 	public interface IRequest<out TResponse> where TResponse : class
     {

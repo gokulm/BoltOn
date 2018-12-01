@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BoltOn.Mediator
+namespace BoltOn.Mediator.Pipeline
 {
 	public class MediatorResponse<TResponse>
 	{

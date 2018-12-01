@@ -12,7 +12,7 @@ namespace BoltOn.UoW
 	}
 
 	[ExcludeFromRegistration]
-	public class UnitOfWork : IUnitOfWork
+	public sealed class UnitOfWork : IUnitOfWork
 	{
 		private TransactionScope _transactionScope;
 		private bool _isStarted;

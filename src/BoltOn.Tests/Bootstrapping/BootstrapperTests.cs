@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BoltOn.Bootstrapping;
+using BoltOn.Other;
 using BoltOn.Tests.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -216,7 +217,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact, TestPriority(11)]
-		public void BoltOn_BoltOnAndBoltOn_ExecutesAllRegistrationTasksInOrder()
+		public void BoltOn_BoltOnAndUseBoltOn_ExecutesAllRegistrationTasksInOrder()
 		{
 			// arrange
 			BootstrapperRegistrationTaskTester.Tasks.Clear();
@@ -239,6 +240,24 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.True(registrationTaskIndex < postRegistrationTaskIndex);
 		}
 
+		[Fact, TestPriority(12)]
+		public void BoltOn_BoltOnAndUseBoltOnWithExcludedFromRegistration_ReturnsNull()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+
+			// act 
+			serviceCollection.AddLogging();
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.UseBoltOn();
+			var test = serviceProvider.GetService<ITestExcludeRegistrationService>();
+
+			// assert
+			Assert.Null(test);
+
+		}
+
 		public void Dispose()
 		{
 			Bootstrapper
@@ -254,6 +273,20 @@ namespace BoltOn.Tests.Bootstrapping
 	}
 
 	public class TestService : ITestService
+	{
+		public string GetName()
+		{
+			return "test";
+		}
+	}
+
+	public interface ITestExcludeRegistrationService
+	{
+		string GetName();
+	}
+
+	[ExcludeFromRegistration]
+	public class TestExcludeRegistrationService : ITestExcludeRegistrationService
 	{
 		public string GetName()
 		{
