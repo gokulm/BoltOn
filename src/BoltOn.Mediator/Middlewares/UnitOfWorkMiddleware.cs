@@ -29,8 +29,8 @@ namespace BoltOn.Mediator.Middlewares
 		public override MediatorResponse<TResponse> Execute<TRequest, TResponse>(IRequest<TResponse> request,
 																				   Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)
 		{
-			var unitOfWorkOptions = _uowOptionsBuilder.Get(request);
-			_unitOfWork = _unitOfWorkProvider.Get(unitOfWorkOptions.IsolationLevel, unitOfWorkOptions.TransactionTimeout);
+			var unitOfWorkOptions = _uowOptionsBuilder.Build(request);
+			_unitOfWork = _unitOfWorkProvider.Get(unitOfWorkOptions);
 			_logger.Debug($"About to begin UoW with IsolationLevel: {unitOfWorkOptions.IsolationLevel.ToString()}");
 			_unitOfWork.Begin();
 			var response = next.Invoke(request);

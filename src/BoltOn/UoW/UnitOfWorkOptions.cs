@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Transactions;
 
-namespace BoltOn.Mediator.UoW
+namespace BoltOn.UoW
 {
 	public class UnitOfWorkOptions
 	{

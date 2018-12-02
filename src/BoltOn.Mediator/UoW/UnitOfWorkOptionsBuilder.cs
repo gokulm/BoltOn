@@ -2,12 +2,13 @@
 using System.Transactions;
 using BoltOn.Logging;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.UoW;
 
 namespace BoltOn.Mediator.UoW
 {
 	public interface IUnitOfWorkOptionsBuilder
 	{
-		UnitOfWorkOptions Get<TResponse>(IRequest<TResponse> request) where TResponse : class;
+		UnitOfWorkOptions Build<TResponse>(IRequest<TResponse> request) where TResponse : class;
 	}
 
 	public class UnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
@@ -19,7 +20,7 @@ namespace BoltOn.Mediator.UoW
 			_logger = logger;
 		}
 
-		public UnitOfWorkOptions Get<TResponse>(IRequest<TResponse> request) where TResponse : class
+		public UnitOfWorkOptions Build<TResponse>(IRequest<TResponse> request) where TResponse : class
 		{
 			IsolationLevel isolationLevel;
 			switch (request)

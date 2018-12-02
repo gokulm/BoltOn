@@ -1,12 +1,10 @@
-﻿using System;
-using System.Transactions;
-using BoltOn.Logging;
+﻿using BoltOn.Logging;
 
 namespace BoltOn.UoW
 {
 	public interface IUnitOfWorkProvider
 	{
-		IUnitOfWork Get(IsolationLevel isolationLevel, TimeSpan? transactionTimeOut = null);
+		IUnitOfWork Get(UnitOfWorkOptions unitOfWorkOptions);
 	}
 
 	public sealed class UnitOfWorkProvider : IUnitOfWorkProvider
@@ -21,17 +19,11 @@ namespace BoltOn.UoW
 			_loggerFactory = loggerFactory;
 		}
 
-		public IUnitOfWork Get(IsolationLevel isolationLevel, TimeSpan? transactionTimeOut = null)
+		public IUnitOfWork Get(UnitOfWorkOptions unitOfWorkOptions)
 		{
-			if (_unitOfWork == null)
-			{
-				var timeOut = transactionTimeOut ?? TransactionManager.DefaultTimeout;
-				_logger.Debug($"Instantiating new UoW. IsolationLevel: {isolationLevel} " +
-				              $"TransactionTimeOut: {timeOut}");
-				_unitOfWork = new UnitOfWork(_loggerFactory, isolationLevel, timeOut);
-				return _unitOfWork;
-			}
-			_logger.Debug("Returning existing UoW");
+			_logger.Debug($"Instantiating new UoW. IsolationLevel: {unitOfWorkOptions.IsolationLevel} " +
+						  $"TransactionTimeOut: {unitOfWorkOptions.TransactionTimeout}");
+			_unitOfWork = new UnitOfWork(_loggerFactory, unitOfWorkOptions.IsolationLevel, unitOfWorkOptions.TransactionTimeout);
 			return _unitOfWork;
 		}
 	}

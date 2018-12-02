@@ -31,7 +31,7 @@ namespace BoltOn.Tests.Mediator
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>());
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
-			testHandler.Setup(s => s.Handle(request)).Returns(new StandardBooleanResponse { IsSuccessful = true});
+			testHandler.Setup(s => s.Handle(request)).Returns(new StandardBooleanResponse { IsSuccessful = true });
 
 			// act
 			var result = sut.Get(request);
@@ -112,12 +112,12 @@ namespace BoltOn.Tests.Mediator
 				.Returns(testHandler.Object);
 			var uowProvider = autoMocker.GetMock<IUnitOfWorkProvider>();
 			var uow = new Mock<IUnitOfWork>();
-			uowProvider.Setup(u => u.Get(It.IsAny<IsolationLevel>(), It.IsAny<TimeSpan>())).Returns(uow.Object);
+			uowProvider.Setup(u => u.Get(It.IsAny<UnitOfWorkOptions>())).Returns(uow.Object);
 			var uowOptions = autoMocker.GetMock<UnitOfWorkOptions>();
 			uowOptions.Setup(u => u.IsolationLevel).Returns(IsolationLevel.ReadCommitted);
 			var uowOptionsBuilder = autoMocker.GetMock<IUnitOfWorkOptionsBuilder>();
 			var request = new TestCommand();
-			uowOptionsBuilder.Setup(u => u.Get(request)).Returns(uowOptions.Object);
+			uowOptionsBuilder.Setup(u => u.Build(request)).Returns(uowOptions.Object);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>
 			{
 				new UnitOfWorkMiddleware(logger.Object, uowProvider.Object, uowOptionsBuilder.Object)
@@ -131,7 +131,7 @@ namespace BoltOn.Tests.Mediator
 			// assert 
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data.IsSuccessful);
-			uowProvider.Verify(u => u.Get(IsolationLevel.ReadCommitted, TransactionManager.DefaultTimeout));
+			uowProvider.Verify(u => u.Get(uowOptions.Object));
 			uow.Verify(u => u.Begin());
 			uow.Verify(u => u.Commit());
 			logger.Verify(l => l.Debug($"About to begin UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
@@ -462,7 +462,7 @@ namespace BoltOn.Tests.Mediator
 			_logger = logger;
 		}
 
-		public UnitOfWorkOptions Get<TResponse>(IRequest<TResponse> request) where TResponse : class
+		public UnitOfWorkOptions Build<TResponse>(IRequest<TResponse> request) where TResponse : class
 		{
 			IsolationLevel isolationLevel;
 			switch (request)
