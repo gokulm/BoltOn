@@ -7,7 +7,6 @@ namespace BoltOn.UoW
 {
 	public interface IUnitOfWork : IDisposable
 	{
-		void Begin();
 		void Commit();
 	}
 
@@ -15,41 +14,24 @@ namespace BoltOn.UoW
 	public sealed class UnitOfWork : IUnitOfWork
 	{
 		private TransactionScope _transactionScope;
-		private bool _isStarted;
 		private readonly IBoltOnLogger<UnitOfWork> _logger;
-		private readonly IsolationLevel _isolationLevel;
-		private readonly TimeSpan _transactionTimeOut;
+		private readonly UnitOfWorkOptions _unitOfWorkOptions;
 
-		internal UnitOfWork(IBoltOnLoggerFactory loggerFactory, IsolationLevel isolationLevel, TimeSpan transactionTimeOut)
+		internal UnitOfWork(IBoltOnLoggerFactory loggerFactory, UnitOfWorkOptions unitOfWorkOptions)
 		{
 			_logger = loggerFactory.Create<UnitOfWork>();
-			_isolationLevel = isolationLevel;
-			_transactionTimeOut = transactionTimeOut;
+			_unitOfWorkOptions = unitOfWorkOptions;
+			Start();
 		}
 
-		public void Dispose()
+		private void Start()
 		{
-			_logger.Debug("Disposing UoW...");
-			_transactionScope.Dispose();
-			_logger.Debug("Disposed UoW");
-		}
-
-		public void Begin()
-		{
-			if (_isStarted)
-			{
-				_logger.Debug("UoW already started");
-				return;
-			}
-
 			_logger.Debug("Starting UoW...");
-			_transactionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions
+			_transactionScope = new TransactionScope(_unitOfWorkOptions.TransactionScopeOption, new TransactionOptions
 			{
-				IsolationLevel = _isolationLevel,
-				Timeout = _transactionTimeOut
+				IsolationLevel = _unitOfWorkOptions.IsolationLevel,
+				Timeout = _unitOfWorkOptions.TransactionTimeout
 			}, TransactionScopeAsyncFlowOption.Enabled);
-
-			_isStarted = true;
 			_logger.Debug("Started UoW");
 		}
 
@@ -58,6 +40,13 @@ namespace BoltOn.UoW
 			_logger.Debug("Committing UoW...");
 			_transactionScope.Complete();
 			_logger.Debug("Committed UoW");
+		}
+
+		public void Dispose()
+		{
+			_logger.Debug("Disposing UoW...");
+			_transactionScope.Dispose();
+			_logger.Debug("Disposed UoW");
 		}
 	}
 }

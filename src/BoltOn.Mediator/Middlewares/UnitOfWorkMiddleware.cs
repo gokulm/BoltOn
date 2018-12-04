@@ -30,9 +30,8 @@ namespace BoltOn.Mediator.Middlewares
 																				   Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)
 		{
 			var unitOfWorkOptions = _uowOptionsBuilder.Build(request);
-			_unitOfWork = _unitOfWorkProvider.Get(unitOfWorkOptions);
 			_logger.Debug($"About to begin UoW with IsolationLevel: {unitOfWorkOptions.IsolationLevel.ToString()}");
-			_unitOfWork.Begin();
+			_unitOfWork = _unitOfWorkProvider.Start(unitOfWorkOptions);
 			var response = next.Invoke(request);
 			_unitOfWork.Commit();
 			_logger.Debug("Committed UoW");

@@ -7,5 +7,7 @@ namespace BoltOn.UoW
 	{
 		public virtual IsolationLevel IsolationLevel { get; set; }
 		public TimeSpan TransactionTimeout { get; set; } = TransactionManager.DefaultTimeout;
-    }
+		internal TransactionScopeOption TransactionScopeOption { get; set; } = TransactionScopeOption.Required;
+
+	}
 }
