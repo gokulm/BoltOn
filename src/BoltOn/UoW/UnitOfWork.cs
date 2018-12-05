@@ -26,7 +26,9 @@ namespace BoltOn.UoW
 
 		private void Start()
 		{
-			_logger.Debug("Starting UoW...");
+			_logger.Debug($"Starting UoW. IsolationLevel: {_unitOfWorkOptions.IsolationLevel} " +
+						  $"TransactionTimeOut: {_unitOfWorkOptions.TransactionTimeout}" +
+						  $"TransactionScopeOption: {_unitOfWorkOptions.TransactionScopeOption}");
 			_transactionScope = new TransactionScope(_unitOfWorkOptions.TransactionScopeOption, new TransactionOptions
 			{
 				IsolationLevel = _unitOfWorkOptions.IsolationLevel,
