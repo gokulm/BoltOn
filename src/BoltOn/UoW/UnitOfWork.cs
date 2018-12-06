@@ -7,6 +7,7 @@ namespace BoltOn.UoW
 {
 	public interface IUnitOfWork : IDisposable
 	{
+		void Start();
 		void Commit();
 	}
 
@@ -21,14 +22,11 @@ namespace BoltOn.UoW
 		{
 			_logger = loggerFactory.Create<UnitOfWork>();
 			_unitOfWorkOptions = unitOfWorkOptions;
-			Start();
 		}
 
-		private void Start()
+		public void Start()
 		{
-			_logger.Debug($"Starting UoW. IsolationLevel: {_unitOfWorkOptions.IsolationLevel} " +
-						  $"TransactionTimeOut: {_unitOfWorkOptions.TransactionTimeout}" +
-						  $"TransactionScopeOption: {_unitOfWorkOptions.TransactionScopeOption}");
+			_logger.Debug($"Starting UoW...");
 			_transactionScope = new TransactionScope(_unitOfWorkOptions.TransactionScopeOption, new TransactionOptions
 			{
 				IsolationLevel = _unitOfWorkOptions.IsolationLevel,

@@ -36,7 +36,7 @@ namespace BoltOn.Bootstrapping
 		private void RegisterOtherTypes(RegistrationTaskContext context)
 		{
 			var serviceCollection = context.Container;
-			serviceCollection.AddScoped<IUnitOfWorkProvider, UnitOfWorkProvider>();
+			serviceCollection.AddScoped<IUnitOfWorkManager, UnitOfWorkManager>();
 			serviceCollection.AddSingleton<IAppContextRetriever, AppContextRetriever>();
 			serviceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(NetStandardLoggerAdapter<>));
 			serviceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();

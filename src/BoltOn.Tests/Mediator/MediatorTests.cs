@@ -110,9 +110,9 @@ namespace BoltOn.Tests.Mediator
 			var logger = new Mock<IBoltOnLogger<UnitOfWorkMiddleware>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestCommand, StandardBooleanResponse>)))
 				.Returns(testHandler.Object);
-			var uowProvider = autoMocker.GetMock<IUnitOfWorkProvider>();
+			var uowProvider = autoMocker.GetMock<IUnitOfWorkManager>();
 			var uow = new Mock<IUnitOfWork>();
-			uowProvider.Setup(u => u.Start(It.IsAny<UnitOfWorkOptions>())).Returns(uow.Object);
+			uowProvider.Setup(u => u.Get(It.IsAny<UnitOfWorkOptions>())).Returns(uow.Object);
 			var uowOptions = autoMocker.GetMock<UnitOfWorkOptions>();
 			uowOptions.Setup(u => u.IsolationLevel).Returns(IsolationLevel.ReadCommitted);
 			var uowOptionsBuilder = autoMocker.GetMock<IUnitOfWorkOptionsBuilder>();
@@ -131,7 +131,7 @@ namespace BoltOn.Tests.Mediator
 			// assert 
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data.IsSuccessful);
-			uowProvider.Verify(u => u.Start(uowOptions.Object));
+			uowProvider.Verify(u => u.Get(uowOptions.Object));
 			uow.Verify(u => u.Commit());
 			logger.Verify(l => l.Debug($"About to begin UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
 			logger.Verify(l => l.Debug("Committed UoW"));

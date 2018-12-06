@@ -12,13 +12,13 @@ namespace BoltOn.Mediator.Middlewares
 
 	public class UnitOfWorkMiddleware : BaseRequestSpecificMiddleware<IEnableUnitOfWorkMiddleware>
 	{
-		private readonly IUnitOfWorkProvider _unitOfWorkProvider;
+		private readonly IUnitOfWorkManager _unitOfWorkProvider;
 		private IUnitOfWork _unitOfWork;
 		private readonly IBoltOnLogger<UnitOfWorkMiddleware> _logger;
 		private readonly IUnitOfWorkOptionsBuilder _uowOptionsBuilder;
 
 		public UnitOfWorkMiddleware(IBoltOnLogger<UnitOfWorkMiddleware> logger, 
-		                            IUnitOfWorkProvider unitOfWorkProvider,
+		                            IUnitOfWorkManager unitOfWorkProvider,
 		                            IUnitOfWorkOptionsBuilder uowOptionsBuilder)
 		{
 			_unitOfWorkProvider = unitOfWorkProvider;
@@ -31,7 +31,8 @@ namespace BoltOn.Mediator.Middlewares
 		{
 			var unitOfWorkOptions = _uowOptionsBuilder.Build(request);
 			_logger.Debug($"About to begin UoW with IsolationLevel: {unitOfWorkOptions.IsolationLevel.ToString()}");
-			_unitOfWork = _unitOfWorkProvider.Start(unitOfWorkOptions);
+			_unitOfWork = _unitOfWorkProvider.Get(unitOfWorkOptions);
+			_unitOfWork.Start();
 			var response = next.Invoke(request);
 			_unitOfWork.Commit();
 			_logger.Debug("Committed UoW");
