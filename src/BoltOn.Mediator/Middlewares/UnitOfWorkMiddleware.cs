@@ -29,13 +29,17 @@ namespace BoltOn.Mediator.Middlewares
 		public override MediatorResponse<TResponse> Execute<TRequest, TResponse>(IRequest<TResponse> request,
 																				   Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)
 		{
+			_logger.Debug($"UnitOfWorkMiddleware started");
 			var unitOfWorkOptions = _uowOptionsBuilder.Build(request);
-			_logger.Debug($"About to begin UoW with IsolationLevel: {unitOfWorkOptions.IsolationLevel.ToString()}");
-			_unitOfWork = _unitOfWorkProvider.Get(unitOfWorkOptions);
-			_unitOfWork.Start();
-			var response = next.Invoke(request);
-			_unitOfWork.Commit();
-			_logger.Debug("Committed UoW");
+			_logger.Debug($"About to start UoW with IsolationLevel: {unitOfWorkOptions.IsolationLevel.ToString()}");
+			MediatorResponse<TResponse> response;
+			using (_unitOfWork = _unitOfWorkProvider.Get(unitOfWorkOptions))
+			{
+				 response = next.Invoke(request);
+				_unitOfWork.Commit();
+			}
+			_unitOfWork = null;
+			_logger.Debug($"UnitOfWorkMiddleware ended");
 			return response;
 		}
 

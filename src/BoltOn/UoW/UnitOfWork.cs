@@ -7,7 +7,6 @@ namespace BoltOn.UoW
 {
 	public interface IUnitOfWork : IDisposable
 	{
-		void Start();
 		void Commit();
 	}
 
@@ -22,9 +21,10 @@ namespace BoltOn.UoW
 		{
 			_logger = loggerFactory.Create<UnitOfWork>();
 			_unitOfWorkOptions = unitOfWorkOptions;
+			Start();
 		}
 
-		public void Start()
+		private void Start()
 		{
 			_logger.Debug($"Starting UoW...");
 			_transactionScope = new TransactionScope(_unitOfWorkOptions.TransactionScopeOption, new TransactionOptions

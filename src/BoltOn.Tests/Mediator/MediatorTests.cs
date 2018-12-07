@@ -110,9 +110,9 @@ namespace BoltOn.Tests.Mediator
 			var logger = new Mock<IBoltOnLogger<UnitOfWorkMiddleware>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestCommand, StandardBooleanResponse>)))
 				.Returns(testHandler.Object);
-			var uowProvider = autoMocker.GetMock<IUnitOfWorkManager>();
+			var uowManager = autoMocker.GetMock<IUnitOfWorkManager>();
 			var uow = new Mock<IUnitOfWork>();
-			uowProvider.Setup(u => u.Get(It.IsAny<UnitOfWorkOptions>())).Returns(uow.Object);
+			uowManager.Setup(u => u.Get(It.IsAny<UnitOfWorkOptions>())).Returns(uow.Object);
 			var uowOptions = autoMocker.GetMock<UnitOfWorkOptions>();
 			uowOptions.Setup(u => u.IsolationLevel).Returns(IsolationLevel.ReadCommitted);
 			var uowOptionsBuilder = autoMocker.GetMock<IUnitOfWorkOptionsBuilder>();
@@ -120,7 +120,7 @@ namespace BoltOn.Tests.Mediator
 			uowOptionsBuilder.Setup(u => u.Build(request)).Returns(uowOptions.Object);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>
 			{
-				new UnitOfWorkMiddleware(logger.Object, uowProvider.Object, uowOptionsBuilder.Object)
+				new UnitOfWorkMiddleware(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			testHandler.Setup(s => s.Handle(request)).Returns(new StandardBooleanResponse { IsSuccessful = true });
@@ -131,10 +131,10 @@ namespace BoltOn.Tests.Mediator
 			// assert 
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data.IsSuccessful);
-			uowProvider.Verify(u => u.Get(uowOptions.Object));
+			uowManager.Verify(u => u.Get(uowOptions.Object));
 			uow.Verify(u => u.Commit());
-			logger.Verify(l => l.Debug($"About to begin UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
-			logger.Verify(l => l.Debug("Committed UoW"));
+			logger.Verify(l => l.Debug($"About to start UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
+			logger.Verify(l => l.Debug("UnitOfWorkMiddleware ended"));
 		}
 
 		[Fact]

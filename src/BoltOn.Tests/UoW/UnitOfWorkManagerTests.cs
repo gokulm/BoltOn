@@ -13,13 +13,12 @@ namespace BoltOn.Tests.UoW
 		public void Get_WithDefaults_StartsTransactionWithDefaultAndReturnsUnitOfWork()
 		{
 			// arrange
-			var loggerFactory = new Mock<IBoltOnLoggerFactory>();
-			var uowProviderLogger = new Mock<IBoltOnLogger<UnitOfWorkManager>>();
-			loggerFactory.Setup(s => s.Create<UnitOfWorkManager>()).Returns(uowProviderLogger.Object);
-			var uow = new Mock<IBoltOnLogger<UnitOfWork>>();
-			loggerFactory.Setup(s => s.Create<UnitOfWork>()).Returns(uow.Object);
+			var uowManagerLogger = new Mock<IBoltOnLogger<UnitOfWorkManager>>();
+			var uow = new Mock<IUnitOfWork>();
+			var uowFactory = new Mock<IUnitOfWorkFactory>();
 			var unitOfWorkOptions = new UnitOfWorkOptions();
-			var sut = new UnitOfWorkManager(loggerFactory.Object);
+			uowFactory.Setup(u => u.Get(unitOfWorkOptions)).Returns(uow.Object);
+			var sut = new UnitOfWorkManager(uowManagerLogger.Object, uowFactory.Object);
 
 			// act
 			var result = sut.Get(unitOfWorkOptions);
@@ -28,25 +27,24 @@ namespace BoltOn.Tests.UoW
 			var uowProviderLoggerStmt = $"Instantiating new UoW. IsolationLevel: {IsolationLevel.Serializable} " +
 						  $"TransactionTimeOut: {TransactionManager.DefaultTimeout}" +
 						  $"TransactionScopeOption: {TransactionScopeOption.Required}";
-			uowProviderLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
+			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
 		}
 
 		[Fact]
 		public void Get_WithCustomIsolationLevel_StartsTransactionWithSpecifiedIsolationLevelAndReturnsUnitOfWork()
 		{
 			// arrange
-			var loggerFactory = new Mock<IBoltOnLoggerFactory>();
-			var uowProviderLogger = new Mock<IBoltOnLogger<UnitOfWorkManager>>();
-			loggerFactory.Setup(s => s.Create<UnitOfWorkManager>()).Returns(uowProviderLogger.Object);
-			var uow = new Mock<IBoltOnLogger<UnitOfWork>>();
-			loggerFactory.Setup(s => s.Create<UnitOfWork>()).Returns(uow.Object);
+			var uowManagerLogger = new Mock<IBoltOnLogger<UnitOfWorkManager>>();
+			var uow = new Mock<IUnitOfWork>();
+			var uowFactory = new Mock<IUnitOfWorkFactory>();
 			var timeSpan = TimeSpan.FromSeconds(30);
 			var unitOfWorkOptions = new UnitOfWorkOptions
 			{
 				IsolationLevel = IsolationLevel.ReadCommitted,
 				TransactionTimeout = timeSpan
 			};
-			var sut = new UnitOfWorkManager(loggerFactory.Object);
+			uowFactory.Setup(u => u.Get(unitOfWorkOptions)).Returns(uow.Object);
+			var sut = new UnitOfWorkManager(uowManagerLogger.Object, uowFactory.Object);
 
 			// act
 			var result = sut.Get(unitOfWorkOptions);
@@ -55,20 +53,19 @@ namespace BoltOn.Tests.UoW
 			var uowProviderLoggerStmt = $"Instantiating new UoW. IsolationLevel: {IsolationLevel.ReadCommitted} " +
 						  $"TransactionTimeOut: {timeSpan}" +
 						  $"TransactionScopeOption: {TransactionScopeOption.Required}";
-			uowProviderLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
+			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
 		}
 
 		[Fact]
 		public void Get_WithDefaultsTwice_StartsTransactionWithDefaultsAndStartsAnotherNew()
 		{
 			// arrange
-			var loggerFactory = new Mock<IBoltOnLoggerFactory>();
-			var uowProviderLogger = new Mock<IBoltOnLogger<UnitOfWorkManager>>();
-			loggerFactory.Setup(s => s.Create<UnitOfWorkManager>()).Returns(uowProviderLogger.Object);
-			var uow = new Mock<IBoltOnLogger<UnitOfWork>>();
-			loggerFactory.Setup(s => s.Create<UnitOfWork>()).Returns(uow.Object);
+			var uowManagerLogger = new Mock<IBoltOnLogger<UnitOfWorkManager>>();
+			var uow = new Mock<IUnitOfWork>();
+			var uowFactory = new Mock<IUnitOfWorkFactory>();
 			var unitOfWorkOptions = new UnitOfWorkOptions();
-			var sut = new UnitOfWorkManager(loggerFactory.Object);
+			uowFactory.Setup(u => u.Get(unitOfWorkOptions)).Returns(uow.Object);
+			var sut = new UnitOfWorkManager(uowManagerLogger.Object, uowFactory.Object);
 
 			// act
 			var result = sut.Get(unitOfWorkOptions);
@@ -81,22 +78,19 @@ namespace BoltOn.Tests.UoW
 			var uowProviderLoggerStmt2 = $"Instantiating new UoW. IsolationLevel: {IsolationLevel.Serializable} " +
 					  $"TransactionTimeOut: {TransactionManager.DefaultTimeout}" +
 					  $"TransactionScopeOption: {TransactionScopeOption.RequiresNew}";
-			uowProviderLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
-			uowProviderLogger.Verify(l => l.Debug(uowProviderLoggerStmt2));
+			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
+			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt2));
 		}
 
 		[Fact]
 		public void Get_WithCustomIsolationLevelSetUsingAction_StartsTransactionWithSpecifiedIsolationLevelAndReturnsUnitOfWork()
 		{
 			// arrange
-			var loggerFactory = new Mock<IBoltOnLoggerFactory>();
-			var uowProviderLogger = new Mock<IBoltOnLogger<UnitOfWorkManager>>();
-			loggerFactory.Setup(s => s.Create<UnitOfWorkManager>()).Returns(uowProviderLogger.Object);
-			var uow = new Mock<IBoltOnLogger<UnitOfWork>>();
-			loggerFactory.Setup(s => s.Create<UnitOfWork>()).Returns(uow.Object);
+			var uowManagerLogger = new Mock<IBoltOnLogger<UnitOfWorkManager>>();
+			var uow = new Mock<IUnitOfWork>();
+			var uowFactory = new Mock<IUnitOfWorkFactory>();
 			var timeSpan = TimeSpan.FromSeconds(30);
-			var sut = new UnitOfWorkManager(loggerFactory.Object);
-
+			var sut = new UnitOfWorkManager(uowManagerLogger.Object, uowFactory.Object);
 			// act
 			var result = sut.Get(u =>
 			{
@@ -108,7 +102,7 @@ namespace BoltOn.Tests.UoW
 			var uowProviderLoggerStmt = $"Instantiating new UoW. IsolationLevel: {IsolationLevel.ReadCommitted} " +
 						  $"TransactionTimeOut: {timeSpan}" +
 						  $"TransactionScopeOption: {TransactionScopeOption.Required}";
-			uowProviderLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
+			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
 		}
 
 		public void Dispose()

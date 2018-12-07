@@ -13,12 +13,13 @@ namespace BoltOn.UoW
 	{
 		private readonly IBoltOnLogger<UnitOfWorkManager> _logger;
 		private readonly IBoltOnLoggerFactory _loggerFactory;
+		private readonly IUnitOfWorkFactory _unitOfWorkFactory;
 		private bool _isUoWInstantiated;
 
-		public UnitOfWorkManager(IBoltOnLoggerFactory loggerFactory)
+		public UnitOfWorkManager(IBoltOnLogger<UnitOfWorkManager> logger, IUnitOfWorkFactory unitOfWorkFactory)
 		{
-			_logger = loggerFactory.Create<UnitOfWorkManager>();
-			_loggerFactory = loggerFactory;
+			_logger = logger;
+			_unitOfWorkFactory = unitOfWorkFactory;
 		}
 
 		public IUnitOfWork Get(UnitOfWorkOptions unitOfWorkOptions)
@@ -28,7 +29,7 @@ namespace BoltOn.UoW
 			_logger.Debug($"Instantiating new UoW. IsolationLevel: {unitOfWorkOptions.IsolationLevel} " +
 						  $"TransactionTimeOut: {unitOfWorkOptions.TransactionTimeout}" +
 						  $"TransactionScopeOption: {unitOfWorkOptions.TransactionScopeOption}");
-			var unitOfWork = new UnitOfWork(_loggerFactory, unitOfWorkOptions);
+			var unitOfWork = _unitOfWorkFactory.Get(unitOfWorkOptions);
 			_isUoWInstantiated = true;
 			return unitOfWork;
 		}
