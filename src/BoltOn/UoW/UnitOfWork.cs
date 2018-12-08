@@ -16,6 +16,7 @@ namespace BoltOn.UoW
 		private TransactionScope _transactionScope;
 		private readonly IBoltOnLogger<UnitOfWork> _logger;
 		private readonly UnitOfWorkOptions _unitOfWorkOptions;
+		private bool _isDisposed;
 
 		internal UnitOfWork(IBoltOnLoggerFactory loggerFactory, UnitOfWorkOptions unitOfWorkOptions)
 		{
@@ -44,9 +45,22 @@ namespace BoltOn.UoW
 
 		public void Dispose()
 		{
-			_logger.Debug("Disposing UoW...");
-			_transactionScope.Dispose();
-			_logger.Debug("Disposed UoW");
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		private void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+				return;
+
+			if (disposing)
+			{
+				_logger.Debug("Disposing UoW...");
+				_transactionScope.Dispose();
+				_logger.Debug("Disposed UoW");
+			}
+			_isDisposed = true;
 		}
 	}
 }

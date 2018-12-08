@@ -26,10 +26,10 @@ namespace BoltOn.UoW
 		{
 			if (_isUoWInstantiated)
 				unitOfWorkOptions.TransactionScopeOption = System.Transactions.TransactionScopeOption.RequiresNew;
-			_logger.Debug($"Instantiating new UoW. IsolationLevel: {unitOfWorkOptions.IsolationLevel} " +
+			_logger.Debug($"About to start UoW. IsolationLevel: {unitOfWorkOptions.IsolationLevel} " +
 						  $"TransactionTimeOut: {unitOfWorkOptions.TransactionTimeout}" +
 						  $"TransactionScopeOption: {unitOfWorkOptions.TransactionScopeOption}");
-			var unitOfWork = _unitOfWorkFactory.Get(unitOfWorkOptions);
+			var unitOfWork = _unitOfWorkFactory.Create(unitOfWorkOptions);
 			_isUoWInstantiated = true;
 			return unitOfWork;
 		}
