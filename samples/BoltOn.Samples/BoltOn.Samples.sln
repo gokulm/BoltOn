@@ -1,0 +1,35 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Samples.WebApi", "BoltOn.Samples.WebApi\BoltOn.Samples.WebApi.csproj", "{6C738B20-98BE-4C92-86D7-2D159977CE1B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn", "..\..\src\BoltOn\BoltOn.csproj", "{0C2CB65A-9999-4BA7-A704-AF4336DC2761}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Mediator", "..\..\src\BoltOn.Mediator\BoltOn.Mediator.csproj", "{DA1F3E49-79C1-4CE0-B5D4-E35345CDFB62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Samples.Domain", "BoltOn.Samples.Domain\BoltOn.Samples.Domain.csproj", "{77EC2B8E-CB42-4461-B3F8-C998E852C56D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6C738B20-98BE-4C92-86D7-2D159977CE1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C738B20-98BE-4C92-86D7-2D159977CE1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C738B20-98BE-4C92-86D7-2D159977CE1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C738B20-98BE-4C92-86D7-2D159977CE1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C2CB65A-9999-4BA7-A704-AF4336DC2761}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C2CB65A-9999-4BA7-A704-AF4336DC2761}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C2CB65A-9999-4BA7-A704-AF4336DC2761}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C2CB65A-9999-4BA7-A704-AF4336DC2761}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA1F3E49-79C1-4CE0-B5D4-E35345CDFB62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA1F3E49-79C1-4CE0-B5D4-E35345CDFB62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA1F3E49-79C1-4CE0-B5D4-E35345CDFB62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA1F3E49-79C1-4CE0-B5D4-E35345CDFB62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77EC2B8E-CB42-4461-B3F8-C998E852C56D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77EC2B8E-CB42-4461-B3F8-C998E852C56D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77EC2B8E-CB42-4461-B3F8-C998E852C56D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77EC2B8E-CB42-4461-B3F8-C998E852C56D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

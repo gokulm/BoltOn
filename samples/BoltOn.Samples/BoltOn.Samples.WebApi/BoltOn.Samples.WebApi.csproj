@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\BoltOn\BoltOn.csproj" />
+    <ProjectReference Include="..\..\..\src\BoltOn.Mediator\BoltOn.Mediator.csproj" />
+    <ProjectReference Include="..\BoltOn.Samples.Domain\BoltOn.Samples.Domain.csproj" />
+  </ItemGroup>
+</Project>

@@ -71,14 +71,10 @@ namespace BoltOn.Bootstrapping
 
 		private void LoadAssemblies()
 		{
-			var referencedAssemblyNames = _callingAssembly.GetReferencedAssemblies().ToList();
-			var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+			var dotNetProductAttribute = GetProductAttribute(typeof(string).Assembly);
+			var assemblies = GetReferencedAssemblies(_callingAssembly).ToList();
 			var assembliesToBeExcluded = _options.AssembliesToBeExcluded.Select(s => s.GetName().FullName).ToList();
-			var assemblies = GetAssembliesThatStartsWith("BoltOn");
-			var appPrefix = _callingAssembly.GetName().Name.Split('.')[0];
-			var appAssemblies = GetAssembliesThatStartsWith(appPrefix);
 			assemblies.AddRange(_options.AssembliesToBeIncluded);
-			assemblies.AddRange(appAssemblies);
 			assemblies.Add(_callingAssembly);
 			assemblies = assemblies.Distinct().ToList();
 			assemblies.RemoveAll(a => assembliesToBeExcluded.Contains(a.GetName().FullName));
@@ -108,19 +104,25 @@ namespace BoltOn.Bootstrapping
 
 			List<Assembly> GetReferencedAssemblies(Assembly assembly)
 			{
-				return (from r in assembly.GetReferencedAssemblies()
-						join a in appDomainAssemblies
-						on r.FullName equals a.FullName
-						select a).Distinct().ToList();
+
+				var referencedAssemblyNames = assembly.GetReferencedAssemblies();
+				var tempReferencedAssemblies = new List<Assembly>();
+				foreach (var referencedAssemblyName in referencedAssemblyNames)
+				{
+					var tempAssembly = Assembly.Load(referencedAssemblyName);
+					var tempProductAttr = GetProductAttribute(tempAssembly);
+					if (!tempProductAttr.StartsWith("Microsoft", StringComparison.Ordinal))
+						tempReferencedAssemblies.Add(tempAssembly);
+				}
+				return tempReferencedAssemblies;
 			}
 
-			List<Assembly> GetAssembliesThatStartsWith(string startsWith)
+			// this is to avoid adding all the .NET framework assemblies to Assemblies
+			string GetProductAttribute(Assembly assembly)
 			{
-				return (from r in referencedAssemblyNames
-						join a in appDomainAssemblies
-						on r.FullName equals a.FullName
-						where r.Name.StartsWith(startsWith, StringComparison.Ordinal)
-						select a).Distinct().ToList();
+				var attributeData = assembly.CustomAttributes.First(attribute => attribute.AttributeType == typeof(AssemblyProductAttribute));
+				var productAttr = attributeData.ConstructorArguments[0].Value as string;
+				return productAttr;
 			}
 		}
 

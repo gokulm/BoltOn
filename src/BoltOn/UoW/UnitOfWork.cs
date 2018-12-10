@@ -59,8 +59,8 @@ namespace BoltOn.UoW
 				_logger.Debug("Disposing UoW...");
 				_transactionScope.Dispose();
 				_logger.Debug("Disposed UoW");
+				_isDisposed = true;
 			}
-			_isDisposed = true;
 		}
 	}
 }
