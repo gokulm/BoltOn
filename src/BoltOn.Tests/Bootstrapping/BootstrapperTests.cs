@@ -92,7 +92,7 @@ namespace BoltOn.Tests.Bootstrapping
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 
 			// act 
-			var ex = Record.Exception(() => serviceProvider.UseBoltOn());
+			var ex = Record.Exception(() => serviceProvider.BoltOn());
 
 			// assert
 			Assert.NotNull(ex);
@@ -227,7 +227,7 @@ namespace BoltOn.Tests.Bootstrapping
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.UseBoltOn();
+			serviceProvider.BoltOn();
 
 			// assert
 			var preRegistrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPreregistrationTask).Name}");
@@ -250,7 +250,7 @@ namespace BoltOn.Tests.Bootstrapping
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.UseBoltOn();
+			serviceProvider.BoltOn();
 			var test = serviceProvider.GetService<ITestExcludeRegistrationService>();
 
 			// assert

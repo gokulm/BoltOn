@@ -8,7 +8,7 @@ namespace BoltOn.Mediator.UoW
 {
 	public interface IUnitOfWorkOptionsBuilder
 	{
-		UnitOfWorkOptions Build<TResponse>(IRequest<TResponse> request) where TResponse : class;
+		UnitOfWorkOptions Build<TResponse>(IRequest<TResponse> request);
 	}
 
 	public class UnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
@@ -20,7 +20,7 @@ namespace BoltOn.Mediator.UoW
 			_logger = logger;
 		}
 
-		public UnitOfWorkOptions Build<TResponse>(IRequest<TResponse> request) where TResponse : class
+		public UnitOfWorkOptions Build<TResponse>(IRequest<TResponse> request) 
 		{
 			IsolationLevel isolationLevel;
 			switch (request)

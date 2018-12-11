@@ -8,7 +8,6 @@ namespace BoltOn.Mediator.Middlewares
 		public MediatorResponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request,
 																	  Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)
 			where TRequest : IRequest<TResponse>
-		 where TResponse : class
 		{
 			if (!(request is T))
 				return next.Invoke(request);
@@ -18,7 +17,6 @@ namespace BoltOn.Mediator.Middlewares
 		public abstract void Dispose();
 
 		public abstract MediatorResponse<TResponse> Execute<TRequest, TResponse>(IRequest<TResponse> request,
-																			   Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)
-			where TResponse : class;
+																			   Func<IRequest<TResponse>, MediatorResponse<TResponse>> next);
 	}
 }

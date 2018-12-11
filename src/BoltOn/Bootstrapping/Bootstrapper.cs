@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
 {
-	internal class Bootstrapper : IDisposable
+	internal sealed class Bootstrapper : IDisposable
 	{
 		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
 		private Assembly _callingAssembly;
@@ -172,7 +172,7 @@ namespace BoltOn.Bootstrapping
 			registrationTaskTypes.ForEach(r => _serviceCollection.AddTransient(registrationTaskType, r));
 		}
 
-		protected virtual void Dispose(bool disposing)
+		private void Dispose(bool disposing)
 		{
 			if (disposing)
 			{

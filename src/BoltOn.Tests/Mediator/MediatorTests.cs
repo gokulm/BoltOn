@@ -26,19 +26,19 @@ namespace BoltOn.Tests.Mediator
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, StandardBooleanResponse>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, bool>)))
 						  .Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>());
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
-			testHandler.Setup(s => s.Handle(request)).Returns(new StandardBooleanResponse { IsSuccessful = true });
+			testHandler.Setup(s => s.Handle(request)).Returns(true);
 
 			// act
 			var result = sut.Get(request);
 
 			// assert 
 			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data.IsSuccessful);
+			Assert.True(result.Data);
 		}
 
 		[Fact]
@@ -50,19 +50,19 @@ namespace BoltOn.Tests.Mediator
 			var testHandler = new Mock<TestHandler>();
 			var middleware = new Mock<IMediatorMiddleware>();
 			var logger = new Mock<IBoltOnLogger<TestMiddleware>>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, StandardBooleanResponse>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, bool>)))
 						  .Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>() { new TestMiddleware(logger.Object) });
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
-			testHandler.Setup(s => s.Handle(request)).Returns(new StandardBooleanResponse { IsSuccessful = true });
+			testHandler.Setup(s => s.Handle(request)).Returns(true);
 
 			// act
 			var result = sut.Get(request);
 
 			// assert 
 			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data.IsSuccessful);
+			Assert.True(result.Data);
 			logger.Verify(l => l.Debug("TestMiddleware Started"));
 			logger.Verify(l => l.Debug("TestMiddleware Ended"));
 		}
@@ -80,20 +80,20 @@ namespace BoltOn.Tests.Mediator
 			var boltOnClock = new Mock<IBoltOnClock>();
 			var currentDateTime = DateTime.Now;
 			boltOnClock.Setup(s => s.Now).Returns(currentDateTime);
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, StandardBooleanResponse>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, bool>)))
 				.Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware> { new TestRequestSpecificMiddleware(logger.Object),
 				new StopwatchMiddleware(logger2.Object, boltOnClock.Object) });
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
-			testHandler.Setup(s => s.Handle(request)).Returns(new StandardBooleanResponse { IsSuccessful = true });
+			testHandler.Setup(s => s.Handle(request)).Returns(true);
 
 			// act
 			var result = sut.Get(request);
 
 			// assert 
 			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data.IsSuccessful);
+			Assert.True(result.Data);
 			logger.Verify(l => l.Debug("TestRequestSpecificMiddleware Started"), Times.Never);
 			logger.Verify(l => l.Debug("TestRequestSpecificMiddleware Ended"), Times.Never);
 			logger2.Verify(l => l.Debug($"StopwatchMiddleware started at {currentDateTime}"), Times.Once);
@@ -108,7 +108,7 @@ namespace BoltOn.Tests.Mediator
 			var testHandler = new Mock<TestHandler>();
 			var middleware = new Mock<IMediatorMiddleware>();
 			var logger = new Mock<IBoltOnLogger<UnitOfWorkMiddleware>>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestCommand, StandardBooleanResponse>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
 			var uowManager = autoMocker.GetMock<IUnitOfWorkManager>();
 			var uow = new Mock<IUnitOfWork>();
@@ -123,14 +123,14 @@ namespace BoltOn.Tests.Mediator
 				new UnitOfWorkMiddleware(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
-			testHandler.Setup(s => s.Handle(request)).Returns(new StandardBooleanResponse { IsSuccessful = true });
+			testHandler.Setup(s => s.Handle(request)).Returns(true);
 
 			// act
 			var result = sut.Get(request);
 
 			// assert 
 			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data.IsSuccessful);
+			Assert.True(result.Data);
 			uowManager.Verify(u => u.Get(uowOptions.Object));
 			uow.Verify(u => u.Commit());
 			logger.Verify(l => l.Debug($"About to start UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
@@ -144,7 +144,7 @@ namespace BoltOn.Tests.Mediator
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, StandardBooleanResponse>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, bool>)))
 						   .Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>());
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
@@ -156,7 +156,7 @@ namespace BoltOn.Tests.Mediator
 
 			// assert 
 			Assert.False(result.IsSuccessful);
-			Assert.Null(result.Data);
+			Assert.False(result.Data);
 			Assert.NotNull(result.Exception);
 			Assert.Equal("handler failed", result.Exception.Message);
 		}
@@ -168,7 +168,7 @@ namespace BoltOn.Tests.Mediator
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, StandardBooleanResponse>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, bool>)))
 						  .Returns(null);
 			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>());
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
@@ -179,7 +179,7 @@ namespace BoltOn.Tests.Mediator
 
 			// assert 
 			Assert.False(result.IsSuccessful);
-			Assert.Null(result.Data);
+			Assert.False(result.Data);
 			Assert.NotNull(result.Exception);
 			Assert.Equal(string.Format(Constants.ExceptionMessages.
 									   HANDLER_NOT_FOUND, request), result.Exception.Message);
@@ -194,7 +194,7 @@ namespace BoltOn.Tests.Mediator
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.UseBoltOn();
+			serviceProvider.BoltOn();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
 			var mediator = serviceProvider.GetService<IMediator>();
 
@@ -203,7 +203,7 @@ namespace BoltOn.Tests.Mediator
 
 			// assert 
 			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data.IsSuccessful);
+			Assert.True(result.Data);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
 																				   $"StopwatchMiddleware started at {boltOnClock.Now}"));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
@@ -220,7 +220,7 @@ namespace BoltOn.Tests.Mediator
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.UseBoltOn();
+			serviceProvider.BoltOn();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
 			var mediator = serviceProvider.GetService<IMediator>();
 
@@ -229,7 +229,7 @@ namespace BoltOn.Tests.Mediator
 
 			// assert 
 			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data.IsSuccessful);
+			Assert.True(result.Data);
 			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestMiddleware Started") > 0);
 			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestMiddleware Ended") > 0);
 			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestRequestSpecificMiddleware Started") == -1);
@@ -251,7 +251,7 @@ namespace BoltOn.Tests.Mediator
 			serviceCollection.BoltOn();
 			serviceCollection.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.UseBoltOn();
+			serviceProvider.BoltOn();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
 			var sut = serviceProvider.GetService<IMediator>();
 			var testMiddleware = serviceProvider.GetService<TestMiddleware>();
@@ -261,7 +261,7 @@ namespace BoltOn.Tests.Mediator
 
 			// assert 
 			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data.IsSuccessful);
+			Assert.True(result.Data);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "TestMiddleware Started"));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "TestMiddleware Ended"));
 			Assert.Null(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {boltOnClock.Now}"));
@@ -279,7 +279,7 @@ namespace BoltOn.Tests.Mediator
 				.BoltOn()
 				.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.UseBoltOn();
+			serviceProvider.BoltOn();
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
@@ -287,7 +287,7 @@ namespace BoltOn.Tests.Mediator
 
 			// assert 
 			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data.IsSuccessful);
+			Assert.True(result.Data);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Query"));
 		}
 
@@ -301,7 +301,7 @@ namespace BoltOn.Tests.Mediator
 				.BoltOn()
 				.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.UseBoltOn();
+			serviceProvider.BoltOn();
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
@@ -309,7 +309,7 @@ namespace BoltOn.Tests.Mediator
 
 			// assert 
 			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data.IsSuccessful);
+			Assert.True(result.Data);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
@@ -368,35 +368,35 @@ namespace BoltOn.Tests.Mediator
 		}
 	}
 
-	public class TestRequest : IRequest<StandardBooleanResponse>, IEnableStopwatchMiddleware
+	public class TestRequest : IRequest<bool>, IEnableStopwatchMiddleware
 	{
 	}
 
-	public class TestHandler : IRequestHandler<TestRequest, StandardBooleanResponse>,
-	IRequestHandler<TestCommand, StandardBooleanResponse>,
-	IRequestHandler<TestQuery, StandardBooleanResponse>
+	public class TestHandler : IRequestHandler<TestRequest, bool>,
+	IRequestHandler<TestCommand, bool>,
+	IRequestHandler<TestQuery, bool>
 	{
-		public virtual StandardBooleanResponse Handle(TestRequest request)
+		public virtual bool Handle(TestRequest request)
 		{
-			return new StandardBooleanResponse { IsSuccessful = true };
+			return true;
 		}
 
-		public virtual StandardBooleanResponse Handle(TestCommand request)
+		public virtual bool Handle(TestCommand request)
 		{
-			return new StandardBooleanResponse { IsSuccessful = true };
+			return true;
 		}
 
-		public virtual StandardBooleanResponse Handle(TestQuery request)
+		public virtual bool Handle(TestQuery request)
 		{
-			return new StandardBooleanResponse { IsSuccessful = true };
+			return true;
 		}
 	}
 
-	public class TestCommand : ICommand<StandardBooleanResponse>
+	public class TestCommand : ICommand<bool>
 	{
 	}
 
-	public class TestQuery : IQuery<StandardBooleanResponse>
+	public class TestQuery : IQuery<bool>
 	{
 	}
 
@@ -412,7 +412,6 @@ namespace BoltOn.Tests.Mediator
 		public MediatorResponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request,
 																	 Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)
 		   where TRequest : IRequest<TResponse>
-		 	where TResponse : class
 		{
 			_logger.Debug("TestMiddleware Started");
 			var response = next.Invoke(request);
@@ -461,7 +460,7 @@ namespace BoltOn.Tests.Mediator
 			_logger = logger;
 		}
 
-		public UnitOfWorkOptions Build<TResponse>(IRequest<TResponse> request) where TResponse : class
+		public UnitOfWorkOptions Build<TResponse>(IRequest<TResponse> request)
 		{
 			IsolationLevel isolationLevel;
 			switch (request)

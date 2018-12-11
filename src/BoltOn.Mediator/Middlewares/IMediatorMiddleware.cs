@@ -7,7 +7,6 @@ namespace BoltOn.Mediator.Middlewares
 	{
 		MediatorResponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request, Func<IRequest<TResponse>,
 										  MediatorResponse<TResponse>> next) 
-			where TResponse : class
 			where TRequest : IRequest<TResponse>;
 	}
 }

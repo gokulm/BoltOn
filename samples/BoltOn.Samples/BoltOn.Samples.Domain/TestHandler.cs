@@ -1,9 +1,8 @@
-﻿using System;
-using BoltOn.Mediator.Pipeline;
+﻿using BoltOn.Mediator.Pipeline;
 
 namespace BoltOn.Samples.Domain
 {
-    public class TestRequest : IQuery<TestResponse>
+	public class TestRequest : IQuery<TestResponse>
     {
     }
 

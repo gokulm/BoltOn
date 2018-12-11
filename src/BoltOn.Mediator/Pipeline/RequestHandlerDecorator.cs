@@ -1,13 +1,12 @@
 ﻿namespace BoltOn.Mediator.Pipeline
 {
-	internal abstract class BaseRequestHandlerDecorator<TResponse> where TResponse : class
+	internal abstract class BaseRequestHandlerDecorator<TResponse>
 	{
 		public abstract TResponse Handle(IRequest<TResponse> request);
 	}
 
 	internal class RequestHandlerDecorator<TRequest, TResponse> : BaseRequestHandlerDecorator<TResponse>
 		where TRequest : IRequest<TResponse>
-		where TResponse : class
 	{
 		private readonly IRequestHandler<TRequest, TResponse> _requestHandler;
 

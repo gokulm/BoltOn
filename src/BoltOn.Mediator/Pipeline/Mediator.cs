@@ -9,7 +9,7 @@ namespace BoltOn.Mediator.Pipeline
 {
 	public interface IMediator
 	{
-		MediatorResponse<TResponse> Get<TResponse>(IRequest<TResponse> request) where TResponse : class;
+		MediatorResponse<TResponse> Get<TResponse>(IRequest<TResponse> request);
 	}
 
 	public class Mediator : IMediator
@@ -26,13 +26,13 @@ namespace BoltOn.Mediator.Pipeline
 			this._middlewares = middlewares;
 		}
 
-		public MediatorResponse<TResponse> Get<TResponse>(IRequest<TResponse> request) where TResponse : class
+		public MediatorResponse<TResponse> Get<TResponse>(IRequest<TResponse> request)
 		{
 			return ExecuteMiddlewares(request, Handle);
 		}
 
 		private MediatorResponse<TResponse> ExecuteMiddlewares<TResponse>(IRequest<TResponse> request,
-			Func<IRequest<TResponse>, MediatorResponse<TResponse>> handle) where TResponse : class
+			Func<IRequest<TResponse>, MediatorResponse<TResponse>> handle)
 		{
 			_logger.Debug("Running middlewares...");
 			var next = _middlewares.Reverse().Aggregate(handle,
@@ -56,7 +56,7 @@ namespace BoltOn.Mediator.Pipeline
 			}
 		}
 
-		private MediatorResponse<TResponse> Handle<TResponse>(IRequest<TResponse> request) where TResponse : class
+		private MediatorResponse<TResponse> Handle<TResponse>(IRequest<TResponse> request)
 		{
 			var requestType = request.GetType();
 			_logger.Debug($"Resolving handler for request: {requestType}");
