@@ -79,7 +79,7 @@ namespace BoltOn.Bootstrapping
 			assemblies = assemblies.Distinct().ToList();
 			assemblies.RemoveAll(a => assembliesToBeExcluded.Contains(a.GetName().FullName));
 
-			var sortedAssemblies = new List<Assembly>();
+			var sortedAssemblies = new HashSet<Assembly>();
 			var assemblyNames = assemblies.Select(s => s.GetName());
 			var boltOnAssembly = assemblies.First(a => a.GetName().Name.Equals("BoltOn"));
 			sortedAssemblies.Add(boltOnAssembly);
@@ -100,7 +100,7 @@ namespace BoltOn.Bootstrapping
 					index += 1;
 			}
 
-			Assemblies = sortedAssemblies.AsReadOnly();
+			Assemblies = sortedAssemblies.ToList().AsReadOnly();
 
 			List<Assembly> GetReferencedAssemblies(Assembly assembly)
 			{

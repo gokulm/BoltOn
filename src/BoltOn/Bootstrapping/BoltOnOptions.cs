@@ -5,26 +5,17 @@ namespace BoltOn.Bootstrapping
 {
 	public sealed class BoltOnOptions
 	{
-		private List<Assembly> _assembliesToBeExcluded;
-		private List<Assembly> _assembliesToBeIncluded;
-
-		public BoltOnOptions()
-		{
-			_assembliesToBeExcluded = new List<Assembly>();
-			_assembliesToBeIncluded = new List<Assembly>();
-		}
-
-		internal IReadOnlyList<Assembly> AssembliesToBeIncluded => _assembliesToBeIncluded.AsReadOnly();
-		internal IReadOnlyList<Assembly> AssembliesToBeExcluded => _assembliesToBeExcluded.AsReadOnly();
+		internal List<Assembly> AssembliesToBeIncluded { get; set; } = new List<Assembly>();
+		internal List<Assembly> AssembliesToBeExcluded { get; set; } = new List<Assembly>();
 
 		public void IncludeAssemblies(params Assembly[] assemblies)
 		{
-			_assembliesToBeIncluded.AddRange(assemblies);
+			AssembliesToBeIncluded.AddRange(assemblies);
 		}
 
 		public void ExcludeAssemblies(params Assembly[] assemblies)
 		{
-			_assembliesToBeExcluded.AddRange(assemblies);
+			AssembliesToBeExcluded.AddRange(assemblies);
 		}
 	}
 }

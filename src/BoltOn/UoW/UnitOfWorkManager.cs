@@ -12,7 +12,6 @@ namespace BoltOn.UoW
 	public sealed class UnitOfWorkManager : IUnitOfWorkManager
 	{
 		private readonly IBoltOnLogger<UnitOfWorkManager> _logger;
-		private readonly IBoltOnLoggerFactory _loggerFactory;
 		private readonly IUnitOfWorkFactory _unitOfWorkFactory;
 		private bool _isUoWInstantiated;
 
