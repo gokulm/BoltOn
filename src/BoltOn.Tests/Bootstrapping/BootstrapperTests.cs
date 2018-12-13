@@ -171,7 +171,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact, TestPriority(8)]
-		public void BoltOn_ClassNotRegisteredByConventionUsingNetStandardContainer_ReturnsNull()
+		public void BoltOn_ClassNotRegisteredByConvention_ReturnsNull()
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();

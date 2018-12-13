@@ -71,20 +71,25 @@ namespace BoltOn.Bootstrapping
 
 		private void LoadAssemblies()
 		{
-			var dotNetProductAttribute = GetProductAttribute(typeof(string).Assembly);
-			var assemblies = GetReferencedAssemblies(_callingAssembly).ToList();
+			var referencedAssemblies = GetReferencedAssemblies(_callingAssembly).ToList();
+			var assemblies = new List<Assembly>
+			{
+				_callingAssembly
+			};
+			var appAssemblyPrefix = _callingAssembly.GetName().Name.Split('.')[0];
+			var assemblyPrefixes = new[] { "BoltOn", appAssemblyPrefix }.Distinct();
+			foreach (var assemblyPrefix in assemblyPrefixes)
+			{
+				var assembliesThatStartsWith = GetAssembliesThatStartsWith(assemblyPrefix);
+				assemblies.AddRange(assembliesThatStartsWith);
+			}
+
 			var assembliesToBeExcluded = _options.AssembliesToBeExcluded.Select(s => s.GetName().FullName).ToList();
-			assemblies.AddRange(_options.AssembliesToBeIncluded);
-			assemblies.Add(_callingAssembly);
-			assemblies = assemblies.Distinct().ToList();
-			assemblies.RemoveAll(a => assembliesToBeExcluded.Contains(a.GetName().FullName));
+			var assembliesToBeIncluded = _options.AssembliesToBeIncluded.Select(s => s.GetName().FullName).ToList();
+			_options.AssembliesToBeIncluded.ForEach(a => assemblies.Add(a));
 
 			var sortedAssemblies = new HashSet<Assembly>();
-			var assemblyNames = assemblies.Select(s => s.GetName());
-			var boltOnAssembly = assemblies.First(a => a.GetName().Name.Equals("BoltOn"));
-			sortedAssemblies.Add(boltOnAssembly);
-			assemblies.Remove(boltOnAssembly);
-
+			assemblies = assemblies.Distinct().ToList();
 			// load assemblies in the order of dependency
 			var index = 0;
 			while (assemblies.Count != 0)
@@ -92,7 +97,8 @@ namespace BoltOn.Bootstrapping
 				var tempRefs = GetReferencedAssemblies(assemblies[index]);
 				if (tempRefs.Intersect(assemblies).Count() == 0)
 				{
-					sortedAssemblies.Add(assemblies[index]);
+					if (!assembliesToBeExcluded.Contains(assemblies[index].FullName))
+						sortedAssemblies.Add(assemblies[index]);
 					assemblies.Remove(assemblies[index]);
 					index = 0;
 				}
@@ -102,27 +108,21 @@ namespace BoltOn.Bootstrapping
 
 			Assemblies = sortedAssemblies.ToList().AsReadOnly();
 
-			List<Assembly> GetReferencedAssemblies(Assembly assembly)
+			IEnumerable<Assembly> GetReferencedAssemblies(Assembly assembly)
 			{
-
 				var referencedAssemblyNames = assembly.GetReferencedAssemblies();
-				var tempReferencedAssemblies = new List<Assembly>();
 				foreach (var referencedAssemblyName in referencedAssemblyNames)
 				{
 					var tempAssembly = Assembly.Load(referencedAssemblyName);
-					var tempProductAttr = GetProductAttribute(tempAssembly);
-					if (!tempProductAttr.StartsWith("Microsoft", StringComparison.Ordinal))
-						tempReferencedAssemblies.Add(tempAssembly);
+					yield return tempAssembly;
 				}
-				return tempReferencedAssemblies;
 			}
 
-			// this is to avoid adding all the .NET framework assemblies to Assemblies
-			string GetProductAttribute(Assembly assembly)
+			List<Assembly> GetAssembliesThatStartsWith(string startsWith)
 			{
-				var attributeData = assembly.CustomAttributes.First(attribute => attribute.AttributeType == typeof(AssemblyProductAttribute));
-				var productAttr = attributeData.ConstructorArguments[0].Value as string;
-				return productAttr;
+				return (from r in referencedAssemblies
+						where r.GetName().Name.StartsWith(startsWith, StringComparison.Ordinal)
+						select r).Distinct().ToList();
 			}
 		}
 
