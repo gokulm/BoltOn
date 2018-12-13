@@ -50,20 +50,20 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.False(result);
 		}
 
-		[Fact]
-		public void BoltOn_IncludeAssembly_IncludesAssemblyToAssemblies()
-		{
-			// arrange	
-			var serviceCollection = new ServiceCollection();
-			var assemblyToBeIncluded = typeof(ServiceCollection).Assembly;
-			serviceCollection.BoltOn(options => options.IncludeAssemblies(assemblyToBeIncluded));
+		//[Fact]
+		//public void BoltOn_IncludeAssembly_IncludesAssemblyToAssemblies()
+		//{
+		//	// arrange	
+		//	var serviceCollection = new ServiceCollection();
+		//	var assemblyToBeIncluded = typeof(ServiceCollection).Assembly;
+		//	serviceCollection.BoltOn(options => options.IncludeAssemblies(assemblyToBeIncluded));
 
-			// act 
-			var result = Bootstrapper.Instance.Assemblies.Contains(assemblyToBeIncluded);
+		//	// act 
+		//	var result = Bootstrapper.Instance.Assemblies.Contains(assemblyToBeIncluded);
 
-			// assert
-			Assert.True(result);
-		}
+		//	// assert
+		//	Assert.True(result);
+		//}
 
 		[Fact]
 		public void BoltOn_ExcludeAssemblyWithRegistrationTask_ThrowsException()

@@ -72,10 +72,7 @@ namespace BoltOn.Bootstrapping
 		private void LoadAssemblies()
 		{
 			var referencedAssemblies = GetReferencedAssemblies(_callingAssembly).ToList();
-			var assemblies = new List<Assembly>
-			{
-				_callingAssembly
-			};
+			var assemblies = new List<Assembly> { _callingAssembly };
 			var appAssemblyPrefix = _callingAssembly.GetName().Name.Split('.')[0];
 			var assemblyPrefixes = new[] { "BoltOn", appAssemblyPrefix }.Distinct();
 			foreach (var assemblyPrefix in assemblyPrefixes)
@@ -85,11 +82,9 @@ namespace BoltOn.Bootstrapping
 			}
 
 			var assembliesToBeExcluded = _options.AssembliesToBeExcluded.Select(s => s.GetName().FullName).ToList();
-			var assembliesToBeIncluded = _options.AssembliesToBeIncluded.Select(s => s.GetName().FullName).ToList();
-			_options.AssembliesToBeIncluded.ForEach(a => assemblies.Add(a));
-
 			var sortedAssemblies = new HashSet<Assembly>();
 			assemblies = assemblies.Distinct().ToList();
+
 			// load assemblies in the order of dependency
 			var index = 0;
 			while (assemblies.Count != 0)
