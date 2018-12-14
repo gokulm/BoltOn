@@ -8,10 +8,6 @@
     <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="MediatorOptions.cs" />
-    <Compile Remove="MediatorContext.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Middlewares\" />
     <Folder Include="Pipeline\" />
     <Folder Include="UoW\" />

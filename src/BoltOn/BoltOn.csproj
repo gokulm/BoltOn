@@ -3,21 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Class1.cs" />
-    <Compile Remove="Logging\BoltOnLoggerDecorator.cs" />
-    <Compile Remove="MediatorModule\Mediator.cs" />
-    <Compile Remove="IoC\IBoltOnContainerFactory.cs" />
-    <Compile Remove="AssemblyRegistrationOrderAttribute.cs" />
-    <Compile Remove="Bootstrapping\BootstrapperOptions.cs" />
-    <Compile Remove="IoC\ServiceFactory.cs" />
-    <Compile Remove="IoC\ServiceLocator.cs" />
-    <Compile Remove="IoC\IBoltOnContainer.cs" />
-    <Compile Remove="Bootstrapping\IBootstrapperRegistrationTask.cs" />
-    <Compile Remove="Bootstrapping\IBootstrapperPostRegistrationTask.cs" />
-    <Compile Remove="IoC\BoltOnIoCAssemblyOptions.cs" />
-  </ItemGroup>
   <ItemGroup>
     <Folder Include="Logging\" />
     <Folder Include="Bootstrapping\" />
@@ -28,7 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -11,14 +11,13 @@
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
-    <PackageReference Include="Moq" Version="4.10.0" />
-    <PackageReference Include="Moq.AutoMock" Version="1.2.0.111" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
+    <PackageReference Include="Moq" Version="4.10.1" />
+    <PackageReference Include="Moq.AutoMock" Version="1.2.0.120" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Logging\" />
     <Folder Include="Bootstrapping\" />
     <Folder Include="Common\" />
     <Folder Include="Mediator\" />
@@ -27,12 +26,5 @@
   <ItemGroup>
     <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
     <ProjectReference Include="..\BoltOn.Mediator\BoltOn.Mediator.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="IoC\NetStandardContainerAdapterTests.cs" />
-    <Compile Remove="IoC\SimpleInjectorContainerAdapterTests.cs" />
-    <Compile Remove="Logging\NLogLoggerAdapterTests.cs" />
-    <Compile Remove="Logging\NetStandardLoggerAdapterTests.cs" />
-    <Compile Remove="Bootstrapping\TestBootstrapperRegistrationTask.cs" />
   </ItemGroup>
 </Project>
