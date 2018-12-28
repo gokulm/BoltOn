@@ -460,6 +460,8 @@ namespace BoltOn.Tests.Mediator
 			_logger = logger;
 		}
 
+		public RequestType RequestType { get; private set; }
+
 		public UnitOfWorkOptions Build<TResponse>(IRequest<TResponse> request)
 		{
 			IsolationLevel isolationLevel;
@@ -469,6 +471,7 @@ namespace BoltOn.Tests.Mediator
 				case IQuery<TResponse> q:
 					_logger.Debug("Getting isolation level for Command or Query");
 					isolationLevel = IsolationLevel.ReadCommitted;
+					RequestType = RequestType.Command;
 					break;
 				default:
 					throw new Exception("Request should implement ICommand<> or IQuery<> to enable Unit of Work.");

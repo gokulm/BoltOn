@@ -13,4 +13,10 @@ namespace BoltOn.Mediator.Pipeline
 	public interface IQuery<out TResponse> : IRequest<TResponse>, IEnableUnitOfWorkMiddleware
 	{
 	}
+
+	public enum RequestType
+	{
+		Query,
+		Command
+	}
 }

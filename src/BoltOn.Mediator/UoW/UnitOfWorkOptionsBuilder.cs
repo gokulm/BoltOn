@@ -8,12 +8,15 @@ namespace BoltOn.Mediator.UoW
 {
 	public interface IUnitOfWorkOptionsBuilder
 	{
+		RequestType RequestType { get; }
 		UnitOfWorkOptions Build<TResponse>(IRequest<TResponse> request);
 	}
 
 	public class UnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
 	{
 		private readonly IBoltOnLogger<UnitOfWorkOptionsBuilder> _logger;
+
+		public RequestType RequestType { get; private set; }
 
 		public UnitOfWorkOptionsBuilder(IBoltOnLogger<UnitOfWorkOptionsBuilder> logger)
 		{
@@ -28,10 +31,12 @@ namespace BoltOn.Mediator.UoW
 				case ICommand<TResponse> c:
 					_logger.Debug("Getting isolation level for Command");
 					isolationLevel = IsolationLevel.ReadCommitted;
+					RequestType = RequestType.Command;
 					break;
 				case IQuery<TResponse> q:
 					_logger.Debug("Getting isolation level for Query");
 					isolationLevel = IsolationLevel.ReadUncommitted;
+					RequestType = RequestType.Query;
 					break;
 				default:
 					throw new Exception("Request should implement ICommand<> or IQuery<> to enable Unit of Work.");
