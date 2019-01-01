@@ -26,7 +26,7 @@ namespace BoltOn.Mediator.Middlewares
 		{
 			var stopwatch = new Stopwatch();
 			_logger.Debug($"StopwatchMiddleware started at {_boltOnClock.Now}");
-			var response = next.Invoke(request);
+			var response = next(request);
 			_logger.Debug($"StopwatchMiddleware ended at {_boltOnClock.Now}. Time elapsed: {stopwatch.ElapsedMilliseconds}");
 			return response;
 		}

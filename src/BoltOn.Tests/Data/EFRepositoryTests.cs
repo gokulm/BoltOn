@@ -11,15 +11,28 @@ namespace BoltOn.Tests.Data
 {
 	public class EFRepositoryTests : IDisposable
 	{
+		private ITestRepository _sut;
+
 		[Fact]
 		public void GetById_WhenRecordExists_ReturnsRecord()
 		{
 			// arrange
-			var services = new ServiceCollection();
-			services.AddDbContext<TestDbContext>(options => options.UseInMemoryDatabase("InMemoryDbForTesting"));
-			services.BoltOn();
-			var serviceProvider = services.BuildServiceProvider();
-			var testRepository = serviceProvider.GetService<ITestRepository>();
+			var serviceCollection = new ServiceCollection();
+			var serviceProvider = SetupInMemoryDb(serviceCollection);
+
+			// act
+			var result = _sut.GetById<TestEntity>(1);
+
+			// assert
+			Assert.NotNull(result);
+			Assert.Equal("a", result.FirstName);
+		}
+
+		private ServiceProvider SetupInMemoryDb(IServiceCollection serviceCollection)
+		{
+			serviceCollection.AddDbContext<TestDbContext>(options => options.UseInMemoryDatabase("InMemoryDbForTesting"));
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
 			var testDbContext = serviceProvider.GetService<TestDbContext>();
 			testDbContext.Set<TestEntity>().Add(new TestEntity
 			{
@@ -28,10 +41,8 @@ namespace BoltOn.Tests.Data
 				LastName = "b"
 			});
 			serviceProvider.BoltOn();
-
-			// act
-			var result = testRepository.GetById<TestEntity>(1);
-
+			_sut = serviceProvider.GetService<ITestRepository>();
+			return serviceProvider;
 		}
 
 		public void Dispose()

@@ -1,6 +1,5 @@
 ﻿using System;
 using BoltOn.Data.EF;
-using BoltOn.Mediator.UoW;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Mediator.Data
@@ -8,20 +7,19 @@ namespace BoltOn.Mediator.Data
 	public class MediatorDbContextFactory : IDbContextFactory
 	{
 		private readonly IServiceProvider _serviceProvider;
-		private readonly IUnitOfWorkOptionsBuilder _unitOfWorkOptionsBuilder;
+		private readonly IMediatorDataContext _mediatorDataContext;
 
 		public MediatorDbContextFactory(IServiceProvider serviceProvider,
-			IUnitOfWorkOptionsBuilder unitOfWorkOptionsBuilder)
+			IMediatorDataContext mediatorDataContext)
 		{
 			_serviceProvider = serviceProvider;
-			_unitOfWorkOptionsBuilder = unitOfWorkOptionsBuilder;
+			_mediatorDataContext = mediatorDataContext;
 		}
 
 		public TDbContext Get<TDbContext>() where TDbContext : DbContext
 		{
 			var dbContext = _serviceProvider.GetService(typeof(TDbContext)) as TDbContext;
-			if (_unitOfWorkOptionsBuilder.RequestType == Pipeline.RequestType.Query)
-				dbContext.ChangeTracker.AutoDetectChangesEnabled = false;
+			dbContext.ChangeTracker.AutoDetectChangesEnabled = _mediatorDataContext.IsAutoDetectChangesEnabled;
 			return dbContext;
 		}
 	}

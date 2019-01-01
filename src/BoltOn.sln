@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Data.EF", "BoltOn.Da
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Data", "BoltOn.Data\BoltOn.Data.csproj", "{934F8EC4-8A00-4506-92FA-A57F94E91574}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Mediator.Data", "BoltOn.Mediator.Data\BoltOn.Mediator.Data.csproj", "{69803292-B755-4274-9BD2-6C1B978936E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Mediator.Data.EF", "BoltOn.Mediator.Data.EF\BoltOn.Mediator.Data.EF.csproj", "{96A60490-975A-4517-9F66-D40443809DEF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,10 +40,10 @@ Global
 		{934F8EC4-8A00-4506-92FA-A57F94E91574}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{934F8EC4-8A00-4506-92FA-A57F94E91574}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{934F8EC4-8A00-4506-92FA-A57F94E91574}.Release|Any CPU.Build.0 = Release|Any CPU
-		{69803292-B755-4274-9BD2-6C1B978936E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{69803292-B755-4274-9BD2-6C1B978936E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{69803292-B755-4274-9BD2-6C1B978936E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{69803292-B755-4274-9BD2-6C1B978936E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96A60490-975A-4517-9F66-D40443809DEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96A60490-975A-4517-9F66-D40443809DEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96A60490-975A-4517-9F66-D40443809DEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96A60490-975A-4517-9F66-D40443809DEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

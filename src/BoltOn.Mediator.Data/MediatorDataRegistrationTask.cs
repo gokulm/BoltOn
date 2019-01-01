@@ -1,5 +1,6 @@
 ﻿using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
+using BoltOn.Mediator.Middlewares;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Mediator.Data
@@ -8,7 +9,10 @@ namespace BoltOn.Mediator.Data
     {
         public void Run(RegistrationTaskContext context)
         {
-            context.Container.AddTransient<IDbContextFactory, MediatorDbContextFactory>();
+			var container = context.Container;
+            container.AddTransient<IDbContextFactory, MediatorDbContextFactory>();
+			container.AddScoped<IMediatorDataContext, MediatorDataContext>();
+			container.AddTransient<IMediatorMiddleware, EFAutoDetectChangesDisablingMiddleware>();
         }
     }
 }
