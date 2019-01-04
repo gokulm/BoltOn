@@ -175,6 +175,7 @@ namespace BoltOn.Bootstrapping
 				_serviceProvider = null;
 				Assemblies = null;
 				_isBolted = false;
+				_callingAssembly = null;
 			}
 		}
 

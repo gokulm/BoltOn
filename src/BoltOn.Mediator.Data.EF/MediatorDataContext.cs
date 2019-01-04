@@ -1,4 +1,3 @@
-using System;
 namespace BoltOn.Mediator.Data.EF
 {
 	public interface IMediatorDataContext

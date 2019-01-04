@@ -32,12 +32,12 @@ namespace BoltOn.Data.EF
 		public async Task<TEntity> GetByIdAsync<TEntity>(object id,
 			CancellationToken cancellationToken = default(CancellationToken)) where TEntity : class
 		{
-			return await DbSets<TEntity>().FindAsync(id, cancellationToken);
+			return await DbSets<TEntity>().FindAsync(id);
 		}
 
 		public IEnumerable<TEntity> GetAll<TEntity>() where TEntity : class
 		{
-			return DbSets<TEntity>().ToList();
+			return DbSets<TEntity>().Select(s => s).ToList();
 		}
 
 		public async Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(CancellationToken cancellationToken = default(CancellationToken))

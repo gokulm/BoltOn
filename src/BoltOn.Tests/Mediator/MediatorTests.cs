@@ -194,7 +194,7 @@ namespace BoltOn.Tests.Mediator
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.BoltOn();
+			serviceProvider.UseBoltOn();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
 			var mediator = serviceProvider.GetService<IMediator>();
 
@@ -220,7 +220,7 @@ namespace BoltOn.Tests.Mediator
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.BoltOn();
+			serviceProvider.UseBoltOn();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
 			var mediator = serviceProvider.GetService<IMediator>();
 
@@ -251,7 +251,7 @@ namespace BoltOn.Tests.Mediator
 			serviceCollection.BoltOn();
 			serviceCollection.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.BoltOn();
+			serviceProvider.UseBoltOn();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
 			var sut = serviceProvider.GetService<IMediator>();
 			var testMiddleware = serviceProvider.GetService<TestMiddleware>();
@@ -279,7 +279,7 @@ namespace BoltOn.Tests.Mediator
 				.BoltOn()
 				.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.BoltOn();
+			serviceProvider.UseBoltOn();
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
@@ -301,7 +301,7 @@ namespace BoltOn.Tests.Mediator
 				.BoltOn()
 				.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.BoltOn();
+			serviceProvider.UseBoltOn();
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act

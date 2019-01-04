@@ -16,7 +16,7 @@ namespace BoltOn.Bootstrapping
 			return serviceCollection;
 		}
 
-		public static void BoltOn(this IServiceProvider serviceProvider)
+		public static void UseBoltOn(this IServiceProvider serviceProvider)
 		{
 			var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
 			Check.Requires(loggerFactory != null, "Add logging to the service collection");
