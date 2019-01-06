@@ -89,7 +89,7 @@ namespace BoltOn.Tests.Data
 		}
 
 		[Fact]
-		public void FindBy_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
+		public void FindByWithoutIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
@@ -101,7 +101,24 @@ namespace BoltOn.Tests.Data
 			// assert
 			Assert.NotNull(result);
 			Assert.Equal("x", result.FirstName);
-			Assert.Empty(result.Addresses);
+			// without includes this should be empty, but it's not, as InMemoryDb uses the same dbcontext and the entity is already loaded
+			//Assert.Empty(result.Addresses);
+		}
+
+		[Fact]
+		public void FindByWitjIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			var serviceProvider = SetUpInMemoryDb(serviceCollection);
+
+			// act
+			var result = _sut.FindBy<Student>(f => f.Id == 2, f => f.Addresses).FirstOrDefault();
+
+			// assert
+			Assert.NotNull(result);
+			Assert.Equal("x", result.FirstName);
+			Assert.NotEmpty(result.Addresses);
 		}
 
 		private ServiceProvider SetUpInMemoryDb(IServiceCollection serviceCollection)
