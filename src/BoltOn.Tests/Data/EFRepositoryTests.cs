@@ -9,6 +9,7 @@ using BoltOn.Bootstrapping;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace BoltOn.Tests.Data
 {
@@ -106,7 +107,7 @@ namespace BoltOn.Tests.Data
 		}
 
 		[Fact]
-		public void FindByWitjIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
+		public void FindByWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
@@ -114,6 +115,22 @@ namespace BoltOn.Tests.Data
 
 			// act
 			var result = _sut.FindBy<Student>(f => f.Id == 2, f => f.Addresses).FirstOrDefault();
+
+			// assert
+			Assert.NotNull(result);
+			Assert.Equal("x", result.FirstName);
+			Assert.NotEmpty(result.Addresses);
+		}
+
+		[Fact]
+		public async Task FindByAsyncWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			var serviceProvider = SetUpInMemoryDb(serviceCollection);
+
+			// act
+			var result = (await _sut.FindByAsync<Student>(f => f.Id == 2, default(CancellationToken), f => f.Addresses)).FirstOrDefault();
 
 			// assert
 			Assert.NotNull(result);
