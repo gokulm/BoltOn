@@ -101,14 +101,15 @@ namespace BoltOn.Tests.Data
 			// assert
 			Assert.NotNull(result);
 			Assert.Equal("x", result.FirstName);
-			Assert.Empty(result.Courses);
+			Assert.Empty(result.Addresses);
 		}
-
-
 
 		private ServiceProvider SetUpInMemoryDb(IServiceCollection serviceCollection)
 		{
-			serviceCollection.AddDbContext<SchoolDbContext>(options => options.UseInMemoryDatabase("InMemoryDbForTesting"));
+			serviceCollection.AddDbContext<SchoolDbContext>(options =>
+			{
+				options.UseInMemoryDatabase("InMemoryDbForTesting");
+			});
 			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			var testDbContext = serviceProvider.GetService<SchoolDbContext>();
@@ -118,16 +119,15 @@ namespace BoltOn.Tests.Data
 				FirstName = "a",
 				LastName = "b"
 			});
-			testDbContext.Set<Student>().Add(new Student
+			var student = new Student
 			{
 				Id = 2,
 				FirstName = "x",
-				LastName = "y",
-				Courses = new List<Course>
-				{
-					new Course { Id = Guid.NewGuid(), Name = "Computer Science"}
-				}
-			});
+				LastName = "y"
+			};
+			var address = new Address { Id = Guid.NewGuid(), Street = "Computer Science", Student = student };
+			testDbContext.Set<Student>().Add(student);
+			testDbContext.Set<Address>().Add(address);
 			testDbContext.SaveChanges();
 			serviceProvider.UseBoltOn();
 			_sut = serviceProvider.GetService<ISchoolRepository>();
@@ -165,12 +165,14 @@ namespace BoltOn.Tests.Data
 	{
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
-		public IEnumerable<Course> Courses { get; set; }
+		public List<Address> Addresses { get; set; } = new List<Address>();
 	}
 
-	public class Course : BaseEntity<Guid>
+	public class Address : BaseEntity<Guid>
 	{
-		public string Name { get; set; }
+		public string Street { get; set; }
+		public string City { get; set; }
+		public Student Student { get; set; }
 	}
 
 	public class StudentMapping : IEntityTypeConfiguration<Student>
@@ -183,21 +185,22 @@ namespace BoltOn.Tests.Data
 			builder
 				.Property(p => p.Id)
 				.HasColumnName("StudentId");
-			builder.
-				HasMany(p => p.Courses);
+			builder
+				.HasMany(p => p.Addresses)
+				.WithOne(p => p.Student);
 		}
 	}
 
-	public class CourseMapping : IEntityTypeConfiguration<Course>
+	public class AddressMapping : IEntityTypeConfiguration<Address>
 	{
-		public void Configure(EntityTypeBuilder<Course> builder)
+		public void Configure(EntityTypeBuilder<Address> builder)
 		{
 			builder
-				.ToTable("Course")
+				.ToTable("Address")
 				.HasKey(k => k.Id);
 			builder
 				.Property(p => p.Id)
-				.HasColumnName("CourseId");
+				.HasColumnName("AddressId");
 		}
 	}
 }

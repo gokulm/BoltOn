@@ -51,7 +51,7 @@ namespace BoltOn.Data.EF
 			where TEntity : class
 		{
 			var query = DbSets<TEntity>().Where(predicate);
-			if (includes != null)
+			if (includes.Any())
 			{
 				query = includes.Aggregate(query,
 					(current, include) => current.Include(include));
