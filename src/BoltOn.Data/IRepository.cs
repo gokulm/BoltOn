@@ -21,8 +21,8 @@ namespace BoltOn.Data
 		   CancellationToken cancellationToken = default(CancellationToken),
 			params Expression<Func<TEntity, object>>[] includes)
 			where TEntity : class;
-		void Add<TEntity>(TEntity entity) where TEntity : class;
-		Task AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
+		TEntity Add<TEntity>(TEntity entity) where TEntity : class;
+		Task<TEntity> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
 			where TEntity : class;
 		void Update<TEntity>(TEntity entity) where TEntity : class;
 		Task UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
@@ -40,8 +40,8 @@ namespace BoltOn.Data
 		Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
 			CancellationToken cancellationToken = default(CancellationToken),
 			params Expression<Func<TEntity, object>>[] includes);
-		void Add(TEntity entity);
-		Task AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken));
+		TEntity Add(TEntity entity);
+		Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken));
 		void Update(TEntity entity);
 		Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken));
 	}

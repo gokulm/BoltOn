@@ -75,17 +75,19 @@ namespace BoltOn.Data.EF
 			return await query.ToListAsync(cancellationToken);
 		}
 
-		public void Add<TEntity>(TEntity entity) where TEntity : class
+		public TEntity Add<TEntity>(TEntity entity) where TEntity : class
 		{
 			DbSets<TEntity>().Add(entity);
 			_dbContext.SaveChanges();
+			return entity;
 		}
 
-		public async Task AddAsync<TEntity>(TEntity entity,
+		public async Task<TEntity> AddAsync<TEntity>(TEntity entity,
 			CancellationToken cancellationToken = default(CancellationToken)) where TEntity : class
 		{
 			DbSets<TEntity>().Add(entity);
 			await _dbContext.SaveChangesAsync(cancellationToken);
+			return entity;
 		}
 
 		public void Update<TEntity>(TEntity entity) where TEntity : class
@@ -164,16 +166,18 @@ namespace BoltOn.Data.EF
 			return await query.ToListAsync(cancellationToken);
 		}
 
-		public void Add(TEntity entity)
+		public TEntity Add(TEntity entity)
 		{
 			DbSets.Add(entity);
 			_dbContext.SaveChanges();
+			return entity;
 		}
 
-		public async Task AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			DbSets.Add(entity);
 			await _dbContext.SaveChangesAsync(cancellationToken);
+			return entity;
 		}
 
 		public void Update(TEntity entity)

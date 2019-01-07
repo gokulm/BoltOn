@@ -15,7 +15,7 @@ namespace BoltOn.Tests.Data
 {
 	public class EFRepositoryTests : IDisposable
 	{
-		private ISchoolRepository _sut;
+		private ITestRepository _sut;
 
 		[Fact]
 		public void GetById_WhenRecordExists_ReturnsRecord()
@@ -138,6 +138,90 @@ namespace BoltOn.Tests.Data
 			Assert.NotEmpty(result.Addresses);
 		}
 
+		[Fact]
+		public void Add_AddANewEntity_ReturnsAddedEntity()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			var serviceProvider = SetUpInMemoryDb(serviceCollection);
+			const int newStudentId = 3;
+			var student = new Student
+			{
+				Id = newStudentId,
+				FirstName = "c",
+				LastName = "d"
+			};
+
+			// act
+			var result = _sut.Add(student);
+			var queryResult = _sut.GetById<Student>(newStudentId);
+
+			// assert
+			Assert.NotNull(queryResult);
+			Assert.Equal("c", queryResult.FirstName);
+			Assert.Equal(result.FirstName, queryResult.FirstName);
+		}
+
+		[Fact]
+		public async Task AddAsync_AddANewEntity_ReturnsAddedEntity()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			var serviceProvider = SetUpInMemoryDb(serviceCollection);
+			const int newStudentId = 3;
+			var student = new Student
+			{
+				Id = newStudentId,
+				FirstName = "c",
+				LastName = "d"
+			};
+
+			// act
+			var result = await _sut.AddAsync(student);
+			var queryResult = _sut.GetById<Student>(newStudentId);
+
+			// assert
+			Assert.NotNull(queryResult);
+			Assert.Equal("c", queryResult.FirstName);
+			Assert.Equal(result.FirstName, queryResult.FirstName);
+		}
+
+		[Fact]
+		public void Update_UpdateAnExistingEntity_UpdatesTheEntity()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			var serviceProvider = SetUpInMemoryDb(serviceCollection);
+			var student = _sut.GetById<Student>(2);
+
+			// act
+			student.FirstName = "c";
+			_sut.Update(student);
+			var queryResult = _sut.GetById<Student>(2);
+
+			// assert
+			Assert.NotNull(queryResult);
+			Assert.Equal("c", queryResult.FirstName);
+		}
+
+		[Fact]
+		public async Task UpdateAsync_UpdateAnExistingEntity_UpdatesTheEntity()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			var serviceProvider = SetUpInMemoryDb(serviceCollection);
+			var student = _sut.GetById<Student>(2);
+
+			// act
+			student.FirstName = "c";
+		    await _sut.UpdateAsync(student);
+			var queryResult = _sut.GetById<Student>(2);
+
+			// assert
+			Assert.NotNull(queryResult);
+			Assert.Equal("c", queryResult.FirstName);
+		}
+
 		private ServiceProvider SetUpInMemoryDb(IServiceCollection serviceCollection)
 		{
 			serviceCollection.AddDbContext<SchoolDbContext>(options =>
@@ -164,7 +248,7 @@ namespace BoltOn.Tests.Data
 			testDbContext.Set<Address>().Add(address);
 			testDbContext.SaveChanges();
 			serviceProvider.UseBoltOn();
-			_sut = serviceProvider.GetService<ISchoolRepository>();
+			_sut = serviceProvider.GetService<ITestRepository>();
 			return serviceProvider;
 		}
 
@@ -176,14 +260,14 @@ namespace BoltOn.Tests.Data
 		}
 	}
 
-	public interface ISchoolRepository : IRepository
+	public interface ITestRepository : IRepository
 	{
 
 	}
 
-	public class SchoolRepository : BaseEFRepository<SchoolDbContext>, ISchoolRepository
+	public class TestRepository : BaseEFRepository<SchoolDbContext>, ITestRepository
 	{
-		public SchoolRepository(IDbContextFactory dbContextFactory) : base(dbContextFactory)
+		public TestRepository(IDbContextFactory dbContextFactory) : base(dbContextFactory)
 		{
 		}
 	}
