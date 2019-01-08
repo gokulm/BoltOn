@@ -15,6 +15,8 @@ namespace BoltOn.Bootstrapping
 		private IServiceProvider _serviceProvider;
 		private BoltOnOptions _options;
 		private bool _isBolted;
+		// this is mainly used to make Dispose thread safe, as multiple threads call Dispose on integration tests 
+		private readonly object _lock = new object();
 
 		private Bootstrapper()
 		{
@@ -50,23 +52,29 @@ namespace BoltOn.Bootstrapping
 
 		internal void BoltOn(IServiceCollection serviceCollection, BoltOnOptions options, Assembly callingAssembly = null)
 		{
-			Check.Requires(!_isBolted, "Components are already bolted");
-			_serviceCollection = serviceCollection;
-			_options = options;
-			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
-			LoadAssemblies();
-			RunPreRegistrationTasks();
-			RunRegistrationTasks();
-			_isBolted = true;
+			lock (_lock)
+			{
+				Check.Requires(!_isBolted, "Components are already bolted");
+				_isBolted = true;
+				_serviceCollection = serviceCollection;
+				_options = options;
+				_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
+				LoadAssemblies();
+				RunPreRegistrationTasks();
+				RunRegistrationTasks();
+			}
 		}
 
 		internal void RunPostRegistrationTasks(IServiceProvider serviceProvider)
 		{
-			_serviceProvider = serviceProvider;
-			var context = new PostRegistrationTaskContext(this);
-			var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IBootstrapperPostRegistrationTask>>();
-			var tasks = serviceProvider.GetServices<IBootstrapperPostRegistrationTask>();
-			postRegistrationTasks.ToList().ForEach(t => t.Run(context));
+			lock (_lock)
+			{
+				_serviceProvider = serviceProvider;
+				var context = new PostRegistrationTaskContext(this);
+				var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IBootstrapperPostRegistrationTask>>();
+				var tasks = serviceProvider.GetServices<IBootstrapperPostRegistrationTask>();
+				postRegistrationTasks.ToList().ForEach(t => t.Run(context));
+			}
 		}
 
 		private void LoadAssemblies()
@@ -169,13 +177,16 @@ namespace BoltOn.Bootstrapping
 
 		private void Dispose(bool disposing)
 		{
-			if (disposing)
+			lock (_lock)
 			{
-				_serviceCollection = null;
-				_serviceProvider = null;
-				Assemblies = null;
-				_isBolted = false;
-				_callingAssembly = null;
+				if (disposing)
+				{
+					_serviceCollection = null;
+					_serviceProvider = null;
+					Assemblies = null;
+					_callingAssembly = null;
+					_isBolted = false;
+				}
 			}
 		}
 

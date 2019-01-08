@@ -17,10 +17,11 @@ namespace BoltOn.Tests.Data
 	{
 		private ITestRepository _sut;
 
-		[Fact]
+		[Fact, Trait("Category", "Integration")]
 		public void GetById_WhenRecordExists_ReturnsRecord()
 		{
 			// arrange
+			Thread.Sleep(800);
 			var serviceCollection = new ServiceCollection();
 			var serviceProvider = SetUpInMemoryDb(serviceCollection);
 
@@ -32,10 +33,11 @@ namespace BoltOn.Tests.Data
 			Assert.Equal("a", result.FirstName);
 		}
 
-		[Fact]
+		[Fact, Trait("Category", "Integration")]
 		public void GetById_WhenRecordDoesNotExist_ReturnsNull()
 		{
 			// arrange
+			Thread.Sleep(800);
 			var serviceCollection = new ServiceCollection();
 			var serviceProvider = SetUpInMemoryDb(serviceCollection);
 
@@ -46,7 +48,7 @@ namespace BoltOn.Tests.Data
 			Assert.Null(result);
 		}
 
-		[Fact]
+		[Fact, Trait("Category", "Integration")]
 		public async Task GetByIdAsync_WhenRecordExists_ReturnsRecord()
 		{
 			// arrange
@@ -61,7 +63,7 @@ namespace BoltOn.Tests.Data
 			Assert.Equal("a", result.FirstName);
 		}
 
-		[Fact]
+		[Fact, Trait("Category", "Integration")]
 		public void GetAll_WhenRecordsExist_ReturnsAllTheRecords()
 		{
 			// arrange
@@ -75,7 +77,7 @@ namespace BoltOn.Tests.Data
 			Assert.Equal(2, result.Count);
 		}
 
-		[Fact]
+		[Fact, Trait("Category", "Integration")]
 		public async Task GetAllAsync_WhenRecordsExist_ReturnsAllTheRecords()
 		{
 			// arrange
@@ -89,7 +91,7 @@ namespace BoltOn.Tests.Data
 			Assert.Equal(2, result.Count());
 		}
 
-		[Fact]
+		[Fact, Trait("Category", "Integration")]
 		public void FindByWithoutIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
 		{
 			// arrange
@@ -106,7 +108,7 @@ namespace BoltOn.Tests.Data
 			//Assert.Empty(result.Addresses);
 		}
 
-		[Fact]
+		[Fact, Trait("Category", "Integration")]
 		public void FindByWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
 		{
 			// arrange
@@ -122,7 +124,7 @@ namespace BoltOn.Tests.Data
 			Assert.NotEmpty(result.Addresses);
 		}
 
-		[Fact]
+		[Fact, Trait("Category", "Integration")]
 		public async Task FindByAsyncWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
 		{
 			// arrange
@@ -138,7 +140,7 @@ namespace BoltOn.Tests.Data
 			Assert.NotEmpty(result.Addresses);
 		}
 
-		[Fact]
+		[Fact, Trait("Category", "Integration")]
 		public void Add_AddANewEntity_ReturnsAddedEntity()
 		{
 			// arrange
@@ -162,7 +164,7 @@ namespace BoltOn.Tests.Data
 			Assert.Equal(result.FirstName, queryResult.FirstName);
 		}
 
-		[Fact]
+		[Fact, Trait("Category", "Integration")]
 		public async Task AddAsync_AddANewEntity_ReturnsAddedEntity()
 		{
 			// arrange
@@ -186,7 +188,7 @@ namespace BoltOn.Tests.Data
 			Assert.Equal(result.FirstName, queryResult.FirstName);
 		}
 
-		[Fact]
+		[Fact, Trait("Category", "Integration")]
 		public void Update_UpdateAnExistingEntity_UpdatesTheEntity()
 		{
 			// arrange
@@ -204,7 +206,7 @@ namespace BoltOn.Tests.Data
 			Assert.Equal("c", queryResult.FirstName);
 		}
 
-		[Fact]
+		[Fact, Trait("Category", "Integration")]
 		public async Task UpdateAsync_UpdateAnExistingEntity_UpdatesTheEntity()
 		{
 			// arrange
