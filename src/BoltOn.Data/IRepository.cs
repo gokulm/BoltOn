@@ -32,7 +32,7 @@ namespace BoltOn.Data
 	public interface IRepository<TEntity>
 	{
 		TEntity GetById(object id);
-		Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default(CancellationToken));
+		Task<TEntity> GetByIdAsync(object id);
 		IEnumerable<TEntity> GetAll();
 		Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default(CancellationToken));
 		IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate,

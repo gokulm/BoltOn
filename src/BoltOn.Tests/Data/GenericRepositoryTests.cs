@@ -13,17 +13,24 @@ using System.Threading;
 
 namespace BoltOn.Tests.Data
 {
-	public class EFRepositoryTests : IDisposable
+	[Collection("IntegrationTests")]
+	public class GenericRepositoryTests : IDisposable
 	{
-		private ITestRepository _sut;
+		private static ITestRepository _sut;
+
+		public GenericRepositoryTests()
+		{
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.UseBoltOn();
+			_sut = serviceProvider.GetService<ITestRepository>();
+		}
 
 		[Fact, Trait("Category", "Integration")]
 		public void GetById_WhenRecordExists_ReturnsRecord()
 		{
 			// arrange
-			Thread.Sleep(800);
-			var serviceCollection = new ServiceCollection();
-			var serviceProvider = SetUpInMemoryDb(serviceCollection);
 
 			// act
 			var result = _sut.GetById<Student>(1);
@@ -37,9 +44,6 @@ namespace BoltOn.Tests.Data
 		public void GetById_WhenRecordDoesNotExist_ReturnsNull()
 		{
 			// arrange
-			Thread.Sleep(800);
-			var serviceCollection = new ServiceCollection();
-			var serviceProvider = SetUpInMemoryDb(serviceCollection);
 
 			// act
 			var result = _sut.GetById<Student>(3);
@@ -52,8 +56,6 @@ namespace BoltOn.Tests.Data
 		public async Task GetByIdAsync_WhenRecordExists_ReturnsRecord()
 		{
 			// arrange
-			var serviceCollection = new ServiceCollection();
-			var serviceProvider = SetUpInMemoryDb(serviceCollection);
 
 			// act
 			var result = await _sut.GetByIdAsync<Student>(1);
@@ -67,8 +69,6 @@ namespace BoltOn.Tests.Data
 		public void GetAll_WhenRecordsExist_ReturnsAllTheRecords()
 		{
 			// arrange
-			var serviceCollection = new ServiceCollection();
-			var serviceProvider = SetUpInMemoryDb(serviceCollection);
 
 			// act
 			var result = _sut.GetAll<Student>().ToList();
@@ -81,8 +81,6 @@ namespace BoltOn.Tests.Data
 		public async Task GetAllAsync_WhenRecordsExist_ReturnsAllTheRecords()
 		{
 			// arrange
-			var serviceCollection = new ServiceCollection();
-			var serviceProvider = SetUpInMemoryDb(serviceCollection);
 
 			// act
 			var result = await _sut.GetAllAsync<Student>();
@@ -95,8 +93,6 @@ namespace BoltOn.Tests.Data
 		public void FindByWithoutIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
 		{
 			// arrange
-			var serviceCollection = new ServiceCollection();
-			var serviceProvider = SetUpInMemoryDb(serviceCollection);
 
 			// act
 			var result = _sut.FindBy<Student>(f => f.Id == 2).FirstOrDefault();
@@ -112,8 +108,6 @@ namespace BoltOn.Tests.Data
 		public void FindByWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
 		{
 			// arrange
-			var serviceCollection = new ServiceCollection();
-			var serviceProvider = SetUpInMemoryDb(serviceCollection);
 
 			// act
 			var result = _sut.FindBy<Student>(f => f.Id == 2, f => f.Addresses).FirstOrDefault();
@@ -128,8 +122,6 @@ namespace BoltOn.Tests.Data
 		public async Task FindByAsyncWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
 		{
 			// arrange
-			var serviceCollection = new ServiceCollection();
-			var serviceProvider = SetUpInMemoryDb(serviceCollection);
 
 			// act
 			var result = (await _sut.FindByAsync<Student>(f => f.Id == 2, default(CancellationToken), f => f.Addresses)).FirstOrDefault();
@@ -144,8 +136,6 @@ namespace BoltOn.Tests.Data
 		public void Add_AddANewEntity_ReturnsAddedEntity()
 		{
 			// arrange
-			var serviceCollection = new ServiceCollection();
-			var serviceProvider = SetUpInMemoryDb(serviceCollection);
 			const int newStudentId = 3;
 			var student = new Student
 			{
@@ -168,9 +158,7 @@ namespace BoltOn.Tests.Data
 		public async Task AddAsync_AddANewEntity_ReturnsAddedEntity()
 		{
 			// arrange
-			var serviceCollection = new ServiceCollection();
-			var serviceProvider = SetUpInMemoryDb(serviceCollection);
-			const int newStudentId = 3;
+			const int newStudentId = 4;
 			var student = new Student
 			{
 				Id = newStudentId,
@@ -192,8 +180,6 @@ namespace BoltOn.Tests.Data
 		public void Update_UpdateAnExistingEntity_UpdatesTheEntity()
 		{
 			// arrange
-			var serviceCollection = new ServiceCollection();
-			var serviceProvider = SetUpInMemoryDb(serviceCollection);
 			var student = _sut.GetById<Student>(2);
 
 			// act
@@ -210,13 +196,11 @@ namespace BoltOn.Tests.Data
 		public async Task UpdateAsync_UpdateAnExistingEntity_UpdatesTheEntity()
 		{
 			// arrange
-			var serviceCollection = new ServiceCollection();
-			var serviceProvider = SetUpInMemoryDb(serviceCollection);
 			var student = _sut.GetById<Student>(2);
 
 			// act
 			student.FirstName = "c";
-		    await _sut.UpdateAsync(student);
+			await _sut.UpdateAsync(student);
 			var queryResult = _sut.GetById<Student>(2);
 
 			// assert
@@ -224,14 +208,30 @@ namespace BoltOn.Tests.Data
 			Assert.Equal("c", queryResult.FirstName);
 		}
 
-		private ServiceProvider SetUpInMemoryDb(IServiceCollection serviceCollection)
+		public void Dispose()
 		{
-			serviceCollection.AddDbContext<SchoolDbContext>(options =>
+			Bootstrapper
+				.Instance
+				.Dispose();
+		}
+	}
+
+	public class TestDataRegistrationTask : IBootstrapperRegistrationTask
+	{
+		public void Run(RegistrationTaskContext context)
+		{
+			context.Container.AddDbContext<SchoolDbContext>(options =>
 			{
 				options.UseInMemoryDatabase("InMemoryDbForTesting");
 			});
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
+		}
+	}
+
+	public class TestDataPostRegistrationTask : IBootstrapperPostRegistrationTask
+	{
+		public void Run(PostRegistrationTaskContext context)
+		{
+			var serviceProvider = context.ServiceProvider;
 			var testDbContext = serviceProvider.GetService<SchoolDbContext>();
 			testDbContext.Set<Student>().Add(new Student
 			{
@@ -249,16 +249,6 @@ namespace BoltOn.Tests.Data
 			testDbContext.Set<Student>().Add(student);
 			testDbContext.Set<Address>().Add(address);
 			testDbContext.SaveChanges();
-			serviceProvider.UseBoltOn();
-			_sut = serviceProvider.GetService<ITestRepository>();
-			return serviceProvider;
-		}
-
-		public void Dispose()
-		{
-			Bootstrapper
-				.Instance
-				.Dispose();
 		}
 	}
 

@@ -9,7 +9,7 @@ namespace BoltOn.Bootstrapping
 {
 	internal sealed class Bootstrapper : IDisposable
 	{
-		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
+		private static Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
 		private Assembly _callingAssembly;
 		private IServiceCollection _serviceCollection;
 		private IServiceProvider _serviceProvider;
@@ -48,33 +48,36 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
+		internal IServiceProvider ServiceProvider
+		{
+			get
+			{
+				Check.Requires(_serviceProvider != null, "ServiceProvider not initialized");
+				return _serviceProvider;
+			}
+		}
+
 		internal IReadOnlyList<Assembly> Assemblies { get; private set; }
 
 		internal void BoltOn(IServiceCollection serviceCollection, BoltOnOptions options, Assembly callingAssembly = null)
 		{
-			lock (_lock)
-			{
-				Check.Requires(!_isBolted, "Components are already bolted");
-				_isBolted = true;
-				_serviceCollection = serviceCollection;
-				_options = options;
-				_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
-				LoadAssemblies();
-				RunPreRegistrationTasks();
-				RunRegistrationTasks();
-			}
+			Check.Requires(!_isBolted, "Components are already bolted");
+			_isBolted = true;
+			_serviceCollection = serviceCollection;
+			_options = options;
+			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
+			LoadAssemblies();
+			RunPreRegistrationTasks();
+			RunRegistrationTasks();
 		}
 
 		internal void RunPostRegistrationTasks(IServiceProvider serviceProvider)
 		{
-			lock (_lock)
-			{
-				_serviceProvider = serviceProvider;
-				var context = new PostRegistrationTaskContext(this);
-				var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IBootstrapperPostRegistrationTask>>();
-				var tasks = serviceProvider.GetServices<IBootstrapperPostRegistrationTask>();
-				postRegistrationTasks.ToList().ForEach(t => t.Run(context));
-			}
+			_serviceProvider = serviceProvider;
+			var context = new PostRegistrationTaskContext(this);
+			var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IBootstrapperPostRegistrationTask>>();
+			var tasks = serviceProvider.GetServices<IBootstrapperPostRegistrationTask>();
+			postRegistrationTasks.ToList().ForEach(t => t.Run(context));
 		}
 
 		private void LoadAssemblies()
@@ -177,16 +180,13 @@ namespace BoltOn.Bootstrapping
 
 		private void Dispose(bool disposing)
 		{
-			lock (_lock)
+			if (disposing)
 			{
-				if (disposing)
-				{
-					_serviceCollection = null;
-					_serviceProvider = null;
-					Assemblies = null;
-					_callingAssembly = null;
-					_isBolted = false;
-				}
+				_serviceCollection = null;
+				_serviceProvider = null;
+				Assemblies = null;
+				_callingAssembly = null;
+				_isBolted = false;
 			}
 		}
 

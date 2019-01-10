@@ -10,6 +10,7 @@ using Xunit;
 namespace BoltOn.Tests.Bootstrapping
 {
 	[TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
+	[Collection("IntegrationTests")]
 	public class BootstrapperTests : IDisposable
 	{
 		[Fact, TestPriority(1)]
@@ -68,21 +69,21 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.NotNull(ex);
 		}
 
-		[Fact, TestPriority(5)]
-		public void BoltOn_UseBoltOnWithoutLogging_ThrowsException()
-		{
-			// arrange	
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
+		//[Fact, TestPriority(5)]
+		//public void BoltOn_UseBoltOnWithoutLogging_ThrowsException()
+		//{
+		//	// arrange	
+		//	var serviceCollection = new ServiceCollection();
+		//	serviceCollection.BoltOn();
+		//	var serviceProvider = serviceCollection.BuildServiceProvider();
 
-			// act 
-			var ex = Record.Exception(() => serviceProvider.UseBoltOn());
+		//	// act 
+		//	var ex = Record.Exception(() => serviceProvider.UseBoltOn());
 
-			// assert
-			Assert.NotNull(ex);
-			Assert.Equal("Add logging to the service collection", ex.Message);
-		}
+		//	// assert
+		//	Assert.NotNull(ex);
+		//	Assert.Equal("Add logging to the service collection", ex.Message);
+		//}
 
 		[Fact, TestPriority(6)]
 		public void BoltOn_ConcreteClassWithoutRegistrationButResolvableDependencies_ReturnsInstance()
@@ -240,7 +241,6 @@ namespace BoltOn.Tests.Bootstrapping
 
 			// assert
 			Assert.Null(test);
-
 		}
 
 		public void Dispose()

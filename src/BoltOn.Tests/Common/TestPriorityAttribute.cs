@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace BoltOn.Tests.Common
 {
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]

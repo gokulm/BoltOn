@@ -123,10 +123,9 @@ namespace BoltOn.Data.EF
 			return DbSets.Find(id);
 		}
 
-		public async Task<TEntity> GetByIdAsync(object id,
-			CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<TEntity> GetByIdAsync(object id) 
 		{
-			return await DbSets.FindAsync(id, cancellationToken);
+			return await DbSets.FindAsync(id);
 		}
 
 		public IEnumerable<TEntity> GetAll()

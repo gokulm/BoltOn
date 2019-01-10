@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -55,6 +56,14 @@ namespace BoltOn.Bootstrapping
 		internal PostRegistrationTaskContext(Bootstrapper bootstrapper)
 		{
 			_bootstrapper = bootstrapper;
+		}
+
+		public IServiceProvider ServiceProvider
+		{
+			get
+			{
+				return _bootstrapper.ServiceProvider;
+			}
 		}
 
 		public IReadOnlyList<Assembly> Assemblies
