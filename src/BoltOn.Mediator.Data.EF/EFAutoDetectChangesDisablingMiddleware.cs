@@ -17,11 +17,12 @@ namespace BoltOn.Mediator.Data.EF
 			_mediatorDataContext = mediatorDataContext;
 		}
 
-		public MediatorResponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request, Func<IRequest<TResponse>, MediatorResponse<TResponse>> next) where TRequest : IRequest<TResponse>
+		public MediatorResponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request, 
+			Func<IRequest<TResponse>, MediatorResponse<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
 			_logger.Debug($"Entering {nameof(EFAutoDetectChangesDisablingMiddleware)}...");
 			_mediatorDataContext.IsAutoDetectChangesEnabled = !(request is IQuery<TResponse>);
-			_logger.Debug($"IsAutoDetectChangesDisabled: {_mediatorDataContext.IsAutoDetectChangesEnabled}");
+			_logger.Debug($"IsAutoDetectChangesEnabled: {_mediatorDataContext.IsAutoDetectChangesEnabled}");
 			var response = next(request);
 			return response;
 		}

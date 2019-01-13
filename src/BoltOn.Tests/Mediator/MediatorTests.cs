@@ -4,6 +4,7 @@ using System.Transactions;
 using BoltOn.Bootstrapping;
 using BoltOn.Logging;
 using BoltOn.Mediator;
+using BoltOn.Mediator.Data.EF;
 using BoltOn.Mediator.Middlewares;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Mediator.UoW;
@@ -17,13 +18,6 @@ namespace BoltOn.Tests.Mediator
 {
 	public class MediatorTests : IDisposable
 	{
-		public MediatorTests()
-		{
-			Bootstrapper
-				.Instance
-				.Dispose();
-		}
-
 		[Fact]
 		public void Get_RegisteredHandlerThatReturnsBool_ReturnsSuccessfulResult()
 		{
@@ -140,6 +134,68 @@ namespace BoltOn.Tests.Mediator
 			uow.Verify(u => u.Commit());
 			logger.Verify(l => l.Debug($"About to start UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
 			logger.Verify(l => l.Debug("UnitOfWorkMiddleware ended"));
+		}
+
+		[Fact]
+		public void Get_MediatorWithQueryRequest_ExecutesEFAutoDetectChangesDisablingMiddlewareAndDisablesAutoDetectChangesEnabled()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
+			var testHandler = new Mock<TestHandler>();
+			var middleware = new Mock<IMediatorMiddleware>();
+			var logger = new Mock<IBoltOnLogger<EFAutoDetectChangesDisablingMiddleware>>();
+			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestQuery, bool>)))
+				.Returns(testHandler.Object);
+			var request = new TestQuery();
+			var mediatorContext = new MediatorDataContext();
+			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>
+			{
+				new EFAutoDetectChangesDisablingMiddleware(logger.Object, mediatorContext)
+			});
+			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			testHandler.Setup(s => s.Handle(request)).Returns(true);
+
+			// act
+			var result = sut.Get(request);
+
+			// assert 
+			Assert.True(result.IsSuccessful);
+			Assert.True(result.Data);
+			Assert.False(mediatorContext.IsAutoDetectChangesEnabled);
+			logger.Verify(l => l.Debug($"Entering {nameof(EFAutoDetectChangesDisablingMiddleware)}..."));
+			logger.Verify(l => l.Debug($"IsAutoDetectChangesEnabled: {false}"));
+		}
+
+		[Fact]
+		public void Get_MediatorWithCommandRequest_ExecutesEFAutoDetectChangesDisablingMiddlewareAndEnablesAutoDetectChangesEnabled()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
+			var testHandler = new Mock<TestHandler>();
+			var middleware = new Mock<IMediatorMiddleware>();
+			var logger = new Mock<IBoltOnLogger<EFAutoDetectChangesDisablingMiddleware>>();
+			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestCommand, bool>)))
+				.Returns(testHandler.Object);
+			var request = new TestCommand();
+			var mediatorContext = new MediatorDataContext();
+			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>
+			{
+				new EFAutoDetectChangesDisablingMiddleware(logger.Object, mediatorContext)
+			});
+			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			testHandler.Setup(s => s.Handle(request)).Returns(true);
+
+			// act
+			var result = sut.Get(request);
+
+			// assert 
+			Assert.True(result.IsSuccessful);
+			Assert.True(result.Data);
+			Assert.True(mediatorContext.IsAutoDetectChangesEnabled);
+			logger.Verify(l => l.Debug($"Entering {nameof(EFAutoDetectChangesDisablingMiddleware)}..."));
+			logger.Verify(l => l.Debug($"IsAutoDetectChangesEnabled: {true}"));
 		}
 
 		[Fact]

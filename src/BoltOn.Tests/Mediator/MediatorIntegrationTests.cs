@@ -5,6 +5,7 @@ using System.Transactions;
 using BoltOn.Bootstrapping;
 using BoltOn.Logging;
 using BoltOn.Mediator;
+using BoltOn.Mediator.Data.EF;
 using BoltOn.Mediator.Middlewares;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Mediator.UoW;
@@ -154,6 +155,29 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
+		[Fact, Trait("Category", "Integration")]
+		public void Get_MediatorWithQueryRequest_ExecutesEFAutoDetectChangesDisablingMiddleware()
+		{
+			// arrange
+			MediatorTestHelper.IsCustomizeIsolationLevel = true;
+			var serviceCollection = new ServiceCollection();
+			serviceCollection
+				.BoltOn()
+				.AddLogging();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.UseBoltOn();
+			var sut = serviceProvider.GetService<IMediator>();
+
+			// act
+			var result = sut.Get(new TestQuery());
+
+			// assert 
+			Assert.True(result.IsSuccessful);
+			Assert.True(result.Data);
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(EFAutoDetectChangesDisablingMiddleware)}..."));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsAutoDetectChangesEnabled: {false}"));
+		}
+
 		public void Dispose()
 		{
 			MediatorTestHelper.LoggerStatements.Clear();
@@ -181,6 +205,11 @@ namespace BoltOn.Tests.Mediator
 			stopWatchMiddlewareLogger.Setup(s => s.Debug(It.IsAny<string>()))
 									 .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
 			context.Container.AddTransient((s) => stopWatchMiddlewareLogger.Object);
+
+			var efAutoDetectChangesMiddleware = new Mock<IBoltOnLogger<EFAutoDetectChangesDisablingMiddleware>>();
+			efAutoDetectChangesMiddleware.Setup(s => s.Debug(It.IsAny<string>()))
+									 .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
+			context.Container.AddTransient((s) => efAutoDetectChangesMiddleware.Object);
 
 			var customUoWOptionsBuilder = new Mock<IBoltOnLogger<CustomUnitOfWorkOptionsBuilder>>();
 			customUoWOptionsBuilder.Setup(s => s.Debug(It.IsAny<string>()))
@@ -294,8 +323,6 @@ namespace BoltOn.Tests.Mediator
 			_logger = logger;
 		}
 
-		public RequestType RequestType { get; private set; }
-
 		public UnitOfWorkOptions Build<TResponse>(IRequest<TResponse> request)
 		{
 			IsolationLevel isolationLevel;
@@ -305,7 +332,6 @@ namespace BoltOn.Tests.Mediator
 				case IQuery<TResponse> q:
 					_logger.Debug("Getting isolation level for Command or Query");
 					isolationLevel = IsolationLevel.ReadCommitted;
-					RequestType = RequestType.Command;
 					break;
 				default:
 					throw new Exception("Request should implement ICommand<> or IQuery<> to enable Unit of Work.");
