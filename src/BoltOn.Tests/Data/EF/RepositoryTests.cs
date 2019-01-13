@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
 
-namespace BoltOn.Tests.Data
+namespace BoltOn.Tests.Data.EF
 {
 	// Collection is used to prevent running tests in parallel i.e., tests in the same collection
 	// will not be executed in parallel

@@ -26,6 +26,9 @@
     <Folder Include="Mediator\" />
     <Folder Include="UoW\" />
     <Folder Include="Data\" />
+    <Folder Include="Data\EF\" />
+    <Folder Include="Mediator\Data\" />
+    <Folder Include="Mediator\Data\EF\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BoltOn\BoltOn.csproj" />

@@ -11,7 +11,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace BoltOn.Tests.Data
+namespace BoltOn.Tests.Data.EF
 {
 	[Collection("IntegrationTests")]
 	public class GenericRepositoryTests : IDisposable
