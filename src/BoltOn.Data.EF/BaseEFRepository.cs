@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BoltOn.Data.EF
 {
 	public abstract class BaseEFRepository<TDbContext> : IRepository
-	where TDbContext : DbContext
+		where TDbContext : DbContext
 	{
 		private readonly TDbContext _dbContext;
 

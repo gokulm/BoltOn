@@ -2,7 +2,6 @@
 using BoltOn.Bootstrapping;
 using BoltOn.Logging;
 using BoltOn.Mediator;
-using BoltOn.Mediator.Data.EF;
 using BoltOn.Mediator.Middlewares;
 using BoltOn.Mediator.UoW;
 using BoltOn.Utilities;
@@ -11,7 +10,7 @@ using Moq;
 
 namespace BoltOn.Tests.Mediator
 {
-    public class TestMediatorRegistrationTask : IBootstrapperRegistrationTask
+	public class TestMediatorRegistrationTask : IBootstrapperRegistrationTask
     {
         public void Run(RegistrationTaskContext context)
         {
@@ -30,10 +29,10 @@ namespace BoltOn.Tests.Mediator
                                      .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
             context.Container.AddTransient((s) => stopWatchMiddlewareLogger.Object);
 
-            var efAutoDetectChangesMiddleware = new Mock<IBoltOnLogger<EFAutoDetectChangesDisablingMiddleware>>();
-            efAutoDetectChangesMiddleware.Setup(s => s.Debug(It.IsAny<string>()))
-                                     .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-            context.Container.AddTransient((s) => efAutoDetectChangesMiddleware.Object);
+            //var efAutoDetectChangesMiddleware = new Mock<IBoltOnLogger<EFAutoDetectChangesDisablingMiddleware>>();
+            //efAutoDetectChangesMiddleware.Setup(s => s.Debug(It.IsAny<string>()))
+            //                         .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
+            //context.Container.AddTransient((s) => efAutoDetectChangesMiddleware.Object);
 
             var customUoWOptionsBuilder = new Mock<IBoltOnLogger<CustomUnitOfWorkOptionsBuilder>>();
             customUoWOptionsBuilder.Setup(s => s.Debug(It.IsAny<string>()))

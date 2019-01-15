@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using BoltOn.Bootstrapping;
 using BoltOn.Logging;
-using BoltOn.Mediator.Middlewares;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Mediator.UoW;
 using BoltOn.UoW;
@@ -185,12 +183,5 @@ namespace BoltOn.Tests.Mediator
 			}
 			return new UnitOfWorkOptions { IsolationLevel = isolationLevel };
 		}
-	}
-
-	public class MediatorTestHelper
-	{
-		public static List<string> LoggerStatements { get; set; } = new List<string>();
-		public static bool IsClearMiddlewares { get; set; }
-		public static bool IsCustomizeIsolationLevel { get; set; }
 	}
 }

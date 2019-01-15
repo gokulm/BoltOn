@@ -217,7 +217,6 @@ namespace BoltOn.Tests.Data.EF
 
 	public interface IStudentRepository : IRepository<Student>
 	{
-
 	}
 
 	public class StudentRepository : BaseEFRepository<Student, SchoolDbContext>, IStudentRepository
