@@ -2,11 +2,11 @@ namespace BoltOn.Mediator.Data.EF
 {
 	public interface IMediatorDataContext
 	{
-		bool IsAutoDetectChangesEnabled { get; set; }
+		bool IsQueryRequest { get; set; }
 	}
 
 	public class MediatorDataContext : IMediatorDataContext
 	{
-		public bool IsAutoDetectChangesEnabled { get; set; }
+		public bool IsQueryRequest { get; set; }
 	}
 }

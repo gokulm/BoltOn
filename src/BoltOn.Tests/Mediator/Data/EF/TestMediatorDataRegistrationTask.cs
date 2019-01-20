@@ -12,30 +12,33 @@ namespace BoltOn.Tests.Mediator.Data.EF
     {
         public void Run(RegistrationTaskContext context)
         {
-            var efAutoDetectChangesMiddleware = new Mock<IBoltOnLogger<EFAutoDetectChangesDisablingMiddleware>>();
+            var efAutoDetectChangesMiddleware = new Mock<IBoltOnLogger<EFQueryTrackingBehaviorMiddleware>>();
             efAutoDetectChangesMiddleware.Setup(s => s.Debug(It.IsAny<string>()))
                                      .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
             context.Container.AddTransient((s) => efAutoDetectChangesMiddleware.Object);
         }
     }
 
-	public class TestDataEFQuery : IQuery<Student>
+	public class GetStudent : IQuery<Student>
 	{
 		public int StudentId { get; set; }
 	}
 
-	public class TestDataEFHandler : IRequestHandler<TestDataEFQuery, Student>
+	public class GetStudentHandler : IRequestHandler<GetStudent, Student>
 	{
 		readonly IStudentRepository _studentRepository;
 
-		public TestDataEFHandler(IStudentRepository studentRepository)
+		public GetStudentHandler(IStudentRepository studentRepository)
 		{
 			this._studentRepository = studentRepository;
 		}
 
-		public virtual Student Handle(TestDataEFQuery request)
+		public virtual Student Handle(GetStudent request)
 		{
-			var student = _studentRepository.GetById(request.StudentId);
+			var student = _studentRepository.Add(new Student { Id = request.StudentId, FirstName = "aa", LastName = "bb"});
+			//var student = _studentRepository.GetById(request.StudentId);
+			//student.FirstName = "aaaa";
+			//_studentRepository.Update(student);
 			return student;
 		}
 	}

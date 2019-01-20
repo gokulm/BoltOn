@@ -12,16 +12,16 @@ namespace BoltOn.Data.EF
 	public abstract class BaseEFRepository<TDbContext> : IRepository
 		where TDbContext : DbContext
 	{
-		private readonly TDbContext _dbContext;
+		protected TDbContext DbContext { get; private set; }
 
 		protected DbSet<TEntity> DbSets<TEntity>() where TEntity : class
 		{
-			return _dbContext.Set<TEntity>();
+			return DbContext.Set<TEntity>();
 		}
 
 		protected BaseEFRepository(IDbContextFactory dbContextFactory)
 		{
-			_dbContext = dbContextFactory.Get<TDbContext>();
+			DbContext = dbContextFactory.Get<TDbContext>();
 		}
 
 		public TEntity GetById<TEntity>(object id) where TEntity : class
@@ -78,7 +78,7 @@ namespace BoltOn.Data.EF
 		public TEntity Add<TEntity>(TEntity entity) where TEntity : class
 		{
 			DbSets<TEntity>().Add(entity);
-			_dbContext.SaveChanges();
+			DbContext.SaveChanges();
 			return entity;
 		}
 
@@ -86,23 +86,23 @@ namespace BoltOn.Data.EF
 			CancellationToken cancellationToken = default(CancellationToken)) where TEntity : class
 		{
 			DbSets<TEntity>().Add(entity);
-			await _dbContext.SaveChangesAsync(cancellationToken);
+			await DbContext.SaveChangesAsync(cancellationToken);
 			return entity;
 		}
 
 		public void Update<TEntity>(TEntity entity) where TEntity : class
 		{
 			DbSets<TEntity>().Attach(entity);
-			_dbContext.Entry(entity).State = EntityState.Modified;
-			_dbContext.SaveChanges();
+			DbContext.Entry(entity).State = EntityState.Modified;
+			DbContext.SaveChanges();
 		}
 
 		public async Task UpdateAsync<TEntity>(TEntity entity,
 			CancellationToken cancellationToken = default(CancellationToken)) where TEntity : class
 		{
 			DbSets<TEntity>().Attach(entity);
-			_dbContext.Entry(entity).State = EntityState.Modified;
-			await _dbContext.SaveChangesAsync(cancellationToken);
+			DbContext.Entry(entity).State = EntityState.Modified;
+			await DbContext.SaveChangesAsync(cancellationToken);
 		}
 	}
 
@@ -110,12 +110,10 @@ namespace BoltOn.Data.EF
 		where TDbContext : DbContext
 		where TEntity : class
 	{
-		private readonly TDbContext _dbContext;
 		protected DbSet<TEntity> DbSets => DbSets<TEntity>();
 
 		protected BaseEFRepository(IDbContextFactory dbContextFactory) : base(dbContextFactory)
 		{
-			_dbContext = dbContextFactory.Get<TDbContext>();
 		}
 
 		public TEntity GetById(object id)
@@ -168,29 +166,29 @@ namespace BoltOn.Data.EF
 		public TEntity Add(TEntity entity)
 		{
 			DbSets.Add(entity);
-			_dbContext.SaveChanges();
+			DbContext.SaveChanges();
 			return entity;
 		}
 
 		public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			DbSets.Add(entity);
-			await _dbContext.SaveChangesAsync(cancellationToken);
+			await DbContext.SaveChangesAsync(cancellationToken);
 			return entity;
 		}
 
 		public void Update(TEntity entity)
 		{
 			DbSets.Attach(entity);
-			_dbContext.Entry(entity).State = EntityState.Modified;
-			_dbContext.SaveChanges();
+			DbContext.Entry(entity).State = EntityState.Modified;
+			DbContext.SaveChanges();
 		}
 
 		public async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			DbSets.Attach(entity);
-			_dbContext.Entry(entity).State = EntityState.Modified;
-			await _dbContext.SaveChangesAsync(cancellationToken);
+			DbContext.Entry(entity).State = EntityState.Modified;
+			await DbContext.SaveChangesAsync(cancellationToken);
 		}
 	}
 }

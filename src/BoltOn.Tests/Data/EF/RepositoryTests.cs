@@ -7,6 +7,7 @@ using BoltOn.Bootstrapping;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
+using BoltOn.Tests.Mediator;
 
 namespace BoltOn.Tests.Data.EF
 {
@@ -23,6 +24,7 @@ namespace BoltOn.Tests.Data.EF
 			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.UseBoltOn();
+			MediatorTestHelper.IsSeedData = true;
 			_sut = serviceProvider.GetService<IStudentRepository>();
 		}
 

@@ -5,12 +5,12 @@ using BoltOn.Mediator.Pipeline;
 
 namespace BoltOn.Mediator.Data.EF
 {
-	public class EFAutoDetectChangesDisablingMiddleware : IMediatorMiddleware
+	public class EFQueryTrackingBehaviorMiddleware : IMediatorMiddleware
 	{
-		private readonly IBoltOnLogger<EFAutoDetectChangesDisablingMiddleware> _logger;
+		private readonly IBoltOnLogger<EFQueryTrackingBehaviorMiddleware> _logger;
 		private readonly IMediatorDataContext _mediatorDataContext;
 
-		public EFAutoDetectChangesDisablingMiddleware(IBoltOnLogger<EFAutoDetectChangesDisablingMiddleware> logger,
+		public EFQueryTrackingBehaviorMiddleware(IBoltOnLogger<EFQueryTrackingBehaviorMiddleware> logger,
 			IMediatorDataContext mediatorDataContext)
 		{
 			_logger = logger;
@@ -20,9 +20,9 @@ namespace BoltOn.Mediator.Data.EF
 		public MediatorResponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request, 
 			Func<IRequest<TResponse>, MediatorResponse<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
-			_logger.Debug($"Entering {nameof(EFAutoDetectChangesDisablingMiddleware)}...");
-			_mediatorDataContext.IsAutoDetectChangesEnabled = !(request is IQuery<TResponse>);
-			_logger.Debug($"IsAutoDetectChangesEnabled: {_mediatorDataContext.IsAutoDetectChangesEnabled}");
+			_logger.Debug($"Entering {nameof(EFQueryTrackingBehaviorMiddleware)}...");
+			_mediatorDataContext.IsQueryRequest = request is IQuery<TResponse>;
+			_logger.Debug($"IsQueryRequest: {_mediatorDataContext.IsQueryRequest}");
 			var response = next(request);
 			return response;
 		}

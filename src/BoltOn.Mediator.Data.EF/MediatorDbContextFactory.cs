@@ -19,7 +19,11 @@ namespace BoltOn.Mediator.Data.EF
 		public TDbContext Get<TDbContext>() where TDbContext : DbContext
 		{
 			var dbContext = _serviceProvider.GetService(typeof(TDbContext)) as TDbContext;
-			dbContext.ChangeTracker.AutoDetectChangesEnabled = _mediatorDataContext.IsAutoDetectChangesEnabled;
+			if (_mediatorDataContext.IsQueryRequest)
+			{
+				dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+				dbContext.ChangeTracker.AutoDetectChangesEnabled = false;
+			}
 			return dbContext;
 		}
 	}
