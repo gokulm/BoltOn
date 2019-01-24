@@ -17,6 +17,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 		public void Get_MediatorWithQueryRequest_ExecutesEFQueryTrackingBehaviorMiddlewareAndDisablesTracking()
 		{
 			// arrange
+			MediatorTestHelper.IsSeedData = true;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection
 				.BoltOn()
@@ -39,7 +40,8 @@ namespace BoltOn.Tests.Mediator.Data.EF
 		public void Get_MediatorWithQueryRequestWithWriteOperation_ExecutesEFQueryTrackingBehaviorMiddlewareAndDisablesTrackingAndNotSavesData()
 		{
 			// arrange
-			MediatorTestHelper.IsSeedData = false;
+			MediatorTestHelper.IsSeedData = true;
+			//MediatorTestHelper.IsSqlite = true;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection
 				.BoltOn()
@@ -49,9 +51,9 @@ namespace BoltOn.Tests.Mediator.Data.EF
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = sut.Get(new GetStudent { StudentId = 5 } );
+			var result = sut.Get(new GetStudent { StudentId = 2 } );
 			var dbContext = serviceProvider.GetService<IDbContextFactory>().Get<SchoolDbContext>();
-			var student = dbContext.Set<Student>().Find(5);
+			var student = dbContext.Set<Student>().Find(2);
 			var isAutoDetectChangesEnabled = dbContext.ChangeTracker.AutoDetectChangesEnabled;
 			var queryTrackingBehavior = dbContext.ChangeTracker.QueryTrackingBehavior;
 
@@ -67,7 +69,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 		}
 
 		[Fact]
-		public void Get_MediatorWithCommandRequest_ReturnsDbContextWithDetectChangesEnabled()
+		public void Get_MediatorWithCommandRequest_ExecutesEFQueryTrackingBehaviorMiddlewareAndEnablesTrackAll()
 		{
 			// arrange
 			MediatorTestHelper.IsSeedData = false;

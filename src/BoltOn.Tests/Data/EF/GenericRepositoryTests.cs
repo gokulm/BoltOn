@@ -17,19 +17,19 @@ namespace BoltOn.Tests.Data.EF
 	[Collection("IntegrationTests")]
 	public class GenericRepositoryTests : IDisposable
 	{
-		private static ITestRepository _sut;
+		private ITestRepository _sut;
 
 		public GenericRepositoryTests()
 		{
+			MediatorTestHelper.IsSeedData = true;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.UseBoltOn(); 
-			MediatorTestHelper.IsSeedData = true;
 			_sut = serviceProvider.GetService<ITestRepository>();
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public void GetById_WhenRecordExists_ReturnsRecord()
 		{
 			// arrange
@@ -42,7 +42,7 @@ namespace BoltOn.Tests.Data.EF
 			Assert.Equal("a", result.FirstName);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public void GetById_WhenRecordDoesNotExist_ReturnsNull()
 		{
 			// arrange
@@ -54,7 +54,7 @@ namespace BoltOn.Tests.Data.EF
 			Assert.Null(result);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public async Task GetByIdAsync_WhenRecordExists_ReturnsRecord()
 		{
 			// arrange
@@ -67,7 +67,7 @@ namespace BoltOn.Tests.Data.EF
 			Assert.Equal("a", result.FirstName);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public void GetAll_WhenRecordsExist_ReturnsAllTheRecords()
 		{
 			// arrange
@@ -79,7 +79,7 @@ namespace BoltOn.Tests.Data.EF
 			Assert.Equal(2, result.Count);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public async Task GetAllAsync_WhenRecordsExist_ReturnsAllTheRecords()
 		{
 			// arrange
@@ -91,7 +91,7 @@ namespace BoltOn.Tests.Data.EF
 			Assert.Equal(2, result.Count());
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public void FindByWithoutIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
 		{
 			// arrange
@@ -106,7 +106,7 @@ namespace BoltOn.Tests.Data.EF
 			//Assert.Empty(result.Addresses);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public void FindByWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
 		{
 			// arrange
@@ -120,7 +120,7 @@ namespace BoltOn.Tests.Data.EF
 			Assert.NotEmpty(result.Addresses);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public async Task FindByAsyncWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
 		{
 			// arrange
@@ -134,7 +134,7 @@ namespace BoltOn.Tests.Data.EF
 			Assert.NotEmpty(result.Addresses);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public void Add_AddANewEntity_ReturnsAddedEntity()
 		{
 			// arrange
@@ -156,7 +156,7 @@ namespace BoltOn.Tests.Data.EF
 			Assert.Equal(result.FirstName, queryResult.FirstName);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public async Task AddAsync_AddANewEntity_ReturnsAddedEntity()
 		{
 			// arrange
@@ -178,7 +178,7 @@ namespace BoltOn.Tests.Data.EF
 			Assert.Equal(result.FirstName, queryResult.FirstName);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public void Update_UpdateAnExistingEntity_UpdatesTheEntity()
 		{
 			// arrange
@@ -194,7 +194,7 @@ namespace BoltOn.Tests.Data.EF
 			Assert.Equal("c", queryResult.FirstName);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public async Task UpdateAsync_UpdateAnExistingEntity_UpdatesTheEntity()
 		{
 			// arrange

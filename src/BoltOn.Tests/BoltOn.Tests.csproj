@@ -18,6 +18,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,5 +37,10 @@
     <ProjectReference Include="..\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
     <ProjectReference Include="..\BoltOn.Data\BoltOn.Data.csproj" />
     <ProjectReference Include="..\BoltOn.Mediator.Data.EF\BoltOn.Mediator.Data.EF.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="netstandard">
+      <HintPath>..\..\..\..\..\..\..\usr\local\share\dotnet\sdk\NuGetFallbackFolder\netstandard.library\2.0.3\build\netstandard2.0\ref\netstandard.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

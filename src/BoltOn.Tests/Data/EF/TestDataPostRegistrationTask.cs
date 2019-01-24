@@ -13,6 +13,8 @@ namespace BoltOn.Tests.Data.EF
 			{
 				var serviceProvider = context.ServiceProvider;
 				var testDbContext = serviceProvider.GetService<SchoolDbContext>();
+				//testDbContext.Database.EnsureDeleted();
+				//testDbContext.Database.EnsureCreated();
 				testDbContext.Set<Student>().Add(new Student
 				{
 					Id = 1,
