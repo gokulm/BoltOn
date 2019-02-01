@@ -8,21 +8,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C751203D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{15E5CCAC-85EB-4C98-B1FA-B5DEFD213FCD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Samples.WebApi", "samples\BoltOn.Samples.WebApi\BoltOn.Samples.WebApi.csproj", "{DABC3AEA-F889-4B63-962A-911696F02733}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Samples.WebApi", "samples\BoltOn.Samples.WebApi\BoltOn.Samples.WebApi.csproj", "{DABC3AEA-F889-4B63-962A-911696F02733}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Samples.Domain", "samples\BoltOn.Samples.Domain\BoltOn.Samples.Domain.csproj", "{D5E25819-7EA3-4B05-B95D-BEE3EB9A18AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Samples.Domain", "samples\BoltOn.Samples.Domain\BoltOn.Samples.Domain.csproj", "{D5E25819-7EA3-4B05-B95D-BEE3EB9A18AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Tests", "tests\BoltOn.Tests\BoltOn.Tests.csproj", "{6AB42094-D912-4DBE-8253-86409EA08896}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Tests", "tests\BoltOn.Tests\BoltOn.Tests.csproj", "{6AB42094-D912-4DBE-8253-86409EA08896}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn", "src\BoltOn\BoltOn.csproj", "{444D6887-C695-489B-9706-D3AB391482F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn", "src\BoltOn\BoltOn.csproj", "{444D6887-C695-489B-9706-D3AB391482F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Mediator", "src\BoltOn.Mediator\BoltOn.Mediator.csproj", "{5CB03D71-FEDE-4034-8046-445A6608DB78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Mediator", "src\BoltOn.Mediator\BoltOn.Mediator.csproj", "{5CB03D71-FEDE-4034-8046-445A6608DB78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Data", "src\BoltOn.Data\BoltOn.Data.csproj", "{2912C74A-3344-45D1-8F1B-1EC0308982FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Data", "src\BoltOn.Data\BoltOn.Data.csproj", "{2912C74A-3344-45D1-8F1B-1EC0308982FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Mediator.Data.EF", "src\BoltOn.Mediator.Data.EF\BoltOn.Mediator.Data.EF.csproj", "{E235DE19-202F-41E2-847F-1A34F8B3A984}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Mediator.Data.EF", "src\BoltOn.Mediator.Data.EF\BoltOn.Mediator.Data.EF.csproj", "{E235DE19-202F-41E2-847F-1A34F8B3A984}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Data.EF", "src\BoltOn.Data.EF\BoltOn.Data.EF.csproj", "{E9FBB8EF-7628-4351-B008-A54EA28C67C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Data.EF", "src\BoltOn.Data.EF\BoltOn.Data.EF.csproj", "{E9FBB8EF-7628-4351-B008-A54EA28C67C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,12 +66,6 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {530F371A-8A38-41FE-9A1E-A03ACCDE867B}
-	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		BaseDirectory = .
-	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DABC3AEA-F889-4B63-962A-911696F02733} = {15E5CCAC-85EB-4C98-B1FA-B5DEFD213FCD}
 		{D5E25819-7EA3-4B05-B95D-BEE3EB9A18AB} = {15E5CCAC-85EB-4C98-B1FA-B5DEFD213FCD}
@@ -81,5 +75,11 @@ Global
 		{2912C74A-3344-45D1-8F1B-1EC0308982FE} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 		{E235DE19-202F-41E2-847F-1A34F8B3A984} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 		{E9FBB8EF-7628-4351-B008-A54EA28C67C2} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {530F371A-8A38-41FE-9A1E-A03ACCDE867B}
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		BaseDirectory = .
 	EndGlobalSection
 EndGlobal
