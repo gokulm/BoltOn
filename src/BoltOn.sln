@@ -2,17 +2,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn", "BoltOn\BoltOn.csproj", "{5F868378-090A-4CD3-A8B9-6C6AFA1E8CE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn", "BoltOn\BoltOn.csproj", "{5F868378-090A-4CD3-A8B9-6C6AFA1E8CE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Tests", "BoltOn.Tests\BoltOn.Tests.csproj", "{5D271ECA-826B-427F-9DCA-B930A230D3A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Mediator", "BoltOn.Mediator\BoltOn.Mediator.csproj", "{AF354657-8CD8-4F14-A795-B269C28AB35D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Mediator", "BoltOn.Mediator\BoltOn.Mediator.csproj", "{AF354657-8CD8-4F14-A795-B269C28AB35D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Data.EF", "BoltOn.Data.EF\BoltOn.Data.EF.csproj", "{7AC2FBFB-C35F-46BC-9A70-2A60998402EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Data.EF", "BoltOn.Data.EF\BoltOn.Data.EF.csproj", "{7AC2FBFB-C35F-46BC-9A70-2A60998402EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Data", "BoltOn.Data\BoltOn.Data.csproj", "{934F8EC4-8A00-4506-92FA-A57F94E91574}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Data", "BoltOn.Data\BoltOn.Data.csproj", "{934F8EC4-8A00-4506-92FA-A57F94E91574}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Mediator.Data.EF", "BoltOn.Mediator.Data.EF\BoltOn.Mediator.Data.EF.csproj", "{96A60490-975A-4517-9F66-D40443809DEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Mediator.Data.EF", "BoltOn.Mediator.Data.EF\BoltOn.Mediator.Data.EF.csproj", "{96A60490-975A-4517-9F66-D40443809DEF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,10 +22,6 @@ Global
 		{5F868378-090A-4CD3-A8B9-6C6AFA1E8CE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F868378-090A-4CD3-A8B9-6C6AFA1E8CE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F868378-090A-4CD3-A8B9-6C6AFA1E8CE3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5D271ECA-826B-427F-9DCA-B930A230D3A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D271ECA-826B-427F-9DCA-B930A230D3A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5D271ECA-826B-427F-9DCA-B930A230D3A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5D271ECA-826B-427F-9DCA-B930A230D3A2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AF354657-8CD8-4F14-A795-B269C28AB35D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AF354657-8CD8-4F14-A795-B269C28AB35D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF354657-8CD8-4F14-A795-B269C28AB35D}.Release|Any CPU.ActiveCfg = Release|Any CPU
