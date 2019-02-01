@@ -75,6 +75,10 @@ namespace BoltOn.Data.EF
 			return await query.ToListAsync(cancellationToken);
 		}
 
+		// APPLIES to Add and Update
+		// in case if records should not be added or updated when TrackingBehavior is NoTracking, we can 
+		// check the behavior in Add and Update methods, and not call DbSets.Add or DbSets.Update and SaveChanges
+
 		public TEntity Add<TEntity>(TEntity entity) where TEntity : class
 		{
 			DbSets<TEntity>().Add(entity);
@@ -92,16 +96,14 @@ namespace BoltOn.Data.EF
 
 		public void Update<TEntity>(TEntity entity) where TEntity : class
 		{
-			DbSets<TEntity>().Attach(entity);
-			DbContext.Entry(entity).State = EntityState.Modified;
+			DbSets<TEntity>().Update(entity);
 			DbContext.SaveChanges();
 		}
 
 		public async Task UpdateAsync<TEntity>(TEntity entity,
 			CancellationToken cancellationToken = default(CancellationToken)) where TEntity : class
 		{
-			DbSets<TEntity>().Attach(entity);
-			DbContext.Entry(entity).State = EntityState.Modified;
+			DbSets<TEntity>().Update(entity);
 			await DbContext.SaveChangesAsync(cancellationToken);
 		}
 	}
@@ -179,15 +181,13 @@ namespace BoltOn.Data.EF
 
 		public void Update(TEntity entity)
 		{
-			DbSets.Attach(entity);
-			DbContext.Entry(entity).State = EntityState.Modified;
+			DbSets.Update(entity);
 			DbContext.SaveChanges();
 		}
 
 		public async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			DbSets.Attach(entity);
-			DbContext.Entry(entity).State = EntityState.Modified;
+			DbSets.Update(entity);
 			await DbContext.SaveChangesAsync(cancellationToken);
 		}
 	}

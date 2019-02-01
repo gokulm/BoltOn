@@ -27,30 +27,6 @@ namespace BoltOn.Tests.Mediator.Data.EF
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = sut.Get(new TestQuery());
-
-			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(EFQueryTrackingBehaviorMiddleware)}..."));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {true}"));
-		}
-
-		[Fact]
-		public void Get_MediatorWithQueryRequestWithWriteOperation_ExecutesEFQueryTrackingBehaviorMiddlewareAndDisablesTrackingAndNotSavesData()
-		{
-			// arrange
-			MediatorTestHelper.IsSeedData = true;
-			//MediatorTestHelper.IsSqlite = true;
-			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn()
-				.AddLogging();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.UseBoltOn();
-			var sut = serviceProvider.GetService<IMediator>();
-
-			// act
 			var result = sut.Get(new GetStudent { StudentId = 2 } );
 			var dbContext = serviceProvider.GetService<IDbContextFactory>().Get<SchoolDbContext>();
 			var student = dbContext.Set<Student>().Find(2);
@@ -60,8 +36,6 @@ namespace BoltOn.Tests.Mediator.Data.EF
 			// assert 
 			Assert.True(result.IsSuccessful);
 			Assert.NotNull(result.Data);
-			// this will be null for non in-memory dbcontext
-			//Assert.Null(student);
 			Assert.Equal(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking, queryTrackingBehavior);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(EFQueryTrackingBehaviorMiddleware)}..."));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {true}"));

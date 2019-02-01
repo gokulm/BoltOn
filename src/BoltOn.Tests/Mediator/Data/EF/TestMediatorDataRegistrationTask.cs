@@ -36,11 +36,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 
 		public virtual Student Handle(GetStudent request)
 		{
-			//var student = _studentRepository.Add(new Student { Id = request.StudentId, FirstName = "aa", LastName = "bb"});
-			//var student = _studentRepository.FindBy(f => f.Id == request.StudentId).First();
 			var student = _studentRepository.GetById(request.StudentId);
-			student.FirstName = "aaaa";
-			_studentRepository.Update(student);
 			return student;
 		}
 	}
