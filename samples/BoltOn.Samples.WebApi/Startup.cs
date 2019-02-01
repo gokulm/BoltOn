@@ -38,7 +38,7 @@ namespace BoltOn.Samples.WebApi
 
             app.UseHttpsRedirection();
             app.UseMvc();
-			app.ApplicationServices.BoltOn();
+			app.ApplicationServices.UseBoltOn();
 		}
     }
 }
