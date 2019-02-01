@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BoltOn.Samples.Domain\BoltOn.Samples.Domain.csproj" />
     <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
+    <ProjectReference Include="..\BoltOn.Samples.Domain\BoltOn.Samples.Domain.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.Mediator\BoltOn.Mediator.csproj" />
   </ItemGroup>
 </Project>

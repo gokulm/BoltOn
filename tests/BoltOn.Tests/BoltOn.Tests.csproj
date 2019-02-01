@@ -33,15 +33,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
-    <ProjectReference Include="..\..\src\BoltOn.Data\BoltOn.Data.csproj" />
-    <ProjectReference Include="..\..\src\BoltOn.Mediator.Data.EF\BoltOn.Mediator.Data.EF.csproj" />
-    <ProjectReference Include="..\..\src\BoltOn.Mediator\BoltOn.Mediator.csproj" />
-    <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="netstandard">
       <HintPath>..\..\..\..\..\..\..\usr\local\share\dotnet\sdk\NuGetFallbackFolder\netstandard.library\2.0.3\build\netstandard2.0\ref\netstandard.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
+    <ProjectReference Include="..\..\src\BoltOn.Data\BoltOn.Data.csproj" />
+    <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
+    <ProjectReference Include="..\..\src\BoltOn.Mediator\BoltOn.Mediator.csproj" />
+    <ProjectReference Include="..\..\src\BoltOn.Mediator.Data.EF\BoltOn.Mediator.Data.EF.csproj" />
   </ItemGroup>
 </Project>
