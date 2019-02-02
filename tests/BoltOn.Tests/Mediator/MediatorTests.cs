@@ -137,6 +137,45 @@ namespace BoltOn.Tests.Mediator
    		}
 
 		[Fact]
+		public void Get_MediatorWithCommandRequestAndHandlerThrowsException_ExecutesUoWMiddlewareAndStartsTransactionsButNotCommit()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
+			var testHandler = new Mock<TestHandler>();
+			var middleware = new Mock<IMediatorMiddleware>();
+			var logger = new Mock<IBoltOnLogger<UnitOfWorkMiddleware>>();
+			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestCommand, bool>)))
+				.Returns(testHandler.Object);
+			var uowManager = autoMocker.GetMock<IUnitOfWorkManager>();
+			var uow = new Mock<IUnitOfWork>();
+			uowManager.Setup(u => u.Get(It.IsAny<UnitOfWorkOptions>())).Returns(uow.Object);
+			var uowOptions = autoMocker.GetMock<UnitOfWorkOptions>();
+			uowOptions.Setup(u => u.IsolationLevel).Returns(IsolationLevel.ReadCommitted);
+			var uowOptionsBuilder = autoMocker.GetMock<IUnitOfWorkOptionsBuilder>();
+			var request = new TestCommand();
+			uowOptionsBuilder.Setup(u => u.Build(request)).Returns(uowOptions.Object);
+			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>
+			{
+				new UnitOfWorkMiddleware(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
+			});
+			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			testHandler.Setup(s => s.Handle(request)).Throws<Exception>();
+
+			// act
+			var result = sut.Get(request);
+
+			// assert 
+			Assert.False(result.IsSuccessful);
+			Assert.False(result.Data);
+			uowManager.Verify(u => u.Get(uowOptions.Object));
+			uow.Verify(u => u.Commit(), Times.Never);
+			logger.Verify(l => l.Debug($"About to start UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
+			logger.Verify(l => l.Debug("UnitOfWorkMiddleware ended"), Times.Never);
+		}
+
+
+		[Fact]
 		public void Get_RegisteredHandlerThatThrowsException_ReturnsUnsuccessfulResult()
 		{
 			// arrange

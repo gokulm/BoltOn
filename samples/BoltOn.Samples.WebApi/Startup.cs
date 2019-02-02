@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using BoltOn.Bootstrapping;
+using BoltOn.AspNetCore;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -38,7 +39,7 @@ namespace BoltOn.Samples.WebApi
 
             app.UseHttpsRedirection();
             app.UseMvc();
-			app.ApplicationServices.UseBoltOn();
+			app.UseBoltOn();
 		}
     }
 }
