@@ -3,7 +3,7 @@ using BoltOn.Bootstrapping;
 using BoltOn.Logging;
 using BoltOn.Mediator;
 using BoltOn.Mediator.Middlewares;
-using BoltOn.Mediator.UoW;
+using BoltOn.UoW;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;

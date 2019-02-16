@@ -8,6 +8,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
     <ProjectReference Include="..\BoltOn.Data\BoltOn.Data.csproj" />
   </ItemGroup>
 </Project>

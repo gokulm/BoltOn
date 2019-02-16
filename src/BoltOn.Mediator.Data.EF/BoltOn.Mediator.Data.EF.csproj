@@ -10,8 +10,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
-    <ProjectReference Include="..\BoltOn.Data\BoltOn.Data.csproj" />
     <ProjectReference Include="..\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
-    <ProjectReference Include="..\BoltOn.Mediator\BoltOn.Mediator.csproj" />
   </ItemGroup>
 </Project>

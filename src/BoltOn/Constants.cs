@@ -1,4 +1,4 @@
-﻿namespace BoltOn.Mediator
+﻿namespace BoltOn
 {
 	public class Constants
 	{

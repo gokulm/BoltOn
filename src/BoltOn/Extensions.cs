@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
+using BoltOn.Bootstrapping;
+using BoltOn.Mediator.Middlewares;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace BoltOn.Bootstrapping
+namespace BoltOn
 {
 	public static class Extensions
     {
@@ -21,6 +24,20 @@ namespace BoltOn.Bootstrapping
 			var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
 			Check.Requires(loggerFactory != null, "Add logging to the service collection");
 			Bootstrapper.Instance.RunPostRegistrationTasks(serviceProvider);
+		}
+
+		public static IServiceCollection RemoveAllMiddlewares(this IServiceCollection services)
+		{
+			var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IMediatorMiddleware));
+			if (serviceDescriptor != null)
+				services.Remove(serviceDescriptor);
+			return services;
+		}
+
+		public static IServiceCollection AddMiddleware<TMiddleware>(this IServiceCollection services)
+		{
+			services.AddTransient(typeof(IMediatorMiddleware), typeof(TMiddleware));
+			return services;
 		}
 	}
 }

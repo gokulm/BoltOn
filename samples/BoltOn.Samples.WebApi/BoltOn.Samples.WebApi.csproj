@@ -13,7 +13,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Domain\BoltOn.Samples.Domain.csproj" />
-    <ProjectReference Include="..\..\src\BoltOn.Mediator\BoltOn.Mediator.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.AspNetCore\BoltOn.AspNetCore.csproj" />
   </ItemGroup>
 </Project>

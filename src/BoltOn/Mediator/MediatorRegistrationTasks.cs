@@ -3,7 +3,7 @@ using BoltOn.Bootstrapping;
 using Microsoft.Extensions.DependencyInjection;
 using BoltOn.Mediator.Middlewares;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Mediator.UoW;
+using BoltOn.UoW;
 
 namespace BoltOn.Mediator
 {

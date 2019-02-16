@@ -6,6 +6,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
-    <ProjectReference Include="..\..\src\BoltOn.Mediator\BoltOn.Mediator.csproj" />
   </ItemGroup>
 </Project>

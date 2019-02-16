@@ -2,12 +2,11 @@
 using System.Transactions;
 using BoltOn.Logging;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Mediator.UoW;
 using BoltOn.UoW;
 
 namespace BoltOn.Tests.Mediator
 {
-    public class CustomUnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
+	public class CustomUnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
     {
         private readonly IBoltOnLogger<CustomUnitOfWorkOptionsBuilder> _logger;
 
