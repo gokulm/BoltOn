@@ -24,29 +24,18 @@ namespace BoltOn.Data.EF
 			DbContext = dbContextFactory.Get<TDbContext>();
 		}
 
-		public TEntity GetById<TEntity>(object id) where TEntity : class
-		{
-			return DbSets<TEntity>().Find(id);
-		}
-
-		public async Task<TEntity> GetByIdAsync<TEntity>(object id,
-			CancellationToken cancellationToken = default(CancellationToken)) where TEntity : class
-		{
-			return await DbSets<TEntity>().FindAsync(id);
-		}
-
-		public IEnumerable<TEntity> GetAll<TEntity>() where TEntity : class
+		public virtual IEnumerable<TEntity> GetAll<TEntity>() where TEntity : class
 		{
 			return DbSets<TEntity>().Select(s => s).ToList();
 		}
 
-		public async Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(CancellationToken cancellationToken = default(CancellationToken))
 			where TEntity : class
 		{
 			return await DbSets<TEntity>().ToListAsync(cancellationToken);
 		}
 
-		public IEnumerable<TEntity> FindBy<TEntity>(Expression<Func<TEntity, bool>> predicate,
+		public virtual IEnumerable<TEntity> FindBy<TEntity>(Expression<Func<TEntity, bool>> predicate,
 			params Expression<Func<TEntity, object>>[] includes)
 			where TEntity : class
 		{
@@ -60,7 +49,7 @@ namespace BoltOn.Data.EF
 			return query.ToList();
 		}
 
-		public async Task<IEnumerable<TEntity>> FindByAsync<TEntity>(Expression<Func<TEntity, bool>> predicate,
+		public virtual async Task<IEnumerable<TEntity>> FindByAsync<TEntity>(Expression<Func<TEntity, bool>> predicate,
 			CancellationToken cancellationToken = default(CancellationToken),
 			params Expression<Func<TEntity, object>>[] includes)
 			where TEntity : class
@@ -79,14 +68,14 @@ namespace BoltOn.Data.EF
 		// in case if records should not be added or updated when TrackingBehavior is NoTracking, we can 
 		// check the behavior in Add and Update methods, and not call DbSets.Add or DbSets.Update and SaveChanges
 
-		public TEntity Add<TEntity>(TEntity entity) where TEntity : class
+		public virtual TEntity Add<TEntity>(TEntity entity) where TEntity : class
 		{
 			DbSets<TEntity>().Add(entity);
 			DbContext.SaveChanges();
 			return entity;
 		}
 
-		public async Task<TEntity> AddAsync<TEntity>(TEntity entity,
+		public virtual async Task<TEntity> AddAsync<TEntity>(TEntity entity,
 			CancellationToken cancellationToken = default(CancellationToken)) where TEntity : class
 		{
 			DbSets<TEntity>().Add(entity);
@@ -94,13 +83,13 @@ namespace BoltOn.Data.EF
 			return entity;
 		}
 
-		public void Update<TEntity>(TEntity entity) where TEntity : class
+		public virtual void Update<TEntity>(TEntity entity) where TEntity : class
 		{
 			DbSets<TEntity>().Update(entity);
 			DbContext.SaveChanges();
 		}
 
-		public async Task UpdateAsync<TEntity>(TEntity entity,
+		public virtual async Task UpdateAsync<TEntity>(TEntity entity,
 			CancellationToken cancellationToken = default(CancellationToken)) where TEntity : class
 		{
 			DbSets<TEntity>().Update(entity);
@@ -118,27 +107,17 @@ namespace BoltOn.Data.EF
 		{
 		}
 
-		public TEntity GetById(object id)
-		{
-			return DbSets.Find(id);
-		}
-
-		public async Task<TEntity> GetByIdAsync(object id) 
-		{
-			return await DbSets.FindAsync(id);
-		}
-
-		public IEnumerable<TEntity> GetAll()
+		public virtual IEnumerable<TEntity> GetAll()
 		{
 			return DbSets.ToList();
 		}
 
-		public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return await DbSets.ToListAsync(cancellationToken);
 		}
 
-		public IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate,
+		public virtual IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate,
 			params Expression<Func<TEntity, object>>[] includes)
 		{
 			var query = DbSets.Where(predicate);
@@ -151,7 +130,7 @@ namespace BoltOn.Data.EF
 			return query.ToList();
 		}
 
-		public async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
+		public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
 			CancellationToken cancellationToken = default(CancellationToken),
 			params Expression<Func<TEntity, object>>[] includes)
 		{
@@ -165,27 +144,27 @@ namespace BoltOn.Data.EF
 			return await query.ToListAsync(cancellationToken);
 		}
 
-		public TEntity Add(TEntity entity)
+		public virtual TEntity Add(TEntity entity)
 		{
 			DbSets.Add(entity);
 			DbContext.SaveChanges();
 			return entity;
 		}
 
-		public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			DbSets.Add(entity);
 			await DbContext.SaveChangesAsync(cancellationToken);
 			return entity;
 		}
 
-		public void Update(TEntity entity)
+		public virtual void Update(TEntity entity)
 		{
 			DbSets.Update(entity);
 			DbContext.SaveChanges();
 		}
 
-		public async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			DbSets.Update(entity);
 			await DbContext.SaveChangesAsync(cancellationToken);
