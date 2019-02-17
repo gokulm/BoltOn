@@ -1,8 +1,6 @@
-# Overview
-
 BoltOn is an [open source](https://github.com/gokulm/BoltOn), light-weight and modular application framework that can be used in any .NET application types like Console Application, MVC, WebAPI, Windows Service etc.
 
-## Commands
+## Installation
 
 * `mkdocs new [dir-name]` - Create a new project.
 * `mkdocs serve` - Start the live-reloading docs server.

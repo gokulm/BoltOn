@@ -41,6 +41,5 @@
     <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.Mediator.Data.EF\BoltOn.Mediator.Data.EF.csproj" />
-    <ProjectReference Include="..\..\src\BoltOn.Data\BoltOn.Data.csproj" />
   </ItemGroup>
 </Project>

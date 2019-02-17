@@ -29,44 +29,6 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public void GetById_WhenRecordExists_ReturnsRecord()
-		{
-			// arrange
-
-			// act
-			var result = _sut.GetById(1);
-
-			// assert
-			Assert.NotNull(result);
-			Assert.Equal("a", result.FirstName);
-		}
-
-		[Fact, Trait("Category", "Integration")]
-		public void GetById_WhenRecordDoesNotExist_ReturnsNull()
-		{
-			// arrange
-
-			// act
-			var result = _sut.GetById(3);
-
-			// assert
-			Assert.Null(result);
-		}
-
-		[Fact, Trait("Category", "Integration")]
-		public async Task GetByIdAsync_WhenRecordExists_ReturnsRecord()
-		{
-			// arrange
-
-			// act
-			var result = await _sut.GetByIdAsync(1);
-
-			// assert
-			Assert.NotNull(result);
-			Assert.Equal("a", result.FirstName);
-		}
-
-		[Fact, Trait("Category", "Integration")]
 		public void GetAll_WhenRecordsExist_ReturnsAllTheRecords()
 		{
 			// arrange
@@ -147,7 +109,7 @@ namespace BoltOn.Tests.Data.EF
 
 			// act
 			var result = _sut.Add(student);
-			var queryResult = _sut.GetById(newStudentId);
+			var queryResult = _sut.FindBy(f => f.Id == newStudentId).FirstOrDefault();
 
 			// assert
 			Assert.NotNull(queryResult);
@@ -169,7 +131,7 @@ namespace BoltOn.Tests.Data.EF
 
 			// act
 			var result = await _sut.AddAsync(student);
-			var queryResult = _sut.GetById(newStudentId);
+			var queryResult = _sut.FindBy(f => f.Id == newStudentId).FirstOrDefault();
 
 			// assert
 			Assert.NotNull(queryResult);
@@ -181,12 +143,12 @@ namespace BoltOn.Tests.Data.EF
 		public void Update_UpdateAnExistingEntity_UpdatesTheEntity()
 		{
 			// arrange
-			var student = _sut.GetById(2);
+			var student = _sut.FindBy(f => f.Id == 2).FirstOrDefault();
 
 			// act
 			student.FirstName = "c";
 			_sut.Update(student);
-			var queryResult = _sut.GetById(2);
+			var queryResult = _sut.FindBy(f => f.Id == 2).FirstOrDefault();
 
 			// assert
 			Assert.NotNull(queryResult);
@@ -197,12 +159,12 @@ namespace BoltOn.Tests.Data.EF
 		public async Task UpdateAsync_UpdateAnExistingEntity_UpdatesTheEntity()
 		{
 			// arrange
-			var student = _sut.GetById(2);
+			var student = _sut.FindBy(f => f.Id == 2).FirstOrDefault();
 
 			// act
 			student.FirstName = "c";
 		    await _sut.UpdateAsync(student);
-			var queryResult = _sut.GetById(2);
+			var queryResult = _sut.FindBy(f => f.Id == 2).FirstOrDefault();
 
 			// assert
 			Assert.NotNull(queryResult);
