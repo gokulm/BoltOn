@@ -95,6 +95,16 @@ namespace BoltOn.Data.EF
 			DbSets<TEntity>().Update(entity);
 			await DbContext.SaveChangesAsync(cancellationToken);
 		}
+
+		public TEntity GetById<TEntity, TId>(TId id) where TEntity : class
+		{
+			return DbSets<TEntity>().Find(id);
+		}
+
+		public async Task<TEntity> GetByIdAsync<TEntity, TId>(TId id) where TEntity : class
+		{
+			return await DbSets<TEntity>().FindAsync(id);
+		}
 	}
 
 	public abstract class BaseEFRepository<TEntity, TDbContext> : BaseEFRepository<TDbContext>, IRepository<TEntity>
@@ -109,65 +119,55 @@ namespace BoltOn.Data.EF
 
 		public virtual IEnumerable<TEntity> GetAll()
 		{
-			return DbSets.ToList();
+			return GetAll<TEntity>();
 		}
 
 		public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return await DbSets.ToListAsync(cancellationToken);
+			return await GetAllAsync<TEntity>(cancellationToken);
 		}
 
 		public virtual IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate,
 			params Expression<Func<TEntity, object>>[] includes)
 		{
-			var query = DbSets.Where(predicate);
-			if (includes != null)
-			{
-				query = includes.Aggregate(query,
-					(current, include) => current.Include(include));
-			}
-
-			return query.ToList();
+			return FindBy<TEntity>(predicate, includes);
 		}
 
 		public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
 			CancellationToken cancellationToken = default(CancellationToken),
 			params Expression<Func<TEntity, object>>[] includes)
 		{
-			var query = DbSets.Where(predicate);
-			if (includes != null)
-			{
-				query = includes.Aggregate(query,
-					(current, include) => current.Include(include));
-			}
-
-			return await query.ToListAsync(cancellationToken);
+			return await FindByAsync<TEntity>(predicate, cancellationToken, includes);
 		}
 
 		public virtual TEntity Add(TEntity entity)
 		{
-			DbSets.Add(entity);
-			DbContext.SaveChanges();
-			return entity;
+			return Add<TEntity>(entity);
 		}
 
 		public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			DbSets.Add(entity);
-			await DbContext.SaveChangesAsync(cancellationToken);
-			return entity;
+			return await AddAsync<TEntity>(entity, cancellationToken);
 		}
 
 		public virtual void Update(TEntity entity)
 		{
-			DbSets.Update(entity);
-			DbContext.SaveChanges();
+			Update<TEntity>(entity);
 		}
 
 		public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			DbSets.Update(entity);
-			await DbContext.SaveChangesAsync(cancellationToken);
+			await UpdateAsync<TEntity>(entity, cancellationToken);
+		}
+
+		public virtual TEntity GetById<TId>(TId id)
+		{
+			return GetById<TEntity, TId>(id);
+		}
+
+		public virtual async Task<TEntity> GetByIdAsync<TId>(TId id)
+		{
+			return await GetByIdAsync<TEntity, TId>(id);
 		}
 	}
 }
