@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using BoltOn.Bootstrapping;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Utilities;
@@ -33,6 +34,32 @@ namespace BoltOn.Tests.Mediator
 
 			// act
 			var result = mediator.Get(new TestRequest());
+
+			// assert 
+			Assert.True(result.IsSuccessful);
+			Assert.True(result.Data);
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
+																				   $"StopwatchMiddleware started at {boltOnClock.Now}"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
+																				   $"StopwatchMiddleware ended at {boltOnClock.Now}. Time elapsed: 0"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestMiddleware Started"));
+		}
+
+		[Fact]
+		public async Task Get_BootstrapWithDefaultsAndAsyncHandler_InvokesAllTheMiddlewaresAndReturnsSuccessfulResult()
+		{
+			// arrange
+			MediatorTestHelper.IsClearMiddlewares = false;
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.AddLogging();
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.UseBoltOn();
+			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
+			var mediator = serviceProvider.GetService<IMediator>();
+
+			// act
+			var result = await mediator.GetAsync(new TestRequest());
 
 			// assert 
 			Assert.True(result.IsSuccessful);
@@ -139,6 +166,28 @@ namespace BoltOn.Tests.Mediator
 
 			// act
 			var result = sut.Get(new TestQuery());
+
+			// assert 
+			Assert.True(result.IsSuccessful);
+			Assert.True(result.Data);
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
+		}
+
+		[Fact]
+		public async Task Get_MediatorWithQueryRequestAndAsyncHandler_ExecutesUoWMiddlewareAndStartsTransactionsWithCustomizedQueryIsolationLevel()
+		{
+			// arrange
+			MediatorTestHelper.IsCustomizeIsolationLevel = true;
+			var serviceCollection = new ServiceCollection();
+			serviceCollection
+				.BoltOn()
+				.AddLogging();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.UseBoltOn();
+			var sut = serviceProvider.GetService<IMediator>();
+
+			// act
+			var result = await sut.GetAsync(new TestQuery());
 
 			// assert 
 			Assert.True(result.IsSuccessful);

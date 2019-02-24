@@ -1,4 +1,6 @@
-﻿using BoltOn.Mediator.Middlewares;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using BoltOn.Mediator.Middlewares;
 using BoltOn.Mediator.Pipeline;
 
 namespace BoltOn.Tests.Mediator
@@ -17,14 +19,16 @@ namespace BoltOn.Tests.Mediator
 
 	public class TestHandler : IRequestHandler<TestRequest, bool>,
 	    IRequestHandler<TestCommand, bool>,
-	    IRequestHandler<TestQuery, bool>
-    {
+	    IRequestHandler<TestQuery, bool>,
+		IRequestAsyncHandler<TestQuery, bool>,
+		IRequestAsyncHandler<TestRequest, bool>
+	{
         public virtual bool Handle(TestRequest request)
         {
             return true;
-        }
+		}
 
-        public virtual bool Handle(TestCommand request)
+		public virtual bool Handle(TestCommand request)
         {
             return true;
         }
@@ -33,5 +37,15 @@ namespace BoltOn.Tests.Mediator
         {
             return true;
         }
-    }
+
+		public virtual async Task<bool> HandleAsync(TestQuery request, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return await Task.FromResult(true);
+		}
+
+		public virtual async Task<bool> HandleAsync(TestRequest request, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return await Task.FromResult(true);
+		}
+	}
 }

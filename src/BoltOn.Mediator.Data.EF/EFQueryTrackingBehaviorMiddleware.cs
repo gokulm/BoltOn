@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using BoltOn.Logging;
 using BoltOn.Mediator.Middlewares;
 using BoltOn.Mediator.Pipeline;
@@ -29,6 +31,16 @@ namespace BoltOn.Mediator.Data.EF
 
 		public void Dispose()
 		{
+		}
+
+		public async Task<MediatorResponse<TResponse>> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
+			Func<IRequest<TResponse>, CancellationToken, Task<MediatorResponse<TResponse>>> next) where TRequest : IRequest<TResponse>
+		{
+			_logger.Debug($"Entering {nameof(EFQueryTrackingBehaviorMiddleware)}...");
+			_mediatorDataContext.IsQueryRequest = request is IQuery<TResponse>;
+			_logger.Debug($"IsQueryRequest: {_mediatorDataContext.IsQueryRequest}");
+			var response = await next(request, cancellationToken);
+			return response;
 		}
 	}
 }
