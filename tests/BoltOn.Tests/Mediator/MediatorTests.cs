@@ -171,6 +171,42 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
+		public async Task Get_MediatorWithAsyncHandlerThrowsException_ExecutesUoWMiddlewareAndStartsTransactionsButNotCommit()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
+			var testHandler = new Mock<TestHandler>();
+			var middleware = new Mock<IMediatorMiddleware>();
+			var logger = new Mock<IBoltOnLogger<UnitOfWorkMiddleware>>();
+			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestCommand, bool>)))
+				.Returns(testHandler.Object);
+			var uowManager = autoMocker.GetMock<IUnitOfWorkManager>();
+			var uow = new Mock<IUnitOfWork>();
+			uowManager.Setup(u => u.Get(It.IsAny<UnitOfWorkOptions>())).Returns(uow.Object);
+			var uowOptions = autoMocker.GetMock<UnitOfWorkOptions>();
+			uowOptions.Setup(u => u.IsolationLevel).Returns(IsolationLevel.ReadCommitted);
+			var uowOptionsBuilder = autoMocker.GetMock<IUnitOfWorkOptionsBuilder>();
+			var request = new TestCommand();
+			uowOptionsBuilder.Setup(u => u.Build(request)).Returns(uowOptions.Object);
+			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>
+			{
+				new UnitOfWorkMiddleware(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
+			});
+			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			testHandler.Setup(s => s.HandleAsync(request, default(CancellationToken))).Throws<Exception>();
+
+			// act 
+			var result = await Record.ExceptionAsync(async () => await sut.GetAsync(request));
+
+			//assert 
+			uowManager.Verify(u => u.Get(uowOptions.Object));
+			uow.Verify(u => u.Commit(), Times.Never);
+			logger.Verify(l => l.Debug($"About to start UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
+			logger.Verify(l => l.Debug("UnitOfWorkMiddleware ended"), Times.Never);
+		}
+
+		[Fact]
 		public void Get_RegisteredHandlerThatThrowsException_ReturnsUnsuccessfulResult()
 		{
 			// arrange
@@ -208,13 +244,14 @@ namespace BoltOn.Tests.Mediator
 			testHandler.Setup(s => s.HandleAsync(request, default(CancellationToken))).Throws(new Exception("handler failed"));
 
 			// act
-			var result = await sut.GetAsync(request);
+			//var result = await sut.GetAsync(request);
+			var result = await Record.ExceptionAsync(async () => await sut.GetAsync(request));
 
 			// assert 
-			Assert.False(result.IsSuccessful);
-			Assert.False(result.Data);
-			Assert.NotNull(result.Exception);
-			Assert.Equal("handler failed", result.Exception.Message);
+			//Assert.False(result.IsSuccessful);
+			//Assert.False(result.Data);
+			Assert.NotNull(result);
+			Assert.Equal("handler failed", result.Message);
 		}
 
 		[Fact]

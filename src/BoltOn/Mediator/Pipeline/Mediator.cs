@@ -73,11 +73,7 @@ namespace BoltOn.Mediator.Pipeline
 			catch (Exception ex)
 			{
 				_logger.Error(ex);
-				return await Task.FromResult(new MediatorResponse<TResponse>
-				{
-					IsSuccessful = false,
-					Exception = ex
-				});
+				throw;
 			}
 			finally
 			{

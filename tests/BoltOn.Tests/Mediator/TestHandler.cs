@@ -21,7 +21,8 @@ namespace BoltOn.Tests.Mediator
 	    IRequestHandler<TestCommand, bool>,
 	    IRequestHandler<TestQuery, bool>,
 		IRequestAsyncHandler<TestQuery, bool>,
-		IRequestAsyncHandler<TestRequest, bool>
+		IRequestAsyncHandler<TestRequest, bool>,
+		IRequestAsyncHandler<TestCommand, bool>
 	{
         public virtual bool Handle(TestRequest request)
         {
@@ -38,12 +39,17 @@ namespace BoltOn.Tests.Mediator
             return true;
         }
 
-		public virtual async Task<bool> HandleAsync(TestQuery request, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<bool> HandleAsync(TestQuery request, CancellationToken cancellationToken)
 		{
 			return await Task.FromResult(true);
 		}
 
-		public virtual async Task<bool> HandleAsync(TestRequest request, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<bool> HandleAsync(TestRequest request, CancellationToken cancellationToken)
+		{
+			return await Task.FromResult(true);
+		}
+
+		public virtual async Task<bool> HandleAsync(TestCommand request, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return await Task.FromResult(true);
 		}
