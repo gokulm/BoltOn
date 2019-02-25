@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Mediator.Pipeline;
 
-namespace BoltOn.Mediator.Middlewares
+namespace BoltOn.Mediator.Interceptors
 {
-	public interface IMediatorMiddleware : IDisposable
+	public interface IInterceptor : IDisposable
 	{
 		MediatorResponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request, 
 		Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)

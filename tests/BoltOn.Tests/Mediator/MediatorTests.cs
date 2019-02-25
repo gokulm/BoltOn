@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using BoltOn.Bootstrapping;
 using BoltOn.Logging;
-using BoltOn.Mediator;
-using BoltOn.Mediator.Middlewares;
+using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.UoW;
 using BoltOn.Utilities;
@@ -27,7 +26,7 @@ namespace BoltOn.Tests.Mediator
 			var testHandler = new Mock<TestHandler>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, bool>)))
 						  .Returns(testHandler.Object);
-			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>());
+			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>());
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
@@ -41,17 +40,17 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Get_MediatorWithMiddleware_ExecutesMiddleware()
+		public void Get_MediatorWithInterceptor_ExecutesInterceptor()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var middleware = new Mock<IMediatorMiddleware>();
-			var logger = new Mock<IBoltOnLogger<TestMiddleware>>();
+			var interceptor = new Mock<IInterceptor>();
+			var logger = new Mock<IBoltOnLogger<TestInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, bool>)))
 						  .Returns(testHandler.Object);
-			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>() { new TestMiddleware(logger.Object) });
+			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>() { new TestInterceptor(logger.Object) });
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
@@ -62,27 +61,27 @@ namespace BoltOn.Tests.Mediator
 			// assert 
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data);
-			logger.Verify(l => l.Debug("TestMiddleware Started"));
-			logger.Verify(l => l.Debug("TestMiddleware Ended"));
+			logger.Verify(l => l.Debug("TestInterceptor Started"));
+			logger.Verify(l => l.Debug("TestInterceptor Ended"));
 		}
 
 		[Fact]
-		public void Get_MediatorWithRequestSpecificMiddleware_ExecutesMiddleware()
+		public void Get_MediatorWithRequestSpecificInterceptor_ExecutesInterceptor()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var middleware = new Mock<IMediatorMiddleware>();
-			var logger = new Mock<IBoltOnLogger<TestMiddleware>>();
-			var logger2 = new Mock<IBoltOnLogger<StopwatchMiddleware>>();
+			var interceptor = new Mock<IInterceptor>();
+			var logger = new Mock<IBoltOnLogger<TestInterceptor>>();
+			var logger2 = new Mock<IBoltOnLogger<StopwatchInterceptor>>();
 			var boltOnClock = new Mock<IBoltOnClock>();
 			var currentDateTime = DateTime.Now;
 			boltOnClock.Setup(s => s.Now).Returns(currentDateTime);
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, bool>)))
 				.Returns(testHandler.Object);
-			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware> { new TestRequestSpecificMiddleware(logger.Object),
-				new StopwatchMiddleware(logger2.Object, boltOnClock.Object) });
+			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor> { new TestRequestSpecificInterceptor(logger.Object),
+				new StopwatchInterceptor(logger2.Object, boltOnClock.Object) });
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
@@ -93,20 +92,20 @@ namespace BoltOn.Tests.Mediator
 			// assert 
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data);
-			logger.Verify(l => l.Debug("TestRequestSpecificMiddleware Started"), Times.Never);
-			logger.Verify(l => l.Debug("TestRequestSpecificMiddleware Ended"), Times.Never);
-			logger2.Verify(l => l.Debug($"StopwatchMiddleware started at {currentDateTime}"), Times.Once);
+			logger.Verify(l => l.Debug("TestRequestSpecificInterceptor Started"), Times.Never);
+			logger.Verify(l => l.Debug("TestRequestSpecificInterceptor Ended"), Times.Never);
+			logger2.Verify(l => l.Debug($"StopwatchInterceptor started at {currentDateTime}"), Times.Once);
 		}
 
 		[Fact]
-		public void Get_MediatorWithCommandRequest_ExecutesUoWMiddlewareAndStartsTransactionsWithDefaultCommandIsolationLevel()
+		public void Get_MediatorWithCommandRequest_ExecutesUoWInterceptorAndStartsTransactionsWithDefaultCommandIsolationLevel()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var middleware = new Mock<IMediatorMiddleware>();
-			var logger = new Mock<IBoltOnLogger<UnitOfWorkMiddleware>>();
+			var interceptor = new Mock<IInterceptor>();
+			var logger = new Mock<IBoltOnLogger<UnitOfWorkInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
 			var uowManager = autoMocker.GetMock<IUnitOfWorkManager>();
@@ -117,9 +116,9 @@ namespace BoltOn.Tests.Mediator
 			var uowOptionsBuilder = autoMocker.GetMock<IUnitOfWorkOptionsBuilder>();
 			var request = new TestCommand();
 			uowOptionsBuilder.Setup(u => u.Build(request)).Returns(uowOptions.Object);
-			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>
+			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
 			{
-				new UnitOfWorkMiddleware(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
+				new UnitOfWorkInterceptor(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
@@ -133,18 +132,18 @@ namespace BoltOn.Tests.Mediator
 			uowManager.Verify(u => u.Get(uowOptions.Object));
 			uow.Verify(u => u.Commit());
 			logger.Verify(l => l.Debug($"About to start UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
-			logger.Verify(l => l.Debug("UnitOfWorkMiddleware ended"));
+			logger.Verify(l => l.Debug("UnitOfWorkInterceptor ended"));
    		}
 
 		[Fact]
-		public void Get_MediatorWithCommandRequestAndHandlerThrowsException_ExecutesUoWMiddlewareAndStartsTransactionsButNotCommit()
+		public void Get_MediatorWithCommandRequestAndHandlerThrowsException_ExecutesUoWInterceptorAndStartsTransactionsButNotCommit()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var middleware = new Mock<IMediatorMiddleware>();
-			var logger = new Mock<IBoltOnLogger<UnitOfWorkMiddleware>>();
+			var interceptor = new Mock<IInterceptor>();
+			var logger = new Mock<IBoltOnLogger<UnitOfWorkInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
 			var uowManager = autoMocker.GetMock<IUnitOfWorkManager>();
@@ -155,9 +154,9 @@ namespace BoltOn.Tests.Mediator
 			var uowOptionsBuilder = autoMocker.GetMock<IUnitOfWorkOptionsBuilder>();
 			var request = new TestCommand();
 			uowOptionsBuilder.Setup(u => u.Build(request)).Returns(uowOptions.Object);
-			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>
+			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
 			{
-				new UnitOfWorkMiddleware(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
+				new UnitOfWorkInterceptor(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			testHandler.Setup(s => s.Handle(request)).Throws<Exception>();
@@ -167,18 +166,18 @@ namespace BoltOn.Tests.Mediator
 			uowManager.Verify(u => u.Get(uowOptions.Object));
 			uow.Verify(u => u.Commit(), Times.Never);
 			logger.Verify(l => l.Debug($"About to start UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
-			logger.Verify(l => l.Debug("UnitOfWorkMiddleware ended"), Times.Never);
+			logger.Verify(l => l.Debug("UnitOfWorkInterceptor ended"), Times.Never);
 		}
 
 		[Fact]
-		public async Task Get_MediatorWithAsyncHandlerThrowsException_ExecutesUoWMiddlewareAndStartsTransactionsButNotCommit()
+		public async Task Get_MediatorWithAsyncHandlerThrowsException_ExecutesUoWInterceptorAndStartsTransactionsButNotCommit()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var middleware = new Mock<IMediatorMiddleware>();
-			var logger = new Mock<IBoltOnLogger<UnitOfWorkMiddleware>>();
+			var interceptor = new Mock<IInterceptor>();
+			var logger = new Mock<IBoltOnLogger<UnitOfWorkInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
 			var uowManager = autoMocker.GetMock<IUnitOfWorkManager>();
@@ -189,9 +188,9 @@ namespace BoltOn.Tests.Mediator
 			var uowOptionsBuilder = autoMocker.GetMock<IUnitOfWorkOptionsBuilder>();
 			var request = new TestCommand();
 			uowOptionsBuilder.Setup(u => u.Build(request)).Returns(uowOptions.Object);
-			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>
+			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
 			{
-				new UnitOfWorkMiddleware(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
+				new UnitOfWorkInterceptor(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			testHandler.Setup(s => s.HandleAsync(request, default(CancellationToken))).Throws<Exception>();
@@ -203,7 +202,7 @@ namespace BoltOn.Tests.Mediator
 			uowManager.Verify(u => u.Get(uowOptions.Object));
 			uow.Verify(u => u.Commit(), Times.Never);
 			logger.Verify(l => l.Debug($"About to start UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
-			logger.Verify(l => l.Debug("UnitOfWorkMiddleware ended"), Times.Never);
+			logger.Verify(l => l.Debug("UnitOfWorkInterceptor ended"), Times.Never);
 		}
 
 		[Fact]
@@ -215,7 +214,7 @@ namespace BoltOn.Tests.Mediator
 			var testHandler = new Mock<TestHandler>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, bool>)))
 						   .Returns(testHandler.Object);
-			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>());
+			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>());
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Throws(new Exception("handler failed"));
@@ -238,7 +237,7 @@ namespace BoltOn.Tests.Mediator
 			var testHandler = new Mock<TestHandler>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestRequest, bool>)))
 						   .Returns(testHandler.Object);
-			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>());
+			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>());
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.HandleAsync(request, default(CancellationToken))).Throws(new Exception("handler failed"));
@@ -260,7 +259,7 @@ namespace BoltOn.Tests.Mediator
 			var testHandler = new Mock<TestHandler>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, bool>)))
 						  .Returns(null);
-			autoMocker.Use<IEnumerable<IMediatorMiddleware>>(new List<IMediatorMiddleware>());
+			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>());
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
 

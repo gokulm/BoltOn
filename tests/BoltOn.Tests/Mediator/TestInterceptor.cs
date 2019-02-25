@@ -2,16 +2,16 @@
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Logging;
-using BoltOn.Mediator.Middlewares;
+using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 
 namespace BoltOn.Tests.Mediator
 {
-	public class TestMiddleware : IMediatorMiddleware
+	public class TestInterceptor : IInterceptor
 	{
-		private readonly IBoltOnLogger<TestMiddleware> _logger;
+		private readonly IBoltOnLogger<TestInterceptor> _logger;
 
-		public TestMiddleware(IBoltOnLogger<TestMiddleware> logger)
+		public TestInterceptor(IBoltOnLogger<TestInterceptor> logger)
 		{
 			_logger = logger;
 		}
@@ -20,9 +20,9 @@ namespace BoltOn.Tests.Mediator
 																	 Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)
 		   where TRequest : IRequest<TResponse>
 		{
-			_logger.Debug("TestMiddleware Started");
+			_logger.Debug("TestInterceptor Started");
 			var response = next.Invoke(request);
-			_logger.Debug("TestMiddleware Ended");
+			_logger.Debug("TestInterceptor Ended");
 			return response;
 		}
 
@@ -33,22 +33,22 @@ namespace BoltOn.Tests.Mediator
 		public async Task<MediatorResponse<TResponse>> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
 			Func<IRequest<TResponse>, CancellationToken, Task<MediatorResponse<TResponse>>> next) where TRequest : IRequest<TResponse>
 		{
-			_logger.Debug("TestMiddleware Started");
+			_logger.Debug("TestInterceptor Started");
 			var response = await next.Invoke(request, cancellationToken);
-			_logger.Debug("TestMiddleware Ended");
+			_logger.Debug("TestInterceptor Ended");
 			return response;
 		}
 	}
 
-	public interface IRequestSpecificMiddleware
+	public interface IRequestSpecificInterceptor
 	{
 	}
 
-	public class TestRequestSpecificMiddleware : BaseRequestSpecificMiddleware<IRequestSpecificMiddleware>
+	public class TestRequestSpecificInterceptor : BaseRequestSpecificInterceptor<IRequestSpecificInterceptor>
 	{
-		private readonly IBoltOnLogger<TestMiddleware> _logger;
+		private readonly IBoltOnLogger<TestInterceptor> _logger;
 
-		public TestRequestSpecificMiddleware(IBoltOnLogger<TestMiddleware> logger)
+		public TestRequestSpecificInterceptor(IBoltOnLogger<TestInterceptor> logger)
 		{
 			_logger = logger;
 		}
@@ -60,18 +60,18 @@ namespace BoltOn.Tests.Mediator
 		public override MediatorResponse<TResponse> Execute<TRequest, TResponse>(IRequest<TResponse> request,
 																				   Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)
 		{
-			_logger.Debug($"TestRequestSpecificMiddleware Started");
+			_logger.Debug($"TestRequestSpecificInterceptor Started");
 			var response = next.Invoke(request);
-			_logger.Debug($"TestRequestSpecificMiddleware Ended");
+			_logger.Debug($"TestRequestSpecificInterceptor Ended");
 			return response;
 		}
 
 		public async override Task<MediatorResponse<TResponse>> ExecuteAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
 			Func<IRequest<TResponse>, CancellationToken, Task<MediatorResponse<TResponse>>> next)
 		{
-			_logger.Debug($"TestRequestSpecificMiddleware Started");
+			_logger.Debug($"TestRequestSpecificInterceptor Started");
 			var response = await next.Invoke(request, cancellationToken);
-			_logger.Debug($"TestRequestSpecificMiddleware Ended");
+			_logger.Debug($"TestRequestSpecificInterceptor Ended");
 			return response;
 		}
 	}

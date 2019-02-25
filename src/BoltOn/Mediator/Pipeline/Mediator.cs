@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Logging;
-using BoltOn.Mediator.Middlewares;
+using BoltOn.Mediator.Interceptors;
 using BoltOn.Utilities;
 
 namespace BoltOn.Mediator.Pipeline
@@ -19,33 +19,33 @@ namespace BoltOn.Mediator.Pipeline
 	{
 		private readonly IBoltOnLogger<Mediator> _logger;
 		private readonly IServiceProvider _serviceProvider;
-		private readonly IEnumerable<IMediatorMiddleware> _middlewares;
+		private readonly IEnumerable<IInterceptor> _interceptors;
 
 		public Mediator(IBoltOnLogger<Mediator> logger, IServiceProvider serviceProvider,
-						IEnumerable<IMediatorMiddleware> middlewares)
+						IEnumerable<IInterceptor> interceptors)
 		{
 			_logger = logger;
 			this._serviceProvider = serviceProvider;
-			this._middlewares = middlewares;
+			this._interceptors = interceptors;
 		}
 
 		public MediatorResponse<TResponse> Get<TResponse>(IRequest<TResponse> request)
 		{
-			return ExecuteMiddlewares(request, Handle);
+			return ExecuteInterceptors(request, Handle);
 		}
 
 		public async Task<MediatorResponse<TResponse>> GetAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return await ExecuteMiddlewaresAsync(request, HandleAsync, cancellationToken);
+			return await ExecuteInterceptorsAsync(request, HandleAsync, cancellationToken);
 		}
 
-		private MediatorResponse<TResponse> ExecuteMiddlewares<TResponse>(IRequest<TResponse> request,
+		private MediatorResponse<TResponse> ExecuteInterceptors<TResponse>(IRequest<TResponse> request,
 			Func<IRequest<TResponse>, MediatorResponse<TResponse>> handle)
 		{
-			_logger.Debug("Running middlewares...");
-			var next = _middlewares.Reverse().Aggregate(handle,
-				   (handleDelegate, middleware) => (req) => middleware.Run<IRequest<TResponse>, TResponse>(req, handleDelegate));
-			try
+			_logger.Debug("Running Interceptors...");
+			var next = _interceptors.Reverse().Aggregate(handle,
+				   (handleDelegate, interceptor) => (req) => interceptor.Run<IRequest<TResponse>, TResponse>(req, handleDelegate));
+			try 
 			{
 				return next.Invoke(request);
 			}
@@ -56,16 +56,16 @@ namespace BoltOn.Mediator.Pipeline
 			}
 			finally
 			{
-				_middlewares.ToList().ForEach(m => m.Dispose());
+				_interceptors.ToList().ForEach(m => m.Dispose());
 			}
 		}
 
-		private async Task<MediatorResponse<TResponse>> ExecuteMiddlewaresAsync<TResponse>(IRequest<TResponse> request,
+		private async Task<MediatorResponse<TResponse>> ExecuteInterceptorsAsync<TResponse>(IRequest<TResponse> request,
 			Func<IRequest<TResponse>, CancellationToken, Task<MediatorResponse<TResponse>>> handleAsync, CancellationToken cancellationToken)
 		{
-			_logger.Debug("Running middlewares...");
-			var next = _middlewares.Reverse().Aggregate(handleAsync,
-				   (handleDelegate, middleware) => (req, token) => middleware.RunAsync<IRequest<TResponse>, TResponse>(req, token, handleDelegate));
+			_logger.Debug("Running Interceptors...");
+			var next = _interceptors.Reverse().Aggregate(handleAsync,
+				   (handleDelegate, interceptor) => (req, token) => interceptor.RunAsync<IRequest<TResponse>, TResponse>(req, token, handleDelegate));
 			try
 			{
 				return await next.Invoke(request, cancellationToken);
@@ -77,7 +77,7 @@ namespace BoltOn.Mediator.Pipeline
 			}
 			finally
 			{
-				_middlewares.ToList().ForEach(m => m.Dispose());
+				_interceptors.ToList().ForEach(m => m.Dispose());
 			}
 		}
 

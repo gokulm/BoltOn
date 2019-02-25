@@ -1,4 +1,4 @@
-﻿using BoltOn.Mediator.Middlewares;
+﻿using BoltOn.Mediator.Interceptors;
 
 namespace BoltOn.Mediator.Pipeline
 {
@@ -6,11 +6,11 @@ namespace BoltOn.Mediator.Pipeline
     {
     }
 
-	public interface ICommand<out TResponse> : IRequest<TResponse>, IEnableUnitOfWorkMiddleware
+	public interface ICommand<out TResponse> : IRequest<TResponse>, IEnableUnitOfWorkInterceptor
 	{	
 	}
 
-	public interface IQuery<out TResponse> : IRequest<TResponse>, IEnableUnitOfWorkMiddleware
+	public interface IQuery<out TResponse> : IRequest<TResponse>, IEnableUnitOfWorkInterceptor
 	{
 	}
 }

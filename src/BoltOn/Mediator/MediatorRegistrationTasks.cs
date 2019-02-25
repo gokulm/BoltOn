@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using BoltOn.Bootstrapping;
 using Microsoft.Extensions.DependencyInjection;
-using BoltOn.Mediator.Middlewares;
+using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.UoW;
 
@@ -14,15 +14,15 @@ namespace BoltOn.Mediator
 			var container = context.Container;
 			container.AddTransient<IMediator, Pipeline.Mediator>();
 			container.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
-			RegisterMiddlewares(container);
+			RegisterInterceptors(container);
 			RegisterHandlers(context);
 			RegisterAsyncHandlers(context);
 		}
 
-		private static void RegisterMiddlewares(IServiceCollection container)
+		private static void RegisterInterceptors(IServiceCollection container)
 		{
-			container.AddTransient<IMediatorMiddleware, StopwatchMiddleware>();
-			container.AddTransient<IMediatorMiddleware, UnitOfWorkMiddleware>();
+			container.AddTransient<IInterceptor, StopwatchInterceptor>();
+			container.AddTransient<IInterceptor, UnitOfWorkInterceptor>();
 		}
 
 		private void RegisterHandlers(RegistrationTaskContext context)

@@ -1,11 +1,11 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Mediator.Middlewares;
+using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 
 namespace BoltOn.Tests.Mediator
 {
-	public class TestRequest : IRequest<bool>, IEnableStopwatchMiddleware
+	public class TestRequest : IRequest<bool>, IEnableStopwatchInterceptor
 	{
 	}
 

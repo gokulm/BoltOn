@@ -20,10 +20,10 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Get_BootstrapWithDefaults_InvokesAllTheMiddlewaresAndReturnsSuccessfulResult()
+		public void Get_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
-			MediatorTestHelper.IsClearMiddlewares = false;
+			MediatorTestHelper.IsClearInterceptors = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
@@ -39,17 +39,17 @@ namespace BoltOn.Tests.Mediator
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchMiddleware started at {boltOnClock.Now}"));
+																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchMiddleware ended at {boltOnClock.Now}. Time elapsed: 0"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestMiddleware Started"));
+																				   $"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 		}
 
 		[Fact]
-		public async Task Get_BootstrapWithDefaultsAndAsyncHandler_InvokesAllTheMiddlewaresAndReturnsSuccessfulResult()
+		public async Task Get_BootstrapWithDefaultsAndAsyncHandler_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
-			MediatorTestHelper.IsClearMiddlewares = false;
+			MediatorTestHelper.IsClearInterceptors = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
@@ -65,17 +65,17 @@ namespace BoltOn.Tests.Mediator
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchMiddleware started at {boltOnClock.Now}"));
+																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchMiddleware ended at {boltOnClock.Now}. Time elapsed: 0"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestMiddleware Started"));
+																				   $"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 		}
 
 		[Fact]
-		public void Get_BootstrapWithCustomMiddlewares_InvokesDefaultAndCustomMiddlewareInOrderAndReturnsSuccessfulResult()
+		public void Get_BootstrapWithCustomInterceptors_InvokesDefaultAndCustomInterceptorInOrderAndReturnsSuccessfulResult()
 		{
 			// arrange
-			MediatorTestHelper.IsClearMiddlewares = false;
+			MediatorTestHelper.IsClearInterceptors = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
@@ -90,23 +90,23 @@ namespace BoltOn.Tests.Mediator
 			// assert 
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestMiddleware Started") > 0);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestMiddleware Ended") > 0);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestRequestSpecificMiddleware Started") == -1);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf($"StopwatchMiddleware started at {boltOnClock.Now}") <
-						MediatorTestHelper.LoggerStatements.IndexOf("TestMiddleware Started"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {boltOnClock.Now}"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchMiddleware ended at {boltOnClock.Now}. " +
+			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Started") > 0);
+			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended") > 0);
+			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestRequestSpecificInterceptor Started") == -1);
+			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf($"StopwatchInterceptor started at {boltOnClock.Now}") <
+						MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Started"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor started at {boltOnClock.Now}"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor ended at {boltOnClock.Now}. " +
 																				   "Time elapsed: 0"));
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf($"StopwatchMiddleware ended at {boltOnClock.Now}. Time elapsed: 0") >
-						MediatorTestHelper.LoggerStatements.IndexOf("TestMiddleware Ended"));
+			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf($"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0") >
+						MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended"));
 		}
 
 		[Fact]
-		public void Get_BootstrapWithCustomMiddlewaresAndClear_InvokesOnlyCustomMiddlewareAndReturnsSuccessfulResult()
+		public void Get_BootstrapWithCustomInterceptorsAndClear_InvokesOnlyCustomInterceptorAndReturnsSuccessfulResult()
 		{
 			// arrange
-			MediatorTestHelper.IsClearMiddlewares = true;
+			MediatorTestHelper.IsClearInterceptors = true;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn();
 			serviceCollection.AddLogging();
@@ -114,7 +114,7 @@ namespace BoltOn.Tests.Mediator
 			serviceProvider.UseBoltOn();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
 			var sut = serviceProvider.GetService<IMediator>();
-			var testMiddleware = serviceProvider.GetService<TestMiddleware>();
+			var testInterceptor = serviceProvider.GetService<TestInterceptor>();
 
 			// act
 			var result = sut.Get(new TestRequest());
@@ -122,15 +122,15 @@ namespace BoltOn.Tests.Mediator
 			// assert 
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "TestMiddleware Started"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "TestMiddleware Ended"));
-			Assert.Null(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchMiddleware started at {boltOnClock.Now}"));
-			Assert.Null(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchMiddleware ended at {boltOnClock.Now}. " +
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "TestInterceptor Started"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "TestInterceptor Ended"));
+			Assert.Null(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor started at {boltOnClock.Now}"));
+			Assert.Null(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor ended at {boltOnClock.Now}. " +
 																				"Time elapsed: 0"));
 		}
 
 		[Fact]
-		public void Get_MediatorWithQueryRequest_ExecutesUoWMiddlewareAndStartsTransactionsWithDefaultQueryIsolationLevel()
+		public void Get_MediatorWithQueryRequest_ExecutesUoWInterceptorAndStartsTransactionsWithDefaultQueryIsolationLevel()
 		{
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
@@ -152,7 +152,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Get_MediatorWithQueryRequest_ExecutesUoWMiddlewareAndStartsTransactionsWithCustomizedQueryIsolationLevel()
+		public void Get_MediatorWithQueryRequest_ExecutesUoWInterceptorAndStartsTransactionsWithCustomizedQueryIsolationLevel()
 		{
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
@@ -174,7 +174,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public async Task Get_MediatorWithQueryRequestAndAsyncHandler_ExecutesUoWMiddlewareAndStartsTransactionsWithCustomizedQueryIsolationLevel()
+		public async Task Get_MediatorWithQueryRequestAndAsyncHandler_ExecutesUoWInterceptorAndStartsTransactionsWithCustomizedQueryIsolationLevel()
 		{
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;

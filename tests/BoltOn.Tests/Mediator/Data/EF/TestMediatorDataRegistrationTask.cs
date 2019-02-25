@@ -13,10 +13,10 @@ namespace BoltOn.Tests.Mediator.Data.EF
     {
         public void Run(RegistrationTaskContext context)
         {
-            var efAutoDetectChangesMiddleware = new Mock<IBoltOnLogger<EFQueryTrackingBehaviorMiddleware>>();
-            efAutoDetectChangesMiddleware.Setup(s => s.Debug(It.IsAny<string>()))
+            var efAutoDetectChangesInterceptor = new Mock<IBoltOnLogger<EFQueryTrackingBehaviorInterceptor>>();
+            efAutoDetectChangesInterceptor.Setup(s => s.Debug(It.IsAny<string>()))
                                      .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-            context.Container.AddTransient((s) => efAutoDetectChangesMiddleware.Object);
+            context.Container.AddTransient((s) => efAutoDetectChangesInterceptor.Object);
         }
     }
 

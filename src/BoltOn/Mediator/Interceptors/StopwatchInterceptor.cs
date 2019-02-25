@@ -6,18 +6,18 @@ using BoltOn.Logging;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Utilities;
 
-namespace BoltOn.Mediator.Middlewares
+namespace BoltOn.Mediator.Interceptors
 {
-	public interface IEnableStopwatchMiddleware
+	public interface IEnableStopwatchInterceptor
 	{
 	}
 
-	public class StopwatchMiddleware : BaseRequestSpecificMiddleware<IEnableStopwatchMiddleware>
+	public class StopwatchInterceptor : BaseRequestSpecificInterceptor<IEnableStopwatchInterceptor>
 	{
-		private readonly IBoltOnLogger<StopwatchMiddleware> _logger;
+		private readonly IBoltOnLogger<StopwatchInterceptor> _logger;
 		private readonly IBoltOnClock _boltOnClock;
 
-		public StopwatchMiddleware(IBoltOnLogger<StopwatchMiddleware> logger, IBoltOnClock boltOnClock)
+		public StopwatchInterceptor(IBoltOnLogger<StopwatchInterceptor> logger, IBoltOnClock boltOnClock)
 		{
 			_logger = logger;
 			_boltOnClock = boltOnClock;
@@ -27,9 +27,9 @@ namespace BoltOn.Mediator.Middlewares
 																				   Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)
 		{
 			var stopwatch = new Stopwatch();
-			_logger.Debug($"StopwatchMiddleware started at {_boltOnClock.Now}");
+			_logger.Debug($"StopwatchInterceptor started at {_boltOnClock.Now}");
 			var response = next(request);
-			_logger.Debug($"StopwatchMiddleware ended at {_boltOnClock.Now}. Time elapsed: {stopwatch.ElapsedMilliseconds}");
+			_logger.Debug($"StopwatchInterceptor ended at {_boltOnClock.Now}. Time elapsed: {stopwatch.ElapsedMilliseconds}");
 			return response;
 		}
 
@@ -41,9 +41,9 @@ namespace BoltOn.Mediator.Middlewares
 			Func<IRequest<TResponse>, CancellationToken, Task<MediatorResponse<TResponse>>> next)
 		{
 			var stopwatch = new Stopwatch();
-			_logger.Debug($"StopwatchMiddleware started at {_boltOnClock.Now}");
+			_logger.Debug($"StopwatchInterceptor started at {_boltOnClock.Now}");
 			var response = await next(request, cancellationToken);
-			_logger.Debug($"StopwatchMiddleware ended at {_boltOnClock.Now}. Time elapsed: {stopwatch.ElapsedMilliseconds}");
+			_logger.Debug($"StopwatchInterceptor ended at {_boltOnClock.Now}. Time elapsed: {stopwatch.ElapsedMilliseconds}");
 			return response;
 		}
 	}

@@ -2,7 +2,7 @@
 using BoltOn.Bootstrapping;
 using BoltOn.Logging;
 using BoltOn.Mediator;
-using BoltOn.Mediator.Middlewares;
+using BoltOn.Mediator.Interceptors;
 using BoltOn.UoW;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,20 +19,20 @@ namespace BoltOn.Tests.Mediator
             boltOnClock.Setup(s => s.Now).Returns(currentDateTime);
             context.Container.AddTransient((s) => boltOnClock.Object);
 
-            var testMiddlewareLogger = new Mock<IBoltOnLogger<TestMiddleware>>();
-            testMiddlewareLogger.Setup(s => s.Debug(It.IsAny<string>()))
+            var testInterceptorLogger = new Mock<IBoltOnLogger<TestInterceptor>>();
+            testInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
                                 .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-            context.Container.AddTransient((s) => testMiddlewareLogger.Object);
+            context.Container.AddTransient((s) => testInterceptorLogger.Object);
 
-            var stopWatchMiddlewareLogger = new Mock<IBoltOnLogger<StopwatchMiddleware>>();
-            stopWatchMiddlewareLogger.Setup(s => s.Debug(It.IsAny<string>()))
+            var stopWatchInterceptorLogger = new Mock<IBoltOnLogger<StopwatchInterceptor>>();
+            stopWatchInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
                                      .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-            context.Container.AddTransient((s) => stopWatchMiddlewareLogger.Object);
+            context.Container.AddTransient((s) => stopWatchInterceptorLogger.Object);
 
-            //var efAutoDetectChangesMiddleware = new Mock<IBoltOnLogger<EFAutoDetectChangesDisablingMiddleware>>();
-            //efAutoDetectChangesMiddleware.Setup(s => s.Debug(It.IsAny<string>()))
+            //var efAutoDetectChangesInterceptor = new Mock<IBoltOnLogger<EFAutoDetectChangesDisablingInterceptor>>();
+            //efAutoDetectChangesInterceptor.Setup(s => s.Debug(It.IsAny<string>()))
             //                         .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-            //context.Container.AddTransient((s) => efAutoDetectChangesMiddleware.Object);
+            //context.Container.AddTransient((s) => efAutoDetectChangesInterceptor.Object);
 
             var customUoWOptionsBuilder = new Mock<IBoltOnLogger<CustomUnitOfWorkOptionsBuilder>>();
             customUoWOptionsBuilder.Setup(s => s.Debug(It.IsAny<string>()))
@@ -44,13 +44,13 @@ namespace BoltOn.Tests.Mediator
                                 .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
             context.Container.AddTransient((s) => uowOptionsBuilderLogger.Object);
 
-            if (MediatorTestHelper.IsClearMiddlewares)
-                context.Container.RemoveAllMiddlewares();
+            if (MediatorTestHelper.IsClearInterceptors)
+                context.Container.RemoveAllInterceptors();
 
             if (MediatorTestHelper.IsCustomizeIsolationLevel)
                 context.Container.AddSingleton<IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOptionsBuilder>();
 
-            context.Container.AddMiddleware<TestMiddleware>();
+            context.Container.AddInterceptor<TestInterceptor>();
         }
     }
 }

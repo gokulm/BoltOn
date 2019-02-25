@@ -1,22 +1,22 @@
 ﻿using System.Linq;
-using BoltOn.Mediator.Middlewares;
+using BoltOn.Mediator.Interceptors;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Mediator
 {
 	public static class Extensions
     {
-		public static IServiceCollection RemoveAllMiddlewares(this IServiceCollection services)
+		public static IServiceCollection RemoveAllInterceptors(this IServiceCollection services)
 		{
-			var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IMediatorMiddleware));
+			var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IInterceptor));
 			if (serviceDescriptor != null)
 				services.Remove(serviceDescriptor);
 			return services;
 		}
 
-		public static IServiceCollection AddMiddleware<TMiddleware>(this IServiceCollection services)
+		public static IServiceCollection AddInterceptor<TInterceptor>(this IServiceCollection services)
 		{
-			services.AddTransient(typeof(IMediatorMiddleware), typeof(TMiddleware));
+			services.AddTransient(typeof(IInterceptor), typeof(TInterceptor));
 			return services;
 		}
 	}

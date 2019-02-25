@@ -14,7 +14,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 	public class MediatorDataEFIntegrationTests : IDisposable
 	{
 		[Fact]
-		public void Get_MediatorWithQueryRequest_ExecutesEFQueryTrackingBehaviorMiddlewareAndDisablesTracking()
+		public void Get_MediatorWithQueryRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndDisablesTracking()
 		{
 			// arrange
 			MediatorTestHelper.IsSeedData = true;
@@ -37,13 +37,13 @@ namespace BoltOn.Tests.Mediator.Data.EF
 			Assert.True(result.IsSuccessful);
 			Assert.NotNull(result.Data);
 			Assert.Equal(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking, queryTrackingBehavior);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(EFQueryTrackingBehaviorMiddleware)}..."));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {true}"));
 			Assert.False(isAutoDetectChangesEnabled);
 		}
 
 		[Fact]
-		public void Get_MediatorWithCommandRequest_ExecutesEFQueryTrackingBehaviorMiddlewareAndEnablesTrackAll()
+		public void Get_MediatorWithCommandRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndEnablesTrackAll()
 		{
 			// arrange
 			MediatorTestHelper.IsSeedData = false;
@@ -65,7 +65,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 			Assert.True(result.IsSuccessful);
 			Assert.True(result.Data);
 			Assert.Equal(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.TrackAll, queryTrackingBehavior);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(EFQueryTrackingBehaviorMiddleware)}..."));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {false}"));
 			Assert.True(isAutoDetectChangesEnabled);
 		}

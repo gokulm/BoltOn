@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using BoltOn.Bootstrapping;
-using BoltOn.Mediator.Middlewares;
+using BoltOn.Mediator.Interceptors;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

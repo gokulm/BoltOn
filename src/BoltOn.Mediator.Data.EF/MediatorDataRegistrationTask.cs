@@ -1,6 +1,6 @@
 using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
-using BoltOn.Mediator.Middlewares;
+using BoltOn.Mediator.Interceptors;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Mediator.Data.EF
@@ -12,7 +12,7 @@ namespace BoltOn.Mediator.Data.EF
 			var container = context.Container;
 			container.AddTransient<IDbContextFactory, MediatorDbContextFactory>();
 			container.AddScoped<IMediatorDataContext, MediatorDataContext>();
-			container.AddTransient<IMediatorMiddleware, EFQueryTrackingBehaviorMiddleware>();
+			container.AddTransient<IInterceptor, EFQueryTrackingBehaviorInterceptor>();
 		}
 	}
 }

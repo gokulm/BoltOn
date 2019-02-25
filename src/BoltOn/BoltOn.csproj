@@ -11,7 +11,7 @@
     <Folder Include="Context\" />
     <Folder Include="Other\" />
     <Folder Include="Mediator\" />
-    <Folder Include="Mediator\Middlewares\" />
+    <Folder Include="Mediator\Interceptors\" />
     <Folder Include="Mediator\Pipeline\" />
     <Folder Include="Data\" />
   </ItemGroup>

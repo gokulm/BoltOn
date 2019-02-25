@@ -2,17 +2,17 @@
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Logging;
-using BoltOn.Mediator.Middlewares;
+using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 
 namespace BoltOn.Mediator.Data.EF
 {
-	public class EFQueryTrackingBehaviorMiddleware : IMediatorMiddleware
+	public class EFQueryTrackingBehaviorInterceptor : IInterceptor
 	{
-		private readonly IBoltOnLogger<EFQueryTrackingBehaviorMiddleware> _logger;
+		private readonly IBoltOnLogger<EFQueryTrackingBehaviorInterceptor> _logger;
 		private readonly IMediatorDataContext _mediatorDataContext;
 
-		public EFQueryTrackingBehaviorMiddleware(IBoltOnLogger<EFQueryTrackingBehaviorMiddleware> logger,
+		public EFQueryTrackingBehaviorInterceptor(IBoltOnLogger<EFQueryTrackingBehaviorInterceptor> logger,
 			IMediatorDataContext mediatorDataContext)
 		{
 			_logger = logger;
@@ -22,7 +22,7 @@ namespace BoltOn.Mediator.Data.EF
 		public MediatorResponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request, 
 			Func<IRequest<TResponse>, MediatorResponse<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
-			_logger.Debug($"Entering {nameof(EFQueryTrackingBehaviorMiddleware)}...");
+			_logger.Debug($"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}...");
 			_mediatorDataContext.IsQueryRequest = request is IQuery<TResponse>;
 			_logger.Debug($"IsQueryRequest: {_mediatorDataContext.IsQueryRequest}");
 			var response = next(request);
@@ -36,7 +36,7 @@ namespace BoltOn.Mediator.Data.EF
 		public async Task<MediatorResponse<TResponse>> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
 			Func<IRequest<TResponse>, CancellationToken, Task<MediatorResponse<TResponse>>> next) where TRequest : IRequest<TResponse>
 		{
-			_logger.Debug($"Entering {nameof(EFQueryTrackingBehaviorMiddleware)}...");
+			_logger.Debug($"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}...");
 			_mediatorDataContext.IsQueryRequest = request is IQuery<TResponse>;
 			_logger.Debug($"IsQueryRequest: {_mediatorDataContext.IsQueryRequest}");
 			var response = await next(request, cancellationToken);
