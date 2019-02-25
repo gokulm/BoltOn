@@ -244,12 +244,9 @@ namespace BoltOn.Tests.Mediator
 			testHandler.Setup(s => s.HandleAsync(request, default(CancellationToken))).Throws(new Exception("handler failed"));
 
 			// act
-			//var result = await sut.GetAsync(request);
 			var result = await Record.ExceptionAsync(async () => await sut.GetAsync(request));
 
 			// assert 
-			//Assert.False(result.IsSuccessful);
-			//Assert.False(result.Data);
 			Assert.NotNull(result);
 			Assert.Equal("handler failed", result.Message);
 		}
