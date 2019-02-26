@@ -21,7 +21,7 @@ namespace BoltOn.Samples.WebApi.Controllers
 		public ActionResult<IEnumerable<string>> Get()
 		{
 			var response = _mediator.Get(new TestRequest());
-			return new string[] { response.Data.Test };
+			return new string[] { response.Test };
 		}
 
 		// GET api/values/5

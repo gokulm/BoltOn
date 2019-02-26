@@ -34,8 +34,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 			var queryTrackingBehavior = dbContext.ChangeTracker.QueryTrackingBehavior;
 
 			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.NotNull(result.Data);
+			Assert.NotNull(result);
 			Assert.Equal(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking, queryTrackingBehavior);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {true}"));
@@ -62,8 +61,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 			var queryTrackingBehavior = dbContext.ChangeTracker.QueryTrackingBehavior;
 
 			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
+			Assert.True(result);
 			Assert.Equal(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.TrackAll, queryTrackingBehavior);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {false}"));

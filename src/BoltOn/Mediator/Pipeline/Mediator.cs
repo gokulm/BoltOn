@@ -11,8 +11,8 @@ namespace BoltOn.Mediator.Pipeline
 {
 	public interface IMediator
 	{
-		MediatorResponse<TResponse> Get<TResponse>(IRequest<TResponse> request);
-		Task<MediatorResponse<TResponse>> GetAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken));
+		TResponse Get<TResponse>(IRequest<TResponse> request);
+		Task<TResponse> GetAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken));
 	}
 
 	public class Mediator : IMediator
@@ -29,18 +29,18 @@ namespace BoltOn.Mediator.Pipeline
 			this._interceptors = interceptors;
 		}
 
-		public MediatorResponse<TResponse> Get<TResponse>(IRequest<TResponse> request)
+		public TResponse Get<TResponse>(IRequest<TResponse> request)
 		{
 			return ExecuteInterceptors(request, Handle);
 		}
 
-		public async Task<MediatorResponse<TResponse>> GetAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<TResponse> GetAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return await ExecuteInterceptorsAsync(request, HandleAsync, cancellationToken);
 		}
 
-		private MediatorResponse<TResponse> ExecuteInterceptors<TResponse>(IRequest<TResponse> request,
-			Func<IRequest<TResponse>, MediatorResponse<TResponse>> handle)
+		private TResponse ExecuteInterceptors<TResponse>(IRequest<TResponse> request,
+			Func<IRequest<TResponse>, TResponse> handle)
 		{
 			_logger.Debug("Running Interceptors...");
 			var next = _interceptors.Reverse().Aggregate(handle,
@@ -60,8 +60,8 @@ namespace BoltOn.Mediator.Pipeline
 			}
 		}
 
-		private async Task<MediatorResponse<TResponse>> ExecuteInterceptorsAsync<TResponse>(IRequest<TResponse> request,
-			Func<IRequest<TResponse>, CancellationToken, Task<MediatorResponse<TResponse>>> handleAsync, CancellationToken cancellationToken)
+		private async Task<TResponse> ExecuteInterceptorsAsync<TResponse>(IRequest<TResponse> request,
+			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> handleAsync, CancellationToken cancellationToken)
 		{
 			_logger.Debug("Running Interceptors...");
 			var next = _interceptors.Reverse().Aggregate(handleAsync,
@@ -81,7 +81,7 @@ namespace BoltOn.Mediator.Pipeline
 			}
 		}
 
-		private MediatorResponse<TResponse> Handle<TResponse>(IRequest<TResponse> request)
+		private TResponse Handle<TResponse>(IRequest<TResponse> request)
 		{
 			var requestType = request.GetType();
 			_logger.Debug($"Resolving handler for request: {requestType}");
@@ -95,14 +95,10 @@ namespace BoltOn.Mediator.Pipeline
 			var decorator = (BaseRequestHandlerDecorator<TResponse>)Activator.CreateInstance(typeof(RequestHandlerDecorator<,>)
 																					   .MakeGenericType(requestType, typeof(TResponse)), handler);
 			var response = decorator.Handle(request);
-			return new MediatorResponse<TResponse>
-			{
-				Data = response,
-				IsSuccessful = true
-			};
+			return response;
 		}
 
-		private async Task<MediatorResponse<TResponse>> HandleAsync<TResponse>(IRequest<TResponse> request,
+		private async Task<TResponse> HandleAsync<TResponse>(IRequest<TResponse> request,
 			CancellationToken cancellationToken)
 		{
 			var requestType = request.GetType();
@@ -112,16 +108,12 @@ namespace BoltOn.Mediator.Pipeline
 			var handler = _serviceProvider.GetService(interfaceHandlerType);
 			Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
 			_logger.Debug($"Resolved handler: {handler.GetType()}");
-			// this is to keep the request objects in the handlers strongly typed and to keep the handlers implement IRequestHandler
+			// this is to keep the request objects in the handlers strongly typed and to keep the handlers implement IRequestAsyncHandler
 			// and not inherit baserequesthandler
 			var decorator = (BaseRequestAsyncHandlerDecorator<TResponse>)Activator.CreateInstance(typeof(RequestAsyncHandlerDecorator<,>)
 																					   .MakeGenericType(requestType, typeof(TResponse)), handler);
 			var response = await decorator.HandleAsync(request, cancellationToken);
-			return await Task.FromResult(new MediatorResponse<TResponse>
-			{
-				Data = response,
-				IsSuccessful = true
-			});
+			return response;
 		}
 	}
 }

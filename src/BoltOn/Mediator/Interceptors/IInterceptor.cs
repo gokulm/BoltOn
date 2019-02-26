@@ -7,13 +7,13 @@ namespace BoltOn.Mediator.Interceptors
 {
 	public interface IInterceptor : IDisposable
 	{
-		MediatorResponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request, 
-		Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)
+		TResponse Run<TRequest, TResponse>(IRequest<TResponse> request, 
+		Func<IRequest<TResponse>, TResponse> next)
 			where TRequest : IRequest<TResponse>;
 
-		Task<MediatorResponse<TResponse>> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, 
+		Task<TResponse> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, 
 			CancellationToken cancellationToken,
-		 	Func<IRequest<TResponse>, CancellationToken, Task<MediatorResponse<TResponse>>> next)
+		 	Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next)
 			where TRequest : IRequest<TResponse>;
 	}
 }

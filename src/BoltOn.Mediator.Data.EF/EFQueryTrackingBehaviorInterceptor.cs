@@ -19,8 +19,8 @@ namespace BoltOn.Mediator.Data.EF
 			_mediatorDataContext = mediatorDataContext;
 		}
 
-		public MediatorResponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request, 
-			Func<IRequest<TResponse>, MediatorResponse<TResponse>> next) where TRequest : IRequest<TResponse>
+		public TResponse Run<TRequest, TResponse>(IRequest<TResponse> request, 
+			Func<IRequest<TResponse>, TResponse> next) where TRequest : IRequest<TResponse>
 		{
 			_logger.Debug($"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}...");
 			_mediatorDataContext.IsQueryRequest = request is IQuery<TResponse>;
@@ -33,8 +33,8 @@ namespace BoltOn.Mediator.Data.EF
 		{
 		}
 
-		public async Task<MediatorResponse<TResponse>> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
-			Func<IRequest<TResponse>, CancellationToken, Task<MediatorResponse<TResponse>>> next) where TRequest : IRequest<TResponse>
+		public async Task<TResponse> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
+			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
 			_logger.Debug($"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}...");
 			_mediatorDataContext.IsQueryRequest = request is IQuery<TResponse>;

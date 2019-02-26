@@ -35,8 +35,7 @@ namespace BoltOn.Tests.Mediator
 			var result = sut.Get(request);
 
 			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
+			Assert.True(result);
 		}
 
 		[Fact]
@@ -59,8 +58,7 @@ namespace BoltOn.Tests.Mediator
 			var result = sut.Get(request);
 
 			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
+			Assert.True(result);
 			logger.Verify(l => l.Debug("TestInterceptor Started"));
 			logger.Verify(l => l.Debug("TestInterceptor Ended"));
 		}
@@ -90,8 +88,7 @@ namespace BoltOn.Tests.Mediator
 			var result = sut.Get(request);
 
 			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
+			Assert.True(result);
 			logger.Verify(l => l.Debug("TestRequestSpecificInterceptor Started"), Times.Never);
 			logger.Verify(l => l.Debug("TestRequestSpecificInterceptor Ended"), Times.Never);
 			logger2.Verify(l => l.Debug($"StopwatchInterceptor started at {currentDateTime}"), Times.Once);
@@ -127,8 +124,7 @@ namespace BoltOn.Tests.Mediator
 			var result = sut.Get(request);
 
 			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
+			Assert.True(result);
 			uowManager.Verify(u => u.Get(uowOptions.Object));
 			uow.Verify(u => u.Commit());
 			logger.Verify(l => l.Debug($"About to start UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));

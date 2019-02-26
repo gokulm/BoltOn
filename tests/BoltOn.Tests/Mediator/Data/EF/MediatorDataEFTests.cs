@@ -37,8 +37,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 			var result = sut.Get(request);
 
 			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
+			Assert.True(result);
 			Assert.True(mediatorContext.IsQueryRequest);
 			logger.Verify(l => l.Debug($"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
 			logger.Verify(l => l.Debug($"IsQueryRequest: {true}"));
@@ -68,8 +67,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 			var result = sut.Get(request);
 
 			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
+			Assert.True(result);
 			Assert.False(mediatorContext.IsQueryRequest);
 			logger.Verify(l => l.Debug($"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
 			logger.Verify(l => l.Debug($"IsQueryRequest: {false}"));

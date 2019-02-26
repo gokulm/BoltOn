@@ -27,13 +27,13 @@ namespace BoltOn.Mediator.Interceptors
 			_uowOptionsBuilder = uowOptionsBuilder;
 		}
 
-		public override MediatorResponse<TResponse> Execute<TRequest, TResponse>(IRequest<TResponse> request,
-																				   Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)
+		public override TResponse Execute<TRequest, TResponse>(IRequest<TResponse> request,
+																				   Func<IRequest<TResponse>, TResponse> next)
 		{
 			_logger.Debug($"UnitOfWorkInterceptor started");
 			var unitOfWorkOptions = _uowOptionsBuilder.Build(request);
 			_logger.Debug($"About to start UoW with IsolationLevel: {unitOfWorkOptions.IsolationLevel.ToString()}");
-			MediatorResponse<TResponse> response;
+			TResponse response;
 			using (_unitOfWork = _unitOfWorkManager.Get(unitOfWorkOptions))
 			{
 				response = next.Invoke(request);
@@ -49,13 +49,13 @@ namespace BoltOn.Mediator.Interceptors
 			_unitOfWork?.Dispose();
 		}
 
-		public async override Task<MediatorResponse<TResponse>> ExecuteAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken,
-			Func<IRequest<TResponse>, CancellationToken, Task<MediatorResponse<TResponse>>> next)
+		public async override Task<TResponse> ExecuteAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken,
+			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next)
 		{
 			_logger.Debug($"UnitOfWorkInterceptor started");
 			var unitOfWorkOptions = _uowOptionsBuilder.Build(request);
 			_logger.Debug($"About to start UoW with IsolationLevel: {unitOfWorkOptions.IsolationLevel.ToString()}");
-			MediatorResponse<TResponse> response;
+			TResponse response;
 			using (_unitOfWork = _unitOfWorkManager.Get(unitOfWorkOptions))
 			{
 				response = await next.Invoke(request, cancellationToken);

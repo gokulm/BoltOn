@@ -16,8 +16,8 @@ namespace BoltOn.Tests.Mediator
 			_logger = logger;
 		}
 
-		public MediatorResponse<TResponse> Run<TRequest, TResponse>(IRequest<TResponse> request,
-																	 Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)
+		public TResponse Run<TRequest, TResponse>(IRequest<TResponse> request,
+																	 Func<IRequest<TResponse>, TResponse> next)
 		   where TRequest : IRequest<TResponse>
 		{
 			_logger.Debug("TestInterceptor Started");
@@ -30,8 +30,8 @@ namespace BoltOn.Tests.Mediator
 		{
 		}
 
-		public async Task<MediatorResponse<TResponse>> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
-			Func<IRequest<TResponse>, CancellationToken, Task<MediatorResponse<TResponse>>> next) where TRequest : IRequest<TResponse>
+		public async Task<TResponse> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
+			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
 			_logger.Debug("TestInterceptor Started");
 			var response = await next.Invoke(request, cancellationToken);
@@ -57,8 +57,8 @@ namespace BoltOn.Tests.Mediator
 		{
 		}
 
-		public override MediatorResponse<TResponse> Execute<TRequest, TResponse>(IRequest<TResponse> request,
-																				   Func<IRequest<TResponse>, MediatorResponse<TResponse>> next)
+		public override TResponse Execute<TRequest, TResponse>(IRequest<TResponse> request,
+																				   Func<IRequest<TResponse>, TResponse> next)
 		{
 			_logger.Debug($"TestRequestSpecificInterceptor Started");
 			var response = next.Invoke(request);
@@ -66,8 +66,8 @@ namespace BoltOn.Tests.Mediator
 			return response;
 		}
 
-		public async override Task<MediatorResponse<TResponse>> ExecuteAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
-			Func<IRequest<TResponse>, CancellationToken, Task<MediatorResponse<TResponse>>> next)
+		public async override Task<TResponse> ExecuteAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
+			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next)
 		{
 			_logger.Debug($"TestRequestSpecificInterceptor Started");
 			var response = await next.Invoke(request, cancellationToken);

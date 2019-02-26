@@ -36,8 +36,7 @@ namespace BoltOn.Tests.Mediator
 			var result = mediator.Get(new TestRequest());
 
 			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
+			Assert.True(result);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
 																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
@@ -62,8 +61,7 @@ namespace BoltOn.Tests.Mediator
 			var result = await mediator.GetAsync(new TestRequest());
 
 			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
+			Assert.True(result);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
 																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
@@ -88,8 +86,7 @@ namespace BoltOn.Tests.Mediator
 			var result = mediator.Get(new TestRequest());
 
 			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
+			Assert.True(result);
 			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Started") > 0);
 			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended") > 0);
 			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestRequestSpecificInterceptor Started") == -1);
@@ -120,8 +117,7 @@ namespace BoltOn.Tests.Mediator
 			var result = sut.Get(new TestRequest());
 
 			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
+			Assert.True(result);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "TestInterceptor Started"));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "TestInterceptor Ended"));
 			Assert.Null(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor started at {boltOnClock.Now}"));
@@ -146,8 +142,7 @@ namespace BoltOn.Tests.Mediator
 			var result = sut.Get(new TestQuery());
 
 			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
+			Assert.True(result);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Query"));
 		}
 
@@ -168,8 +163,7 @@ namespace BoltOn.Tests.Mediator
 			var result = sut.Get(new TestQuery());
 
 			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
+			Assert.True(result);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
@@ -190,8 +184,7 @@ namespace BoltOn.Tests.Mediator
 			var result = await sut.GetAsync(new TestQuery());
 
 			// assert 
-			Assert.True(result.IsSuccessful);
-			Assert.True(result.Data);
+			Assert.True(result);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
