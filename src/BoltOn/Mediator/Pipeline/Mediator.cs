@@ -91,9 +91,9 @@ namespace BoltOn.Mediator.Pipeline
 			Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
 			_logger.Debug($"Resolved handler: {handler.GetType()}");
 			// this is to keep the request objects in the handlers strongly typed and to keep the handlers implement IRequestHandler
-			// and not inherit baserequesthandler
-			var decorator = (BaseRequestHandlerDecorator<TResponse>)Activator.CreateInstance(typeof(RequestHandlerDecorator<,>)
-																					   .MakeGenericType(requestType, typeof(TResponse)), handler);
+			// and not inherit baserequesthandler. also the requestType can be inferred only if we use MakeGenericType
+			dynamic decorator = Activator.CreateInstance(typeof(RequestHandlerDecorator<,>)
+															   .MakeGenericType(requestType, typeof(TResponse)), handler);
 			var response = decorator.Handle(request);
 			return response;
 		}
@@ -109,9 +109,9 @@ namespace BoltOn.Mediator.Pipeline
 			Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
 			_logger.Debug($"Resolved handler: {handler.GetType()}");
 			// this is to keep the request objects in the handlers strongly typed and to keep the handlers implement IRequestAsyncHandler
-			// and not inherit baserequesthandler
-			var decorator = (BaseRequestAsyncHandlerDecorator<TResponse>)Activator.CreateInstance(typeof(RequestAsyncHandlerDecorator<,>)
-																					   .MakeGenericType(requestType, typeof(TResponse)), handler);
+			// and not inherit baserequesthandler. also the requestType can be inferred only if we use MakeGenericType
+			dynamic decorator = Activator.CreateInstance(typeof(RequestAsyncHandlerDecorator<,>)
+																   .MakeGenericType(requestType, typeof(TResponse)), handler);
 			var response = await decorator.HandleAsync(request, cancellationToken);
 			return response;
 		}
