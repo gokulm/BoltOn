@@ -23,7 +23,7 @@ namespace BoltOn.Mediator.Data.EF
 			Func<IRequest<TResponse>, TResponse> next) where TRequest : IRequest<TResponse>
 		{
 			_logger.Debug($"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}...");
-			_mediatorDataContext.IsQueryRequest = request is IQuery<TResponse>;
+			_mediatorDataContext.IsQueryRequest = request is IQuery<TResponse> || request is IStaleQuery<TResponse>;
 			_logger.Debug($"IsQueryRequest: {_mediatorDataContext.IsQueryRequest}");
 			var response = next(request);
 			return response;

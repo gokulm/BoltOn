@@ -17,10 +17,15 @@ namespace BoltOn.Tests.Mediator
 	{
 	}
 
+	public class TestStaleQuery : IStaleQuery<bool>
+	{
+	}
+
 	public class TestHandler : IRequestHandler<TestRequest, bool>,
 	    IRequestHandler<TestCommand, bool>,
 	    IRequestHandler<TestQuery, bool>,
 		IRequestAsyncHandler<TestQuery, bool>,
+		IRequestHandler<TestStaleQuery, bool>,
 		IRequestAsyncHandler<TestRequest, bool>,
 		IRequestAsyncHandler<TestCommand, bool>
 	{
@@ -38,6 +43,11 @@ namespace BoltOn.Tests.Mediator
         {
             return true;
         }
+
+		public virtual bool Handle(TestStaleQuery request)
+		{
+			return true;
+		}
 
 		public virtual async Task<bool> HandleAsync(TestQuery request, CancellationToken cancellationToken)
 		{

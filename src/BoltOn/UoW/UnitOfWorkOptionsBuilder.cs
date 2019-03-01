@@ -30,6 +30,10 @@ namespace BoltOn.UoW
 					break;
 				case IQuery<TResponse> q:
 					_logger.Debug("Getting isolation level for Query");
+					isolationLevel = IsolationLevel.ReadCommitted;
+					break;
+				case IStaleQuery<TResponse> q:
+					_logger.Debug("Getting isolation level for StaleQuery");
 					isolationLevel = IsolationLevel.ReadUncommitted;
 					break;
 				default:

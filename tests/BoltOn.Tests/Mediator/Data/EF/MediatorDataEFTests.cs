@@ -44,6 +44,36 @@ namespace BoltOn.Tests.Mediator.Data.EF
 		}
 
 		[Fact]
+		public void Get_MediatorWithStaleQueryRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndDisablesTracking()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
+			var testHandler = new Mock<TestHandler>();
+			var interceptor = new Mock<IInterceptor>();
+			var logger = new Mock<IBoltOnLogger<EFQueryTrackingBehaviorInterceptor>>();
+			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestStaleQuery, bool>)))
+				.Returns(testHandler.Object);
+			var request = new TestStaleQuery();
+			var mediatorContext = new MediatorDataContext();
+			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
+			{
+				new EFQueryTrackingBehaviorInterceptor(logger.Object, mediatorContext)
+			});
+			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			testHandler.Setup(s => s.Handle(request)).Returns(true);
+
+			// act
+			var result = sut.Get(request);
+
+			// assert 
+			Assert.True(result);
+			Assert.True(mediatorContext.IsQueryRequest);
+			logger.Verify(l => l.Debug($"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
+			logger.Verify(l => l.Debug($"IsQueryRequest: {true}"));
+		}
+
+		[Fact]
 		public void Get_MediatorWithCommandRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndEnablesTracking()
 		{
 			// arrange

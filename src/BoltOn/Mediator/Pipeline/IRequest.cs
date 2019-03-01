@@ -13,4 +13,8 @@ namespace BoltOn.Mediator.Pipeline
 	public interface IQuery<out TResponse> : IRequest<TResponse>, IEnableUnitOfWorkInterceptor
 	{
 	}
+
+	public interface IStaleQuery<out TResponse> : IRequest<TResponse>, IEnableUnitOfWorkInterceptor
+	{
+	}
 }

@@ -22,16 +22,16 @@ namespace BoltOn.Mediator.Pipeline
 	internal class RequestAsyncHandlerDecorator<TRequest, TResponse>
 		where TRequest : IRequest<TResponse>
 	{
-		private readonly IRequestAsyncHandler<TRequest, TResponse> _requestHandler;
+		private readonly IRequestAsyncHandler<TRequest, TResponse> _requestAsyncHandler;
 
-		public RequestAsyncHandlerDecorator(IRequestAsyncHandler<TRequest, TResponse> requestHandler)
+		public RequestAsyncHandlerDecorator(IRequestAsyncHandler<TRequest, TResponse> requestAsyncHandler)
 		{
-			_requestHandler = requestHandler;
+			_requestAsyncHandler = requestAsyncHandler;
 		}
 
 		public async Task<TResponse> HandleAsync(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return await _requestHandler.HandleAsync((TRequest)request, cancellationToken);
+			return await _requestAsyncHandler.HandleAsync((TRequest)request, cancellationToken);
 		}
 	}
 
