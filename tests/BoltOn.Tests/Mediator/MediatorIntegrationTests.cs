@@ -45,6 +45,32 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 		}
 
+
+		[Fact]
+		public void Get_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayRequest()
+		{
+			// arrange
+			MediatorTestHelper.IsClearInterceptors = false;
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.AddTransient<IRequestHandler<TestRequest2>, TestHandler2>();
+			serviceCollection.AddLogging();
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.UseBoltOn();
+			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
+			var mediator = serviceProvider.GetService<IMediator>();
+
+			// act
+			mediator.Process(new TestRequest2());
+
+			// assert 
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
+																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
+																				   $"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
+		}
+
 		[Fact]
 		public async Task Get_BootstrapWithDefaultsAndAsyncHandler_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{

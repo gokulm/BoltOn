@@ -12,6 +12,7 @@ namespace BoltOn.Mediator.Pipeline
 	public interface IMediator
 	{
 		TResponse Get<TResponse>(IRequest<TResponse> request);
+		void Process(IRequest request);
 		Task<TResponse> GetAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken));
 	}
 
@@ -32,6 +33,12 @@ namespace BoltOn.Mediator.Pipeline
 		public TResponse Get<TResponse>(IRequest<TResponse> request)
 		{
 			return ExecuteInterceptors(request, Handle);
+		}
+
+		public void Process(IRequest request)
+		{
+			var castedRequest = request as IRequest<bool>;
+			ExecuteInterceptors(castedRequest, Handle);
 		}
 
 		public async Task<TResponse> GetAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken))
@@ -83,19 +90,36 @@ namespace BoltOn.Mediator.Pipeline
 
 		private TResponse Handle<TResponse>(IRequest<TResponse> request)
 		{
-			var requestType = request.GetType();
-			_logger.Debug($"Resolving handler for request: {requestType}");
-			var genericRequestHandlerType = typeof(IRequestHandler<,>);
-			var interfaceHandlerType = genericRequestHandlerType.MakeGenericType(request.GetType(), typeof(TResponse));
-			var handler = _serviceProvider.GetService(interfaceHandlerType);
-			Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
-			_logger.Debug($"Resolved handler: {handler.GetType()}");
-			// this is to keep the request objects in the handlers strongly typed and to keep the handlers implement IRequestHandler
+			// the decorator is to keep the request objects in the handlers strongly typed and to keep the handlers implement IRequestHandler
 			// and not inherit baserequesthandler. also the requestType can be inferred only if we use MakeGenericType
-			dynamic decorator = Activator.CreateInstance(typeof(RequestHandlerDecorator<,>)
-															   .MakeGenericType(requestType, typeof(TResponse)), handler);
-			var response = decorator.Handle(request);
-			return response;
+			if (request is IRequest)
+			{
+				var requestType = request.GetType();
+				_logger.Debug($"Resolving handler for request: {requestType}");
+				var genericRequestHandlerType = typeof(IRequestHandler<>);
+				var interfaceHandlerType = genericRequestHandlerType.MakeGenericType(request.GetType());
+				var handler = _serviceProvider.GetService(interfaceHandlerType);
+				Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
+				_logger.Debug($"Resolved handler: {handler.GetType()}");
+				dynamic decorator = Activator.CreateInstance(typeof(RequestHandlerDecorator<>)
+																   .MakeGenericType(requestType), handler);
+				var response = decorator.Handle(request);
+				return default(TResponse);
+			}
+			else
+			{
+				var requestType = request.GetType();
+				_logger.Debug($"Resolving handler for request: {requestType}");
+				var genericRequestHandlerType = typeof(IRequestHandler<,>);
+				var interfaceHandlerType = genericRequestHandlerType.MakeGenericType(request.GetType(), typeof(TResponse));
+				var handler = _serviceProvider.GetService(interfaceHandlerType);
+				Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
+				_logger.Debug($"Resolved handler: {handler.GetType()}");
+				dynamic decorator = Activator.CreateInstance(typeof(RequestHandlerDecorator<,>)
+																   .MakeGenericType(requestType, typeof(TResponse)), handler);
+				var response = decorator.Handle(request);
+				return response;
+			}
 		}
 
 		private async Task<TResponse> HandleAsync<TResponse>(IRequest<TResponse> request,

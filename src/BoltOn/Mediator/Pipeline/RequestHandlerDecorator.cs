@@ -19,6 +19,23 @@ namespace BoltOn.Mediator.Pipeline
 		}
 	}
 
+	internal class RequestHandlerDecorator<TRequest>
+		where TRequest : IRequest
+	{
+		private readonly IRequestHandler<TRequest> _requestHandler;
+
+		public RequestHandlerDecorator(IRequestHandler<TRequest> requestHandler)
+		{
+			_requestHandler = requestHandler;
+		}
+
+		public bool Handle(IRequest<bool> request)
+		{
+			_requestHandler.Handle((TRequest)request);
+			return true;
+		}
+	}
+
 	internal class RequestAsyncHandlerDecorator<TRequest, TResponse>
 		where TRequest : IRequest<TResponse>
 	{

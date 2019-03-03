@@ -6,6 +6,10 @@ namespace BoltOn.Mediator.Pipeline
     {
     }
 
+	public interface IRequest : IRequest<bool>
+	{
+	}
+
 	public interface ICommand<out TResponse> : IRequest<TResponse>, IEnableUnitOfWorkInterceptor
 	{	
 	}
