@@ -69,11 +69,17 @@ namespace BoltOn.Tests.Mediator
 	{
 	}
 
-	public class TestHandler2 : IRequestHandler<TestRequest2>
+	public class TestHandler2 : IRequestHandler<TestRequest2>, IRequestAsyncHandler<TestRequest2>
 	{
 		public void Handle(TestRequest2 request)
 		{
 			int i = 0;
+		}
+
+		public Task HandleAsync(TestRequest2 request, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			int i = 0;
+			return Task.CompletedTask;
 		}
 	}
 }

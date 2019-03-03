@@ -16,7 +16,9 @@ namespace BoltOn.Mediator
 			container.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
 			RegisterInterceptors(container);
 			RegisterHandlers(context);
+			RegisterOneWayRequestHandlers(context);
 			RegisterAsyncHandlers(context);
+			RegisterOneWayAsyncHandlers(context);
 		}
 
 		private static void RegisterInterceptors(IServiceCollection container)
@@ -38,9 +40,36 @@ namespace BoltOn.Mediator
 				context.Container.AddTransient(handler.Interface, handler.Implementation);
 		}
 
+		private void RegisterOneWayRequestHandlers(RegistrationTaskContext context)
+		{
+			var requestHandlerInterfaceType = typeof(IRequestHandler<>);
+			var handlers = (from a in context.Assemblies.ToList()
+							from t in a.GetTypes()
+							from i in t.GetInterfaces()
+							where i.IsGenericType &&
+								requestHandlerInterfaceType.IsAssignableFrom(i.GetGenericTypeDefinition())
+							select new { Interface = i, Implementation = t }).ToList();
+			foreach (var handler in handlers)
+				context.Container.AddTransient(handler.Interface, handler.Implementation);
+		}
+
+
 		private void RegisterAsyncHandlers(RegistrationTaskContext context)
 		{
 			var requestHandlerInterfaceType = typeof(IRequestAsyncHandler<,>);
+			var handlers = (from a in context.Assemblies.ToList()
+							from t in a.GetTypes()
+							from i in t.GetInterfaces()
+							where i.IsGenericType &&
+								requestHandlerInterfaceType.IsAssignableFrom(i.GetGenericTypeDefinition())
+							select new { Interface = i, Implementation = t }).ToList();
+			foreach (var handler in handlers)
+				context.Container.AddTransient(handler.Interface, handler.Implementation);
+		}
+
+		private void RegisterOneWayAsyncHandlers(RegistrationTaskContext context)
+		{
+			var requestHandlerInterfaceType = typeof(IRequestAsyncHandler<>);
 			var handlers = (from a in context.Assemblies.ToList()
 							from t in a.GetTypes()
 							from i in t.GetInterfaces()

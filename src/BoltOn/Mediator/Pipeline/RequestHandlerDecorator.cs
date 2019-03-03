@@ -52,4 +52,20 @@ namespace BoltOn.Mediator.Pipeline
 		}
 	}
 
+	internal class RequestAsyncHandlerDecorator<TRequest>
+		where TRequest : IRequest
+	{
+		private readonly IRequestAsyncHandler<TRequest> _requestAsyncHandler;
+
+		public RequestAsyncHandlerDecorator(IRequestAsyncHandler<TRequest> requestAsyncHandler)
+		{
+			_requestAsyncHandler = requestAsyncHandler;
+		}
+
+		public async Task<bool> HandleAsync(IRequest<bool> request, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			await _requestAsyncHandler.HandleAsync((TRequest)request, cancellationToken);
+			return await Task.FromResult(true);
+		}
+	}
 }

@@ -20,4 +20,10 @@ namespace BoltOn.Mediator.Pipeline
 	{
 		Task<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken = default(CancellationToken));
 	}
+
+	public interface IRequestAsyncHandler<in TRequest>
+		where TRequest : IRequest
+	{
+		Task HandleAsync(TRequest request, CancellationToken cancellationToken = default(CancellationToken));
+	}
 }
