@@ -22,7 +22,8 @@ namespace BoltOn.Tests.Mediator
             {
                 case ICommand<TResponse> c:
                 case IQuery<TResponse> q:
-                    _logger.Debug("Getting isolation level for Command or Query");
+				case ICommand co:
+					_logger.Debug("Getting isolation level for Command or Query");
                     isolationLevel = IsolationLevel.ReadCommitted;
                     break;
                 default:

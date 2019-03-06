@@ -1,7 +1,4 @@
-﻿using System;
-using BoltOn.Utilities;
-using Microsoft.AspNetCore.Builder;
-using BoltOn.Bootstrapping;
+﻿using Microsoft.AspNetCore.Builder;
 
 namespace BoltOn.AspNetCore
 {

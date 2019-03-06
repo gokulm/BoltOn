@@ -25,6 +25,7 @@ namespace BoltOn.UoW
 			switch (request)
 			{
 				case ICommand<TResponse> c:
+				case ICommand co:
 					_logger.Debug("Getting isolation level for Command");
 					isolationLevel = IsolationLevel.ReadCommitted;
 					break;

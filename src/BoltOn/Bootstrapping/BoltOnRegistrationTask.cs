@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using BoltOn.Context;
 using BoltOn.Logging;
 using BoltOn.Other;
 using BoltOn.UoW;
@@ -37,11 +36,8 @@ namespace BoltOn.Bootstrapping
 		{
 			var serviceCollection = context.Container;
 			serviceCollection.AddScoped<IUnitOfWorkManager, UnitOfWorkManager>();
-			serviceCollection.AddSingleton<IAppContextRetriever, AppContextRetriever>();
 			serviceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnNetStandardLoggerAdapter<>));
 			serviceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
-			serviceCollection.AddScoped<IContextRetriever>((serviceProvider) => 
-			                                            new ContextRetriever(serviceProvider.GetService(typeof(IAppContextRetriever)) as IAppContextRetriever));
 		}
 	}
-} 
+}

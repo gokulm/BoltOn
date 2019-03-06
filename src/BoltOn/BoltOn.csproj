@@ -8,7 +8,6 @@
     <Folder Include="Bootstrapping\" />
     <Folder Include="Utilities\" />
     <Folder Include="UoW\" />
-    <Folder Include="Context\" />
     <Folder Include="Other\" />
     <Folder Include="Mediator\" />
     <Folder Include="Mediator\Interceptors\" />
@@ -22,5 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Mediator\Pipeline\MediatorResponse.cs" />
+    <Compile Remove="Context\ContextScope.cs" />
   </ItemGroup>
 </Project>
