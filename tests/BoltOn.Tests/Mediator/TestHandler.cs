@@ -13,7 +13,12 @@ namespace BoltOn.Tests.Mediator
 	{
 	}
 
-	public class TestOneWayCommand : ICommand
+	public class TestOneWayRequest : IRequest, IEnableStopwatchInterceptor
+	{
+		public int Value { get; set; }
+	}
+
+	public class TestOneWayCommand : ICommand, IEnableStopwatchInterceptor
 	{
 		public int Value { get; set; }
 	}
@@ -35,6 +40,7 @@ namespace BoltOn.Tests.Mediator
 		IRequestAsyncHandler<TestCommand, bool>,
 		IRequestHandler<TestOneWayRequest>,
 		IRequestAsyncHandler<TestOneWayRequest>,
+		IRequestHandler<TestOneWayCommand>,
 		IRequestAsyncHandler<TestOneWayCommand>
 	{
 		public virtual bool Handle(TestRequest request)
@@ -74,10 +80,12 @@ namespace BoltOn.Tests.Mediator
 
 		public void Handle(TestOneWayRequest request)
 		{
+			request.Value = 1;
 		}
 
 		public Task HandleAsync(TestOneWayRequest request, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			request.Value = 1;
 			return Task.CompletedTask;
 		}
 
@@ -86,9 +94,10 @@ namespace BoltOn.Tests.Mediator
 			request.Value = 1;
 			return Task.CompletedTask;
 		}
-	}
 
-	public class TestOneWayRequest : IRequest, IEnableStopwatchInterceptor
-	{
+		public void Handle(TestOneWayCommand request)
+		{
+			request.Value = 1;
+		}
 	}
 }

@@ -58,11 +58,39 @@ namespace BoltOn.Tests.Mediator
 			serviceProvider.UseBoltOn();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
 			var mediator = serviceProvider.GetService<IMediator>();
+			var request = new TestOneWayRequest();
 
 			// act
-			mediator.Process(new TestOneWayRequest());
+			mediator.Process(request);
 
 			// assert 
+			Assert.Equal(1, request.Value);
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
+																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
+																				   $"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
+		}
+
+		[Fact]
+		public void Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayCommand()
+		{
+			// arrange
+			MediatorTestHelper.IsClearInterceptors = false;
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.AddLogging();
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.UseBoltOn();
+			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
+			var mediator = serviceProvider.GetService<IMediator>();
+			var request = new TestOneWayCommand();
+
+			// act
+			mediator.Process(request);
+
+			// assert 
+			Assert.Equal(1, request.Value);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
 																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
@@ -82,11 +110,13 @@ namespace BoltOn.Tests.Mediator
 			serviceProvider.UseBoltOn();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
 			var mediator = serviceProvider.GetService<IMediator>();
+			var request = new TestOneWayRequest();
 
 			// act
-			await mediator.ProcessAsync(new TestOneWayRequest());
+			await mediator.ProcessAsync(request);
 
 			// assert 
+			Assert.Equal(1, request.Value);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
 																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
