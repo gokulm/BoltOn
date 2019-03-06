@@ -13,6 +13,11 @@ namespace BoltOn.Tests.Mediator
 	{
 	}
 
+	public class TestOneWayCommand : ICommand
+	{
+		public int Value { get; set; }
+	}
+
 	public class TestQuery : IQuery<bool>
 	{
 	}
@@ -28,8 +33,9 @@ namespace BoltOn.Tests.Mediator
 		IRequestHandler<TestStaleQuery, bool>,
 		IRequestAsyncHandler<TestRequest, bool>,
 		IRequestAsyncHandler<TestCommand, bool>,
-		IRequestHandler<TestRequest2>,
-		IRequestAsyncHandler<TestRequest2>
+		IRequestHandler<TestOneWayRequest>,
+		IRequestAsyncHandler<TestOneWayRequest>,
+		IRequestAsyncHandler<TestOneWayCommand>
 	{
 		public virtual bool Handle(TestRequest request)
 		{
@@ -66,17 +72,23 @@ namespace BoltOn.Tests.Mediator
 			return await Task.FromResult(true);
 		}
 
-		public void Handle(TestRequest2 request)
+		public void Handle(TestOneWayRequest request)
 		{
 		}
 
-		public Task HandleAsync(TestRequest2 request, CancellationToken cancellationToken = default(CancellationToken))
+		public Task HandleAsync(TestOneWayRequest request, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			return Task.CompletedTask;
+		}
+
+		public Task HandleAsync(TestOneWayCommand request, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			request.Value = 1;
 			return Task.CompletedTask;
 		}
 	}
 
-	public class TestRequest2 : IRequest, IEnableStopwatchInterceptor
+	public class TestOneWayRequest : IRequest, IEnableStopwatchInterceptor
 	{
 	}
 }

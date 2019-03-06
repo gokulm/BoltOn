@@ -60,7 +60,7 @@ namespace BoltOn.Tests.Mediator
 			var mediator = serviceProvider.GetService<IMediator>();
 
 			// act
-			mediator.Process(new TestRequest2());
+			mediator.Process(new TestOneWayRequest());
 
 			// assert 
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
@@ -84,7 +84,7 @@ namespace BoltOn.Tests.Mediator
 			var mediator = serviceProvider.GetService<IMediator>();
 
 			// act
-			await mediator.ProcessAsync(new TestRequest2());
+			await mediator.ProcessAsync(new TestOneWayRequest());
 
 			// assert 
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
@@ -289,6 +289,28 @@ namespace BoltOn.Tests.Mediator
 
 			// assert 
 			Assert.True(result);
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
+		}
+
+		[Fact]
+		public async Task Process_MediatorWithOneWayCommandRequestAndAsyncHandler_ExecutesUoWInterceptorAndStartsTransactionsWithCustomizedQueryIsolationLevel()
+		{
+			// arrange
+			MediatorTestHelper.IsCustomizeIsolationLevel = true;
+			var serviceCollection = new ServiceCollection();
+			serviceCollection
+				.BoltOn()
+				.AddLogging();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.UseBoltOn();
+			var sut = serviceProvider.GetService<IMediator>();
+			var command = new TestOneWayCommand();
+
+			// act
+			await sut.ProcessAsync(command);
+
+			// assert 
+			Assert.Equal(1, command.Value);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
