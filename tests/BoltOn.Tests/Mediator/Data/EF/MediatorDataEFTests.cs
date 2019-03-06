@@ -34,7 +34,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
 
 			// act
-			var result = sut.Get(request);
+			var result = sut.Process(request);
 
 			// assert 
 			Assert.True(result);
@@ -64,7 +64,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
 
 			// act
-			var result = sut.Get(request);
+			var result = sut.Process(request);
 
 			// assert 
 			Assert.True(result);
@@ -94,7 +94,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
 
 			// act
-			var result = sut.Get(request);
+			var result = sut.Process(request);
 
 			// assert 
 			Assert.True(result);

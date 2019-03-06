@@ -14,7 +14,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 	public class MediatorDataEFIntegrationTests : IDisposable
 	{
 		[Fact]
-		public void Get_MediatorWithQueryRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndDisablesTracking()
+		public void Process_MediatorWithQueryRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndDisablesTracking()
 		{
 			// arrange
 			MediatorTestHelper.IsSeedData = true;
@@ -27,7 +27,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = sut.Get(new GetStudent { StudentId = 2 } );
+			var result = sut.Process(new GetStudent { StudentId = 2 } );
 			var dbContext = serviceProvider.GetService<IDbContextFactory>().Get<SchoolDbContext>();
 			var student = dbContext.Set<Student>().Find(2);
 			var isAutoDetectChangesEnabled = dbContext.ChangeTracker.AutoDetectChangesEnabled;
@@ -42,7 +42,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 		}
 
 		[Fact]
-		public void Get_MediatorWithCommandRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndEnablesTrackAll()
+		public void Process_MediatorWithCommandRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndEnablesTrackAll()
 		{
 			// arrange
 			MediatorTestHelper.IsSeedData = false;
@@ -55,7 +55,7 @@ namespace BoltOn.Tests.Mediator.Data.EF
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = sut.Get(new TestCommand());
+			var result = sut.Process(new TestCommand());
 			var dbContext = serviceProvider.GetService<IDbContextFactory>().Get<SchoolDbContext>();
 			var isAutoDetectChangesEnabled = dbContext.ChangeTracker.AutoDetectChangesEnabled;
 			var queryTrackingBehavior = dbContext.ChangeTracker.QueryTrackingBehavior;

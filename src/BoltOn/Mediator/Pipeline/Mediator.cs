@@ -11,9 +11,9 @@ namespace BoltOn.Mediator.Pipeline
 {
 	public interface IMediator
 	{
-		TResponse Get<TResponse>(IRequest<TResponse> request);
+		TResponse Process<TResponse>(IRequest<TResponse> request);
 		void Process(IRequest request);
-		Task<TResponse> GetAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken));
+		Task<TResponse> ProcessAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken));
 		Task ProcessAsync(IRequest request, CancellationToken cancellationToken = default(CancellationToken));
 	}
 
@@ -31,7 +31,7 @@ namespace BoltOn.Mediator.Pipeline
 			this._interceptors = interceptors;
 		}
 
-		public TResponse Get<TResponse>(IRequest<TResponse> request)
+		public TResponse Process<TResponse>(IRequest<TResponse> request)
 		{
 			return ExecuteInterceptors(request, Handle);
 		}
@@ -42,7 +42,7 @@ namespace BoltOn.Mediator.Pipeline
 			ExecuteInterceptors(castedRequest, Handle);
 		}
 
-		public async Task<TResponse> GetAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<TResponse> ProcessAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return await ExecuteInterceptorsAsync(request, HandleAsync, cancellationToken);
 		}

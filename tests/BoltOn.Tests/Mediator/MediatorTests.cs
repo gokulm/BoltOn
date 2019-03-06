@@ -18,7 +18,7 @@ namespace BoltOn.Tests.Mediator
 	public class MediatorTests : IDisposable
 	{
 		[Fact]
-		public void Get_RegisteredHandlerThatReturnsBool_ReturnsSuccessfulResult()
+		public void Process_RegisteredHandlerThatReturnsBool_ReturnsSuccessfulResult()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -32,14 +32,14 @@ namespace BoltOn.Tests.Mediator
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
 
 			// act
-			var result = sut.Get(request);
+			var result = sut.Process(request);
 
 			// assert 
 			Assert.True(result);
 		}
 
 		[Fact]
-		public void Get_MediatorWithInterceptor_ExecutesInterceptor()
+		public void Process_MediatorWithInterceptor_ExecutesInterceptor()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -55,7 +55,7 @@ namespace BoltOn.Tests.Mediator
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
 
 			// act
-			var result = sut.Get(request);
+			var result = sut.Process(request);
 
 			// assert 
 			Assert.True(result);
@@ -64,7 +64,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Get_MediatorWithRequestSpecificInterceptor_ExecutesInterceptor()
+		public void Process_MediatorWithRequestSpecificInterceptor_ExecutesInterceptor()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -85,7 +85,7 @@ namespace BoltOn.Tests.Mediator
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
 
 			// act
-			var result = sut.Get(request);
+			var result = sut.Process(request);
 
 			// assert 
 			Assert.True(result);
@@ -95,7 +95,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Get_MediatorWithCommandRequest_ExecutesUoWInterceptorAndStartsTransactionsWithDefaultCommandIsolationLevel()
+		public void Process_MediatorWithCommandRequest_ExecutesUoWInterceptorAndStartsTransactionsWithDefaultCommandIsolationLevel()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -121,7 +121,7 @@ namespace BoltOn.Tests.Mediator
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
 
 			// act
-			var result = sut.Get(request);
+			var result = sut.Process(request);
 
 			// assert 
 			Assert.True(result);
@@ -132,7 +132,7 @@ namespace BoltOn.Tests.Mediator
    		}
 
 		[Fact]
-		public void Get_MediatorWithCommandRequestAndHandlerThrowsException_ExecutesUoWInterceptorAndStartsTransactionsButNotCommit()
+		public void Process_MediatorWithCommandRequestAndHandlerThrowsException_ExecutesUoWInterceptorAndStartsTransactionsButNotCommit()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -158,7 +158,7 @@ namespace BoltOn.Tests.Mediator
 			testHandler.Setup(s => s.Handle(request)).Throws<Exception>();
 
 			// act & assert 
-			Assert.Throws<Exception>(() => sut.Get(request));
+			Assert.Throws<Exception>(() => sut.Process(request));
 			uowManager.Verify(u => u.Get(uowOptions.Object));
 			uow.Verify(u => u.Commit(), Times.Never);
 			logger.Verify(l => l.Debug($"About to start UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
@@ -166,7 +166,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public async Task Get_MediatorWithAsyncHandlerThrowsException_ExecutesUoWInterceptorAndStartsTransactionsButNotCommit()
+		public async Task Process_MediatorWithAsyncHandlerThrowsException_ExecutesUoWInterceptorAndStartsTransactionsButNotCommit()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -192,7 +192,7 @@ namespace BoltOn.Tests.Mediator
 			testHandler.Setup(s => s.HandleAsync(request, default(CancellationToken))).Throws<Exception>();
 
 			// act 
-			var result = await Record.ExceptionAsync(async () => await sut.GetAsync(request));
+			var result = await Record.ExceptionAsync(async () => await sut.ProcessAsync(request));
 
 			//assert 
 			uowManager.Verify(u => u.Get(uowOptions.Object));
@@ -202,7 +202,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Get_RegisteredHandlerThatThrowsException_ReturnsUnsuccessfulResult()
+		public void Process_RegisteredHandlerThatThrowsException_ReturnsUnsuccessfulResult()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -216,7 +216,7 @@ namespace BoltOn.Tests.Mediator
 			testHandler.Setup(s => s.Handle(request)).Throws(new Exception("handler failed"));
 
 			// act
-			var result = Record.Exception(() => sut.Get(request));
+			var result = Record.Exception(() => sut.Process(request));
 
 			// assert 
 			Assert.NotNull(result);
@@ -225,7 +225,7 @@ namespace BoltOn.Tests.Mediator
 
 
 		[Fact]
-		public async Task Get_RegisteredAsyncHandlerThatThrowsException_ReturnsUnsuccessfulResult()
+		public async Task Process_RegisteredAsyncHandlerThatThrowsException_ReturnsUnsuccessfulResult()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -239,7 +239,7 @@ namespace BoltOn.Tests.Mediator
 			testHandler.Setup(s => s.HandleAsync(request, default(CancellationToken))).Throws(new Exception("handler failed"));
 
 			// act
-			var result = await Record.ExceptionAsync(async () => await sut.GetAsync(request));
+			var result = await Record.ExceptionAsync(async () => await sut.ProcessAsync(request));
 
 			// assert 
 			Assert.NotNull(result);
@@ -247,7 +247,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Get_UnregisteredHandler_ReturnsUnsuccessfulResult()
+		public void Process_UnregisteredHandler_ReturnsUnsuccessfulResult()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -260,7 +260,7 @@ namespace BoltOn.Tests.Mediator
 			var request = new TestRequest();
 
 			// act
-			var result = Record.Exception(() => sut.Get(request));
+			var result = Record.Exception(() => sut.Process(request));
 
 			// assert 
 			Assert.NotNull(result);
