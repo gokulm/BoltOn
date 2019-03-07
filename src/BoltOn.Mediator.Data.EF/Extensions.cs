@@ -5,9 +5,10 @@ namespace BoltOn.Mediator.Data.EF
 {
     public static class Extensions
     {
-        public static void BoltOnMediatorDataEF(this BoltOnOptions boltOnOptions)
+        public static BoltOnOptions BoltOnMediatorDataEF(this BoltOnOptions boltOnOptions)
 		{
 			boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
+			return boltOnOptions;
 		}
     }
 }

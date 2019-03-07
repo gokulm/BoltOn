@@ -5,9 +5,10 @@ namespace BoltOn.Data.EF
 {
     public static class Extensions
     {
-        public static void BoltOnDataEF(this BoltOnOptions boltOnOptions)
+        public static BoltOnOptions BoltOnDataEF(this BoltOnOptions boltOnOptions)
         {
 			boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
+			return boltOnOptions;
         }
     }
 }

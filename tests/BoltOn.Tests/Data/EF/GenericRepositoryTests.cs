@@ -23,7 +23,12 @@ namespace BoltOn.Tests.Data.EF
 		{
 			MediatorTestHelper.IsSeedData = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn();
+			serviceCollection
+				.BoltOn(options =>
+				{
+					options
+						.BoltOnDataEF();
+				});
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.UseBoltOn();
 			_sut = serviceProvider.GetService<ITestRepository>();
