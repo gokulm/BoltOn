@@ -12,4 +12,7 @@
     <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
     <ProjectReference Include="..\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" />
+  </ItemGroup>
 </Project>

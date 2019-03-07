@@ -10,10 +10,10 @@ namespace BoltOn.Mediator.Data.EF
 	public class EFQueryTrackingBehaviorInterceptor : IInterceptor
 	{
 		private readonly IBoltOnLogger<EFQueryTrackingBehaviorInterceptor> _logger;
-		private readonly IMediatorDataContext _mediatorDataContext;
+		private readonly MediatorDataContext _mediatorDataContext;
 
 		public EFQueryTrackingBehaviorInterceptor(IBoltOnLogger<EFQueryTrackingBehaviorInterceptor> logger,
-			IMediatorDataContext mediatorDataContext)
+			MediatorDataContext mediatorDataContext)
 		{
 			_logger = logger;
 			_mediatorDataContext = mediatorDataContext;

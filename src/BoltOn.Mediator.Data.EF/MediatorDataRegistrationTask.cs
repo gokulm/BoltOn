@@ -11,7 +11,7 @@ namespace BoltOn.Mediator.Data.EF
 		{
 			var container = context.Container;
 			container.AddTransient<IDbContextFactory, MediatorDbContextFactory>();
-			container.AddScoped<IMediatorDataContext, MediatorDataContext>();
+			container.AddScoped<MediatorDataContext>();
 			container.AddTransient<IInterceptor, EFQueryTrackingBehaviorInterceptor>();
 		}
 	}

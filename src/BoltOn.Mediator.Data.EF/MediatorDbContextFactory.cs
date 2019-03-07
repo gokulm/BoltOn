@@ -7,10 +7,10 @@ namespace BoltOn.Mediator.Data.EF
 	public class MediatorDbContextFactory : IDbContextFactory
 	{
 		private readonly IServiceProvider _serviceProvider;
-		private readonly IMediatorDataContext _mediatorDataContext;
+		private readonly MediatorDataContext _mediatorDataContext;
 
 		public MediatorDbContextFactory(IServiceProvider serviceProvider,
-			IMediatorDataContext mediatorDataContext)
+			MediatorDataContext mediatorDataContext)
 		{
 			_serviceProvider = serviceProvider;
 			_mediatorDataContext = mediatorDataContext;
