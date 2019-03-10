@@ -36,55 +36,6 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.NotNull(Bootstrapper.Instance.Container);
 		}
 
-		[Fact, TestPriority(3)]
-		public void BoltOn_ExcludeAssembly_ExcludesAssemblyFromAssemblies()
-		{
-			// arrange	
-			var serviceCollection = new ServiceCollection();
-			var assemblyToBeExcluded = typeof(ITestService).Assembly;
-			serviceCollection.BoltOn(options => options.ExcludeAssemblies(assemblyToBeExcluded));
-
-			// act 
-			var result = Bootstrapper.Instance.Assemblies.Contains(assemblyToBeExcluded);
-
-			// assert
-			Assert.False(result);
-		}
-
-		[Fact, TestPriority(4)]
-		public void BoltOn_ExcludeAssemblyWithRegistrationTask_ThrowsException()
-		{
-			// arrange	
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(options =>
-			{
-				options.ExcludeAssemblies(typeof(ITestService).Assembly);
-			});
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-
-			// act 
-			var ex = Record.Exception(() => serviceProvider.GetRequiredService<ITestService>());
-
-			// assert
-			Assert.NotNull(ex);
-		}
-
-		//[Fact, TestPriority(5)]
-		//public void BoltOn_UseBoltOnWithoutLogging_ThrowsException()
-		//{
-		//	// arrange	
-		//	var serviceCollection = new ServiceCollection();
-		//	serviceCollection.BoltOn();
-		//	var serviceProvider = serviceCollection.BuildServiceProvider();
-
-		//	// act 
-		//	var ex = Record.Exception(() => serviceProvider.UseBoltOn());
-
-		//	// assert
-		//	Assert.NotNull(ex);
-		//	Assert.Equal("Add logging to the service collection", ex.Message);
-		//}
-
 		[Fact, TestPriority(6)]
 		public void BoltOn_ConcreteClassWithoutRegistrationButResolvableDependencies_ReturnsInstance()
 		{
@@ -99,27 +50,6 @@ namespace BoltOn.Tests.Bootstrapping
 
 			// assert
 			Assert.NotNull(employee);
-		}
-
-		[Fact, TestPriority(7)]
-		public void BoltOn_ConcreteClassWithoutRegistrationButNotResolvableDependencies_ThrowsException()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddLogging();
-			serviceCollection.BoltOn(options =>
-			{
-				options.ExcludeAssemblies(typeof(ITestService).Assembly);
-			});
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-
-			// act 
-			var instance = serviceProvider.GetService<ClassWithInjectedDependency>();
-			var ex = Record.Exception(() => serviceProvider.GetRequiredService<ClassWithInjectedDependency>());
-
-			// assert
-			Assert.Null(instance);
-			Assert.NotNull(ex);
 		}
 
 		[Fact, TestPriority(8)]
@@ -156,22 +86,6 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.Equal("test", name);
 		}
 
-		[Fact, TestPriority(10)]
-		public void BoltOn_ClassNotRegisteredByConvention_ReturnsNull()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddLogging();
-			serviceCollection.BoltOn(options => options.ExcludeAssemblies(typeof(ITestService).Assembly));
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-
-			// act 
-			var result = serviceProvider.GetService<ITestService>();
-
-			// assert
-			Assert.Null(result);
-		}
-
 		[Fact, TestPriority(11)]
 		public void BoltOn_BoltOnCalledMoreThanOnce_ThrowsException()
 		{
@@ -184,7 +98,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact, TestPriority(12)]
-		public void BoltOn_BoltOn_ExecutesPreAndRegistrationTasksInOrderAndNotPostRegistrationTask()
+		public void BoltOn_BoltOn_ExecutesRegistrationTasksInOrderAndNotPostRegistrationTask()
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
@@ -193,13 +107,10 @@ namespace BoltOn.Tests.Bootstrapping
 			serviceCollection.BoltOn();
 
 			// assert
-			var preRegistrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPreregistrationTask).Name}");
 			var registrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
 			var postRegistrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
-			Assert.True(preRegistrationTaskIndex != -1); 
 			Assert.True(registrationTaskIndex != -1);
 			Assert.True(postRegistrationTaskIndex == -1);
-			Assert.True(preRegistrationTaskIndex < registrationTaskIndex);
 		}
 
 		[Fact, TestPriority(13)]
@@ -216,13 +127,10 @@ namespace BoltOn.Tests.Bootstrapping
 			serviceProvider.UseBoltOn();
 
 			// assert
-			var preRegistrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPreregistrationTask).Name}");
 			var registrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
 			var postRegistrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
-			Assert.True(preRegistrationTaskIndex != -1);
 			Assert.True(registrationTaskIndex != -1);
 			Assert.True(postRegistrationTaskIndex != -1);
-			Assert.True(preRegistrationTaskIndex < registrationTaskIndex);
 			Assert.True(registrationTaskIndex < postRegistrationTaskIndex);
 		}
 
@@ -290,14 +198,6 @@ namespace BoltOn.Tests.Bootstrapping
 		{
 			get;
 			set;
-		}
-	}
-
-	public class TestBootstrapperPreregistrationTask : IBootstrapperPreRegistrationTask
-	{
-		public void Run(PreRegistrationTaskContext context)
-		{
-			BootstrapperRegistrationTaskTester.Tasks.Add($"Executed {this.GetType().Name}");
 		}
 	}
 

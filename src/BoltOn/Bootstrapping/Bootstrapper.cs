@@ -15,8 +15,6 @@ namespace BoltOn.Bootstrapping
 		private IServiceProvider _serviceProvider;
 		private BoltOnOptions _options;
 		private bool _isBolted;
-		// this is mainly used to make Dispose thread safe, as multiple threads call Dispose on integration tests 
-		private readonly object _lock = new object();
 
 		private Bootstrapper()
 		{
@@ -67,7 +65,6 @@ namespace BoltOn.Bootstrapping
 			_options = options;
 			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
 			LoadAssemblies();
-			RunPreRegistrationTasks();
 			RunRegistrationTasks();
 		}
 
@@ -82,29 +79,19 @@ namespace BoltOn.Bootstrapping
 
 		private void LoadAssemblies()
 		{
-			var referencedAssemblies = GetReferencedAssemblies(_callingAssembly).ToList();
-			var assemblies = new List<Assembly> { _callingAssembly };
-			var appAssemblyPrefix = _callingAssembly.GetName().Name.Split('.')[0];
-			var assemblyPrefixes = new[] { "BoltOn", appAssemblyPrefix }.Distinct();
-			foreach (var assemblyPrefix in assemblyPrefixes)
-			{
-				var assembliesThatStartsWith = GetAssembliesThatStartsWith(assemblyPrefix);
-				assemblies.AddRange(assembliesThatStartsWith);
-			}
-
-			var assembliesToBeExcluded = _options.AssembliesToBeExcluded.Select(s => s.GetName().FullName).ToList();
+			var assemblies = new List<Assembly> { Assembly.GetExecutingAssembly(), _callingAssembly };
 			var sortedAssemblies = new HashSet<Assembly>();
 			assemblies = assemblies.Distinct().ToList();
+			assemblies.AddRange(_options.AssembliesToBeIncluded);
 
 			// load assemblies in the order of dependency
 			var index = 0;
 			while (assemblies.Count != 0)
 			{
 				var tempRefs = GetReferencedAssemblies(assemblies[index]);
-				if (tempRefs.Intersect(assemblies).Count() == 0)
+				if (!tempRefs.Intersect(assemblies).Any())
 				{
-					if (!assembliesToBeExcluded.Contains(assemblies[index].FullName))
-						sortedAssemblies.Add(assemblies[index]);
+					sortedAssemblies.Add(assemblies[index]);
 					assemblies.Remove(assemblies[index]);
 					index = 0;
 				}
@@ -122,29 +109,6 @@ namespace BoltOn.Bootstrapping
 					var tempAssembly = Assembly.Load(referencedAssemblyName);
 					yield return tempAssembly;
 				}
-			}
-
-			List<Assembly> GetAssembliesThatStartsWith(string startsWith)
-			{
-				return (from r in referencedAssemblies
-						where r.GetName().Name.StartsWith(startsWith, StringComparison.Ordinal)
-						select r).Distinct().ToList();
-			}
-		}
-
-		private void RunPreRegistrationTasks()
-		{
-			var preRegistrationTaskType = typeof(IBootstrapperPreRegistrationTask);
-			var preRegistrationTaskTypes = (from a in Assemblies
-											from t in a.GetTypes()
-											where preRegistrationTaskType.IsAssignableFrom(t)
-											&& t.IsClass
-											select t).ToList();
-			var context = new PreRegistrationTaskContext(this);
-			foreach (var type in preRegistrationTaskTypes)
-			{
-				var task = Activator.CreateInstance(type) as IBootstrapperPreRegistrationTask;
-				task.Run(context);
 			}
 		}
 

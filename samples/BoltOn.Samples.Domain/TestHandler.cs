@@ -1,16 +1,8 @@
 ﻿using BoltOn.Mediator.Pipeline;
+using BoltOn.Samples.DTOs;
 
 namespace BoltOn.Samples.Domain
 {
-	public class TestRequest : IQuery<TestResponse>
-    {
-    }
-
-	public class TestResponse
-	{
-		public string Test { get; set; }
-	}
-
 	public class TestHandler : IRequestHandler<TestRequest, TestResponse>
 	{
 		public TestResponse Handle(TestRequest request)

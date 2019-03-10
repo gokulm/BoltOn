@@ -5,11 +5,11 @@ namespace BoltOn.Bootstrapping
 {
 	public sealed class BoltOnOptions
 	{
-		internal List<Assembly> AssembliesToBeExcluded { get; set; } = new List<Assembly>();
+		internal List<Assembly> AssembliesToBeIncluded { get; set; } = new List<Assembly>();
 
-		public void ExcludeAssemblies(params Assembly[] assemblies)
+		public void BoltOnAssemblies(params Assembly[] assemblies)
 		{
-			AssembliesToBeExcluded.AddRange(assemblies);
+			AssembliesToBeIncluded.AddRange(assemblies);
 		}
 	}
 }
