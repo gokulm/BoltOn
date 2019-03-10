@@ -15,8 +15,6 @@ namespace BoltOn.Bootstrapping
 		private IServiceProvider _serviceProvider;
 		private BoltOnOptions _options;
 		private bool _isBolted;
-		// this is mainly used to make Dispose thread safe, as multiple threads call Dispose on integration tests 
-		private readonly object _lock = new object();
 
 		private Bootstrapper()
 		{
@@ -67,7 +65,6 @@ namespace BoltOn.Bootstrapping
 			_options = options;
 			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
 			LoadAssemblies();
-			RunPreRegistrationTasks();
 			RunRegistrationTasks();
 		}
 
@@ -92,7 +89,7 @@ namespace BoltOn.Bootstrapping
 			while (assemblies.Count != 0)
 			{
 				var tempRefs = GetReferencedAssemblies(assemblies[index]);
-				if (tempRefs.Intersect(assemblies).Count() == 0)
+				if (!tempRefs.Intersect(assemblies).Any())
 				{
 					sortedAssemblies.Add(assemblies[index]);
 					assemblies.Remove(assemblies[index]);
@@ -112,22 +109,6 @@ namespace BoltOn.Bootstrapping
 					var tempAssembly = Assembly.Load(referencedAssemblyName);
 					yield return tempAssembly;
 				}
-			}
-		}
-
-		private void RunPreRegistrationTasks()
-		{
-			var preRegistrationTaskType = typeof(IBootstrapperPreRegistrationTask);
-			var preRegistrationTaskTypes = (from a in Assemblies
-											from t in a.GetTypes()
-											where preRegistrationTaskType.IsAssignableFrom(t)
-											&& t.IsClass
-											select t).ToList();
-			var context = new PreRegistrationTaskContext(this);
-			foreach (var type in preRegistrationTaskTypes)
-			{
-				var task = Activator.CreateInstance(type) as IBootstrapperPreRegistrationTask;
-				task.Run(context);
 			}
 		}
 

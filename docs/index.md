@@ -1,4 +1,4 @@
-BoltOn is an [open source](https://github.com/gokulm/BoltOn), light-weight and modular application framework that can be used in any .NET application types like Console Application, MVC, WebAPI, Windows Service etc.
+BoltOn is an [open source](https://github.com/gokulm/BoltOn) library which can be used to build a .NET application (like Console, MVC, WebAPI, Windows Service etc.,) with proper separation of concerns quickly.
 
 Quick start
 ============
@@ -13,12 +13,11 @@ There are a [couple of packages](https://www.nuget.org/packages?q=BoltOn) for Bo
 Configuration
 --------------
 
-After installing the package, call BoltOn() and UseBoltOn() extension methods in ConfigureServices() and Configure() methods respectively. To use UseBoltOn() extension method, install the BoltOn.AspNetCore package. 
+After installing the package, call BoltOn() and UseBoltOn() extension methods in ConfigureServices() and Configure() methods respectively. 
 
     .
     .
     using BoltOn;
-    using BoltOn.AspNetCore;
 
     namespace BoltOn.Samples.WebApi
     {
@@ -34,13 +33,16 @@ After installing the package, call BoltOn() and UseBoltOn() extension methods in
             public void ConfigureServices(IServiceCollection services)
             {
                 services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-                services.BoltOn();
+                services.BoltOn(options => 
+                {
+                    options.BoltOnAssemblies(<collection of assemblies that should be scanned>)
+                });
             }
 
             public void Configure(IApplicationBuilder app, IHostingEnvironment env)
             {
                 app.UseMvc();
-                app.UseBoltOn();
+                app.ApplicationServices.UseBoltOn();
             }
         }
     }

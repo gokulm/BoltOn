@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
-    <ProjectReference Include="..\..\src\BoltOn.AspNetCore\BoltOn.AspNetCore.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.DTOs\BoltOn.Samples.DTOs.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Domain\BoltOn.Samples.Domain.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.Mediator.Data.EF\BoltOn.Mediator.Data.EF.csproj" />

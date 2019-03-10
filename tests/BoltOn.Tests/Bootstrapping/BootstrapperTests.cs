@@ -98,7 +98,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact, TestPriority(12)]
-		public void BoltOn_BoltOn_ExecutesPreAndRegistrationTasksInOrderAndNotPostRegistrationTask()
+		public void BoltOn_BoltOn_ExecutesRegistrationTasksInOrderAndNotPostRegistrationTask()
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
@@ -107,13 +107,10 @@ namespace BoltOn.Tests.Bootstrapping
 			serviceCollection.BoltOn();
 
 			// assert
-			var preRegistrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPreregistrationTask).Name}");
 			var registrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
 			var postRegistrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
-			Assert.True(preRegistrationTaskIndex != -1); 
 			Assert.True(registrationTaskIndex != -1);
 			Assert.True(postRegistrationTaskIndex == -1);
-			Assert.True(preRegistrationTaskIndex < registrationTaskIndex);
 		}
 
 		[Fact, TestPriority(13)]
@@ -130,13 +127,10 @@ namespace BoltOn.Tests.Bootstrapping
 			serviceProvider.UseBoltOn();
 
 			// assert
-			var preRegistrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPreregistrationTask).Name}");
 			var registrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
 			var postRegistrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
-			Assert.True(preRegistrationTaskIndex != -1);
 			Assert.True(registrationTaskIndex != -1);
 			Assert.True(postRegistrationTaskIndex != -1);
-			Assert.True(preRegistrationTaskIndex < registrationTaskIndex);
 			Assert.True(registrationTaskIndex < postRegistrationTaskIndex);
 		}
 
@@ -204,14 +198,6 @@ namespace BoltOn.Tests.Bootstrapping
 		{
 			get;
 			set;
-		}
-	}
-
-	public class TestBootstrapperPreregistrationTask : IBootstrapperPreRegistrationTask
-	{
-		public void Run(PreRegistrationTaskContext context)
-		{
-			BootstrapperRegistrationTaskTester.Tasks.Add($"Executed {this.GetType().Name}");
 		}
 	}
 
