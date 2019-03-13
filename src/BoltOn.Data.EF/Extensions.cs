@@ -5,7 +5,7 @@ namespace BoltOn.Data.EF
 {
     public static class Extensions
     {
-        public static BoltOnOptions BoltOnDataEF(this BoltOnOptions boltOnOptions)
+        public static BoltOnOptions BoltOnEntityFramework(this BoltOnOptions boltOnOptions)
         {
 			boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
 			return boltOnOptions;
