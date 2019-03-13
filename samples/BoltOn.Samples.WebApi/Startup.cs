@@ -23,24 +23,14 @@ namespace BoltOn.Samples.WebApi
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 			services.BoltOn(options =>
 			{
-				options.BoltOnDataEF();
-				options.BoltOnMediatorDataEF();
+				options.BoltOnEntityFramework();
+				options.BoltOnMediatorEntityFramework();
 				options.BoltOnAssemblies(typeof(TestHandler).Assembly);
 			});
 		}
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
             app.UseMvc();
 			app.ApplicationServices.UseBoltOn();
 		}
