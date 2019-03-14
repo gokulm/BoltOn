@@ -27,10 +27,10 @@ namespace BoltOn.Tests.Data.EF
 				.BoltOn(options =>
 				{
 					options
-						.BoltOnEntityFramework();
+						.AddEntityFrameworkModule();
 				});
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.UseBoltOn();
+			serviceProvider.TightenBolts();
 			_sut = serviceProvider.GetService<ITestRepository>();
 		}
 

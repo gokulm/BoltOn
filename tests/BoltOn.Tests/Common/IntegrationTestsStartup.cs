@@ -32,7 +32,7 @@ namespace BoltOn.Tests.Common
 				var serviceCollection = new ServiceCollection();
 				serviceCollection.BoltOn();
 				_serviceProvider = serviceCollection.BuildServiceProvider();
-				_serviceProvider.UseBoltOn();
+				_serviceProvider.TightenBolts();
 				_isInitialized = true;
 			}
         }

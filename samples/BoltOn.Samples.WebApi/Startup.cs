@@ -23,16 +23,16 @@ namespace BoltOn.Samples.WebApi
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 			services.BoltOn(options =>
 			{
-				options.BoltOnEntityFramework();
-				options.BoltOnMediatorEntityFramework();
-				options.BoltOnAssemblies(typeof(TestHandler).Assembly);
+				options.AddEntityFrameworkModule();
+				options.AddMediatorEntityFrameworkModule();
+				options.AddAssemblies(typeof(TestHandler).Assembly);
 			});
 		}
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseMvc();
-			app.ApplicationServices.UseBoltOn();
+			app.ApplicationServices.TightenBolts();
 		}
     }
 }

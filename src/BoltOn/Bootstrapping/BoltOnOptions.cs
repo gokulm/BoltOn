@@ -7,7 +7,7 @@ namespace BoltOn.Bootstrapping
 	{
 		internal List<Assembly> AssembliesToBeIncluded { get; set; } = new List<Assembly>();
 
-		public void BoltOnAssemblies(params Assembly[] assemblies)
+		public void AddAssemblies(params Assembly[] assemblies)
 		{
 			AssembliesToBeIncluded.AddRange(assemblies);
 		}

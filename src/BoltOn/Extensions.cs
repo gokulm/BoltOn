@@ -17,7 +17,7 @@ namespace BoltOn
 			return serviceCollection;
 		}
 
-		public static void UseBoltOn(this IServiceProvider serviceProvider)
+		public static void TightenBolts(this IServiceProvider serviceProvider)
 		{
 			var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
 			Check.Requires(loggerFactory != null, "Add logging to the service collection");

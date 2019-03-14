@@ -25,10 +25,10 @@ namespace BoltOn.Tests.Data.EF
 				.BoltOn(options =>
 				{
 					options
-						.BoltOnEntityFramework();
+						.AddEntityFrameworkModule();
 				});
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.UseBoltOn();
+			serviceProvider.TightenBolts();
 			MediatorTestHelper.IsSeedData = true;
 			_sut = serviceProvider.GetService<IStudentRepository>();
 		}

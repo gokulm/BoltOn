@@ -23,12 +23,12 @@ namespace BoltOn.Tests.Mediator.Data.EF
 				.BoltOn(options =>
 				{
 					options
-						.BoltOnEntityFramework()
-						.BoltOnMediatorEntityFramework();
+						.AddEntityFrameworkModule()
+						.AddMediatorEntityFrameworkModule();
 				})
 				.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.UseBoltOn();
+			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
@@ -56,12 +56,12 @@ namespace BoltOn.Tests.Mediator.Data.EF
 				.BoltOn(options =>
 				{
 					options
-						.BoltOnEntityFramework()
-						.BoltOnMediatorEntityFramework();
+						.AddEntityFrameworkModule()
+						.AddMediatorEntityFrameworkModule();
 				})
 				.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.UseBoltOn();
+			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
