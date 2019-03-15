@@ -4,14 +4,14 @@ Quick start
 ============
 
 How to install?
--------------
+---------------
 
 There are a [couple of packages](https://www.nuget.org/packages?q=BoltOn) for BoltOn available on NuGet. To install BoltOn in your .NET application, type the following command into the Package Manager Console window:
 
     PM> Install-Package BoltOn
 
 How to configure?
---------------
+-----------------
 
 After installing the package, call BoltOn() and TightenBolts() extension methods in ConfigureServices() and Configure() methods respectively. 
 
@@ -53,4 +53,29 @@ BoltOn uses .NET core's dependency injection internally. In case if you want to 
 
 What does BoltOn() do? 
 ----------------------
-It initializes the executing assembly, all the assemblies of the other NuGet packages and the assemblies passed to BoltOnAssemblies() to a collection, sorts them based on the assembly dependencies, and finally scans for all the classes that implement **IBootstrapperRegistrationTask** and executes them. A built-in registration task called **BoltOnRegistrationTask** registers all the types that follow the convention like the interface ITestService and its implementation TestService as trasient. To exclude the types from getting registered by convention, decorate the classes with **[ExcludeFromRegistration]** attribute. For all the other registration scopes like scoped or singleton, or to register types that are not like the interface ITestService and its implementation TestService, you could implement **IBootstrapperRegistrationTask** and add them in it.
+* It initializes the executing assembly, all the assemblies of the other NuGet packages and the assemblies passed to BoltOnAssemblies() to a collection, sorts them based on the assembly dependencies, and finally scans for all the classes that implement `IBootstrapperRegistrationTask` and executes them. 
+* A built-in registration task called `BoltOnRegistrationTask` registers all the types that follow the convention like the interface ITestService and its implementation TestService as trasient. 
+* To exclude the types from getting registered by convention, decorate the classes with `[ExcludeFromRegistration]` attribute. 
+* For all the other registration scopes like scoped or singleton, or to register types that are not like the interface ITestService and its implementation TestService, you could implement `IBootstrapperRegistrationTask` and add them in it.
+
+Request, Respone and RequestHandler
+-----------------------------------
+To create a request class, implement any of these interfaces: 
+
+* `IRequest`
+<br /> To create a request that doesn't have any response and doesn't require unit of work
+* `IRequest<out TResponse>` 
+<br /> To create a request with response of type TResponse and doesn't require unit of work
+* `ICommand`
+<br /> To create a request that doesn't have any response and that requires unit of work. A transaction with isolation level ReadCommitted will be started for the requests that implement this interface. 
+* `ICommand<out TResponse>` 
+<br /> To create a request with response of type TResponse and that requires require unit of work. A transaction with isolation level ReadCommitted will be started for the requests that implement this interface.
+* `IQuery<out TResponse>`
+<br /> To create a request with response of type TResponse and that requires unit of work. A transaction with isolation level ReadCommitted will be started for the requests that implement this interface. 
+<br /> If **BoltOn.Mediator.Data.EF** is installed and bolted, DbContexts' ChangeTracker.QueryTrackingBehavior will be set to `QueryTrackingBehavior.NoTracking` and ChangeTracker.AutoDetectChangesEnabled will be set to false.
+* `IStaleQuery<out TResponse>` 
+<br /> To create a request with response of type TResponse and that requires require unit of work. A transaction with isolation level ReadUncommitted will be started for the requests that implement this interface.
+
+**Note:** You could modify the transaction's default isolation level and time out by implementing `IUnitOfWorkOptionsBuilder` 
+
+
