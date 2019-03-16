@@ -29,7 +29,7 @@ namespace BoltOn.Mediator.Pipeline
 			_requestHandler = requestHandler;
 		}
 
-		public bool Handle(IRequest<bool> request)
+		public bool Handle(IRequest<DummyResponse> request)
 		{
 			_requestHandler.Handle((TRequest)request);
 			return true;
@@ -62,10 +62,10 @@ namespace BoltOn.Mediator.Pipeline
 			_requestAsyncHandler = requestAsyncHandler;
 		}
 
-		public async Task<bool> HandleAsync(IRequest<bool> request, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<DummyResponse> HandleAsync(IRequest<DummyResponse> request, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			await _requestAsyncHandler.HandleAsync((TRequest)request, cancellationToken);
-			return await Task.FromResult(true);
+			return await Task.FromResult(new DummyResponse());
 		}
 	}
 }

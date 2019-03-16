@@ -44,12 +44,8 @@ namespace BoltOn.Mediator.Interceptors
 			return response;
 		}
 
-		public override void Dispose()
-		{
-			_unitOfWork?.Dispose();
-		}
-
-		public async override Task<TResponse> ExecuteAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken,
+		public async override Task<TResponse> ExecuteAsync<TRequest, TResponse>(IRequest<TResponse> request, 
+			CancellationToken cancellationToken,
 			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next)
 		{
 			_logger.Debug($"UnitOfWorkInterceptor started");
@@ -64,6 +60,11 @@ namespace BoltOn.Mediator.Interceptors
 			_unitOfWork = null;
 			_logger.Debug($"UnitOfWorkInterceptor ended");
 			return response;
+		}
+
+		public override void Dispose()
+		{
+			_unitOfWork?.Dispose();
 		}
 	}
 }

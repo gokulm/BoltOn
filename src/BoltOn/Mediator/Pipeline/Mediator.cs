@@ -38,13 +38,19 @@ namespace BoltOn.Mediator.Pipeline
 
 		public void Process(IRequest request)
 		{
-			var castedRequest = request as IRequest<bool>;
+			var castedRequest = request as IRequest<DummyResponse>;
 			ExecuteInterceptors(castedRequest, Handle);
 		}
 
 		public async Task<TResponse> ProcessAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return await ExecuteInterceptorsAsync(request, HandleAsync, cancellationToken);
+		}
+
+		public async Task ProcessAsync(IRequest request, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var castedRequest = request as IRequest<DummyResponse>;
+			await ExecuteInterceptorsAsync(request, HandleAsync, cancellationToken);
 		}
 
 		private TResponse ExecuteInterceptors<TResponse>(IRequest<TResponse> request,
@@ -156,12 +162,6 @@ namespace BoltOn.Mediator.Pipeline
 				var response = await decorator.HandleAsync(request, cancellationToken);
 				return response;
 			}
-		}
-
-		public async Task ProcessAsync(IRequest request, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			var castedRequest = request as IRequest<bool>;
-			await ExecuteInterceptorsAsync(request, HandleAsync, cancellationToken);
 		}
 	}
 }

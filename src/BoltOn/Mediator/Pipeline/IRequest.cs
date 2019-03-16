@@ -6,7 +6,7 @@ namespace BoltOn.Mediator.Pipeline
 	{
 	}
 
-	public interface IRequest : IRequest<bool>
+	public interface IRequest : IRequest<DummyResponse>
 	{
 	}
 
@@ -23,6 +23,10 @@ namespace BoltOn.Mediator.Pipeline
 	}
 
 	public interface IStaleQuery<out TResponse> : IRequest<TResponse>, IEnableUnitOfWorkInterceptor
+	{
+	}
+	
+	public class DummyResponse
 	{
 	}
 }

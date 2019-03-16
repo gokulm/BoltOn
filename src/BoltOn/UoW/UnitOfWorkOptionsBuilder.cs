@@ -19,7 +19,7 @@ namespace BoltOn.UoW
 			_logger = logger;
 		}
 
-		public UnitOfWorkOptions Build<TResponse>(IRequest<TResponse> request) 
+		public virtual UnitOfWorkOptions Build<TResponse>(IRequest<TResponse> request) 
 		{
 			IsolationLevel isolationLevel;
 			switch (request)
