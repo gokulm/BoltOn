@@ -20,8 +20,8 @@ namespace BoltOn.Samples.WebApi.Controllers
 		[HttpGet]
 		public ActionResult<IEnumerable<string>> Get()
 		{
-			var response = _mediator.Process(new TestRequest());
-			return new string[] { response.Test };
+			var response = _mediator.Process(new PingRequest());
+			return new string[] { response.Data };
 		}
 
 		// GET api/values/5

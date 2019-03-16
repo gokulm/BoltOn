@@ -27,7 +27,7 @@ namespace BoltOn.Tests.Data.EF
 				.BoltOn(options =>
 				{
 					options
-						.AddEntityFrameworkModule();
+						.BoltOnEFModule();
 				});
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();

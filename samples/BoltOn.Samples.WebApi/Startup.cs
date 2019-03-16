@@ -23,9 +23,9 @@ namespace BoltOn.Samples.WebApi
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 			services.BoltOn(options =>
 			{
-				options.AddEntityFrameworkModule();
-				options.AddMediatorEntityFrameworkModule();
-				options.AddAssemblies(typeof(TestHandler).Assembly);
+				options.BoltOnEFModule();
+				options.BoltOnMediatorEFModule();
+				options.BoltOnAssemblies(typeof(PingHandler).Assembly);
 			});
 		}
 

@@ -20,14 +20,20 @@ namespace BoltOn.Bootstrapping
 							  from type in assembly.GetTypes()
 							  where type.IsInterface
 							  select type).ToList();
-			var registrations = (from @interface in interfaces
+			var tempRegistrations = (from @interface in interfaces
 								 from assembly in context.Assemblies
 								 from type in assembly.GetTypes()
 								 where !type.IsAbstract
 									   && type.IsClass && @interface.IsAssignableFrom(type)
-									   && type.Name.Equals(@interface.Name.Substring(1))
+									   //&& type.Name.Equals(@interface.Name.Substring(1))
 								 && !type.GetCustomAttributes(typeof(ExcludeFromRegistrationAttribute), true).Any()
 								 select new { Interface = @interface, Implementation = type }).ToList();
+
+			// get interfaces with only one implementation
+			var registrations = (from r in tempRegistrations
+						group r by r.Interface into grp
+						where grp.Count() == 1
+						select new { Interface = grp.Key, grp.First().Implementation }).ToList();
 
 			registrations.ForEach(f => context.Container.AddTransient(f.Interface, f.Implementation));
 		}

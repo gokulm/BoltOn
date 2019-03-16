@@ -6,11 +6,11 @@ namespace BoltOn.Mediator.Data.EF
 {
     public static class Extensions
     {
-        public static BoltOnOptions AddMediatorEntityFrameworkModule(this BoltOnOptions boltOnOptions)
+        public static BoltOnOptions BoltOnMediatorEFModule(this BoltOnOptions boltOnOptions)
 		{
 			boltOnOptions
-				.AddEntityFrameworkModule()
-				.AddAssemblies(Assembly.GetExecutingAssembly());
+				.BoltOnEFModule()
+				.BoltOnAssemblies(Assembly.GetExecutingAssembly());
 			return boltOnOptions;
 		}
     }

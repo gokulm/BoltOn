@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Bootstrapping;
+using BoltOn.Mediator;
+using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -239,6 +241,32 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
+		public void Process_BootstrapWithRemoveInterceptor_DoesNotInvokeRemovedInterceptorAndReturnsSuccessfulResult()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn();
+			serviceCollection.AddLogging();
+			serviceCollection.RemoveInterceptor<StopwatchInterceptor>();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
+			var sut = serviceProvider.GetService<IMediator>();
+			var testInterceptor = serviceProvider.GetService<TestInterceptor>();
+
+			// act
+			var result = sut.Process(new TestRequest());
+
+			// assert 
+			Assert.True(result);
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "TestInterceptor Started"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "TestInterceptor Ended"));
+			Assert.Null(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor started at {boltOnClock.Now}"));
+			Assert.Null(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor ended at {boltOnClock.Now}. " +
+																				"Time elapsed: 0"));
+		}
+
+		[Fact]
 		public void Process_MediatorWithQueryRequest_ExecutesUoWInterceptorAndStartsTransactionsWithDefaultQueryIsolationLevel()
 		{
 			// arrange
@@ -343,6 +371,8 @@ namespace BoltOn.Tests.Mediator
 			Assert.Equal(1, command.Value);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
+
+
 
 		public void Dispose()
 		{
