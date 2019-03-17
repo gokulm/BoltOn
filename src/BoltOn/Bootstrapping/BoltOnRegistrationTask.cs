@@ -25,7 +25,6 @@ namespace BoltOn.Bootstrapping
 								 from type in assembly.GetTypes()
 								 where !type.IsAbstract
 									   && type.IsClass && @interface.IsAssignableFrom(type)
-									   //&& type.Name.Equals(@interface.Name.Substring(1))
 								 && !type.GetCustomAttributes(typeof(ExcludeFromRegistrationAttribute), true).Any()
 								 select new { Interface = @interface, Implementation = type }).ToList();
 

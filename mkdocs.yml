@@ -1,5 +1,6 @@
 site_name: BoltOn
 nav:
-    - Home: index.md
+    - Introduction: index.md
+    - Mediator: mediator.md
 theme: readthedocs
 
