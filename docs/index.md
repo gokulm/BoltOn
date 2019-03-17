@@ -52,11 +52,23 @@ BoltOn()
 --------
 This extension method does the following:
 
-* It groups the executing assembly, all the assemblies of the other modules and the assemblies passed to BoltOnAssemblies() to a collection, sorts them based on the assembly dependencies, and finally scans for all the classes that implement `IBootstrapperRegistrationTask` and executes them. 
+* It groups the executing assembly, all the assemblies of the other modules and the assemblies passed to BoltOnAssemblies() to a collection, sorts them based on the assembly dependencies, and finally scans for all the classes that implement `IBootstrapperRegistrationTask` and executes them in the order of the assembly dependencies. 
 <br />The assemblies collection can be accessed from `RegistrationTaskContext` and `PostRegistrationTaskContext` of the registration tasks.
 * A built-in registration task called `BoltOnRegistrationTask` registers all the interfaces with **single** implementation as trasient. 
 * To exclude classes from registration, decorate them with `[ExcludeFromRegistration]` attribute.
 * For all the other registration scopes like scoped or singleton, or to register interfaces with more than one implementations, implement `IBootstrapperRegistrationTask` and use the context.Container to register them.
+
+Example:
+
+    public class CustomRegistrationTask : IBootstrapperRegistrationTask
+	{
+		public void Run(RegistrationTaskContext context)
+		{
+			var container = context.Container;
+			container.AddSingleton<IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOptionsBuilder>();
+			container.AddScoped<ITestService, TestService>();
+		}
+	}
 
 Use the BoltOnOptions' extension methods like BoltOnEFModule, BoltOnMediatorEFModule etc., to attach the other modules. Each and every module calls other extension methods to attach their own dependent modules. For eg., BoltOnMediatorEFModule calls BoltOnEFModule internally, so you need to call it explicitly, and thus you need not worry about the dependency of every module. 
 
@@ -78,3 +90,30 @@ Example:
             testDbContext.Database.EnsureCreated();
         }
     }
+
+Logging
+-------
+BoltOn uses a custom logging adapter written for .NET Core's `ILogger<TType>` interface, which was mainly written to help in unit testing. You could use any logging provider as you wish, or you could inherit `BoltOnNetStandardLoggerAdapter<TType>` and override the logging methods.
+
+Utilities
+---------
+* **Check.Requires**
+<br>
+There are instances where you have to check for a condition and throw exception if the condition fails, in those instances you could use Check.Requires
+
+    Example:
+
+        Check.Requires(_serviceCollection != null, "ServiceCollection not initialized"); 
+
+    is equivalent to
+
+        if(_serviceCollection == null)
+            throw new Exception("ServiceCollection not initialized");
+
+    and custom exceptions can be thrown like this:
+
+        Check.Requires<CustomException>(_serviceCollection != null, "ServiceCollection not initialized"); 
+
+* **IBoltOnClock/BoltOnClock**
+<br>
+There are instances where you have to use static properties DateTime.Now or DateTimeOffset.UtcNow, which makes hard to unit test, in those instances you could inject IBoltOnClock
