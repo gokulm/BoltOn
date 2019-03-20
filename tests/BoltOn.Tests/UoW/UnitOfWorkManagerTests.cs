@@ -28,6 +28,9 @@ namespace BoltOn.Tests.UoW
 						  $"TransactionTimeOut: {TransactionManager.DefaultTimeout}" +
 						  $"TransactionScopeOption: {TransactionScopeOption.Required}";
 			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
+
+			// cleanup
+			result.Dispose();
 		}
 
 		[Fact]
@@ -53,7 +56,10 @@ namespace BoltOn.Tests.UoW
 			var uowProviderLoggerStmt = $"About to start UoW. IsolationLevel: {IsolationLevel.ReadCommitted} " +
 						  $"TransactionTimeOut: {timeSpan}" +
 						  $"TransactionScopeOption: {TransactionScopeOption.Required}";
-			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
+			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));      
+
+			// cleanup
+			result.Dispose();
 		}
 
 		[Fact]
@@ -80,6 +86,10 @@ namespace BoltOn.Tests.UoW
 					  $"TransactionScopeOption: {TransactionScopeOption.RequiresNew}";
 			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
 			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt2));
+
+			// cleanup
+			result.Dispose();
+			result2.Dispose();
 		}
 
 		[Fact]

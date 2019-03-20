@@ -93,7 +93,7 @@ Example:
 
 Logging
 -------
-BoltOn uses a custom logging adapter written for .NET Core's `ILogger<TType>` interface, which was mainly written to help in unit testing. You could use any logging provider as you wish, or you could inherit `BoltOnNetStandardLoggerAdapter<TType>` and override the logging methods.
+BoltOn uses .NET Core's logger internally, with just a custom adapter to help in unit testing. You could use any logging provider as you wish, or you could inherit `BoltOnNetStandardLoggerAdapter<TType>` and override the logging methods.
 
 Utilities
 ---------
