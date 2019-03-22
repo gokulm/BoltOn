@@ -96,7 +96,7 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public void FindByWithoutIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
+		public void FindByWithoutIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheFindByCriteria()
 		{
 			// arrange
 
@@ -106,8 +106,6 @@ namespace BoltOn.Tests.Data.EF
 			// assert
 			Assert.NotNull(result);
 			Assert.Equal("x", result.FirstName);
-			// without includes this should be empty, but it's not, as InMemoryDb uses the same dbcontext and the entity is already loaded
-			//Assert.Empty(result.Addresses);
 		}
 
 		[Fact, Trait("Category", "Integration")]

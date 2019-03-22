@@ -9,37 +9,33 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Data.EF
 {
-	public abstract class BaseEFRepository<TDbContext> : IRepository
+	public abstract class BaseEFRepository<TEntity, TDbContext> : IRepository<TEntity>
 		where TDbContext : DbContext
+		where TEntity : class
 	{
-		protected TDbContext DbContext { get; private set; }
-
-		protected DbSet<TEntity> DbSets<TEntity>() where TEntity : class
-		{
-			return DbContext.Set<TEntity>();
-		}
+		private TDbContext _dbContext;
+		private DbSet<TEntity> _dbSets;
 
 		protected BaseEFRepository(IDbContextFactory dbContextFactory)
 		{
-			DbContext = dbContextFactory.Get<TDbContext>();
+			_dbContext = dbContextFactory.Get<TDbContext>();
+			_dbSets = _dbContext.Set<TEntity>();
 		}
 
-		public virtual IEnumerable<TEntity> GetAll<TEntity>() where TEntity : class
+		public virtual IEnumerable<TEntity> GetAll()
 		{
-			return DbSets<TEntity>().Select(s => s).ToList();
+			return _dbSets.Select(s => s).ToList();
 		}
 
-		public virtual async Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(CancellationToken cancellationToken = default(CancellationToken))
-			where TEntity : class
+		public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return await DbSets<TEntity>().ToListAsync(cancellationToken);
+			return await _dbSets.ToListAsync(cancellationToken);
 		}
 
-		public virtual IEnumerable<TEntity> FindBy<TEntity>(Expression<Func<TEntity, bool>> predicate,
+		public virtual IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate,
 			params Expression<Func<TEntity, object>>[] includes)
-			where TEntity : class
 		{
-			var query = DbSets<TEntity>().Where(predicate);
+			var query = _dbSets.Where(predicate);
 			if (includes.Any())
 			{
 				query = includes.Aggregate(query,
@@ -49,12 +45,11 @@ namespace BoltOn.Data.EF
 			return query.ToList();
 		}
 
-		public virtual async Task<IEnumerable<TEntity>> FindByAsync<TEntity>(Expression<Func<TEntity, bool>> predicate,
+		public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
 			CancellationToken cancellationToken = default(CancellationToken),
 			params Expression<Func<TEntity, object>>[] includes)
-			where TEntity : class
 		{
-			var query = DbSets<TEntity>().Where(predicate);
+			var query = _dbSets.Where(predicate);
 			if (includes != null)
 			{
 				query = includes.Aggregate(query,
@@ -64,110 +59,40 @@ namespace BoltOn.Data.EF
 			return await query.ToListAsync(cancellationToken);
 		}
 
-		// APPLIES to Add and Update
-		// in case if records should not be added or updated when TrackingBehavior is NoTracking, we can 
-		// check the behavior in Add and Update methods, and not call DbSets.Add or DbSets.Update and SaveChanges
-
-		public virtual TEntity Add<TEntity>(TEntity entity) where TEntity : class
-		{
-			DbSets<TEntity>().Add(entity);
-			DbContext.SaveChanges();
-			return entity;
-		}
-
-		public virtual async Task<TEntity> AddAsync<TEntity>(TEntity entity,
-			CancellationToken cancellationToken = default(CancellationToken)) where TEntity : class
-		{
-			DbSets<TEntity>().Add(entity);
-			await DbContext.SaveChangesAsync(cancellationToken);
-			return entity;
-		}
-
-		public virtual void Update<TEntity>(TEntity entity) where TEntity : class
-		{
-			DbSets<TEntity>().Update(entity);
-			DbContext.SaveChanges();
-		}
-
-		public virtual async Task UpdateAsync<TEntity>(TEntity entity,
-			CancellationToken cancellationToken = default(CancellationToken)) where TEntity : class
-		{
-			DbSets<TEntity>().Update(entity);
-			await DbContext.SaveChangesAsync(cancellationToken);
-		}
-
-		public TEntity GetById<TEntity, TId>(TId id) where TEntity : class
-		{
-			return DbSets<TEntity>().Find(id);
-		}
-
-		public async Task<TEntity> GetByIdAsync<TEntity, TId>(TId id) where TEntity : class
-		{
-			return await DbSets<TEntity>().FindAsync(id);
-		}
-	}
-
-	public abstract class BaseEFRepository<TEntity, TDbContext> : BaseEFRepository<TDbContext>, IRepository<TEntity>
-		where TDbContext : DbContext
-		where TEntity : class
-	{
-		protected DbSet<TEntity> DbSets => DbSets<TEntity>();
-
-		protected BaseEFRepository(IDbContextFactory dbContextFactory) : base(dbContextFactory)
-		{
-		}
-
-		public virtual IEnumerable<TEntity> GetAll()
-		{
-			return GetAll<TEntity>();
-		}
-
-		public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default(CancellationToken))
-		{
-			return await GetAllAsync<TEntity>(cancellationToken);
-		}
-
-		public virtual IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate,
-			params Expression<Func<TEntity, object>>[] includes)
-		{
-			return FindBy<TEntity>(predicate, includes);
-		}
-
-		public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
-			CancellationToken cancellationToken = default(CancellationToken),
-			params Expression<Func<TEntity, object>>[] includes)
-		{
-			return await FindByAsync<TEntity>(predicate, cancellationToken, includes);
-		}
-
 		public virtual TEntity Add(TEntity entity)
 		{
-			return Add<TEntity>(entity);
+			_dbSets.Add(entity);
+			_dbContext.SaveChanges();
+			return entity;
 		}
 
 		public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return await AddAsync<TEntity>(entity, cancellationToken);
+			_dbSets.Add(entity);
+			await _dbContext.SaveChangesAsync(cancellationToken);
+			return entity;
 		}
 
 		public virtual void Update(TEntity entity)
 		{
-			Update<TEntity>(entity);
+			_dbSets.Update(entity);
+			_dbContext.SaveChanges();
 		}
 
 		public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			await UpdateAsync<TEntity>(entity, cancellationToken);
+			_dbSets.Update(entity);
+			await _dbContext.SaveChangesAsync(cancellationToken);
 		}
 
 		public virtual TEntity GetById<TId>(TId id)
 		{
-			return GetById<TEntity, TId>(id);
+			return _dbSets.Find(id);
 		}
 
 		public virtual async Task<TEntity> GetByIdAsync<TId>(TId id)
 		{
-			return await GetByIdAsync<TEntity, TId>(id);
+			return await _dbSets.FindAsync(id);
 		}
 	}
 }

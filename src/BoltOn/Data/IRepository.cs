@@ -6,28 +6,6 @@ using System.Threading.Tasks;
 
 namespace BoltOn.Data
 {
-	public interface IRepository
-	{
-		TEntity GetById<TEntity, TId>(TId id) where TEntity : class;
-		Task<TEntity> GetByIdAsync<TEntity, TId>(TId id) where TEntity : class;
-		IEnumerable<TEntity> GetAll<TEntity>() where TEntity : class;
-		Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(CancellationToken cancellationToken = default(CancellationToken))
-			where TEntity : class;
-		IEnumerable<TEntity> FindBy<TEntity>(Expression<Func<TEntity, bool>> predicate,
-			params Expression<Func<TEntity, object>>[] includes)
-			where TEntity : class;
-		Task<IEnumerable<TEntity>> FindByAsync<TEntity>(Expression<Func<TEntity, bool>> predicate,
-		   CancellationToken cancellationToken = default(CancellationToken),
-			params Expression<Func<TEntity, object>>[] includes)
-			where TEntity : class;
-		TEntity Add<TEntity>(TEntity entity) where TEntity : class;
-		Task<TEntity> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
-			where TEntity : class;
-		void Update<TEntity>(TEntity entity) where TEntity : class;
-		Task UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
-			where TEntity : class;
-	}
-
 	public interface IRepository<TEntity> where TEntity : class
 	{
 		TEntity GetById<TId>(TId id);
