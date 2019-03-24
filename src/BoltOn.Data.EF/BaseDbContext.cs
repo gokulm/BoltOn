@@ -6,13 +6,17 @@ namespace BoltOn.Data.EF
     {
 		public BaseDbContext(DbContextOptions<TDbContext> options) : base(options)
 		{
-
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(TDbContext).Assembly);
+			ApplyConfigurations(modelBuilder);
         }
-    }
+
+		protected virtual void ApplyConfigurations(ModelBuilder modelBuilder)
+		{
+			modelBuilder.ApplyConfigurationsFromAssembly(typeof(TDbContext).Assembly);
+		}
+	}
 }
