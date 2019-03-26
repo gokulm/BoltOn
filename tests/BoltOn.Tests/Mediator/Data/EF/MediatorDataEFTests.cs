@@ -5,6 +5,7 @@ using BoltOn.Logging;
 using BoltOn.Mediator.Data.EF;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.Tests.Other;
 using Moq;
 using Moq.AutoMock;
 using Xunit;

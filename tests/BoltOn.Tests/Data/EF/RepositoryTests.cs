@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
 using BoltOn.Tests.Mediator;
+using BoltOn.Tests.Other;
 
 namespace BoltOn.Tests.Data.EF
 {
@@ -20,6 +21,8 @@ namespace BoltOn.Tests.Data.EF
 
 		public RepositoryTests()
 		{
+			// this flag can be set to true for [few] tests. Running all the tests with this set to true might slow down.
+			MediatorTestHelper.IsSqlServer = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection
 				.BoltOn(options =>
@@ -217,17 +220,6 @@ namespace BoltOn.Tests.Data.EF
 			Bootstrapper
 				.Instance
 				.Dispose();
-		}
-	}
-
-	public interface IStudentRepository : IRepository<Student>
-	{
-	}
-
-	public class StudentRepository : BaseEFRepository<Student, SchoolDbContext>, IStudentRepository
-	{
-		public StudentRepository(IDbContextFactory dbContextFactory) : base(dbContextFactory)
-		{
 		}
 	}
 }

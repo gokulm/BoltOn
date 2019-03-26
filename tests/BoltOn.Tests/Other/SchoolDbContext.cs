@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
 
-namespace BoltOn.Tests.Data.EF
+namespace BoltOn.Tests.Other
 {
 	public class SchoolDbContext : BaseDbContext<SchoolDbContext>
 	{
@@ -37,7 +37,8 @@ namespace BoltOn.Tests.Data.EF
 				.HasKey(k => k.Id);
 			builder
 				.Property(p => p.Id)
-				.HasColumnName("StudentId");
+				.HasColumnName("StudentId")
+				.ValueGeneratedNever();
 			builder
 				.HasMany(p => p.Addresses)
 				.WithOne(p => p.Student);

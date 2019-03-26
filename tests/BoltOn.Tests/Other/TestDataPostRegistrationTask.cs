@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using BoltOn.Bootstrapping;
 using BoltOn.Tests.Mediator;
 
-namespace BoltOn.Tests.Data.EF
+namespace BoltOn.Tests.Other
 {
     public class TestDataPostRegistrationTask : IBootstrapperPostRegistrationTask
     {
@@ -13,8 +13,8 @@ namespace BoltOn.Tests.Data.EF
 			{
 				var serviceProvider = context.ServiceProvider;
 				var testDbContext = serviceProvider.GetService<SchoolDbContext>();
-				//testDbContext.Database.EnsureDeleted();
-				//testDbContext.Database.EnsureCreated();
+				testDbContext.Database.EnsureDeleted();
+				testDbContext.Database.EnsureCreated();
 				testDbContext.Set<Student>().Add(new Student
 				{
 					Id = 1,

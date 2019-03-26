@@ -1,5 +1,5 @@
 using BoltOn.Logging;
-using BoltOn.Tests.Mediator;
+using BoltOn.Tests.Other;
 using BoltOn.UoW;
 using Moq;
 using Xunit;

@@ -5,6 +5,7 @@ using BoltOn.Data.EF;
 using BoltOn.Mediator.Data.EF;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Tests.Data.EF;
+using BoltOn.Tests.Other;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 

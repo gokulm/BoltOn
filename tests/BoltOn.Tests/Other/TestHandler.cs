@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 
-namespace BoltOn.Tests.Mediator
+namespace BoltOn.Tests.Other
 {
 	public class TestRequest : IRequest<bool>, IEnableStopwatchInterceptor
 	{

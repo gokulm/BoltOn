@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BoltOn.Tests.Mediator
+namespace BoltOn.Tests.Other
 {
 	public class MediatorTestHelper
     {
@@ -8,6 +8,6 @@ namespace BoltOn.Tests.Mediator
         public static bool IsClearInterceptors { get; set; }
         public static bool IsCustomizeIsolationLevel { get; set; }
 		public static bool IsSeedData { get; set; } = true;
-		public static bool IsSqlite { get; set; } 
+		public static bool IsSqlServer { get; set; } 
 	}
 }

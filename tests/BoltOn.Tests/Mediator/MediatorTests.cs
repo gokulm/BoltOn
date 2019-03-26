@@ -7,6 +7,7 @@ using BoltOn.Bootstrapping;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.Tests.Other;
 using BoltOn.UoW;
 using BoltOn.Utilities;
 using Moq;

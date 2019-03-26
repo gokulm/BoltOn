@@ -6,6 +6,7 @@ using BoltOn.Bootstrapping;
 using BoltOn.Mediator;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.Tests.Other;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;

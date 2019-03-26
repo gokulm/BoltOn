@@ -3,11 +3,10 @@ using BoltOn.Bootstrapping;
 using BoltOn.Logging;
 using BoltOn.Mediator.Data.EF;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Tests.Data.EF;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
-namespace BoltOn.Tests.Mediator.Data.EF
+namespace BoltOn.Tests.Other
 {
 	public class TestMediatorDataRegistrationTask : IBootstrapperRegistrationTask
     {
