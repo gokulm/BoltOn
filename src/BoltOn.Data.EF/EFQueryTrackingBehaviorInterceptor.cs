@@ -5,7 +5,7 @@ using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 
-namespace BoltOn.Mediator.Data.EF
+namespace BoltOn.Data.EF
 {
 	public class EFQueryTrackingBehaviorInterceptor : IInterceptor
 	{
@@ -29,10 +29,6 @@ namespace BoltOn.Mediator.Data.EF
 			return response;
 		}
 
-		public void Dispose()
-		{
-		}
-
 		public async Task<TResponse> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
 			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
@@ -41,6 +37,10 @@ namespace BoltOn.Mediator.Data.EF
 			_logger.Debug($"IsQueryRequest: {_mediatorDataContext.IsQueryRequest}");
 			var response = await next(request, cancellationToken);
 			return response;
+		}
+
+		public void Dispose()
+		{
 		}
 	}
 }

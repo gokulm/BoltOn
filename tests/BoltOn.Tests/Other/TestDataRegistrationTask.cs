@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Tests.Other
 {
-	public class TestDataRegistrationTask : IBootstrapperRegistrationTask
+	public class TestDataRegistrationTask : IRegistrationTask
 	{
 		public void Run(RegistrationTaskContext context)
 		{

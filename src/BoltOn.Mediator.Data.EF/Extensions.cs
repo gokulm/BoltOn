@@ -8,9 +8,9 @@ namespace BoltOn.Mediator.Data.EF
     {
         public static BoltOnOptions BoltOnMediatorEFModule(this BoltOnOptions boltOnOptions)
 		{
-			boltOnOptions
-				.BoltOnEFModule()
-				.BoltOnAssemblies(Assembly.GetExecutingAssembly());
+			//boltOnOptions
+				//.BoltOnEFModule()
+				//.BoltOnAssemblies(Assembly.GetExecutingAssembly());
 			return boltOnOptions;
 		}
     }

@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
 {
-	internal class BoltOnRegistrationTask : IBootstrapperRegistrationTask
+	internal class BoltOnRegistrationTask : IRegistrationTask
 	{
 		public void Run(RegistrationTaskContext context)
 		{

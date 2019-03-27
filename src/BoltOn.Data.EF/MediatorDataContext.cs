@@ -1,4 +1,4 @@
-namespace BoltOn.Mediator.Data.EF
+namespace BoltOn.Data.EF
 {
 	public class MediatorDataContext 
 	{

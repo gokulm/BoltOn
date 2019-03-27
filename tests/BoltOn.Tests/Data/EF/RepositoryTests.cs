@@ -1,5 +1,4 @@
 using System;
-using BoltOn.Data;
 using BoltOn.Data.EF;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -7,7 +6,6 @@ using BoltOn.Bootstrapping;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
-using BoltOn.Tests.Mediator;
 using BoltOn.Tests.Other;
 
 namespace BoltOn.Tests.Data.EF

@@ -1,11 +1,11 @@
 ﻿namespace BoltOn.Bootstrapping
 {
-	public interface IBootstrapperRegistrationTask
+	public interface IRegistrationTask
 	{
 		void Run(RegistrationTaskContext context);
 	}
 
-	public interface IBootstrapperPostRegistrationTask
+	public interface IPostRegistrationTask
 	{
 		void Run(PostRegistrationTaskContext context);
 	}

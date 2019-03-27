@@ -1,14 +1,14 @@
 ﻿using System.Linq;
 using BoltOn.Bootstrapping;
+using BoltOn.Data.EF;
 using BoltOn.Logging;
-using BoltOn.Mediator.Data.EF;
 using BoltOn.Mediator.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
 namespace BoltOn.Tests.Other
 {
-	public class TestMediatorDataRegistrationTask : IBootstrapperRegistrationTask
+	public class TestMediatorDataRegistrationTask : IRegistrationTask
     {
         public void Run(RegistrationTaskContext context)
         {

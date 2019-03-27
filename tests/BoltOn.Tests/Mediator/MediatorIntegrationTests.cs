@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Bootstrapping;
+using BoltOn.Data.EF;
 using BoltOn.Mediator;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
@@ -374,6 +375,68 @@ namespace BoltOn.Tests.Mediator
 		}
 
 
+		[Fact]
+		public void Process_MediatorWithQueryRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndDisablesTracking()
+		{
+			// arrange
+			MediatorTestHelper.IsSeedData = true;
+			var serviceCollection = new ServiceCollection();
+			serviceCollection
+				.BoltOn(options =>
+				{
+					options
+						.BoltOnEFModule();
+				})
+				.AddLogging();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var sut = serviceProvider.GetService<IMediator>();
+
+			// act
+			var result = sut.Process(new GetStudent { StudentId = 2 });
+			var dbContext = serviceProvider.GetService<IDbContextFactory>().Get<SchoolDbContext>();
+			var student = dbContext.Set<Student>().Find(2);
+			var isAutoDetectChangesEnabled = dbContext.ChangeTracker.AutoDetectChangesEnabled;
+			var queryTrackingBehavior = dbContext.ChangeTracker.QueryTrackingBehavior;
+
+			// assert 
+			Assert.NotNull(result);
+			Assert.Equal(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking, queryTrackingBehavior);
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {true}"));
+			Assert.False(isAutoDetectChangesEnabled);
+		}
+
+		[Fact]
+		public void Process_MediatorWithCommandRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndEnablesTrackAll()
+		{
+			// arrange
+			MediatorTestHelper.IsSeedData = false;
+			var serviceCollection = new ServiceCollection();
+			serviceCollection
+				.BoltOn(options =>
+				{
+					options
+						.BoltOnEFModule();
+				})
+				.AddLogging();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var sut = serviceProvider.GetService<IMediator>();
+
+			// act
+			var result = sut.Process(new TestCommand());
+			var dbContext = serviceProvider.GetService<IDbContextFactory>().Get<SchoolDbContext>();
+			var isAutoDetectChangesEnabled = dbContext.ChangeTracker.AutoDetectChangesEnabled;
+			var queryTrackingBehavior = dbContext.ChangeTracker.QueryTrackingBehavior;
+
+			// assert 
+			Assert.True(result);
+			Assert.Equal(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.TrackAll, queryTrackingBehavior);
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {false}"));
+			Assert.True(isAutoDetectChangesEnabled);
+		}
 
 		public void Dispose()
 		{

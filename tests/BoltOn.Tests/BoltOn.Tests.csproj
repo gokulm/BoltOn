@@ -29,14 +29,11 @@
     <Folder Include="UoW\" />
     <Folder Include="Data\" />
     <Folder Include="Data\EF\" />
-    <Folder Include="Mediator\Data\" />
-    <Folder Include="Mediator\Data\EF\" />
     <Folder Include="Other\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
-    <ProjectReference Include="..\..\src\BoltOn.Mediator.Data.EF\BoltOn.Mediator.Data.EF.csproj" />
   </ItemGroup>
 </Project>

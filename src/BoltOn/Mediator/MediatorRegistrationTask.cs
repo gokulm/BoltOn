@@ -7,7 +7,7 @@ using BoltOn.UoW;
 
 namespace BoltOn.Mediator
 {
-	public class MediatorRegistrationTask : IBootstrapperRegistrationTask
+	public class MediatorRegistrationTask : IRegistrationTask
 	{
 		public void Run(RegistrationTaskContext context)
 		{

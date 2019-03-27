@@ -5,7 +5,7 @@ using BoltOn.Tests.Mediator;
 
 namespace BoltOn.Tests.Other
 {
-    public class TestDataPostRegistrationTask : IBootstrapperPostRegistrationTask
+    public class TestDataPostRegistrationTask : IPostRegistrationTask
     {
         public void Run(PostRegistrationTaskContext context)
         {

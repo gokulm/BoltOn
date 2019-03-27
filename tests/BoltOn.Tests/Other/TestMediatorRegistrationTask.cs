@@ -11,7 +11,7 @@ using Moq;
 
 namespace BoltOn.Tests.Other
 {
-	public class TestMediatorRegistrationTask : IBootstrapperRegistrationTask
+	public class TestMediatorRegistrationTask : IRegistrationTask
 	{
 		public void Run(RegistrationTaskContext context)
 		{

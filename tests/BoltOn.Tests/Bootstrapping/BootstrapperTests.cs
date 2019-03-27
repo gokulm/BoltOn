@@ -201,7 +201,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 	}
 
-	public class TestBootstrapperPostRegistrationTask : IBootstrapperPostRegistrationTask
+	public class TestBootstrapperPostRegistrationTask : IPostRegistrationTask
 	{
 		public void Run(PostRegistrationTaskContext context)
 		{
@@ -209,7 +209,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 	}
 
-	public class TestBootstrapperRegistrationTask : IBootstrapperRegistrationTask
+	public class TestBootstrapperRegistrationTask : IRegistrationTask
 	{
 		public void Run(RegistrationTaskContext context)
 		{

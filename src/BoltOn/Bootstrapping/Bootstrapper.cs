@@ -72,8 +72,8 @@ namespace BoltOn.Bootstrapping
 		{
 			_serviceProvider = serviceProvider;
 			var context = new PostRegistrationTaskContext(this);
-			var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IBootstrapperPostRegistrationTask>>();
-			var tasks = serviceProvider.GetServices<IBootstrapperPostRegistrationTask>();
+			var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IPostRegistrationTask>>();
+			var tasks = serviceProvider.GetServices<IPostRegistrationTask>();
 			postRegistrationTasks.ToList().ForEach(t => t.Run(context));
 		}
 
@@ -114,7 +114,7 @@ namespace BoltOn.Bootstrapping
 
 		private void RunRegistrationTasks()
 		{
-			var registrationTaskType = typeof(IBootstrapperRegistrationTask);
+			var registrationTaskType = typeof(IRegistrationTask);
 			var registrationTaskTypes = (from a in Assemblies
 										 from t in a.GetTypes()
 										 where registrationTaskType.IsAssignableFrom(t)
@@ -124,7 +124,7 @@ namespace BoltOn.Bootstrapping
 			var registrationTaskContext = new RegistrationTaskContext(this);
 			foreach (var type in registrationTaskTypes)
 			{
-				var task = Activator.CreateInstance(type) as IBootstrapperRegistrationTask;
+				var task = Activator.CreateInstance(type) as IRegistrationTask;
 				task.Run(registrationTaskContext);
 			}
 
@@ -133,7 +133,7 @@ namespace BoltOn.Bootstrapping
 
 		private void RegisterPostRegistrationTasks()
 		{
-			var registrationTaskType = typeof(IBootstrapperPostRegistrationTask);
+			var registrationTaskType = typeof(IPostRegistrationTask);
 			var registrationTaskTypes = (from a in Assemblies
 										 from t in a.GetTypes()
 										 where registrationTaskType.IsAssignableFrom(t)

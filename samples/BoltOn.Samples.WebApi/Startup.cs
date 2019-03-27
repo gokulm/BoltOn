@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using BoltOn.Samples.Domain;
 using BoltOn.Data.EF;
-using BoltOn.Mediator.Data.EF;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -24,7 +23,6 @@ namespace BoltOn.Samples.WebApi
 			services.BoltOn(options =>
 			{
 				options.BoltOnEFModule();
-				options.BoltOnMediatorEFModule();
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly);
 			});
 		}
