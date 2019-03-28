@@ -33,7 +33,7 @@ namespace BoltOn.Data.EF
 			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
 			_logger.Debug($"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}...");
-			_mediatorDataContext.IsQueryRequest = request is IQuery<TResponse>;
+			_mediatorDataContext.IsQueryRequest = request is IQuery<TResponse> || request is IStaleQuery<TResponse>;
 			_logger.Debug($"IsQueryRequest: {_mediatorDataContext.IsQueryRequest}");
 			var response = await next(request, cancellationToken);
 			return response;

@@ -42,7 +42,6 @@ In case if you want to use other BoltOn packages and/or add other assemblies, yo
     services.BoltOn(options =>
     {
         options.BoltOnEFModule();
-        options.BoltOnMediatorEFModule();
         options.BoltOnAssemblies(typeof(PingHandler).Assembly);
     });
 
@@ -70,7 +69,7 @@ Example:
 		}
 	}
 
-Use the BoltOnOptions' extension methods like BoltOnEFModule, BoltOnMediatorEFModule etc., to attach the other modules. Each and every module calls other extension methods to attach their own dependent modules. For eg., BoltOnMediatorEFModule calls BoltOnEFModule internally, so you need to call it explicitly, and thus you need not worry about the dependency of every module. 
+Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other modules. Each and every module calls other extension methods to attach their own dependent modules. 
 
 TightenBolts()
 --------------

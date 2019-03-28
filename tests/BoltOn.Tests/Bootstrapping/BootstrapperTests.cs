@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using BoltOn.Bootstrapping;
 using BoltOn.Other;
 using BoltOn.Tests.Common;
+using BoltOn.Tests.Other;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -107,8 +107,8 @@ namespace BoltOn.Tests.Bootstrapping
 			serviceCollection.BoltOn();
 
 			// assert
-			var registrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
-			var postRegistrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
+			var registrationTaskIndex = BootstrapperRegistrationTasksHelper.Tasks.IndexOf($"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
+			var postRegistrationTaskIndex = BootstrapperRegistrationTasksHelper.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
 			Assert.True(registrationTaskIndex != -1);
 			Assert.True(postRegistrationTaskIndex == -1);
 		}
@@ -117,7 +117,7 @@ namespace BoltOn.Tests.Bootstrapping
 		public void BoltOn_BoltOnAndUseBoltOn_ExecutesAllRegistrationTasksInOrder()
 		{
 			// arrange
-			BootstrapperRegistrationTaskTester.Tasks.Clear();
+			BootstrapperRegistrationTasksHelper.Tasks.Clear();
 			var serviceCollection = new ServiceCollection();
 
 			// act 
@@ -127,8 +127,8 @@ namespace BoltOn.Tests.Bootstrapping
 			serviceProvider.TightenBolts();
 
 			// assert
-			var registrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
-			var postRegistrationTaskIndex = BootstrapperRegistrationTaskTester.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
+			var registrationTaskIndex = BootstrapperRegistrationTasksHelper.Tasks.IndexOf($"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
+			var postRegistrationTaskIndex = BootstrapperRegistrationTasksHelper.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
 			Assert.True(registrationTaskIndex != -1);
 			Assert.True(postRegistrationTaskIndex != -1);
 			Assert.True(registrationTaskIndex < postRegistrationTaskIndex);
@@ -156,7 +156,7 @@ namespace BoltOn.Tests.Bootstrapping
 			Bootstrapper
 				.Instance
 				.Dispose();
-			BootstrapperRegistrationTaskTester.Tasks.Clear();
+			BootstrapperRegistrationTasksHelper.Tasks.Clear();
 		}
 	}
 
@@ -205,7 +205,7 @@ namespace BoltOn.Tests.Bootstrapping
 	{
 		public void Run(PostRegistrationTaskContext context)
 		{
-			BootstrapperRegistrationTaskTester.Tasks.Add($"Executed {this.GetType().Name}");
+			BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {this.GetType().Name}");
 		}
 	}
 
@@ -213,14 +213,14 @@ namespace BoltOn.Tests.Bootstrapping
 	{
 		public void Run(RegistrationTaskContext context)
 		{
-			BootstrapperRegistrationTaskTester.Tasks.Add($"Executed {this.GetType().Name}");
+			BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {this.GetType().Name}");
 			context.Container
 				   .AddTransient<Employee>()
 				   .AddTransient<ClassWithInjectedDependency>();
 		}
 	}
 
-	public class BootstrapperRegistrationTaskTester
+	public class BootstrapperRegistrationTasksHelper
 	{
 		public static List<string> Tasks { get; set; } = new List<string>();
 	}

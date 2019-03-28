@@ -65,8 +65,9 @@ Example:
 
 **Note: ** You could create just one repository for the entire database and use it for all the entities like `ISchoolRepository<Student>`, `ISchoolRepository<Address>` etc., if the methods in the `BaseEFRepository<>` are good enough.
 
-BoltOn.Mediator.Data.EF Module
-------------------------------
- In case if you want to set your DbContexts' ChangeTracker.QueryTrackingBehavior to QueryTrackingBehavior.NoTracking and disable ChangeTracker.AutoDetectChangesEnabled, install **BoltOn.Mediator.Data.EF** module and call `BoltOnMediatorEFModule()` in your startup's BoltOn() method 
+EFQueryTrackingBehaviorInterceptor
+----------------------------------
+If the request implements `IQuery<>` or `IStaleQuery<>`, the DbContexts' ChangeTracker.QueryTrackingBehavior will be set to QueryTrackingBehavior.NoTracking and ChangeTracker.AutoDetectChangesEnabled will be set to false with the help of `EFQueryTrackingBehaviorInterceptor` and `DbContextFactory`. 
 
+**Note:** You could disable this behavior by removing the interceptor from the pipeline using `RemoveInterceptor<TInterceptor>` extension method.
 
