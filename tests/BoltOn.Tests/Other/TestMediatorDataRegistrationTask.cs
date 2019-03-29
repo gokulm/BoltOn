@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using BoltOn.Bootstrapping;
+﻿using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
 using BoltOn.Logging;
 using BoltOn.Mediator.Pipeline;
@@ -18,25 +17,4 @@ namespace BoltOn.Tests.Other
             context.Container.AddTransient((s) => efAutoDetectChangesInterceptor.Object);
         }
     }
-
-	public class GetStudent : IQuery<Student>
-	{
-		public int StudentId { get; set; }
-	}
-
-	public class GetStudentHandler : IRequestHandler<GetStudent, Student>
-	{
-		readonly IStudentRepository _studentRepository;
-
-		public GetStudentHandler(IStudentRepository studentRepository)
-		{
-			this._studentRepository = studentRepository;
-		}
-
-		public virtual Student Handle(GetStudent request)
-		{
-			var student = _studentRepository.FindBy(f => f.Id == request.StudentId).FirstOrDefault();
-			return student;
-		}
-	}
 }

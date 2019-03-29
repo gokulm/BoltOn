@@ -36,4 +36,7 @@
     <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Other\TGetStudentHandler.cs" />
+  </ItemGroup>
 </Project>

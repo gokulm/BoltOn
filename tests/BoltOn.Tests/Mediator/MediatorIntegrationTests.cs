@@ -393,7 +393,7 @@ namespace BoltOn.Tests.Mediator
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = sut.Process(new GetStudent { StudentId = 2 });
+			var result = sut.Process(new GetStudentRequest { StudentId = 2 });
 			var dbContext = serviceProvider.GetService<IDbContextFactory>().Get<SchoolDbContext>();
 			var student = dbContext.Set<Student>().Find(2);
 			var isAutoDetectChangesEnabled = dbContext.ChangeTracker.AutoDetectChangesEnabled;

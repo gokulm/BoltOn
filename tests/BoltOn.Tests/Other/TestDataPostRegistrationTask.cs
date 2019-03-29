@@ -1,11 +1,10 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using BoltOn.Bootstrapping;
-using BoltOn.Tests.Mediator;
 
 namespace BoltOn.Tests.Other
 {
-    public class TestDataPostRegistrationTask : IPostRegistrationTask
+	public class TestDataPostRegistrationTask : IPostRegistrationTask
     {
         public void Run(PostRegistrationTaskContext context)
         {
@@ -15,6 +14,7 @@ namespace BoltOn.Tests.Other
 				var testDbContext = serviceProvider.GetService<SchoolDbContext>();
 				testDbContext.Database.EnsureDeleted();
 				testDbContext.Database.EnsureCreated();
+
 				testDbContext.Set<Student>().Add(new Student
 				{
 					Id = 1,
