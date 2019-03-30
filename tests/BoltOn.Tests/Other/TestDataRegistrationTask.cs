@@ -1,5 +1,4 @@
 ﻿using BoltOn.Bootstrapping;
-using BoltOn.Tests.Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
