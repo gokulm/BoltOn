@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
+    <ProjectReference Include="..\BoltOn.Samples.DTOs\BoltOn.Samples.DTOs.csproj" />
+  </ItemGroup>
+</Project>
