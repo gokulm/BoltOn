@@ -1,7 +1,0 @@
-site_name: BoltOn
-nav:
-    - Introduction: index.md
-    - Mediator: mediator.md
-    - Data: data.md
-theme: readthedocs
-
