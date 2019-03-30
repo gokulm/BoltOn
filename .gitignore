@@ -41,6 +41,10 @@ bld/
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 
+#NUNIT
+*.VisualState.xml
+TestResult.xml
+
 *_i.c
 *_p.c
 *_i.h
@@ -66,12 +70,21 @@ bld/
 *.svclog
 *.scc
 
+# Visual C++ cache files
+ipch/
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+*.cachefile
 
 # Visual Studio profiler
 *.psess
 *.vsp
 *.vspx
 
+# Guidance Automation Toolkit
+*.gpState
 
 # ReSharper is a .NET coding add-in
 _ReSharper*/
@@ -81,6 +94,8 @@ _ReSharper*/
 # Web workbench (sass)
 .sass-cache/
 
+# Installshield output folder
+[Ee]xpress/
 
 # Click-Once directory
 publish/
@@ -103,6 +118,12 @@ publish/
 # Uncomment if necessary however generally it will be regenerated when needed
 #!**/packages/repositories.config
 
+# Windows Azure Build Output
+csx/
+*.build.csdef
+
+# Windows Store app package directory
+AppPackages/
 
 # Others
 *.[Cc]ache
@@ -116,6 +137,8 @@ ClientBin/
 node_modules/
 bower_components/
 
+# RIA/Silverlight projects
+Generated_Code/
 
 # Backup & report files from converting an old project file
 # to a newer Visual Studio version. Backup files are not needed,
@@ -130,9 +153,26 @@ UpgradeLog*.htm
 *.ldf
 *.dacpac
 
+# Business Intelligence projects
+*.rdl.data
+*.bim.layout
+*.bim_*.settings
+
+# Microsoft Fakes
+FakesAssemblies/
+
 # Node.js Tools for Visual Studio
 .ntvs_analysis.dat
 
+# Visual Studio 6 build log
+*.plg
+
+# Visual Studio 6 workspace options file
+*.opt
+*.db
+*.jfm
+.vs
+*.opt
 
 *.nuget.cache
 *.nuget.g.props
