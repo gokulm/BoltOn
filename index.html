@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="None">
+  
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>Introduction - BoltOn</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Introduction";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> BoltOn</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href=".">Introduction</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#installation">Installation</a></li>
+    
+
+    <li class="toctree-l2"><a href="#configuration">Configuration</a></li>
+    
+
+    <li class="toctree-l2"><a href="#bolton">BoltOn()</a></li>
+    
+
+    <li class="toctree-l2"><a href="#tightenbolts">TightenBolts()</a></li>
+    
+
+    <li class="toctree-l2"><a href="#logging">Logging</a></li>
+    
+
+    <li class="toctree-l2"><a href="#utilities">Utilities</a></li>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="mediator/">Mediator</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="data/">Data</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">BoltOn</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Introduction</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p>BoltOn is an <a href="https://github.com/gokulm/BoltOn">open source</a> library which can be used to build any .NET application (like Console, MVC, WebAPI, Windows Service etc.,) with proper separation of concerns quickly.</p>
+<h2 id="installation">Installation</h2>
+<p>There are a <a href="https://www.nuget.org/packages?q=BoltOn">couple of packages</a> for BoltOn available on NuGet. To install BoltOn in your .NET application, type the following command into the Package Manager Console window:</p>
+<pre><code>PM&gt; Install-Package BoltOn
+</code></pre>
+<h2 id="configuration">Configuration</h2>
+<p>After installing the package, call BoltOn() and TightenBolts() extension methods in ConfigureServices() and Configure() methods respectively. </p>
+<pre><code>namespace BoltOn.Samples.WebApi
+{
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.BoltOn();
+        }
+
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            app.UseMvc();
+            app.ApplicationServices.TightenBolts();
+        }
+    }
+}
+</code></pre>
+<p>In case if you want to use other BoltOn packages and/or add other assemblies, you can add them using options:</p>
+<pre><code>services.BoltOn(options =&gt;
+{
+    options.BoltOnEFModule();
+    options.BoltOnAssemblies(typeof(PingHandler).Assembly);
+});
+</code></pre>
+<p>BoltOn uses .NET core's dependency injection internally. In case if you want to use any other DI framework, you can configure it after the BoltOn() call. </p>
+<h2 id="bolton">BoltOn()</h2>
+<p>This extension method does the following:</p>
+<ul>
+<li>It groups the executing assembly, all the assemblies of the other modules and the assemblies passed to BoltOnAssemblies() to a collection, sorts them based on the assembly dependencies, and finally scans for all the classes that implement <code>IBootstrapperRegistrationTask</code> and executes them in the order of the assembly dependencies. 
+<br />The assemblies collection can be accessed from <code>RegistrationTaskContext</code> and <code>PostRegistrationTaskContext</code> of the registration tasks.</li>
+<li>A built-in registration task called <code>BoltOnRegistrationTask</code> registers all the interfaces with <strong>single</strong> implementation as trasient. </li>
+<li>To exclude classes from registration, decorate them with <code>[ExcludeFromRegistration]</code> attribute.</li>
+<li>For all the other registration scopes like scoped or singleton, or to register interfaces with more than one implementations, implement <code>IBootstrapperRegistrationTask</code> and use the context.Container to register them.</li>
+</ul>
+<p>Example:</p>
+<pre><code>public class CustomRegistrationTask : IBootstrapperRegistrationTask
+{
+    public void Run(RegistrationTaskContext context)
+    {
+        var container = context.Container;
+        container.AddSingleton&lt;IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOptionsBuilder&gt;();
+        container.AddScoped&lt;ITestService, TestService&gt;();
+    }
+}
+</code></pre>
+<p>Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other modules. Each and every module calls other extension methods to attach their own dependent modules. </p>
+<h2 id="tightenbolts">TightenBolts()</h2>
+<p>This extension method does the following:</p>
+<ul>
+<li>It scans all the <code>IBootstrapperPostRegistrationTask</code> in the assemblies collection formed by BoltOn() and executes them.</li>
+<li>In case if you want to run any task that involves resolving dependencies, like seeding data using any of the registered DbContexts, implement <code>IBootstrapperPostRegistrationTask</code>. </li>
+</ul>
+<p>Example:</p>
+<pre><code>public class CustomPostRegistrationTask : IBootstrapperPostRegistrationTask
+{
+    public void Run(PostRegistrationTaskContext context)
+    {
+        var serviceProvider = context.ServiceProvider;
+        var schoolDbContext = serviceProvider.GetService&lt;TestDbContext&gt;();
+        testDbContext.Database.EnsureCreated();
+    }
+}
+</code></pre>
+<h2 id="logging">Logging</h2>
+<p>BoltOn uses .NET Core's logger internally, with just a custom adapter to help in unit testing. You could use any logging provider as you wish, or you could inherit <code>BoltOnNetStandardLoggerAdapter&lt;TType&gt;</code> and override the logging methods.</p>
+<h2 id="utilities">Utilities</h2>
+<ul>
+<li>
+<p><strong>Check.Requires</strong>
+<br>
+There are instances where you have to check for a condition and throw exception if the condition fails, in those instances you could use Check.Requires</p>
+<p>Example:</p>
+<pre><code>Check.Requires(_serviceCollection != null, "ServiceCollection not initialized");
+</code></pre>
+<p>is equivalent to</p>
+<pre><code>if(_serviceCollection == null)
+    throw new Exception("ServiceCollection not initialized");
+</code></pre>
+<p>and custom exceptions can be thrown like this:</p>
+<pre><code>Check.Requires&lt;CustomException&gt;(_serviceCollection != null, "ServiceCollection not initialized");
+</code></pre>
+</li>
+<li>
+<p><strong>IBoltOnClock/BoltOnClock</strong>
+<br>
+There are instances where you have to use static properties DateTime.Now or DateTimeOffset.UtcNow, which makes hard to unit test, in those instances you could inject IBoltOnClock</p>
+</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mediator/" class="btn btn-neutral float-right" title="Mediator">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+      
+        <span style="margin-left: 15px"><a href="mediator/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme.js" defer></script>
+      <script src="search/main.js" defer></script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.0.4
+Build Date UTC : 2019-03-30 18:51:54
+-->
