@@ -98,7 +98,7 @@ Utilities
 ---------
 * **Check.Requires**
 <br>
-There are instances where you have to check for a condition and throw exception if the condition fails, in those instances you could use `Check.Requires`.
+There are instances where you have to check for a condition and throw exception if the condition fails, in those instances you could use `Check.Requires`
 
     Example:
 
@@ -115,4 +115,4 @@ There are instances where you have to check for a condition and throw exception 
 
 * **IBoltOnClock/BoltOnClock**
 <br>
-There are instances where you have to use static properties DateTime.Now or DateTimeOffset.UtcNow, which makes hard to unit test, in those instances you could inject `IBoltOnClock`.
+There are instances where you have to use static properties DateTime.Now or DateTimeOffset.UtcNow, which makes hard to unit test, in those instances you could inject `IBoltOnClock`

@@ -1,0 +1,57 @@
+﻿<Properties StartupConfiguration="{5D271ECA-826B-427F-9DCA-B930A230D3A2}|Default">
+  <MonoDevelop.Ide.ItemProperties.BoltOn.Tests PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="BoltOn.Tests/Mediator/Data/EF/MediatorDataEFIntegrationTests.cs">
+    <Files>
+      <File FileName="src Status" />
+      <File FileName="BoltOn.Tests/Data/EF/TestDataPostRegistrationTask.cs" Line="1" Column="1" />
+      <File FileName="BoltOn.Tests/Mediator/CustomUnitOfWorkOptionsBuilder.cs" Line="10" Column="26" />
+      <File FileName="BoltOn.Tests/Mediator/MediatorTestHelper.cs" Line="10" Column="27" />
+      <File FileName="BoltOn.Tests/Data/EF/GenericRepositoryTests.cs" Line="1" Column="1" />
+      <File FileName="BoltOn/UoW/UnitOfWork.cs" Line="40" Column="4" />
+      <File FileName="BoltOn.Tests/Data/EF/TestDataRegistrationTask.cs" Line="34" Column="1" />
+      <File FileName="BoltOn.Mediator.Data.EF/MediatorDbContextFactory.cs" Line="30" Column="2" />
+      <File FileName="BoltOn.Tests/Mediator/Data/EF/MediatorDataEFTests.cs" Line="72" Column="29" />
+      <File FileName="BoltOn.Tests/Data/EF/RepositoryTests.cs" Line="1" Column="1" />
+      <File FileName="BoltOn.Tests/Bootstrapping/BootstrapperTests.cs" Line="137" Column="13" />
+      <File FileName="BoltOn.Data/IRepository.cs" Line="32" Column="39" />
+      <File FileName="BoltOn.Mediator.Data.EF/EFQueryTrackingBehaviorMiddleware.cs" Line="28" Column="4" />
+      <File FileName="BoltOn.Mediator/Middlewares/UnitOfWorkMiddleware.cs" Line="39" Column="26" />
+      <File FileName="BoltOn/UoW/UnitOfWorkManager.cs" Line="33" Column="22" />
+      <File FileName="BoltOn/UoW/UnitOfWorkFactory.cs" Line="24" Column="30" />
+      <File FileName="BoltOn/UoW/UnitOfWorkOptions.cs" Line="10" Column="35" />
+      <File FileName="BoltOn.Tests/UoW/UnitOfWorkManagerTests.cs" Line="73" Column="4" />
+      <File FileName="BoltOn.Mediator/Pipeline/Mediator.cs" Line="70" Column="101" />
+      <File FileName="BoltOn.Mediator/Pipeline/RequestHandlerDecorator.cs" Line="24" Column="1" />
+      <File FileName="BoltOn.Tests/Mediator/TestHandler.cs" Line="38" Column="1" />
+      <File FileName="BoltOn.Tests/Mediator/Data/EF/MediatorDataEFIntegrationTests.cs" Line="44" Column="3" />
+      <File FileName="BoltOn.Tests/Mediator/Data/EF/TestMediatorDataRegistrationTask.cs" Line="25" Column="37" />
+    </Files>
+    <Pads>
+      <Pad Id="MonoDevelop.UnitTesting.TestPad">
+        <State name="__root__">
+          <Node name="BoltOn" expanded="True">
+            <Node name="BoltOn.Tests" expanded="True">
+              <Node name="BoltOn" expanded="True">
+                <Node name="Tests" expanded="True">
+                  <Node name="Mediator" expanded="True">
+                    <Node name="MediatorDataEFIntegrationTests" expanded="True" />
+                  </Node>
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/gokul/Desktop/Development/BoltOn/src/BoltOn.Tests/Data/EF/GenericRepositoryTests.cs" relfile="BoltOn.Tests/Data/EF/GenericRepositoryTests.cs" line="185" column="1" />
+      <Breakpoint file="/Users/gokul/Desktop/Development/BoltOn/src/BoltOn.Tests/Mediator/Data/EF/MediatorDataEFIntegrationTests.cs" relfile="BoltOn.Tests/Mediator/Data/EF/MediatorDataEFIntegrationTests.cs" line="33" column="1" />
+      <Breakpoint file="/Users/gokul/Desktop/Development/BoltOn/src/BoltOn.Tests/Mediator/Data/EF/TestMediatorDataRegistrationTask.cs" relfile="BoltOn.Tests/Mediator/Data/EF/TestMediatorDataRegistrationTask.cs" line="38" column="67" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

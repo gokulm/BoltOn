@@ -11,6 +11,7 @@ applicationhost.config
 *.7z
 *.log
 applicationhost.config
+site
 
 
 # User-specific files
