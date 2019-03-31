@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using BoltOn.Samples.Domain;
 using BoltOn.Data.EF;
+using BoltOn.Samples.Application.Handlers;
+using Microsoft.EntityFrameworkCore;
+using BoltOn.Samples.Infrastructure.Data;
+using BoltOn.Samples.Infrastructure.Data.Repositories;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -23,8 +26,13 @@ namespace BoltOn.Samples.WebApi
 			services.BoltOn(options =>
 			{
 				options.BoltOnEFModule();
-				options.BoltOnAssemblies(typeof(PingHandler).Assembly);
+				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(StudentRepository).Assembly);
 			});
+
+			services.AddDbContext<SchoolDbContext>(options =>
+			 {
+				 options.UseSqlServer("Data Source=127.0.0.1;initial catalog=Testing;persist security info=True;User ID=sa;Password=$Password1;");
+			 });
 		}
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

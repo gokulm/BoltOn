@@ -8,12 +8,14 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
-    <ProjectReference Include="..\BoltOn.Samples.DTOs\BoltOn.Samples.DTOs.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Domain\BoltOn.Samples.Domain.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
+    <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />
+    <ProjectReference Include="..\BoltOn.Samples.Infrastructure\BoltOn.Samples.Infrastructure.csproj" />
   </ItemGroup>
 </Project>
