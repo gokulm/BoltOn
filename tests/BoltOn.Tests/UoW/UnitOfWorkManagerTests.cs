@@ -10,6 +10,30 @@ namespace BoltOn.Tests.UoW
 	public class UnitOfWorkManagerTests
 	{
 		[Fact]
+		public void Get_WithoutUnitOfWorkOptions_StartsTransactionWithDefaultAndReturnsUnitOfWork()
+		{
+			// arrange
+			var uowManagerLogger = new Mock<IBoltOnLogger<UnitOfWorkManager>>();
+			var uow = new Mock<IUnitOfWork>();
+			var uowFactory = new Mock<IUnitOfWorkFactory>();
+			var unitOfWorkOptions = new UnitOfWorkOptions();
+			uowFactory.Setup(u => u.Create(It.IsAny<UnitOfWorkOptions>())).Returns(uow.Object);
+			var sut = new UnitOfWorkManager(uowManagerLogger.Object, uowFactory.Object);
+
+			// act
+			var result = sut.Get();
+
+			// assert
+			var uowProviderLoggerStmt = $"About to start UoW. IsolationLevel: {IsolationLevel.Serializable} " +
+						  $"TransactionTimeOut: {TransactionManager.DefaultTimeout}" +
+						  $"TransactionScopeOption: {TransactionScopeOption.Required}";
+			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
+
+			// cleanup
+			result.Dispose();
+		}
+
+		[Fact]
 		public void Get_WithDefaults_StartsTransactionWithDefaultAndReturnsUnitOfWork()
 		{
 			// arrange
