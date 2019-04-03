@@ -1,7 +1,6 @@
 ﻿using BoltOn.Bootstrapping;
-using BoltOn.Data.EF;
+using BoltOn.Data.EF.Mediator;
 using BoltOn.Logging;
-using BoltOn.Mediator.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 

@@ -1,5 +1,5 @@
 using BoltOn.Bootstrapping;
-using BoltOn.Data.EF;
+using BoltOn.Data.EF.Mediator;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Mediator.Data.EF

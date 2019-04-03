@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using BoltOn.Bootstrapping;
-using BoltOn.Data.EF;
+using BoltOn.Data.EF.Mediator;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
