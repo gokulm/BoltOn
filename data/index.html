@@ -66,7 +66,7 @@
     <li class="toctree-l2"><a href="#entity">Entity</a></li>
     
 
-    <li class="toctree-l2"><a href="#repository">Repository</a></li>
+    <li class="toctree-l2"><a href="#entity-framework-repository">Entity Framework Repository</a></li>
     
 
     <li class="toctree-l2"><a href="#efquerytrackingbehaviorinterceptor">EFQueryTrackingBehaviorInterceptor</a></li>
@@ -109,7 +109,7 @@
               
                 <h2 id="entity">Entity</h2>
 <p>You could create an entity by inheriting <code>BaseEntity&lt;TIdType&gt;</code> where TIdType is the type of the Id property.</p>
-<h2 id="repository">Repository</h2>
+<h2 id="entity-framework-repository">Entity Framework Repository</h2>
 <p>The core BoltOn package has only the <code>IRepository</code> interface, which could be used in your domain layer if you're into Domain Driven Design. </p>
 <p>In order to use Entity Framework implementation of the repository, you need to do the following:</p>
 <ol>
@@ -167,9 +167,8 @@ public class StudentRepository : BaseEFRepository&lt;Student, SchoolDbContext&gt
     }
 }
 </code></pre>
-<p><strong>Note: </strong> You could create just one repository for the entire database and use it for all the entities like <code>ISchoolRepository&lt;Student&gt;</code>, <code>ISchoolRepository&lt;Address&gt;</code> etc., if the methods in the <code>BaseEFRepository&lt;&gt;</code> are good enough.</p>
 <h2 id="efquerytrackingbehaviorinterceptor">EFQueryTrackingBehaviorInterceptor</h2>
-<p>If the request implements <code>IQuery&lt;&gt;</code> or <code>IStaleQuery&lt;&gt;</code>, the DbContexts' ChangeTracker.QueryTrackingBehavior will be set to QueryTrackingBehavior.NoTracking and ChangeTracker.AutoDetectChangesEnabled will be set to false with the help of <code>EFQueryTrackingBehaviorInterceptor</code> and <code>DbContextFactory</code>. </p>
+<p>If the request implements <code>IQuery&lt;&gt;</code> or <code>IStaleQuery&lt;&gt;</code>, the DbContexts' <code>ChangeTracker.QueryTrackingBehavior</code> will be set to <code>QueryTrackingBehavior.NoTracking</code> and <code>ChangeTracker.AutoDetectChangesEnabled</code> will be set to false with the help of <code>EFQueryTrackingBehaviorInterceptor</code> and <code>DbContextFactory</code>. </p>
 <p><strong>Note:</strong> You could disable this behavior by removing the interceptor from the pipeline using <code>RemoveInterceptor&lt;TInterceptor&gt;</code> extension method.</p>
               
             </div>

@@ -107,9 +107,10 @@
           <div role="main">
             <div class="section">
               
-                <p>Mediator is the backbone of BoltOn. It follows the <a href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html">Request/Response</a> and <a href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/CommandMessage.html">Command Message</a> patterns. It was developed after getting inspired by <a href="https://github.com/davybrion/Agatha">Agatha</a>, <a href="https://github.com/BrighterCommand/Brighter">Brighter</a> and <a href="https://github.com/jbogard/MediatR">MediatR</a>.</p>
+                <p>Mediator is the backbone of BoltOn. It follows the <a href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html">Request/Response</a> and <a href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/CommandMessage.html">Command Message</a> patterns. </p>
+<p>The main source of inspiration for the Mediator was <a href="https://github.com/davybrion/Agatha">Agatha</a>, and various other projects like <a href="https://github.com/BrighterCommand/Brighter">Brighter</a> and <a href="https://github.com/jbogard/MediatR">MediatR</a>.</p>
 <h2 id="request-response-and-requesthandler">Request, Response and RequestHandler</h2>
-<p>In order to use Mediator, you need to create a request by implementing any of these interfaces:</p>
+<p>In order to use the Mediator, you need to create a request by implementing any of these interfaces:</p>
 <ul>
 <li><code>IRequest</code>
 <br /> To create a request that doesn't have any response and doesn't require unit of work.</li>
@@ -121,11 +122,11 @@
 <br /> To create a request with response of type TResponse and that requires require unit of work. A transaction with isolation level ReadCommitted will be started for the requests that implement this interface.</li>
 <li><code>IQuery&lt;out TResponse&gt;</code>
 <br /> To create a request with response of type TResponse and that requires unit of work. A transaction with isolation level ReadCommitted will be started for the requests that implement this interface. 
-<br /> If <strong>BoltOn.Mediator.Data.EF</strong> is installed and bolted, DbContexts' ChangeTracker.QueryTrackingBehavior will be set to <code>QueryTrackingBehavior.NoTracking</code> and ChangeTracker.AutoDetectChangesEnabled will be set to false.</li>
+<br /> If <strong>BoltOn.Data.EF</strong> is installed and bolted, DbContexts' ChangeTracker.QueryTrackingBehavior will be set to <code>QueryTrackingBehavior.NoTracking</code> and <code>ChangeTracker.AutoDetectChangesEnabled</code> will be set to false.</li>
 <li><code>IStaleQuery&lt;out TResponse&gt;</code> 
 <br /> To create a request with response of type TResponse and that requires require unit of work. A transaction with isolation level ReadUncommitted will be started for the requests that implement this interface.</li>
 </ul>
-<p>The response can be a value or a reference type, which is always tied to the request.</p>
+<p>The <strong>response</strong> can be any value or reference type.</p>
 <p>After declaring the request and the response, you need to create a handler by implementiong any of these interfaces:</p>
 <ul>
 <li><code>IRequestHandler&lt;in TRequest&gt;</code> or <code>IRequestAsyncHandler&lt;in TRequest&gt;</code>
@@ -134,6 +135,23 @@
 <br> For handlers that have responses.</li>
 </ul>
 <p><strong>Note:</strong> <code>MediatorRegistrationTask</code> takes care of registering the handers to the DI framework.</p>
+<p>Example:</p>
+<pre><code>public class GetAllStudentsRequest : IQuery&lt;IEnumerable&lt;StudentDto&gt;&gt;
+{
+}
+
+public class GetAllStudentsHandler : IRequestAsyncHandler&lt;GetAllStudentsRequest, IEnumerable&lt;StudentDto&gt;&gt;
+{
+    public async Task&lt;IEnumerable&lt;StudentDto&gt;&gt; HandleAsync(GetAllStudentsRequest request, CancellationToken cancellationToken)
+    {
+        var students = new List&lt;StudentDto&gt;
+        {
+            new StudentDto { FirstName = "first", LastName = "last" }
+        };
+        return await Task.FromResult(students);
+    }
+}
+</code></pre>
 <h2 id="interceptors">Interceptors</h2>
 <p>Every request flows thru a set of built-in interceptors, which can be controlled by implementing appropriate marker interfaces. </p>
 <ul>
@@ -149,9 +167,12 @@
 <p>You can create an interceptor by implementing <code>IInterceptor</code> interface. If you want to enable or disable an interceptor based on a marker interface implementation, you can inherit <code>BaseRequestSpecificInterceptor&lt;T&gt;</code></p>
 <p>Interceptors can be added and removed using the extension methods <code>AddInterceptor&lt;TInterceptor&gt;</code> and <code>RemoveInterceptor&lt;TInterceptor&gt;</code> (in BoltOn.Mediator namespace) respectively. All the interceptors can be removed using the extension method <code>RemoveAllInterceptors</code>.</p>
 <h2 id="unit-of-work">Unit of Work</h2>
-<p>If you're using Mediator, you need not worry about starting or committing an unit of work, it will be done automatically using <code>UnitOfWorkInterceptor</code>. In case if you're not using Mediator or you want to take control on starting an unit of work, use <code>IUnitOfWorkManager</code>. It takes care of starting a new transaction with <code>System.Transactions.TransactionScopeOption.RequiresNew</code> if there is one already started. </p>
+<ul>
+<li>If you use Mediator and implement any of the interfaces mentioned above (like IQuery, ICommand etc.,), you need not worry about starting or committing unit of work, it will be done automatically using <code>UnitOfWorkInterceptor</code>. </li>
+<li>If you're not using Mediator and if you want to start an unit of work, call Get method in <code>IUnitOfWorkManager</code> by passing <code>UnitOfWorkOptions</code> based on your needs. It will start a new transaction with <code>System.Transactions.TransactionScopeOption.RequiresNew</code> if there is one already started. The default transaction isolation level is <code>IsolationLevel.Serializable</code></li>
+</ul>
 <p><strong>Note:</strong> Though it's possible to start an unit of work manually, please try to do avoid it, especially when there is already one, as having more than one unit of work isn't a proper way to build applications. This will be useful only when you want to query a database with an isolation level different from the one started by <code>UnitOfWorkInterceptor</code>.</p>
-<p>In case if you want to change the default transaction isolation level for all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement <code>IUnitOfWorkOptionsBuilder</code> or inherit <code>UnitOfWorkOptionsBuilder</code> and override Build method.</p>
+<p>In case if you want to change the default transaction isolation level for all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement <code>IUnitOfWorkOptionsBuilder</code> or inherit <code>UnitOfWorkOptionsBuilder</code> and override the Build method.</p>
               
             </div>
           </div>
