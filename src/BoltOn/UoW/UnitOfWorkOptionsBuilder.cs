@@ -24,16 +24,16 @@ namespace BoltOn.UoW
 			IsolationLevel isolationLevel;
 			switch (request)
 			{
-				case ICommand<TResponse> c:
-				case ICommand co:
+				case ICommand<TResponse> _:
+				case ICommand _:
 					_logger.Debug("Getting isolation level for Command");
 					isolationLevel = IsolationLevel.ReadCommitted;
 					break;
-				case IQuery<TResponse> q:
+				case IQuery<TResponse> _:
 					_logger.Debug("Getting isolation level for Query");
 					isolationLevel = IsolationLevel.ReadCommitted;
 					break;
-				case IStaleQuery<TResponse> q:
+				case IStaleQuery<TResponse> _:
 					_logger.Debug("Getting isolation level for StaleQuery");
 					isolationLevel = IsolationLevel.ReadUncommitted;
 					break;

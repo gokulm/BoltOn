@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace BoltOn.Mediator.Pipeline
 {
-	public interface IRequestHandler<in TRequest, TResponse> 
+	public interface IRequestHandler<in TRequest, out TResponse> 
 		where TRequest : IRequest<TResponse> 
     {
 		TResponse Handle(TRequest request);

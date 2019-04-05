@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,46 +13,8 @@ namespace BoltOn.Bootstrapping
 			_bootstrapper = bootstrapper;
 		}
 
-		public IServiceCollection Container
-		{
-			get
-			{
-				return _bootstrapper.Container;
-			}
-		}
+		public IServiceCollection Container => _bootstrapper.Container;
 
-		public IReadOnlyList<Assembly> Assemblies
-		{
-			get
-			{
-				return _bootstrapper.Assemblies;
-			}
-		}
-	}
-
-	public sealed class PostRegistrationTaskContext
-	{
-		private readonly Bootstrapper _bootstrapper;
-
-		internal PostRegistrationTaskContext(Bootstrapper bootstrapper)
-		{
-			_bootstrapper = bootstrapper;
-		}
-
-		public IServiceProvider ServiceProvider
-		{
-			get
-			{
-				return _bootstrapper.ServiceProvider;
-			}
-		}
-
-		public IReadOnlyList<Assembly> Assemblies
-		{
-			get
-			{
-				return _bootstrapper.Assemblies;
-			}
-		}
+	    public IReadOnlyList<Assembly> Assemblies => _bootstrapper.Assemblies;
 	}
 }

@@ -27,7 +27,7 @@ namespace BoltOn.Tests.Other
                 Id = request.Id,
                 FirstName = request.FirstName,
                 LastName = request.LastName
-            });
+            }, cancellationToken);
             return result;
         }
     }

@@ -23,7 +23,8 @@ namespace BoltOn.Data.EF
 
 		public TDbContext Get<TDbContext>() where TDbContext : DbContext
 		{
-			var dbContext = _serviceProvider.GetService(typeof(TDbContext)) as TDbContext;
+		    if(!(_serviceProvider.GetService(typeof(TDbContext)) is TDbContext dbContext))
+                throw new Exception("DbContext is null");
 			if (_mediatorDataContext.IsQueryRequest)
 			{
 				dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;

@@ -9,7 +9,7 @@ namespace BoltOn.Bootstrapping
 {
 	internal sealed class Bootstrapper : IDisposable
 	{
-		private static Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
+		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
 		private Assembly _callingAssembly;
 		private IServiceCollection _serviceCollection;
 		private IServiceProvider _serviceProvider;
@@ -25,26 +25,17 @@ namespace BoltOn.Bootstrapping
 			_options = null;
 		}
 
-		internal static Bootstrapper Instance
-		{
-			get
-			{
-				return _instance.Value;
-			}
-		}
+		internal static Bootstrapper Instance => _instance.Value;
 
-		internal IServiceCollection Container
+	    internal IServiceCollection Container
 		{
 			get
 			{
 				Check.Requires(_serviceCollection != null, "ServiceCollection not initialized");
 				return _serviceCollection;
 			}
-			set
-			{
-				_serviceCollection = value;
-			}
-		}
+			set => _serviceCollection = value;
+	    }
 
 		internal IServiceProvider ServiceProvider
 		{
@@ -73,7 +64,6 @@ namespace BoltOn.Bootstrapping
 			_serviceProvider = serviceProvider;
 			var context = new PostRegistrationTaskContext(this);
 			var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IPostRegistrationTask>>();
-			var tasks = serviceProvider.GetServices<IPostRegistrationTask>();
 			postRegistrationTasks.ToList().ForEach(t => t.Run(context));
 		}
 
@@ -125,7 +115,7 @@ namespace BoltOn.Bootstrapping
 			foreach (var type in registrationTaskTypes)
 			{
 				var task = Activator.CreateInstance(type) as IRegistrationTask;
-				task.Run(registrationTaskContext);
+				task?.Run(registrationTaskContext);
 			}
 
 			RegisterPostRegistrationTasks();

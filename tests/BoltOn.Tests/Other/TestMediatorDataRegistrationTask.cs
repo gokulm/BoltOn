@@ -13,7 +13,7 @@ namespace BoltOn.Tests.Other
             var efAutoDetectChangesInterceptor = new Mock<IBoltOnLogger<EFQueryTrackingBehaviorInterceptor>>();
             efAutoDetectChangesInterceptor.Setup(s => s.Debug(It.IsAny<string>()))
                                      .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-            context.Container.AddTransient((s) => efAutoDetectChangesInterceptor.Object);
+            context.Container.AddTransient(s => efAutoDetectChangesInterceptor.Object);
         }
     }
 }

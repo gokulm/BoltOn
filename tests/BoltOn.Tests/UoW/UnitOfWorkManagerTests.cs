@@ -16,7 +16,6 @@ namespace BoltOn.Tests.UoW
 			var uowManagerLogger = new Mock<IBoltOnLogger<UnitOfWorkManager>>();
 			var uow = new Mock<IUnitOfWork>();
 			var uowFactory = new Mock<IUnitOfWorkFactory>();
-			var unitOfWorkOptions = new UnitOfWorkOptions();
 			uowFactory.Setup(u => u.Create(It.IsAny<UnitOfWorkOptions>())).Returns(uow.Object);
 			var sut = new UnitOfWorkManager(uowManagerLogger.Object, uowFactory.Object);
 
@@ -125,11 +124,12 @@ namespace BoltOn.Tests.UoW
 			var uowFactory = new Mock<IUnitOfWorkFactory>();
 			var timeSpan = TimeSpan.FromSeconds(30);
 			var sut = new UnitOfWorkManager(uowManagerLogger.Object, uowFactory.Object);
+
 			// act
-			var result = sut.Get(u =>
+			sut.Get(u =>
 			{
-				u.IsolationLevel = IsolationLevel.ReadCommitted;
-				u.TransactionTimeout = timeSpan;
+			    u.IsolationLevel = IsolationLevel.ReadCommitted;
+			    u.TransactionTimeout = timeSpan;
 			});
 
 			// assert

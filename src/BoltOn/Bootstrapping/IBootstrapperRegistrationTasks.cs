@@ -4,9 +4,4 @@
 	{
 		void Run(RegistrationTaskContext context);
 	}
-
-	public interface IPostRegistrationTask
-	{
-		void Run(PostRegistrationTaskContext context);
-	}
 }
