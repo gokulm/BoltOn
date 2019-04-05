@@ -2,8 +2,8 @@ Entity
 ------
 You could create an entity by inheriting `BaseEntity<TIdType>` where TIdType is the type of the Id property.
 
-Repository
-----------
+Entity Framework Repository
+---------------------------
 The core BoltOn package has only the `IRepository` interface, which could be used in your domain layer if you're into Domain Driven Design. 
 
 In order to use Entity Framework implementation of the repository, you need to do the following:
@@ -63,11 +63,10 @@ Example:
 		}
 	}
 
-**Note: ** You could create just one repository for the entire database and use it for all the entities like `ISchoolRepository<Student>`, `ISchoolRepository<Address>` etc., if the methods in the `BaseEFRepository<>` are good enough.
 
 EFQueryTrackingBehaviorInterceptor
 ----------------------------------
-If the request implements `IQuery<>` or `IStaleQuery<>`, the DbContexts' ChangeTracker.QueryTrackingBehavior will be set to QueryTrackingBehavior.NoTracking and ChangeTracker.AutoDetectChangesEnabled will be set to false with the help of `EFQueryTrackingBehaviorInterceptor` and `DbContextFactory`. 
+If the request implements `IQuery<>` or `IStaleQuery<>`, the DbContexts' `ChangeTracker.QueryTrackingBehavior` will be set to `QueryTrackingBehavior.NoTracking` and `ChangeTracker.AutoDetectChangesEnabled` will be set to false with the help of `EFQueryTrackingBehaviorInterceptor` and `DbContextFactory`. 
 
 **Note:** You could disable this behavior by removing the interceptor from the pipeline using `RemoveInterceptor<TInterceptor>` extension method.
 

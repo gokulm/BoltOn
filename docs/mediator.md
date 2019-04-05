@@ -1,10 +1,10 @@
 Mediator is the backbone of BoltOn. It follows the [Request/Response](https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html) and [Command Message](https://www.enterpriseintegrationpatterns.com/patterns/messaging/CommandMessage.html) patterns. 
 
-The main source of inspiration for the Mediator has been [Agatha](https://github.com/davybrion/Agatha), and various other projects like [Brighter](https://github.com/BrighterCommand/Brighter) and [MediatR](https://github.com/jbogard/MediatR).
+The main source of inspiration for the Mediator was [Agatha](https://github.com/davybrion/Agatha), and various other projects like [Brighter](https://github.com/BrighterCommand/Brighter) and [MediatR](https://github.com/jbogard/MediatR).
 
 Request, Response and RequestHandler
 ------------------------------------
-In order to use Mediator, you need to create a request by implementing any of these interfaces:
+In order to use the Mediator, you need to create a request by implementing any of these interfaces:
 
 * `IRequest`
 <br /> To create a request that doesn't have any response and doesn't require unit of work.
@@ -16,11 +16,11 @@ In order to use Mediator, you need to create a request by implementing any of th
 <br /> To create a request with response of type TResponse and that requires require unit of work. A transaction with isolation level ReadCommitted will be started for the requests that implement this interface.
 * `IQuery<out TResponse>`
 <br /> To create a request with response of type TResponse and that requires unit of work. A transaction with isolation level ReadCommitted will be started for the requests that implement this interface. 
-<br /> If **BoltOn.Mediator.Data.EF** is installed and bolted, DbContexts' ChangeTracker.QueryTrackingBehavior will be set to `QueryTrackingBehavior.NoTracking` and ChangeTracker.AutoDetectChangesEnabled will be set to false.
+<br /> If **BoltOn.Data.EF** is installed and bolted, DbContexts' ChangeTracker.QueryTrackingBehavior will be set to `QueryTrackingBehavior.NoTracking` and `ChangeTracker.AutoDetectChangesEnabled` will be set to false.
 * `IStaleQuery<out TResponse>` 
 <br /> To create a request with response of type TResponse and that requires require unit of work. A transaction with isolation level ReadUncommitted will be started for the requests that implement this interface.
 
-The response can be a value or a reference type, which is always tied to the request.
+The **response** can be any value or reference type.
 
 After declaring the request and the response, you need to create a handler by implementiong any of these interfaces:
 
@@ -30,6 +30,24 @@ After declaring the request and the response, you need to create a handler by im
 <br> For handlers that have responses.
 
 **Note:** `MediatorRegistrationTask` takes care of registering the handers to the DI framework.
+
+Example:
+
+    public class GetAllStudentsRequest : IQuery<IEnumerable<StudentDto>>
+	{
+	}
+
+	public class GetAllStudentsHandler : IRequestAsyncHandler<GetAllStudentsRequest, IEnumerable<StudentDto>>
+	{
+		public async Task<IEnumerable<StudentDto>> HandleAsync(GetAllStudentsRequest request, CancellationToken cancellationToken)
+		{
+			var students = new List<StudentDto>
+			{
+				new StudentDto { FirstName = "first", LastName = "last" }
+			};
+			return await Task.FromResult(students);
+		}
+	}
 
 Interceptors
 ------------
@@ -47,9 +65,11 @@ Interceptors can be added and removed using the extension methods `AddIntercepto
 
 Unit of Work
 ------------
-If you're using Mediator, you need not worry about starting or committing an unit of work, it will be done automatically using `UnitOfWorkInterceptor`. In case if you're not using Mediator or you want to take control on starting an unit of work, use `IUnitOfWorkManager`. It takes care of starting a new transaction with `System.Transactions.TransactionScopeOption.RequiresNew` if there is one already started. 
+
+* If you use Mediator and implement any of the interfaces mentioned above (like IQuery, ICommand etc.,), you need not worry about starting or committing unit of work, it will be done automatically using `UnitOfWorkInterceptor`. 
+* If you're not using Mediator and if you want to start an unit of work, call Get method in `IUnitOfWorkManager` by passing `UnitOfWorkOptions` based on your needs. It will start a new transaction with `System.Transactions.TransactionScopeOption.RequiresNew` if there is one already started. The default transaction isolation level is `IsolationLevel.Serializable`
 
 **Note:** Though it's possible to start an unit of work manually, please try to do avoid it, especially when there is already one, as having more than one unit of work isn't a proper way to build applications. This will be useful only when you want to query a database with an isolation level different from the one started by `UnitOfWorkInterceptor`.
 
-In case if you want to change the default transaction isolation level for all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement `IUnitOfWorkOptionsBuilder` or inherit `UnitOfWorkOptionsBuilder` and override Build method.
+In case if you want to change the default transaction isolation level for all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement `IUnitOfWorkOptionsBuilder` or inherit `UnitOfWorkOptionsBuilder` and override the Build method.
 

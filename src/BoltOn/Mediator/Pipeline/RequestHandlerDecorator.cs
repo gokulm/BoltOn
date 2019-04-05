@@ -46,7 +46,7 @@ namespace BoltOn.Mediator.Pipeline
 			_requestAsyncHandler = requestAsyncHandler;
 		}
 
-		public async Task<TResponse> HandleAsync(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<TResponse> HandleAsync(IRequest<TResponse> request, CancellationToken cancellationToken)
 		{
 			return await _requestAsyncHandler.HandleAsync((TRequest)request, cancellationToken);
 		}
@@ -62,7 +62,7 @@ namespace BoltOn.Mediator.Pipeline
 			_requestAsyncHandler = requestAsyncHandler;
 		}
 
-		public async Task<DummyResponse> HandleAsync(IRequest<DummyResponse> request, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<DummyResponse> HandleAsync(IRequest<DummyResponse> request, CancellationToken cancellationToken)
 		{
 			await _requestAsyncHandler.HandleAsync((TRequest)request, cancellationToken);
 			return await Task.FromResult(new DummyResponse());
