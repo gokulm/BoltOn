@@ -27,7 +27,7 @@ namespace BoltOn.Mediator
 			container.AddTransient<IInterceptor, UnitOfWorkInterceptor>();
 		}
 
-		private void RegisterHandlers(RegistrationTaskContext context)
+		private static void RegisterHandlers(RegistrationTaskContext context)
 		{
 			var requestHandlerInterfaceType = typeof(IRequestHandler<,>);
 			var handlers = (from a in context.Assemblies.ToList()
@@ -40,7 +40,7 @@ namespace BoltOn.Mediator
 				context.Container.AddTransient(handler.Interface, handler.Implementation);
 		}
 
-		private void RegisterOneWayRequestHandlers(RegistrationTaskContext context)
+		private static void RegisterOneWayRequestHandlers(RegistrationTaskContext context)
 		{
 			var requestHandlerInterfaceType = typeof(IRequestHandler<>);
 			var handlers = (from a in context.Assemblies.ToList()
@@ -53,8 +53,7 @@ namespace BoltOn.Mediator
 				context.Container.AddTransient(handler.Interface, handler.Implementation);
 		}
 
-
-		private void RegisterAsyncHandlers(RegistrationTaskContext context)
+		private static void RegisterAsyncHandlers(RegistrationTaskContext context)
 		{
 			var requestHandlerInterfaceType = typeof(IRequestAsyncHandler<,>);
 			var handlers = (from a in context.Assemblies.ToList()
@@ -67,7 +66,7 @@ namespace BoltOn.Mediator
 				context.Container.AddTransient(handler.Interface, handler.Implementation);
 		}
 
-		private void RegisterOneWayAsyncHandlers(RegistrationTaskContext context)
+		private static void RegisterOneWayAsyncHandlers(RegistrationTaskContext context)
 		{
 			var requestHandlerInterfaceType = typeof(IRequestAsyncHandler<>);
 			var handlers = (from a in context.Assemblies.ToList()

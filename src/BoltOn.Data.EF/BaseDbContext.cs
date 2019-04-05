@@ -4,7 +4,7 @@ namespace BoltOn.Data.EF
 {
     public abstract class BaseDbContext<TDbContext> : DbContext where TDbContext : DbContext
     {
-		public BaseDbContext(DbContextOptions<TDbContext> options) : base(options)
+        protected BaseDbContext(DbContextOptions<TDbContext> options) : base(options)
 		{
 		}
 

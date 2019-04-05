@@ -4,7 +4,7 @@ namespace BoltOn.Tests.Other
 {
     public class Employee
     {
-        readonly IBoltOnLogger<Employee> _logger;
+        private readonly IBoltOnLogger<Employee> _logger;
 
         public Employee(IBoltOnLogger<Employee> logger)
         {

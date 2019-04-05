@@ -13,8 +13,8 @@ namespace BoltOn.Data.EF
 		where TDbContext : DbContext
 		where TEntity : class
 	{
-		private TDbContext _dbContext;
-		private DbSet<TEntity> _dbSets;
+		private readonly TDbContext _dbContext;
+		private readonly DbSet<TEntity> _dbSets;
 
 		protected BaseEFRepository(IDbContextFactory dbContextFactory)
 		{

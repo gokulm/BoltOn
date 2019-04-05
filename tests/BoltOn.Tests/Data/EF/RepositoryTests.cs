@@ -15,7 +15,7 @@ namespace BoltOn.Tests.Data.EF
 	[Collection("IntegrationTests")]
 	public class RepositoryTests : IDisposable
 	{
-		private IStudentRepository _sut;
+		private readonly IStudentRepository _sut;
 
 		public RepositoryTests()
 		{

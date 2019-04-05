@@ -13,7 +13,7 @@ namespace BoltOn.Logging
 
 		public BoltOnLoggerFactory(ILoggerFactory loggerFactory)
 		{
-			this._loggerFactory = loggerFactory;
+			_loggerFactory = loggerFactory;
 		}
 
 		public IBoltOnLogger<TType> Create<TType>()

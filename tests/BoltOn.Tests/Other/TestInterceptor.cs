@@ -60,18 +60,18 @@ namespace BoltOn.Tests.Other
 		public override TResponse Execute<TRequest, TResponse>(IRequest<TResponse> request,
 																				   Func<IRequest<TResponse>, TResponse> next)
 		{
-			_logger.Debug($"TestRequestSpecificInterceptor Started");
+			_logger.Debug("TestRequestSpecificInterceptor Started");
 			var response = next.Invoke(request);
-			_logger.Debug($"TestRequestSpecificInterceptor Ended");
+			_logger.Debug("TestRequestSpecificInterceptor Ended");
 			return response;
 		}
 
-		public async override Task<TResponse> ExecuteAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
+		public override async Task<TResponse> ExecuteAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
 			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next)
 		{
-			_logger.Debug($"TestRequestSpecificInterceptor Started");
+			_logger.Debug("TestRequestSpecificInterceptor Started");
 			var response = await next.Invoke(request, cancellationToken);
-			_logger.Debug($"TestRequestSpecificInterceptor Ended");
+			_logger.Debug("TestRequestSpecificInterceptor Ended");
 			return response;
 		}
 	}

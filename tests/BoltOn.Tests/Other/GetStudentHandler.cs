@@ -14,7 +14,7 @@ namespace BoltOn.Tests.Other
 
         public GetStudentHandler(IStudentRepository studentRepository)
         {
-            this._studentRepository = studentRepository;
+            _studentRepository = studentRepository;
         }
 
         public virtual Student Handle(GetStudentRequest request)

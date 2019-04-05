@@ -255,7 +255,6 @@ namespace BoltOn.Tests.Mediator
 			serviceProvider.TightenBolts();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
 			var sut = serviceProvider.GetService<IMediator>();
-			var testInterceptor = serviceProvider.GetService<TestInterceptor>();
 
 			// act
 			var result = sut.Process(new TestRequest());
@@ -396,7 +395,6 @@ namespace BoltOn.Tests.Mediator
 			// act
 			var result = sut.Process(new GetStudentRequest { StudentId = 2 });
 			var dbContext = serviceProvider.GetService<IDbContextFactory>().Get<SchoolDbContext>();
-			var student = dbContext.Set<Student>().Find(2);
 			var isAutoDetectChangesEnabled = dbContext.ChangeTracker.AutoDetectChangesEnabled;
 			var queryTrackingBehavior = dbContext.ChangeTracker.QueryTrackingBehavior;
 
