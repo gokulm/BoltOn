@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Samples.DTOs;
+using BoltOn.Samples.Application.Handlers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BoltOn.Samples.WebApi.Controllers

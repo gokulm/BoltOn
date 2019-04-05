@@ -2,12 +2,13 @@
 
 namespace BoltOn.UoW
 {
-	public interface IUnitOfWorkFactory
+	// this is mainly used to help unit testing UnitOfWorkManager
+	internal interface IUnitOfWorkFactory
 	{
 		IUnitOfWork Create(UnitOfWorkOptions options);
 	}
 
-	public class UnitOfWorkFactory : IUnitOfWorkFactory
+	internal class UnitOfWorkFactory : IUnitOfWorkFactory
     {
         private readonly IBoltOnLoggerFactory _boltOnLoggerFactory;
 		private readonly IBoltOnLogger<UnitOfWorkFactory> _uowFactory;

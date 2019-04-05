@@ -1,4 +1,4 @@
-BoltOn is an [open source](https://github.com/gokulm/BoltOn) library which can be used to build any .NET application (like Console, MVC, WebAPI, Windows Service etc.,) with proper separation of concerns quickly.
+BoltOn is an [open source](https://github.com/gokulm/BoltOn) package which can be used to build any .NET application (like Console, MVC, WebAPI, Windows Service etc.,) with proper separation of concerns quickly.
 
 Installation
 ------------
@@ -37,7 +37,7 @@ After installing the package, call BoltOn() and TightenBolts() extension methods
         }
     }
 
-In case if you want to use other BoltOn packages and/or add other assemblies, you can add them using options:
+To use other BoltOn packages and/or add other assemblies, you can add them using options:
 
     services.BoltOn(options =>
     {
@@ -45,7 +45,7 @@ In case if you want to use other BoltOn packages and/or add other assemblies, yo
         options.BoltOnAssemblies(typeof(PingHandler).Assembly);
     });
 
-BoltOn uses .NET core's dependency injection internally. In case if you want to use any other DI framework, you can configure it after the BoltOn() call. 
+** Note: ** BoltOn uses .NET core's dependency injection internally. In case if you want to use any other DI framework, you can configure it after the BoltOn() call. 
 
 BoltOn()
 --------
@@ -54,8 +54,11 @@ This extension method does the following:
 * It groups the executing assembly, all the assemblies of the other modules and the assemblies passed to BoltOnAssemblies() to a collection, sorts them based on the assembly dependencies, and finally scans for all the classes that implement `IBootstrapperRegistrationTask` and executes them in the order of the assembly dependencies. 
 <br />The assemblies collection can be accessed from `RegistrationTaskContext` and `PostRegistrationTaskContext` of the registration tasks.
 * A built-in registration task called `BoltOnRegistrationTask` registers all the interfaces with **single** implementation as trasient. 
+
+**Custom registrations:**
+
 * To exclude classes from registration, decorate them with `[ExcludeFromRegistration]` attribute.
-* For all the other registration scopes like scoped or singleton, or to register interfaces with more than one implementations, implement `IBootstrapperRegistrationTask` and use the context.Container to register them.
+* For all the other registration scopes like scoped or singleton, or to register interfaces with more than one implementations, implement `IBootstrapperRegistrationTask` and use the context.Container (which is of type `IServicesCollection`) to register them.
 
 Example:
 
@@ -69,14 +72,14 @@ Example:
 		}
 	}
 
+** Note: **
 Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other modules. Each and every module calls other extension methods to attach their own dependent modules. 
 
 TightenBolts()
 --------------
-This extension method does the following:
+This extension method scans all the `IBootstrapperPostRegistrationTask` in the assemblies collection formed by BoltOn() and executes them.
 
-* It scans all the `IBootstrapperPostRegistrationTask` in the assemblies collection formed by BoltOn() and executes them.
-* In case if you want to run any task that involves resolving dependencies, like seeding data using any of the registered DbContexts, implement `IBootstrapperPostRegistrationTask`. 
+To run any task that involves resolving dependencies, like seeding data using any of the registered DbContexts, implement `IBootstrapperPostRegistrationTask`. 
 
 Example:
 

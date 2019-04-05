@@ -1,8 +1,16 @@
 ﻿using BoltOn.Mediator.Pipeline;
-using BoltOn.Samples.DTOs;
 
-namespace BoltOn.Samples.Domain
+namespace BoltOn.Samples.Application.Handlers
 {
+	public class PingRequest : IQuery<PongResponse>
+	{
+	}
+
+	public class PongResponse
+	{
+		public string Data { get; set; }
+	}
+
 	public class PingHandler : IRequestHandler<PingRequest, PongResponse>
 	{
 		public PongResponse Handle(PingRequest request)

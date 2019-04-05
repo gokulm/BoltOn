@@ -21,18 +21,18 @@ namespace BoltOn.Bootstrapping
 							  where type.IsInterface
 							  select type).ToList();
 			var tempRegistrations = (from @interface in interfaces
-								 from assembly in context.Assemblies
-								 from type in assembly.GetTypes()
-								 where !type.IsAbstract
-									   && type.IsClass && @interface.IsAssignableFrom(type)
-								 && !type.GetCustomAttributes(typeof(ExcludeFromRegistrationAttribute), true).Any()
-								 select new { Interface = @interface, Implementation = type }).ToList();
+									 from assembly in context.Assemblies
+									 from type in assembly.GetTypes()
+									 where !type.IsAbstract
+										   && type.IsClass && @interface.IsAssignableFrom(type)
+									 && !type.GetCustomAttributes(typeof(ExcludeFromRegistrationAttribute), true).Any()
+									 select new { Interface = @interface, Implementation = type }).ToList();
 
 			// get interfaces with only one implementation
 			var registrations = (from r in tempRegistrations
-						group r by r.Interface into grp
-						where grp.Count() == 1
-						select new { Interface = grp.Key, grp.First().Implementation }).ToList();
+								 group r by r.Interface into grp
+								 where grp.Count() == 1
+								 select new { Interface = grp.Key, grp.First().Implementation }).ToList();
 
 			registrations.ForEach(f => context.Container.AddTransient(f.Interface, f.Implementation));
 		}
@@ -41,6 +41,11 @@ namespace BoltOn.Bootstrapping
 		{
 			var serviceCollection = context.Container;
 			serviceCollection.AddScoped<IUnitOfWorkManager, UnitOfWorkManager>();
+			serviceCollection.AddScoped<IUnitOfWorkManager>(s =>
+			{
+				return new UnitOfWorkManager(s.GetRequiredService<IBoltOnLogger<UnitOfWorkManager>>(), 
+					s.GetRequiredService<IUnitOfWorkFactory>());
+			});
 			serviceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnNetStandardLoggerAdapter<>));
 			serviceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
 		}

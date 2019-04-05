@@ -1,5 +1,5 @@
 site_name: BoltOn
-pages:
+nav:
     - Introduction: index.md
     - Mediator: mediator.md
     - Data: data.md

@@ -1,4 +1,5 @@
 using System;
+using BoltOn.Data.EF.Mediator;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Data.EF

@@ -73,7 +73,7 @@ namespace BoltOn.Tests.Other
 			return await Task.FromResult(true);
 		}
 
-		public virtual async Task<bool> HandleAsync(TestCommand request, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<bool> HandleAsync(TestCommand request, CancellationToken cancellationToken)
 		{
 			return await Task.FromResult(true);
 		}
@@ -83,13 +83,13 @@ namespace BoltOn.Tests.Other
 			request.Value = 1;
 		}
 
-		public Task HandleAsync(TestOneWayRequest request, CancellationToken cancellationToken = default(CancellationToken))
+		public Task HandleAsync(TestOneWayRequest request, CancellationToken cancellationToken)
 		{
 			request.Value = 1;
 			return Task.CompletedTask;
 		}
 
-		public Task HandleAsync(TestOneWayCommand request, CancellationToken cancellationToken = default(CancellationToken))
+		public Task HandleAsync(TestOneWayCommand request, CancellationToken cancellationToken)
 		{
 			request.Value = 1;
 			return Task.CompletedTask;

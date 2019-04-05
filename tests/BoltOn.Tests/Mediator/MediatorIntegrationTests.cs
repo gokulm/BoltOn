@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
+using BoltOn.Data.EF.Mediator;
 using BoltOn.Mediator;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;

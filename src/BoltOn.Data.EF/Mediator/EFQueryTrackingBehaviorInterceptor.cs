@@ -5,7 +5,7 @@ using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 
-namespace BoltOn.Data.EF
+namespace BoltOn.Data.EF.Mediator
 {
 	public class EFQueryTrackingBehaviorInterceptor : IInterceptor
 	{
