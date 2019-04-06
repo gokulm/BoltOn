@@ -1,27 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="Logging\" />
-    <Folder Include="Bootstrapping\" />
-    <Folder Include="Utilities\" />
-    <Folder Include="UoW\" />
-    <Folder Include="Other\" />
-    <Folder Include="Mediator\" />
-    <Folder Include="Mediator\Interceptors\" />
-    <Folder Include="Mediator\Pipeline\" />
-    <Folder Include="Data\" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Mediator\Pipeline\MediatorResponse.cs" />
-    <Compile Remove="Context\ContextScope.cs" />
-    <Compile Remove="Mediator\Pipeline\StandardResponses.cs" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <Authors>Gokulnath Murugesan</Authors>
+        <Owners>Gokulnath Murugesan</Owners>
+        <PackageProjectUrl>https://github.com/gokulm/BoltOn</PackageProjectUrl>
+        <Title>BoltOn</Title>
+        <ReleaseVersion>1.0.0</ReleaseVersion>
+        <SynchReleaseVersion>false</SynchReleaseVersion>
+        <PackageId>BoltOn</PackageId>
+        <Description>BoltOn is an open source package which can be used to build any .NET application.</Description>
+        <PackageVersion>0.1.0-beta</PackageVersion>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    </PropertyGroup>
+    <ItemGroup>
+        <Folder Include="Logging\" />
+        <Folder Include="Bootstrapping\" />
+        <Folder Include="Utilities\" />
+        <Folder Include="UoW\" />
+        <Folder Include="Other\" />
+        <Folder Include="Mediator\" />
+        <Folder Include="Mediator\Interceptors\" />
+        <Folder Include="Mediator\Pipeline\" />
+        <Folder Include="Data\" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
+        <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="Mediator\Pipeline\MediatorResponse.cs" />
+        <Compile Remove="Context\ContextScope.cs" />
+        <Compile Remove="Mediator\Pipeline\StandardResponses.cs" />
+    </ItemGroup>
 </Project>
