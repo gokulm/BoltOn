@@ -16,6 +16,7 @@ namespace BoltOn.Tests.UoW
 			var uowManagerLogger = new Mock<IBoltOnLogger<UnitOfWorkManager>>();
 			var uow = new Mock<IUnitOfWork>();
 			var uowFactory = new Mock<IUnitOfWorkFactory>();
+			var unitOfWorkOptions = new UnitOfWorkOptions();
 			uowFactory.Setup(u => u.Create(It.IsAny<UnitOfWorkOptions>())).Returns(uow.Object);
 			var sut = new UnitOfWorkManager(uowManagerLogger.Object, uowFactory.Object);
 

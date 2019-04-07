@@ -41,9 +41,11 @@ namespace BoltOn.Bootstrapping
 		{
 			var serviceCollection = context.Container;
 			serviceCollection.AddScoped<IUnitOfWorkManager, UnitOfWorkManager>();
-			serviceCollection.AddScoped<IUnitOfWorkManager>(s => 
-			    new UnitOfWorkManager(s.GetRequiredService<IBoltOnLogger<UnitOfWorkManager>>(), 
-			    s.GetRequiredService<IUnitOfWorkFactory>()));
+			serviceCollection.AddScoped<IUnitOfWorkManager>(s =>
+			{
+				return new UnitOfWorkManager(s.GetRequiredService<IBoltOnLogger<UnitOfWorkManager>>(), 
+					s.GetRequiredService<IUnitOfWorkFactory>());
+			});
 			serviceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
 			serviceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
 		}
