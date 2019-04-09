@@ -2,18 +2,16 @@
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Logging;
-using BoltOn.Mediator;
-using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 
-namespace BoltOn.Data.EF.Mediator
+namespace BoltOn.Mediator.Interceptors
 {
-	public class EFQueryTrackingBehaviorInterceptor : IInterceptor
+	public class MediatorContextInterceptor : IInterceptor
 	{
-		private readonly IBoltOnLogger<EFQueryTrackingBehaviorInterceptor> _logger;
+		private readonly IBoltOnLogger<MediatorContextInterceptor> _logger;
 		private readonly MediatorContext _mediatorContext;
 
-		public EFQueryTrackingBehaviorInterceptor(IBoltOnLogger<EFQueryTrackingBehaviorInterceptor> logger,
+		public MediatorContextInterceptor(IBoltOnLogger<MediatorContextInterceptor> logger,
 			MediatorContext mediatorContext)
 		{
 			_logger = logger;
@@ -23,7 +21,7 @@ namespace BoltOn.Data.EF.Mediator
 		public TResponse Run<TRequest, TResponse>(IRequest<TResponse> request,
 			Func<IRequest<TResponse>, TResponse> next) where TRequest : IRequest<TResponse>
 		{
-			_logger.Debug($"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}...");
+			_logger.Debug($"Entering {nameof(MediatorContextInterceptor)}...");
 			_mediatorContext.IsQueryRequest = request is IQuery<TResponse>;
 			_logger.Debug($"IsQueryRequest: {_mediatorContext.IsQueryRequest}");
 			var response = next(request);
@@ -33,7 +31,7 @@ namespace BoltOn.Data.EF.Mediator
 		public async Task<TResponse> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken,
 			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
-			_logger.Debug($"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}...");
+			_logger.Debug($"Entering {nameof(MediatorContextInterceptor)}...");
 			_mediatorContext.IsQueryRequest = request is IQuery<TResponse>;
 			_logger.Debug($"IsQueryRequest: {_mediatorContext.IsQueryRequest}");
 			var response = await next(request, cancellationToken);

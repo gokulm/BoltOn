@@ -4,11 +4,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
-using BoltOn.Data.EF.Mediator;
 using BoltOn.Mediator;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.Overrides.Mediator;
 using BoltOn.Tests.Other;
+using BoltOn.UoW;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -290,7 +291,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_MediatorWithStaleQueryRequest_ExecutesUoWInterceptorAndStartsTransactionsWithDefaultQueryIsolationLevel()
+		public void Process_MediatorWithQueryUncommittedRequest_ExecutesUoWInterceptorAndStartsTransactionsWithDefaultQueryIsolationLevel()
 		{
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
@@ -298,6 +299,9 @@ namespace BoltOn.Tests.Mediator
 			serviceCollection
 				.BoltOn()
 				.AddLogging();
+			serviceCollection.RemoveInterceptor<MediatorContextInterceptor>();
+			serviceCollection.AddInterceptor<CustomMediatorContextInterceptor>();
+			serviceCollection.AddTransient<IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOptionsBuilder>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -307,7 +311,7 @@ namespace BoltOn.Tests.Mediator
 
 			// assert 
 			Assert.True(result);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for StaleQuery"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for QueryUncommitted"));
 		}
 
 		[Fact]
@@ -376,7 +380,7 @@ namespace BoltOn.Tests.Mediator
 
 
 		[Fact]
-		public void Process_MediatorWithQueryRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndDisablesTracking()
+		public void Process_MediatorWithQueryRequest_ExecutesMediatorContextInterceptorAndDisablesTracking()
 		{
 			// arrange
 			MediatorTestHelper.IsSeedData = true;
@@ -388,6 +392,9 @@ namespace BoltOn.Tests.Mediator
 						.BoltOnEFModule();
 				})
 				.AddLogging();
+			serviceCollection.RemoveInterceptor<CustomMediatorContextInterceptor>();
+			serviceCollection.AddInterceptor<MediatorContextInterceptor>();
+			serviceCollection.AddTransient<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -401,13 +408,13 @@ namespace BoltOn.Tests.Mediator
 			// assert 
 			Assert.NotNull(result);
 			Assert.Equal(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking, queryTrackingBehavior);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(MediatorContextInterceptor)}..."));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {true}"));
 			Assert.False(isAutoDetectChangesEnabled);
 		}
 
 		[Fact]
-		public void Process_MediatorWithCommandRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndEnablesTrackAll()
+		public void Process_MediatorWithCommandRequest_ExecutesMediatorContextInterceptorAndEnablesTrackAll()
 		{
 			// arrange
 			MediatorTestHelper.IsSeedData = false;
@@ -419,6 +426,9 @@ namespace BoltOn.Tests.Mediator
 						.BoltOnEFModule();
 				})
 				.AddLogging();
+			serviceCollection.RemoveInterceptor<CustomMediatorContextInterceptor>();
+			serviceCollection.AddInterceptor<MediatorContextInterceptor>();
+			serviceCollection.AddTransient<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -432,7 +442,7 @@ namespace BoltOn.Tests.Mediator
 			// assert 
 			Assert.True(result);
 			Assert.Equal(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.TrackAll, queryTrackingBehavior);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(MediatorContextInterceptor)}..."));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {false}"));
 			Assert.True(isAutoDetectChangesEnabled);
 		}
