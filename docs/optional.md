@@ -33,7 +33,7 @@ In case if you want a custom request type which is completely different from IQu
     {
     }
 
-Create a custom interceptor in case if you want to tweak the MediatorContext, like the one mentioned [below](/optional/#interceptor) and create a custom UnitOfWorkOptionsBuilder to change the transaction isolation level or timeout, like the one mentioned [below](/optional/#unitofworkoptionsbuilder). And, finally register the custom interceptor and UnitOfWorksOptionsBuilder like this:
+And then create a custom interceptor in case if you want to tweak the MediatorContext, like the one mentioned [below](/optional/#interceptor) and create a custom UnitOfWorkOptionsBuilder to change the transaction isolation level or timeout, like the one mentioned [below](/optional/#unitofworkoptionsbuilder). And, finally register them like this:
 
     serviceCollection.RemoveInterceptor<MediatorContextInterceptor>();
     serviceCollection.AddInterceptor<CustomMediatorContextInterceptor>();

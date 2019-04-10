@@ -64,9 +64,9 @@ Example:
 	}
 
 
-EFQueryTrackingBehaviorInterceptor
-----------------------------------
-If the request implements `IQuery<>` or `IStaleQuery<>`, the DbContexts' `ChangeTracker.QueryTrackingBehavior` will be set to `QueryTrackingBehavior.NoTracking` and `ChangeTracker.AutoDetectChangesEnabled` will be set to false with the help of `EFQueryTrackingBehaviorInterceptor` and `DbContextFactory`. 
+DbContextFactory
+----------------
+This factory uses IServiceProvider to resolve DbContexts, and if the request implements `IQuery<>`, the DbContexts' `ChangeTracker.QueryTrackingBehavior` will be set to `QueryTrackingBehavior.NoTracking` and `ChangeTracker.AutoDetectChangesEnabled` will be set to false with the help of `MediatorContextInterceptor`. 
 
 **Note:** You could disable this behavior by removing the interceptor from the pipeline using `RemoveInterceptor<TInterceptor>` extension method.
 

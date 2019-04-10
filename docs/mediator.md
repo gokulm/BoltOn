@@ -16,7 +16,7 @@ In order to use the Mediator, you need to create a request by implementing any o
 <br /> To create a request with response of type TResponse and that requires require unit of work. A transaction with isolation level **ReadCommitted** will be started for the requests that implement this interface.
 * `IQuery<out TResponse>`
 <br /> To create a request with response of type TResponse and that requires unit of work. A transaction with isolation level ReadCommitted will be started for the requests that implement this interface. 
-<br /> If **BoltOn.Data.EF** is installed and bolted, DbContexts' ChangeTracker.QueryTrackingBehavior will be set to `QueryTrackingBehavior.NoTracking` and `ChangeTracker.AutoDetectChangesEnabled` will be set to false.
+<br /> If **BoltOn.Data.EF** is installed and bolted, DbContexts' ChangeTracker.QueryTrackingBehavior will be set to `QueryTrackingBehavior.NoTracking` and `ChangeTracker.AutoDetectChangesEnabled` will be set to false in [DbContextFactory](/data/#dbcontextfactory).
 
 In case if you want a custom request type with a different isolation level, you could create an interface and customize `UnitOfWorkOptionsBuilder` by overriding it or by creating a new one. Check out this custom request type called `IQueryUncommitted` with isolation level **ReadUncommitted** [here](/optional/#iqueryuncommitted). 
 
