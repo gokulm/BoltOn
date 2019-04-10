@@ -3,5 +3,6 @@ nav:
     - Introduction: index.md
     - Mediator: mediator.md
     - Data: data.md
+    - Optional: optional.md
 theme: readthedocs
 

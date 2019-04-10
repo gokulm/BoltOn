@@ -11,14 +11,14 @@ In order to use the Mediator, you need to create a request by implementing any o
 * `IRequest<out TResponse>` 
 <br /> To create a request with response of type TResponse and doesn't require unit of work.
 * `ICommand`
-<br /> To create a request that doesn't have any response and that requires unit of work. A transaction with isolation level ReadCommitted will be started for the requests that implement this interface. 
+<br /> To create a request that doesn't have any response and that requires unit of work. A transaction with isolation level **ReadCommitted** will be started for the requests that implement this interface. 
 * `ICommand<out TResponse>` 
-<br /> To create a request with response of type TResponse and that requires require unit of work. A transaction with isolation level ReadCommitted will be started for the requests that implement this interface.
+<br /> To create a request with response of type TResponse and that requires require unit of work. A transaction with isolation level **ReadCommitted** will be started for the requests that implement this interface.
 * `IQuery<out TResponse>`
 <br /> To create a request with response of type TResponse and that requires unit of work. A transaction with isolation level ReadCommitted will be started for the requests that implement this interface. 
 <br /> If **BoltOn.Data.EF** is installed and bolted, DbContexts' ChangeTracker.QueryTrackingBehavior will be set to `QueryTrackingBehavior.NoTracking` and `ChangeTracker.AutoDetectChangesEnabled` will be set to false.
-* `IStaleQuery<out TResponse>` 
-<br /> To create a request with response of type TResponse and that requires require unit of work. A transaction with isolation level ReadUncommitted will be started for the requests that implement this interface.
+
+In case if you want a custom request type with a different isolation level, you could create an interface and customize `UnitOfWorkOptionsBuilder` by overriding it or by creating a new one. Check out this custom request type called `IQueryUncommitted` with isolation level **ReadUncommitted** [here](/optional/#iqueryuncommitted). 
 
 The **response** can be any value or reference type.
 
@@ -59,17 +59,17 @@ Every request flows thru a set of built-in interceptors, which can be controlled
 * `UnitOfWorkInterceptor`
 <br> This interceptor starts a transaction with an isolation level based on the interface like IQuery or ICommand etc., (mentioned above) that the request implements. This interceptor is enabled only if the request implements `IEnableUnitOfWorkInterceptor`
 
-You can create an interceptor by implementing `IInterceptor` interface. If you want to enable or disable an interceptor based on a marker interface implementation, you can inherit `BaseRequestSpecificInterceptor<T>`
+You can create an interceptor by implementing `IInterceptor` interface, like [this](/optional/#interceptor). If you want to enable or disable an interceptor based on a marker interface implementation, you can inherit `BaseRequestSpecificInterceptor<T>`
 
 Interceptors can be added and removed using the extension methods `AddInterceptor<TInterceptor>` and `RemoveInterceptor<TInterceptor>` (in BoltOn.Mediator namespace) respectively. All the interceptors can be removed using the extension method `RemoveAllInterceptors`.
 
 Unit of Work
 ------------
 
-* If you use Mediator and implement any of the interfaces mentioned above (like IQuery, ICommand etc.,), you need not worry about starting or committing unit of work, it will be done automatically using `UnitOfWorkInterceptor`. 
+* If you use Mediator and implement any of the interfaces like IQuery or ICommand, which in turn implements `IEnableUnitOfWorkInterceptor`, you need not worry about starting or committing unit of work, it will be done automatically using `UnitOfWorkInterceptor`. 
 * If you're not using Mediator and if you want to start an unit of work, call Get method in `IUnitOfWorkManager` by passing `UnitOfWorkOptions` based on your needs. It will start a new transaction with `System.Transactions.TransactionScopeOption.RequiresNew` if there is one already started. The default transaction isolation level is `IsolationLevel.Serializable`
 
 **Note:** Though it's possible to start an unit of work manually, please try to do avoid it, especially when there is already one, as having more than one unit of work isn't a proper way to build applications. This will be useful only when you want to query a database with an isolation level different from the one started by `UnitOfWorkInterceptor`.
 
-In case if you want to change the default transaction isolation level for all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement `IUnitOfWorkOptionsBuilder` or inherit `UnitOfWorkOptionsBuilder` and override the Build method.
+In case if you want to change the default transaction isolation level for all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement `IUnitOfWorkOptionsBuilder` like [this](/optional/#unitofworkoptionsbuilder) or inherit `UnitOfWorkOptionsBuilder` and override the Build method.
 
