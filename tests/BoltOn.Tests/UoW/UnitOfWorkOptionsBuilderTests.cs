@@ -44,7 +44,7 @@ namespace BoltOn.Tests.UoW
 		}
 
 		[Fact]
-		public void Build_StaleQueryRequest_ReturnsUoWOptionsBuildWithProperIsolationLevel()
+		public void Build_QueryUncommittedRequest_ReturnsUoWOptionsBuildWithProperIsolationLevel()
 		{
 			// arrange
 			var loggerFactory = new Mock<IBoltOnLoggerFactory>();
