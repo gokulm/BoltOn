@@ -33,7 +33,7 @@ In case if you want a custom request type which is completely different from IQu
     {
     }
 
-And then create a custom interceptor in case if you want to tweak the ChangeTrackerContext, like the one mentioned [below](../optional/#interceptor) and create a custom UnitOfWorkOptionsBuilder to change the transaction isolation level or timeout, like the one mentioned [below](../optional/#unitofworkoptionsbuilder). And, finally register them like this:
+And then create a custom interceptor in case if you want to tweak the ChangeTrackerContext, like the one mentioned [below](#interceptor) and create a custom UnitOfWorkOptionsBuilder to change the transaction isolation level or timeout, like the one mentioned [below](#unitofworkoptionsbuilder). And, finally register them like this:
 
     serviceCollection.RemoveInterceptor<ChangeTrackerInterceptor>();
     serviceCollection.AddInterceptor<CustomChangeTrackerInterceptor>();
