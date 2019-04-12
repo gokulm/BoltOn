@@ -1,4 +1,6 @@
 using BoltOn.Bootstrapping;
+using BoltOn.Mediator;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Data.EF
 {
@@ -6,6 +8,9 @@ namespace BoltOn.Data.EF
 	{
 		public void Run(RegistrationTaskContext context)
 		{
+			var container = context.Container;
+			container.AddScoped<ChangeTrackerContext>();
+			container.AddInterceptor<ChangeTrackerInterceptor>();
 		}
 	}
 }

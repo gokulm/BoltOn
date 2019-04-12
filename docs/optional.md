@@ -33,28 +33,28 @@ In case if you want a custom request type which is completely different from IQu
     {
     }
 
-And then create a custom interceptor in case if you want to tweak the MediatorContext, like the one mentioned [below](/optional/#interceptor) and create a custom UnitOfWorkOptionsBuilder to change the transaction isolation level or timeout, like the one mentioned [below](/optional/#unitofworkoptionsbuilder). And, finally register them like this:
+And then create a custom interceptor in case if you want to tweak the ChangeTrackerContext, like the one mentioned [below](/optional/#interceptor) and create a custom UnitOfWorkOptionsBuilder to change the transaction isolation level or timeout, like the one mentioned [below](/optional/#unitofworkoptionsbuilder). And, finally register them like this:
 
-    serviceCollection.RemoveInterceptor<MediatorContextInterceptor>();
-    serviceCollection.AddInterceptor<CustomMediatorContextInterceptor>();
+    serviceCollection.RemoveInterceptor<ChangeTrackerInterceptor>();
+    serviceCollection.AddInterceptor<CustomChangeTrackerInterceptor>();
     serviceCollection.AddTransient<IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOptionsBuilder>();
 
 Interceptor
 -----------
 
-    public class CustomMediatorContextInterceptor : IInterceptor
+    public class CustomChangeTrackerInterceptor : IInterceptor
 	{
-		private readonly MediatorContext _mediatorContext;
+		private readonly ChangeTrackerContext _changeTrackerContext;
 
-		public CustomMediatorContextInterceptor(MediatorContext mediatorContext)
+		public CustomChangeTrackerInterceptor(ChangeTrackerContext changeTrackerContext)
 		{
-			_mediatorContext = mediatorContext;
+			_changeTrackerContext = changeTrackerContext;
 		}
 
 		public TResponse Run<TRequest, TResponse>(IRequest<TResponse> request, 
 			Func<IRequest<TResponse>, TResponse> next) where TRequest : IRequest<TResponse>
 		{
-			_mediatorContext.IsQueryRequest = request is IQuery<TResponse> || request is IQueryUncommitted<TResponse>;
+			_changeTrackerContext.IsQueryRequest = request is IQuery<TResponse> || request is IQueryUncommitted<TResponse>;
 			var response = next(request);
 			return response;
 		}
@@ -62,7 +62,7 @@ Interceptor
 		public async Task<TResponse> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
 			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
-			_mediatorContext.IsQueryRequest = request is IQuery<TResponse> || request is IQueryUncommitted<TResponse>;
+			_changeTrackerContext.IsQueryRequest = request is IQuery<TResponse> || request is IQueryUncommitted<TResponse>;
 			var response = await next(request, cancellationToken);
 			return response;
 		}

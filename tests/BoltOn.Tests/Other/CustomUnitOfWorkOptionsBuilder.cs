@@ -5,7 +5,7 @@ using BoltOn.Mediator.Pipeline;
 using BoltOn.Ovverides.Mediator;
 using BoltOn.UoW;
 
-namespace BoltOn.Tests.Mediator
+namespace BoltOn.Tests.Other
 {
 	public class CustomUnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
     {

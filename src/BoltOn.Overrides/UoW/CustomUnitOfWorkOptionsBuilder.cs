@@ -7,11 +7,11 @@ using BoltOn.UoW;
 
 namespace BoltOn.Ovverides.UoW
 {
-	public class UnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
+	public class CustomUnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
 	{
-		private readonly IBoltOnLogger<UnitOfWorkOptionsBuilder> _logger;
+		private readonly IBoltOnLogger<CustomUnitOfWorkOptionsBuilder> _logger;
 
-		public UnitOfWorkOptionsBuilder(IBoltOnLogger<UnitOfWorkOptionsBuilder> logger)
+		public CustomUnitOfWorkOptionsBuilder(IBoltOnLogger<CustomUnitOfWorkOptionsBuilder> logger)
 		{
 			_logger = logger;
 		}
