@@ -35,6 +35,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
+    <ProjectReference Include="..\..\src\BoltOn.Overrides\BoltOn.Overrides.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Other\TGetStudentHandler.cs" />

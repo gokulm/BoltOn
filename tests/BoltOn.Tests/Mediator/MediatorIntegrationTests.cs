@@ -4,11 +4,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
-using BoltOn.Data.EF.Mediator;
 using BoltOn.Mediator;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.Overrides.Mediator;
 using BoltOn.Tests.Other;
+using BoltOn.UoW;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -224,7 +225,6 @@ namespace BoltOn.Tests.Mediator
 			MediatorTestHelper.IsClearInterceptors = true;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn();
-			serviceCollection.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
@@ -249,13 +249,11 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn();
-			serviceCollection.AddLogging();
 			serviceCollection.RemoveInterceptor<StopwatchInterceptor>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
 			var sut = serviceProvider.GetService<IMediator>();
-			var testInterceptor = serviceProvider.GetService<TestInterceptor>();
 
 			// act
 			var result = sut.Process(new TestRequest());
@@ -276,8 +274,7 @@ namespace BoltOn.Tests.Mediator
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection
-				.BoltOn()
-				.AddLogging();
+				.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -291,14 +288,15 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_MediatorWithStaleQueryRequest_ExecutesUoWInterceptorAndStartsTransactionsWithDefaultQueryIsolationLevel()
+		public void Process_MediatorWithQueryUncommittedRequest_ExecutesUoWInterceptorAndStartsTransactionsWithDefaultQueryIsolationLevel()
 		{
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn()
-				.AddLogging();
+			serviceCollection.BoltOn(options => options.BoltOnEFModule());
+			serviceCollection.RemoveInterceptor<ChangeTrackerInterceptor>();
+			serviceCollection.AddInterceptor<CustomChangeTrackerInterceptor>();
+			serviceCollection.AddTransient<IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOptionsBuilder>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -308,7 +306,7 @@ namespace BoltOn.Tests.Mediator
 
 			// assert 
 			Assert.True(result);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for StaleQuery"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for QueryUncommitted"));
 		}
 
 		[Fact]
@@ -317,9 +315,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn()
-				.AddLogging();
+			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -338,9 +334,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn()
-				.AddLogging();
+			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -359,9 +353,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn()
-				.AddLogging();
+			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -377,18 +369,12 @@ namespace BoltOn.Tests.Mediator
 
 
 		[Fact]
-		public void Process_MediatorWithQueryRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndDisablesTracking()
+		public void Process_MediatorWithQueryRequest_ExecutesChangeTrackerContextInterceptorAndDisablesTracking()
 		{
 			// arrange
 			MediatorTestHelper.IsSeedData = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn(options =>
-				{
-					options
-						.BoltOnEFModule();
-				})
-				.AddLogging();
+			serviceCollection.BoltOn(options => options.BoltOnEFModule());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -396,31 +382,24 @@ namespace BoltOn.Tests.Mediator
 			// act
 			var result = sut.Process(new GetStudentRequest { StudentId = 2 });
 			var dbContext = serviceProvider.GetService<IDbContextFactory>().Get<SchoolDbContext>();
-			var student = dbContext.Set<Student>().Find(2);
 			var isAutoDetectChangesEnabled = dbContext.ChangeTracker.AutoDetectChangesEnabled;
 			var queryTrackingBehavior = dbContext.ChangeTracker.QueryTrackingBehavior;
 
 			// assert 
 			Assert.NotNull(result);
 			Assert.Equal(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking, queryTrackingBehavior);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(ChangeTrackerInterceptor)}..."));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {true}"));
 			Assert.False(isAutoDetectChangesEnabled);
 		}
 
 		[Fact]
-		public void Process_MediatorWithCommandRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndEnablesTrackAll()
+		public void Process_MediatorWithCommandRequest_ExecutesChangeTrackerContextInterceptorAndEnablesTrackAll()
 		{
 			// arrange
 			MediatorTestHelper.IsSeedData = false;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn(options =>
-				{
-					options
-						.BoltOnEFModule();
-				})
-				.AddLogging();
+			serviceCollection.BoltOn(options => options.BoltOnEFModule());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -434,7 +413,7 @@ namespace BoltOn.Tests.Mediator
 			// assert 
 			Assert.True(result);
 			Assert.Equal(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.TrackAll, queryTrackingBehavior);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(ChangeTrackerInterceptor)}..."));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {false}"));
 			Assert.True(isAutoDetectChangesEnabled);
 		}

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.Ovverides.Mediator;
 
 namespace BoltOn.Tests.Other
 {
@@ -27,7 +28,7 @@ namespace BoltOn.Tests.Other
 	{
 	}
 
-	public class TestStaleQuery : IStaleQuery<bool>
+	public class TestStaleQuery : IQueryUncommitted<bool>
 	{
 	}
 

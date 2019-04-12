@@ -13,12 +13,12 @@ namespace BoltOn.Logging
 
 		public BoltOnLoggerFactory(ILoggerFactory loggerFactory)
 		{
-			this._loggerFactory = loggerFactory;
+			_loggerFactory = loggerFactory;
 		}
 
 		public IBoltOnLogger<TType> Create<TType>()
 		{
-			return new BoltOnNetStandardLoggerAdapter<TType>(_loggerFactory.CreateLogger<TType>());
+			return new BoltOnLogger<TType>(_loggerFactory.CreateLogger<TType>());
 		}
 	}
 }

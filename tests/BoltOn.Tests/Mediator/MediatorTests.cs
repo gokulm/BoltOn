@@ -4,10 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using BoltOn.Bootstrapping;
-using BoltOn.Data.EF.Mediator;
+using BoltOn.Data.EF;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.Overrides.Mediator;
 using BoltOn.Tests.Other;
 using BoltOn.UoW;
 using BoltOn.Utilities;
@@ -47,11 +48,10 @@ namespace BoltOn.Tests.Mediator
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var interceptor = new Mock<IInterceptor>();
 			var logger = new Mock<IBoltOnLogger<TestInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, bool>)))
 						  .Returns(testHandler.Object);
-			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>() { new TestInterceptor(logger.Object) });
+			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor> { new TestInterceptor(logger.Object) });
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
@@ -103,7 +103,6 @@ namespace BoltOn.Tests.Mediator
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var interceptor = new Mock<IInterceptor>();
 			var logger = new Mock<IBoltOnLogger<UnitOfWorkInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
@@ -277,15 +276,14 @@ namespace BoltOn.Tests.Mediator
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var interceptor = new Mock<IInterceptor>();
-			var logger = new Mock<IBoltOnLogger<EFQueryTrackingBehaviorInterceptor>>();
+			var logger = new Mock<IBoltOnLogger<ChangeTrackerInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestQuery, bool>)))
 				.Returns(testHandler.Object);
 			var request = new TestQuery();
-			var mediatorContext = new MediatorDataContext();
+			var changeTrackerContext = new ChangeTrackerContext();
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
 			{
-				new EFQueryTrackingBehaviorInterceptor(logger.Object, mediatorContext)
+				new ChangeTrackerInterceptor(logger.Object, changeTrackerContext)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
@@ -295,27 +293,26 @@ namespace BoltOn.Tests.Mediator
 
 			// assert 
 			Assert.True(result);
-			Assert.True(mediatorContext.IsQueryRequest);
-			logger.Verify(l => l.Debug($"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
+			Assert.True(changeTrackerContext.IsQueryRequest);
+			logger.Verify(l => l.Debug($"Entering {nameof(ChangeTrackerInterceptor)}..."));
 			logger.Verify(l => l.Debug($"IsQueryRequest: {true}"));
 		}
 
 		[Fact]
-		public void Get_MediatorWithStaleQueryRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndDisablesTracking()
+		public void Get_MediatorWithQueryUncommittedRequest_ExecutesChangeTrackerContextInterceptorAndDisablesTracking()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var interceptor = new Mock<IInterceptor>();
-			var logger = new Mock<IBoltOnLogger<EFQueryTrackingBehaviorInterceptor>>();
+			var logger = new Mock<IBoltOnLogger<CustomChangeTrackerInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestStaleQuery, bool>)))
 				.Returns(testHandler.Object);
 			var request = new TestStaleQuery();
-			var mediatorContext = new MediatorDataContext();
+			var changeTrackerContext = new ChangeTrackerContext();
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
 			{
-				new EFQueryTrackingBehaviorInterceptor(logger.Object, mediatorContext)
+				new CustomChangeTrackerInterceptor(logger.Object, changeTrackerContext)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
@@ -325,27 +322,26 @@ namespace BoltOn.Tests.Mediator
 
 			// assert 
 			Assert.True(result);
-			Assert.True(mediatorContext.IsQueryRequest);
-			logger.Verify(l => l.Debug($"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
+			Assert.True(changeTrackerContext.IsQueryRequest);
+			logger.Verify(l => l.Debug($"Entering {nameof(CustomChangeTrackerInterceptor)}..."));
 			logger.Verify(l => l.Debug($"IsQueryRequest: {true}"));
 		}
 
 		[Fact]
-		public void Get_MediatorWithCommandRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndEnablesTracking()
+		public void Get_MediatorWithCommandRequest_ExecutesChangeTrackerContextInterceptorAndEnablesTracking()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var interceptor = new Mock<IInterceptor>();
-			var logger = new Mock<IBoltOnLogger<EFQueryTrackingBehaviorInterceptor>>();
+			var logger = new Mock<IBoltOnLogger<ChangeTrackerInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
 			var request = new TestCommand();
-			var mediatorContext = new MediatorDataContext();
+			var changeTrackerContext = new ChangeTrackerContext();
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
 			{
-				new EFQueryTrackingBehaviorInterceptor(logger.Object, mediatorContext)
+				new ChangeTrackerInterceptor(logger.Object, changeTrackerContext)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			testHandler.Setup(s => s.Handle(request)).Returns(true);
@@ -355,8 +351,8 @@ namespace BoltOn.Tests.Mediator
 
 			// assert 
 			Assert.True(result);
-			Assert.False(mediatorContext.IsQueryRequest);
-			logger.Verify(l => l.Debug($"Entering {nameof(EFQueryTrackingBehaviorInterceptor)}..."));
+			Assert.False(changeTrackerContext.IsQueryRequest);
+			logger.Verify(l => l.Debug($"Entering {nameof(ChangeTrackerInterceptor)}..."));
 			logger.Verify(l => l.Debug($"IsQueryRequest: {false}"));
 		}
 

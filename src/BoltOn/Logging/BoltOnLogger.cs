@@ -12,11 +12,11 @@ namespace BoltOn.Logging
 		void Warn(string message);
     }
 
-	public class BoltOnNetStandardLoggerAdapter<TType> : IBoltOnLogger<TType>
+	public class BoltOnLogger<TType> : IBoltOnLogger<TType>
 	{
 		readonly ILogger<TType> _logger;
 
-		public BoltOnNetStandardLoggerAdapter(ILogger<TType> logger)
+		public BoltOnLogger(ILogger<TType> logger)
 		{
 			_logger = logger;
 		}

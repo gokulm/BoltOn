@@ -46,7 +46,7 @@ namespace BoltOn.Bootstrapping
 				return new UnitOfWorkManager(s.GetRequiredService<IBoltOnLogger<UnitOfWorkManager>>(), 
 					s.GetRequiredService<IUnitOfWorkFactory>());
 			});
-			serviceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnNetStandardLoggerAdapter<>));
+			serviceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
 			serviceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
 		}
 	}

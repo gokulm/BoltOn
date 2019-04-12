@@ -1,5 +1,4 @@
 using System;
-using BoltOn.Data.EF.Mediator;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Data.EF
@@ -12,19 +11,20 @@ namespace BoltOn.Data.EF
 	public class DbContextFactory : IDbContextFactory
 	{
 		private readonly IServiceProvider _serviceProvider;
-		readonly MediatorDataContext _mediatorDataContext;
+		private readonly ChangeTrackerContext _changeTrackerContext;
 
 		public DbContextFactory(IServiceProvider serviceProvider,
-			MediatorDataContext mediatorDataContext)
+			ChangeTrackerContext changeTrackerContext)
 		{
-			_mediatorDataContext = mediatorDataContext;
+			_changeTrackerContext = changeTrackerContext;
 			_serviceProvider = serviceProvider;
 		}
 
 		public TDbContext Get<TDbContext>() where TDbContext : DbContext
 		{
-			var dbContext = _serviceProvider.GetService(typeof(TDbContext)) as TDbContext;
-			if (_mediatorDataContext.IsQueryRequest)
+		    if(!(_serviceProvider.GetService(typeof(TDbContext)) is TDbContext dbContext))
+                throw new Exception("DbContext is null");
+			if(_changeTrackerContext.IsQueryRequest)
 			{
 				dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 				dbContext.ChangeTracker.AutoDetectChangesEnabled = false;

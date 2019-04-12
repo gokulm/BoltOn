@@ -10,7 +10,6 @@ namespace BoltOn.Utilities
     public class BoltOnClock : IBoltOnClock
     {
 		public DateTime Now => DateTime.Now;
-
 		public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
     }
 }

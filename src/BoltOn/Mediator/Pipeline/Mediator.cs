@@ -27,8 +27,8 @@ namespace BoltOn.Mediator.Pipeline
 						IEnumerable<IInterceptor> interceptors)
 		{
 			_logger = logger;
-			this._serviceProvider = serviceProvider;
-			this._interceptors = interceptors;
+			_serviceProvider = serviceProvider;
+			_interceptors = interceptors;
 		}
 
 		public TResponse Process<TResponse>(IRequest<TResponse> request)
@@ -107,7 +107,7 @@ namespace BoltOn.Mediator.Pipeline
 				var interfaceHandlerType = genericRequestHandlerType.MakeGenericType(request.GetType());
 				var handler = _serviceProvider.GetService(interfaceHandlerType);
 				Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
-				_logger.Debug($"Resolved handler: {handler.GetType()}");
+				_logger.Debug($"Resolved handler: {handler?.GetType()}");
 				dynamic decorator = Activator.CreateInstance(typeof(RequestHandlerDecorator<>)
 																   .MakeGenericType(requestType), handler);
 				var response = decorator.Handle(request);
@@ -121,7 +121,7 @@ namespace BoltOn.Mediator.Pipeline
 				var interfaceHandlerType = genericRequestHandlerType.MakeGenericType(request.GetType(), typeof(TResponse));
 				var handler = _serviceProvider.GetService(interfaceHandlerType);
 				Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
-				_logger.Debug($"Resolved handler: {handler.GetType()}");
+				_logger.Debug($"Resolved handler: {handler?.GetType()}");
 				dynamic decorator = Activator.CreateInstance(typeof(RequestHandlerDecorator<,>)
 																   .MakeGenericType(requestType, typeof(TResponse)), handler);
 				var response = decorator.Handle(request);
@@ -142,7 +142,7 @@ namespace BoltOn.Mediator.Pipeline
 				var interfaceHandlerType = genericRequestHandlerType.MakeGenericType(request.GetType());
 				var handler = _serviceProvider.GetService(interfaceHandlerType);
 				Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
-				_logger.Debug($"Resolved handler: {handler.GetType()}");
+				_logger.Debug($"Resolved handler: {handler?.GetType()}");
 				dynamic decorator = Activator.CreateInstance(typeof(RequestAsyncHandlerDecorator<>)
 																	   .MakeGenericType(requestType), handler);
 				var response = await decorator.HandleAsync(request, cancellationToken);
@@ -156,7 +156,7 @@ namespace BoltOn.Mediator.Pipeline
 				var interfaceHandlerType = genericRequestHandlerType.MakeGenericType(request.GetType(), typeof(TResponse));
 				var handler = _serviceProvider.GetService(interfaceHandlerType);
 				Check.Requires(handler != null, string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
-				_logger.Debug($"Resolved handler: {handler.GetType()}");
+				_logger.Debug($"Resolved handler: {handler?.GetType()}");
 				dynamic decorator = Activator.CreateInstance(typeof(RequestAsyncHandlerDecorator<,>)
 																	   .MakeGenericType(requestType, typeof(TResponse)), handler);
 				var response = await decorator.HandleAsync(request, cancellationToken);

@@ -2,7 +2,7 @@
 
 namespace BoltOn.Tests.Common
 {
-	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Method)]
 	public class TestPriorityAttribute : Attribute
 	{
 		public TestPriorityAttribute(int priority)
@@ -10,6 +10,6 @@ namespace BoltOn.Tests.Common
 			Priority = priority;
 		}
 
-		public int Priority { get; private set; }
+		public int Priority { get; }
 	}
 }

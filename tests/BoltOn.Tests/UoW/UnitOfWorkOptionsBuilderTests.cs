@@ -1,4 +1,5 @@
 using BoltOn.Logging;
+using BoltOn.Tests.Mediator;
 using BoltOn.Tests.Other;
 using BoltOn.UoW;
 using Moq;
@@ -43,20 +44,20 @@ namespace BoltOn.Tests.UoW
 		}
 
 		[Fact]
-		public void Build_StaleQueryRequest_ReturnsUoWOptionsBuildWithProperIsolationLevel()
+		public void Build_QueryUncommittedRequest_ReturnsUoWOptionsBuildWithProperIsolationLevel()
 		{
 			// arrange
 			var loggerFactory = new Mock<IBoltOnLoggerFactory>();
-			var logger = new Mock<IBoltOnLogger<UnitOfWorkOptionsBuilder>>();
-			loggerFactory.Setup(u => u.Create<UnitOfWorkOptionsBuilder>()).Returns(logger.Object);
-			var sut = new UnitOfWorkOptionsBuilder(logger.Object);
+			var logger = new Mock<IBoltOnLogger<CustomUnitOfWorkOptionsBuilder>>();
+			loggerFactory.Setup(u => u.Create<CustomUnitOfWorkOptionsBuilder>()).Returns(logger.Object);
+			var sut = new CustomUnitOfWorkOptionsBuilder(logger.Object);
 
 			// act
 			var result = sut.Build(new TestStaleQuery());
 
 			// assert
 			Assert.Equal(System.Transactions.IsolationLevel.ReadUncommitted, result.IsolationLevel);
-			logger.Verify(l => l.Debug("Getting isolation level for StaleQuery"));
+			logger.Verify(l => l.Debug("Getting isolation level for QueryUncommitted"));
 		}
 	}
 }
