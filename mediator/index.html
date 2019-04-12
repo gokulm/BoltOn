@@ -127,9 +127,9 @@
 <br /> To create a request with response of type TResponse and that requires require unit of work. A transaction with isolation level <strong>ReadCommitted</strong> will be started for the requests that implement this interface.</li>
 <li><code>IQuery&lt;out TResponse&gt;</code>
 <br /> To create a request with response of type TResponse and that requires unit of work. A transaction with isolation level ReadCommitted will be started for the requests that implement this interface. 
-<br /> If <strong>BoltOn.Data.EF</strong> is installed and bolted, DbContexts' ChangeTracker.QueryTrackingBehavior will be set to <code>QueryTrackingBehavior.NoTracking</code> and <code>ChangeTracker.AutoDetectChangesEnabled</code> will be set to false in <a href="/data/#dbcontextfactory">DbContextFactory</a>.</li>
+<br /> If <strong>BoltOn.Data.EF</strong> is installed and bolted, DbContexts' ChangeTracker.QueryTrackingBehavior will be set to <code>QueryTrackingBehavior.NoTracking</code> and <code>ChangeTracker.AutoDetectChangesEnabled</code> will be set to false in <a href="../data/#dbcontextfactory">DbContextFactory</a>.</li>
 </ul>
-<p>In case if you want a custom request type with a different isolation level, you could create an interface and customize <code>UnitOfWorkOptionsBuilder</code> by overriding it or by creating a new one. Check out this custom request type called <code>IQueryUncommitted</code> with isolation level <strong>ReadUncommitted</strong> <a href="/optional/#iqueryuncommitted">here</a>. </p>
+<p>In case if you want a custom request type with a different isolation level, you could create an interface and customize <code>UnitOfWorkOptionsBuilder</code> by overriding it or by creating a new one. Check out this custom request type called <code>IQueryUncommitted</code> with isolation level <strong>ReadUncommitted</strong> <a href="../optional/#iqueryuncommitted">here</a>. </p>
 <p>The <strong>response</strong> can be any value or reference type.</p>
 <p>After declaring the request and the response, you need to create a handler by implementiong any of these interfaces:</p>
 <ul>
@@ -168,7 +168,7 @@ public class GetAllStudentsHandler : IRequestAsyncHandler&lt;GetAllStudentsReque
 <br> This interceptor starts a transaction with an isolation level based on the interface like IQuery or ICommand etc., (mentioned above) that the request implements. This interceptor is enabled only if the request implements <code>IEnableUnitOfWorkInterceptor</code></p>
 </li>
 </ul>
-<p>You can create an interceptor by implementing <code>IInterceptor</code> interface, like <a href="/optional/#interceptor">this</a>. If you want to enable or disable an interceptor based on a marker interface implementation, you can inherit <code>BaseRequestSpecificInterceptor&lt;T&gt;</code></p>
+<p>You can create an interceptor by implementing <code>IInterceptor</code> interface, like <a href="../optional/#interceptor">this</a>. If you want to enable or disable an interceptor based on a marker interface implementation, you can inherit <code>BaseRequestSpecificInterceptor&lt;T&gt;</code></p>
 <p>Interceptors can be added and removed using the extension methods <code>AddInterceptor&lt;TInterceptor&gt;</code> and <code>RemoveInterceptor&lt;TInterceptor&gt;</code> (in BoltOn.Mediator namespace) respectively. All the interceptors can be removed using the extension method <code>RemoveAllInterceptors</code>.</p>
 <h2 id="unit-of-work">Unit of Work</h2>
 <ul>
@@ -176,7 +176,7 @@ public class GetAllStudentsHandler : IRequestAsyncHandler&lt;GetAllStudentsReque
 <li>If you're not using Mediator and if you want to start an unit of work, call Get method in <code>IUnitOfWorkManager</code> by passing <code>UnitOfWorkOptions</code> based on your needs. It will start a new transaction with <code>System.Transactions.TransactionScopeOption.RequiresNew</code> if there is one already started. The default transaction isolation level is <code>IsolationLevel.Serializable</code></li>
 </ul>
 <p><strong>Note:</strong> Though it's possible to start an unit of work manually, please try to do avoid it, especially when there is already one, as having more than one unit of work isn't a proper way to build applications. This will be useful only when you want to query a database with an isolation level different from the one started by <code>UnitOfWorkInterceptor</code>.</p>
-<p>In case if you want to change the default transaction isolation level for all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement <code>IUnitOfWorkOptionsBuilder</code> like <a href="/optional/#unitofworkoptionsbuilder">this</a> or inherit <code>UnitOfWorkOptionsBuilder</code> and override the Build method.</p>
+<p>In case if you want to change the default transaction isolation level for all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement <code>IUnitOfWorkOptionsBuilder</code> like <a href="../optional/#unitofworkoptionsbuilder">this</a> or inherit <code>UnitOfWorkOptionsBuilder</code> and override the Build method.</p>
               
             </div>
           </div>
