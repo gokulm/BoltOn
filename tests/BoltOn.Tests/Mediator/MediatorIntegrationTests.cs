@@ -293,8 +293,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn(options => options.BoltOnEFModule());
+			serviceCollection.BoltOn(options => options.BoltOnEFModule());
 			serviceCollection.RemoveInterceptor<ChangeTrackerInterceptor>();
 			serviceCollection.AddInterceptor<CustomChangeTrackerInterceptor>();
 			serviceCollection.AddTransient<IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOptionsBuilder>();
@@ -316,8 +315,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn();
+			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -336,8 +334,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn();
+			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -356,8 +353,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn();
+			serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -378,15 +374,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			MediatorTestHelper.IsSeedData = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn(options =>
-				{
-					options
-						.BoltOnEFModule();
-				});
-			//serviceCollection.RemoveInterceptor<CustomChangeTrackerInterceptor>();
-			//serviceCollection.AddInterceptor<ChangeTrackerInterceptor>();
-			//serviceCollection.AddTransient<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
+			serviceCollection.BoltOn(options => options.BoltOnEFModule());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -411,14 +399,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			MediatorTestHelper.IsSeedData = false;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn(options =>
-				{
-					options
-						.BoltOnEFModule();
-				});
-			//serviceCollection.RemoveInterceptor<CustomChangeTrackerInterceptor>();
-			//serviceCollection.AddInterceptor<ChangeTrackerInterceptor>();
+			serviceCollection.BoltOn(options => options.BoltOnEFModule());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
