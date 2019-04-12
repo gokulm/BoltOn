@@ -149,7 +149,7 @@ There are instances where you have to use static properties DateTime.Now or Date
 {
 }
 </code></pre>
-<p>And then create a custom interceptor in case if you want to tweak the ChangeTrackerContext, like the one mentioned <a href="#interceptor">below</a> and create a custom UnitOfWorkOptionsBuilder to change the transaction isolation level or timeout, like the one mentioned <a href="#unitofworkoptionsbuilder">below</a>. And, finally register them like this:</p>
+<p>And then create a custom interceptor in case if you want to tweak the ChangeTrackerContext, like the one mentioned <a href="/optional/#interceptor">below</a> and create a custom UnitOfWorkOptionsBuilder to change the transaction isolation level or timeout, like the one mentioned <a href="/optional/#unitofworkoptionsbuilder">below</a>. And, finally register them like this:</p>
 <pre><code>serviceCollection.RemoveInterceptor&lt;ChangeTrackerInterceptor&gt;();
 serviceCollection.AddInterceptor&lt;CustomChangeTrackerInterceptor&gt;();
 serviceCollection.AddTransient&lt;IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOptionsBuilder&gt;();
