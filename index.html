@@ -65,12 +65,6 @@
     <li class="toctree-l2"><a href="#tightenbolts">TightenBolts()</a></li>
     
 
-    <li class="toctree-l2"><a href="#logging">Logging</a></li>
-    
-
-    <li class="toctree-l2"><a href="#utilities">Utilities</a></li>
-    
-
     </ul>
 	    </li>
           
@@ -82,6 +76,11 @@
             <li class="toctree-l1">
 		
     <a class="" href="data/">Data</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="optional/">Optional</a>
 	    </li>
           
         </ul>
@@ -195,31 +194,6 @@ Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other 
     }
 }
 </code></pre>
-<h2 id="logging">Logging</h2>
-<p>BoltOn uses .NET Core's logger internally, with just a custom adapter to help in unit testing. You could use any logging provider as you wish, or you could inherit <code>BoltOnNetStandardLoggerAdapter&lt;TType&gt;</code> and override the logging methods.</p>
-<h2 id="utilities">Utilities</h2>
-<ul>
-<li>
-<p><strong>Check.Requires</strong>
-<br>
-There are instances where you have to check for a condition and throw exception if the condition fails, in those instances you could use <code>Check.Requires</code></p>
-<p>Example:</p>
-<pre><code>Check.Requires(_serviceCollection != null, "ServiceCollection not initialized");
-</code></pre>
-<p>is equivalent to</p>
-<pre><code>if(_serviceCollection == null)
-    throw new Exception("ServiceCollection not initialized");
-</code></pre>
-<p>and custom exceptions can be thrown like this:</p>
-<pre><code>Check.Requires&lt;CustomException&gt;(_serviceCollection != null, "ServiceCollection not initialized");
-</code></pre>
-</li>
-<li>
-<p><strong>IBoltOnClock/BoltOnClock</strong>
-<br>
-There are instances where you have to use static properties DateTime.Now or DateTimeOffset.UtcNow, which makes hard to unit test, in those instances you could inject <code>IBoltOnClock</code></p>
-</li>
-</ul>
               
             </div>
           </div>
@@ -268,5 +242,5 @@ There are instances where you have to use static properties DateTime.Now or Date
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-04-12 02:02:31
+Build Date UTC : 2019-04-12 02:11:36
 -->
