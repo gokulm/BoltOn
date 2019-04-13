@@ -61,7 +61,10 @@ Every request flows thru a set of built-in interceptors, which can be controlled
 
 You can create an interceptor by implementing `IInterceptor` interface, like [this](../optional/#interceptor). If you want to enable or disable an interceptor based on a marker interface implementation, you can inherit `BaseRequestSpecificInterceptor<T>`
 
-Interceptors can be added and removed using the extension methods `AddInterceptor<TInterceptor>` and `RemoveInterceptor<TInterceptor>` (in BoltOn.Mediator namespace) respectively. All the interceptors can be removed using the extension method `RemoveAllInterceptors`.
+**Note: **
+
+* Interceptors can be added and removed using the extension methods `AddInterceptor<TInterceptor>` and `RemoveInterceptor<TInterceptor>` (in BoltOn.Mediator namespace) respectively. All the interceptors can be removed using the extension method `RemoveAllInterceptors`. 
+* Interceptors from all the bolted modules and assemblies will be registered and executed automatically. In case if certain interceptors must be executed in a particular order, adding the interceptors using `AddInterceptor<TInterceptor>` extension method will execute in the order they're added. 
 
 Unit of Work
 ------------
