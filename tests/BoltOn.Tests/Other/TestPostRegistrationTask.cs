@@ -4,7 +4,7 @@ using BoltOn.Bootstrapping;
 
 namespace BoltOn.Tests.Other
 {
-	public class TestDataPostRegistrationTask : IPostRegistrationTask
+	public class TestPostRegistrationTask : IPostRegistrationTask
     {
         public void Run(PostRegistrationTaskContext context)
         {

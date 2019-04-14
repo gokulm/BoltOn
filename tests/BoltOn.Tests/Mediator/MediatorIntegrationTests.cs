@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.Overrides.Mediator;
 using BoltOn.Tests.Other;
 using BoltOn.UoW;
 using BoltOn.Utilities;
@@ -27,7 +28,7 @@ namespace BoltOn.Tests.Mediator
 		public void Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
-			MediatorTestHelper.IsClearInterceptors = false;
+			//MediatorTestHelper.IsClearInterceptors = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
@@ -53,7 +54,6 @@ namespace BoltOn.Tests.Mediator
 		public void Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayRequest()
 		{
 			// arrange
-			MediatorTestHelper.IsClearInterceptors = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
@@ -79,7 +79,6 @@ namespace BoltOn.Tests.Mediator
 		public void Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayCommand()
 		{
 			// arrange
-			MediatorTestHelper.IsClearInterceptors = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
@@ -105,7 +104,6 @@ namespace BoltOn.Tests.Mediator
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayAsyncRequest()
 		{
 			// arrange
-			MediatorTestHelper.IsClearInterceptors = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
@@ -131,7 +129,6 @@ namespace BoltOn.Tests.Mediator
 		public async Task Process_BootstrapWithDefaultsAndAsyncHandler_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
-			MediatorTestHelper.IsClearInterceptors = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
@@ -156,10 +153,9 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_BootstrapWithCustomInterceptors_InvokesDefaultAndCustomInterceptorInOrderAndReturnsSuccessfulResult()
+		public void Process_BootstrapWithTestInterceptors_InvokesDefaultAndCustomInterceptorInOrderAndReturnsSuccessfulResult()
 		{
 			// arrange
-			MediatorTestHelper.IsClearInterceptors = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
@@ -186,10 +182,9 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public async Task Process_BootstrapWithCustomInterceptorsAndAsyncHandler_InvokesDefaultAndCustomInterceptorInOrderAndReturnsSuccessfulResult()
+		public async Task Process_BootstrapWithTestInterceptorsAndAsyncHandler_InvokesDefaultAndCustomInterceptorInOrderAndReturnsSuccessfulResult()
 		{
 			// arrange
-			MediatorTestHelper.IsClearInterceptors = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
@@ -216,7 +211,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_BootstrapWithCustomInterceptorsAndClear_InvokesOnlyCustomInterceptorAndReturnsSuccessfulResult()
+		public void Process_BootstrapWithTestInterceptorsAndRemoveAll_InvokesOnlyTestInterceptorAndReturnsSuccessfulResult()
 		{
 			// arrange
 			MediatorTestHelper.IsClearInterceptors = true;
@@ -264,7 +259,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_MediatorWithQueryRequest_ExecutesUoWInterceptorAndStartsTransactionsWithDefaultQueryIsolationLevel()
+		public void Process_MediatorWithQueryRequest_StartsTransactionsWithDefaultQueryIsolationLevel()
 		{
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
@@ -284,14 +279,12 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_MediatorWithQueryUncommittedRequest_ExecutesUoWInterceptorAndStartsTransactionsWithDefaultQueryIsolationLevel()
+		public void Process_MediatorWithQueryUncommittedRequest_ExecutesCustomChangeTrackerInterceptor()
 		{
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(options => options.BoltOnEFModule());
-			//serviceCollection.RemoveInterceptor<ChangeTrackerInterceptor>();
-			//serviceCollection.AddInterceptor<CustomChangeTrackerInterceptor>();
 			serviceCollection.AddTransient<IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOptionsBuilder>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
@@ -306,12 +299,12 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_MediatorWithQueryRequest_ExecutesUoWInterceptorAndStartsTransactionsWithCustomizedQueryIsolationLevel()
+		public void Process_MediatorWithQueryRequest_StartsTransactionsWithCustomizedQueryIsolationLevel()
 		{
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn();
+			serviceCollection.BoltOn(o => o.BoltOnEFModule());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -321,16 +314,17 @@ namespace BoltOn.Tests.Mediator
 
 			// assert 
 			Assert.True(result);
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(CustomChangeTrackerInterceptor)}..."));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
 		[Fact]
-		public async Task Process_MediatorWithQueryRequestAndAsyncHandler_ExecutesUoWInterceptorAndStartsTransactionsWithCustomizedQueryIsolationLevel()
+		public async Task Process_MediatorWithQueryRequestAndAsyncHandler_StartsTransactionsWithCustomizedQueryIsolationLevel()
 		{
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn();
+			serviceCollection.BoltOn(o => o.BoltOnEFModule());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -339,17 +333,18 @@ namespace BoltOn.Tests.Mediator
 			var result = await sut.ProcessAsync(new TestQuery());
 
 			// assert 
-			Assert.True(result);
+			Assert.True(result); 
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(CustomChangeTrackerInterceptor)}..."));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
 		[Fact]
-		public async Task Process_MediatorWithOneWayCommandRequestAndAsyncHandler_ExecutesUoWInterceptorAndStartsTransactionsWithCustomizedQueryIsolationLevel()
+		public async Task Process_MediatorWithOneWayCommandRequestAndAsyncHandler_StartsTransactionsWithCustomizedQueryIsolationLevel()
 		{
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn();
+			serviceCollection.BoltOn(o => o.BoltOnEFModule());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -359,7 +354,8 @@ namespace BoltOn.Tests.Mediator
 			await sut.ProcessAsync(command);
 
 			// assert 
-			Assert.Equal(1, command.Value);
+			Assert.Equal(1, command.Value); 
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(CustomChangeTrackerInterceptor)}..."));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
@@ -418,6 +414,7 @@ namespace BoltOn.Tests.Mediator
 		{
 			MediatorTestHelper.IsRemoveStopwatchInterceptor = false;
 			MediatorTestHelper.IsClearInterceptors = false;
+			MediatorTestHelper.IsCustomizeIsolationLevel = false;
 			MediatorTestHelper.LoggerStatements.Clear();
 			Bootstrapper
 				.Instance

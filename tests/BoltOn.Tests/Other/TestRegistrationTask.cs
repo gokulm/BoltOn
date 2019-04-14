@@ -85,7 +85,19 @@ namespace BoltOn.Tests.Other
 				context.RemoveAllInterceptors();
 
 			if (MediatorTestHelper.IsCustomizeIsolationLevel)
+			{
+				context.RemoveInterceptor<ChangeTrackerInterceptor>();
+				context.AddInterceptor<CustomChangeTrackerInterceptor>();
 				context.Container.AddSingleton<IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOptionsBuilder>();
+				var customChangeTrackerInterceptorLogger = new Mock<IBoltOnLogger<CustomChangeTrackerInterceptor>>();
+				customChangeTrackerInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
+										 .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
+				context.Container.AddTransient((s) => customChangeTrackerInterceptorLogger.Object);
+			}
+			else
+			{
+				//context.AddInterceptor<CustomChangeTrackerInterceptor>();
+			}
 
 			if (MediatorTestHelper.IsRemoveStopwatchInterceptor)
 				context.RemoveInterceptor<StopwatchInterceptor>();
