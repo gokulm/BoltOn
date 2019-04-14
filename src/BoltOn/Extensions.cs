@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 namespace BoltOn
 {
 	public static class Extensions
-    {
+	{
 		public static IServiceCollection BoltOn(this IServiceCollection serviceCollection, Action<BoltOnOptions> action = null)
 		{
 			var options = new BoltOnOptions();
@@ -26,26 +26,27 @@ namespace BoltOn
 			Bootstrapper.Instance.RunPostRegistrationTasks(serviceProvider);
 		}
 
-		public static IServiceCollection RemoveAllInterceptors(this IServiceCollection services)
+		internal static IServiceCollection AddInterceptor(this IServiceCollection services, Type interceptorType)
 		{
-			var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IInterceptor));
-			if (serviceDescriptor != null)
-				services.Remove(serviceDescriptor);
+			var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == interceptorType);
+			if (serviceDescriptor == null)
+				services.AddTransient(typeof(IInterceptor), interceptorType);
 			return services;
 		}
 
-		public static IServiceCollection AddInterceptor<TInterceptor>(this IServiceCollection services)
+		public static void AddInterceptor<TInterceptor>(this RegistrationTaskContext context) where TInterceptor : IInterceptor
 		{
-			services.AddTransient(typeof(IInterceptor), typeof(TInterceptor));
-			return services;
+			context.AddInterceptor<TInterceptor>();
 		}
 
-		public static IServiceCollection RemoveInterceptor<TInterceptor>(this IServiceCollection services)
+		public static void RemoveInterceptor<TInterceptor>(this RegistrationTaskContext context) where TInterceptor : IInterceptor
 		{
-			var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(TInterceptor));
-			if (serviceDescriptor != null)
-				services.Remove(serviceDescriptor);
-			return services;
+			context.RemoveInterceptor<TInterceptor>();
+		}
+
+		public static void RemoveAllInterceptors(this RegistrationTaskContext context)
+		{
+			context.RemoveAllInterceptors();
 		}
 	}
 }

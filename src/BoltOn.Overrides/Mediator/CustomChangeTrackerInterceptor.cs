@@ -26,7 +26,7 @@ namespace BoltOn.Overrides.Mediator
 		{
 			_logger.Debug($"Entering {nameof(CustomChangeTrackerInterceptor)}...");
 			_changeTrackerContext.IsQueryRequest = request is IQuery<TResponse> || request is IQueryUncommitted<TResponse>;
-			_logger.Debug($"IsQueryRequest: {_changeTrackerContext.IsQueryRequest}");
+			_logger.Debug($"IsQueryRequest or IQueryUncommitted: {_changeTrackerContext.IsQueryRequest}");
 			var response = next(request);
 			return response;
 		}
@@ -36,7 +36,7 @@ namespace BoltOn.Overrides.Mediator
 		{
 			_logger.Debug($"Entering {nameof(CustomChangeTrackerInterceptor)}...");
 			_changeTrackerContext.IsQueryRequest = request is IQuery<TResponse> || request is IQueryUncommitted<TResponse>;
-			_logger.Debug($"IsQueryRequest: {_changeTrackerContext.IsQueryRequest}");
+			_logger.Debug($"IsQueryRequest or IQueryUncommitted: {_changeTrackerContext.IsQueryRequest}");
 			var response = await next(request, cancellationToken);
 			return response;
 		}

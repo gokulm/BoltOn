@@ -29,8 +29,6 @@ After declaring the request and the response, you need to create a handler by im
 * `IRequestHandler<in TRequest, TResponse>` or `IRequestAsyncHandler<in TRequest, TResponse>`
 <br> For handlers that have responses.
 
-**Note:** `MediatorRegistrationTask` takes care of registering the handers to the DI framework.
-
 Example:
 
     public class GetAllStudentsRequest : IQuery<IEnumerable<StudentDto>>
@@ -63,8 +61,10 @@ You can create an interceptor by implementing `IInterceptor` interface, like [th
 
 **Note: **
 
-* Interceptors can be added and removed using the extension methods `AddInterceptor<TInterceptor>` and `RemoveInterceptor<TInterceptor>` (in BoltOn.Mediator namespace) respectively. All the interceptors can be removed using the extension method `RemoveAllInterceptors`. 
-* Interceptors from all the bolted modules and assemblies will be registered and executed automatically. In case if certain interceptors must be executed in a particular order, adding the interceptors using `AddInterceptor<TInterceptor>` extension method will execute in the order they're added. 
+* Interceptors from all the bolted modules and assemblies **must be** added explicitly in the registration tasks.
+* Interceptors can be added and removed using the extension methods `AddInterceptor<TInterceptor>` and `RemoveInterceptor<TInterceptor>` respectively. 
+* Interceptors added using `AddInterceptor<TInterceptor>` will be executed in the order they're added.
+* In case if you want to remove all the interceptors in the pipeline, use the extension method `RemoveAllInterceptors`. However, if this extension method is executed in a registration task and if there is another registration task after your registration task with `AddInterceptor<TInterceptor>` call, those interceptors will be added to the pipeline.
 
 Unit of Work
 ------------

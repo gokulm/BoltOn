@@ -324,7 +324,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.True(result);
 			Assert.True(changeTrackerContext.IsQueryRequest);
 			logger.Verify(l => l.Debug($"Entering {nameof(CustomChangeTrackerInterceptor)}..."));
-			logger.Verify(l => l.Debug($"IsQueryRequest: {true}"));
+			logger.Verify(l => l.Debug($"IsQueryRequest or IQueryUncommitted: {true}"));
 		}
 
 		[Fact]

@@ -68,24 +68,8 @@ namespace BoltOn
 
 		private static void RegisterInterceptors(RegistrationTaskContext context)
 		{
-			var container = context.Container;
-			container.AddInterceptor<StopwatchInterceptor>();
-			container.AddInterceptor<UnitOfWorkInterceptor>();
-
-			var interceptorType = typeof(IInterceptor);
-			var interceptorImplementations = (from a in context.Assemblies
-										 from t in a.GetTypes()
-										 where interceptorType.IsAssignableFrom(t)
-										 && t.IsClass && !t.IsAbstract
-										 select t).ToList();
-
-			foreach (var implementation in interceptorImplementations)
-			{
-				var serviceDescriptor = container.FirstOrDefault(descriptor => descriptor.ImplementationType == implementation);
-				if (serviceDescriptor == null)
-					container.AddTransient(interceptorType, implementation);
-			}
-
+			context.AddInterceptor<StopwatchInterceptor>();
+			context.AddInterceptor<UnitOfWorkInterceptor>();
 		}
 
 		private static void RegisterHandlers(RegistrationTaskContext context)

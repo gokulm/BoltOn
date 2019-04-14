@@ -9,6 +9,7 @@ namespace BoltOn.Data.EF
 		{
 			var container = context.Container;
 			container.AddScoped<ChangeTrackerContext>();
+			context.AddInterceptor<ChangeTrackerInterceptor>();
 		}
 	}
 }

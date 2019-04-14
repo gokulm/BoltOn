@@ -4,10 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
-using BoltOn.Mediator;
-using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Overrides.Mediator;
 using BoltOn.Tests.Other;
 using BoltOn.UoW;
 using BoltOn.Utilities;
@@ -229,7 +226,6 @@ namespace BoltOn.Tests.Mediator
 			serviceProvider.TightenBolts();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
 			var sut = serviceProvider.GetService<IMediator>();
-			var testInterceptor = serviceProvider.GetService<TestInterceptor>();
 
 			// act
 			var result = sut.Process(new TestRequest());
@@ -247,9 +243,9 @@ namespace BoltOn.Tests.Mediator
 		public void Process_BootstrapWithRemoveInterceptor_DoesNotInvokeRemovedInterceptorAndReturnsSuccessfulResult()
 		{
 			// arrange
+			MediatorTestHelper.IsRemoveStopwatchInterceptor = true;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn();
-			serviceCollection.RemoveInterceptor<StopwatchInterceptor>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
@@ -294,8 +290,8 @@ namespace BoltOn.Tests.Mediator
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(options => options.BoltOnEFModule());
-			serviceCollection.RemoveInterceptor<ChangeTrackerInterceptor>();
-			serviceCollection.AddInterceptor<CustomChangeTrackerInterceptor>();
+			//serviceCollection.RemoveInterceptor<ChangeTrackerInterceptor>();
+			//serviceCollection.AddInterceptor<CustomChangeTrackerInterceptor>();
 			serviceCollection.AddTransient<IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOptionsBuilder>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
@@ -420,6 +416,8 @@ namespace BoltOn.Tests.Mediator
 
 		public void Dispose()
 		{
+			MediatorTestHelper.IsRemoveStopwatchInterceptor = false;
+			MediatorTestHelper.IsClearInterceptors = false;
 			MediatorTestHelper.LoggerStatements.Clear();
 			Bootstrapper
 				.Instance
