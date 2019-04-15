@@ -115,7 +115,7 @@
           <div role="main">
             <div class="section">
               
-                <p>BoltOn is an <a href="https://github.com/gokulm/BoltOn">open source</a> package which can be used to build any .NET application (like Console, MVC, WebAPI, Windows Service etc.,) with proper separation of concerns quickly.</p>
+                <p>BoltOn is an <a href="https://github.com/gokulm/BoltOn">open source</a> framework to build any .NET application (like Console, MVC, WebAPI, Windows Service etc.,) with proper separation of concerns.</p>
 <h2 id="installation">Installation</h2>
 <p>There are a <a href="https://www.nuget.org/packages?q=BoltOn">couple of packages</a> for BoltOn available on NuGet. To install BoltOn in your .NET application, type the following command into the Package Manager Console window:</p>
 <pre><code>PM&gt; Install-Package BoltOn
@@ -158,17 +158,17 @@
 <h2 id="bolton">BoltOn()</h2>
 <p>This extension method does the following:</p>
 <ul>
-<li>It groups the executing assembly, all the assemblies of the other modules and the assemblies passed to BoltOnAssemblies() to a collection, sorts them based on the assembly dependencies, and finally scans for all the classes that implement <code>IBootstrapperRegistrationTask</code> and executes them in the order of the assembly dependencies. 
+<li>It groups the executing assembly, all the assemblies of the other modules and the assemblies passed to BoltOnAssemblies() to a collection, sorts them based on the assembly dependencies, and finally scans for all the classes that implement <code>IRegistrationTask</code> and executes them in the order of the assembly dependencies. 
 <br />The assemblies collection can be accessed from <code>RegistrationTaskContext</code> and <code>PostRegistrationTaskContext</code> of the registration tasks.</li>
 <li>A built-in registration task called <code>BoltOnRegistrationTask</code> registers all the interfaces with <strong>single</strong> implementation as trasient. </li>
 </ul>
 <p><strong>Custom registrations:</strong></p>
 <ul>
 <li>To exclude classes from registration, decorate them with <code>[ExcludeFromRegistration]</code> attribute.</li>
-<li>For all the other registration scopes like scoped or singleton, or to register interfaces with more than one implementations, implement <code>IBootstrapperRegistrationTask</code> and use the context.Container (which is of type <code>IServicesCollection</code>) to register them.</li>
+<li>For all the other registration scopes like scoped or singleton, or to register interfaces with more than one implementations, implement <code>IRegistrationTask</code> and use the context.Container (which is of type <code>IServicesCollection</code>) to register them.</li>
 </ul>
 <p>Example:</p>
-<pre><code>public class CustomRegistrationTask : IBootstrapperRegistrationTask
+<pre><code>public class CustomRegistrationTask : IRegistrationTask
 {
     public void Run(RegistrationTaskContext context)
     {
@@ -181,10 +181,10 @@
 <p><strong> Note: </strong>
 Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other modules. Each and every module calls other extension methods to attach their own dependent modules. </p>
 <h2 id="tightenbolts">TightenBolts()</h2>
-<p>This extension method scans all the <code>IBootstrapperPostRegistrationTask</code> in the assemblies collection formed by BoltOn() and executes them.</p>
-<p>To run any task that involves resolving dependencies, like seeding data using any of the registered DbContexts, implement <code>IBootstrapperPostRegistrationTask</code>. </p>
+<p>This extension method scans all the <code>IPostRegistrationTask</code> in the assemblies collection formed by BoltOn() and executes them.</p>
+<p>To run any task that involves resolving dependencies, like seeding data using any of the registered DbContexts, implement <code>IPostRegistrationTask</code>. </p>
 <p>Example:</p>
-<pre><code>public class CustomPostRegistrationTask : IBootstrapperPostRegistrationTask
+<pre><code>public class CustomPostRegistrationTask : IPostRegistrationTask
 {
     public void Run(PostRegistrationTaskContext context)
     {
@@ -242,5 +242,5 @@ Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other 
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-04-12 02:48:59
+Build Date UTC : 2019-04-15 13:52:02
 -->
