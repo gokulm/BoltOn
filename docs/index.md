@@ -1,15 +1,13 @@
-BoltOn is an [open source](https://github.com/gokulm/BoltOn) framework to build any .NET application (like Console, MVC, WebAPI, Windows Service etc.,) with proper separation of concerns quickly.
+BoltOn is an [open source](https://github.com/gokulm/BoltOn) framework to build any .NET application (like Console, MVC, WebAPI, Windows Service etc.,) with proper separation of concerns.
 
 Installation
 ------------
-
 There are a [couple of packages](https://www.nuget.org/packages?q=BoltOn) for BoltOn available on NuGet. To install BoltOn in your .NET application, type the following command into the Package Manager Console window:
 
     PM> Install-Package BoltOn
 
 Configuration
 -------------
-
 After installing the package, call BoltOn() and TightenBolts() extension methods in ConfigureServices() and Configure() methods respectively. 
 
     namespace BoltOn.Samples.WebApi
