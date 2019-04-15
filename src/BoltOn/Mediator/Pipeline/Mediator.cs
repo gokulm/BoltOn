@@ -49,8 +49,7 @@ namespace BoltOn.Mediator.Pipeline
 
 		public async Task ProcessAsync(IRequest request, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var castedRequest = request as IRequest<DummyResponse>;
-			await ExecuteInterceptorsAsync(request, HandleAsync, cancellationToken);
+		    await ExecuteInterceptorsAsync(request, HandleAsync, cancellationToken);
 		}
 
 		private TResponse ExecuteInterceptors<TResponse>(IRequest<TResponse> request,
@@ -110,7 +109,7 @@ namespace BoltOn.Mediator.Pipeline
 				_logger.Debug($"Resolved handler: {handler?.GetType()}");
 				dynamic decorator = Activator.CreateInstance(typeof(RequestHandlerDecorator<>)
 																   .MakeGenericType(requestType), handler);
-				var response = decorator.Handle(request);
+				decorator.Handle(request);
 				return default(TResponse);
 			}
 			else

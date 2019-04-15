@@ -5,7 +5,6 @@ using BoltOn.Data.EF;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Ovverides.Mediator;
 
 namespace BoltOn.Overrides.Mediator
 {
