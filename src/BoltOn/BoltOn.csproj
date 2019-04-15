@@ -9,9 +9,10 @@
         <ReleaseVersion>1.0.0</ReleaseVersion>
         <SynchReleaseVersion>false</SynchReleaseVersion>
         <PackageId>BoltOn</PackageId>
-        <Description>BoltOn is an open source package which can be used to build any .NET application.</Description>
-        <PackageVersion>0.1.0-beta</PackageVersion>
+        <Description>BoltOn is an open source framework to build any .NET application with proper separation of concerns.</Description>
+        <PackageVersion>0.2.0-beta</PackageVersion>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <PackageTags>C#, .NET Core</PackageTags>
     </PropertyGroup>
     <ItemGroup>
         <Folder Include="Logging\" />

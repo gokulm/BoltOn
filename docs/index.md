@@ -1,4 +1,4 @@
-BoltOn is an [open source](https://github.com/gokulm/BoltOn) package which can be used to build any .NET application (like Console, MVC, WebAPI, Windows Service etc.,) with proper separation of concerns quickly.
+BoltOn is an [open source](https://github.com/gokulm/BoltOn) framework to build any .NET application (like Console, MVC, WebAPI, Windows Service etc.,) with proper separation of concerns quickly.
 
 Installation
 ------------
