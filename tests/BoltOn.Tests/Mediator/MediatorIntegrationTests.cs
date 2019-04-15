@@ -28,7 +28,6 @@ namespace BoltOn.Tests.Mediator
 		public void Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
-			//MediatorTestHelper.IsClearInterceptors = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
@@ -153,7 +152,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_BootstrapWithTestInterceptors_InvokesDefaultAndCustomInterceptorInOrderAndReturnsSuccessfulResult()
+		public void Process_BootstrapWithTestInterceptors_InvokesDefaultAndTestInterceptorInOrderAndReturnsSuccessfulResult()
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
@@ -182,7 +181,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public async Task Process_BootstrapWithTestInterceptorsAndAsyncHandler_InvokesDefaultAndCustomInterceptorInOrderAndReturnsSuccessfulResult()
+		public async Task Process_BootstrapWithTestInterceptorsAndAsyncHandler_InvokesDefaultAndTestInterceptorInOrderAndReturnsSuccessfulResult()
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
