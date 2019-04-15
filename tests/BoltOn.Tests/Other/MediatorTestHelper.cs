@@ -8,6 +8,7 @@ namespace BoltOn.Tests.Other
         public static bool IsClearInterceptors { get; set; }
         public static bool IsCustomizeIsolationLevel { get; set; }
 		public static bool IsSeedData { get; set; } = true;
-		public static bool IsSqlServer { get; set; } 
+		public static bool IsSqlServer { get; set; }
+		public static bool IsRemoveStopwatchInterceptor { get; set; }
 	}
 }

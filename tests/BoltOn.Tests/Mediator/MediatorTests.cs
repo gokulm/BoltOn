@@ -72,7 +72,6 @@ namespace BoltOn.Tests.Mediator
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var interceptor = new Mock<IInterceptor>();
 			var logger = new Mock<IBoltOnLogger<TestInterceptor>>();
 			var logger2 = new Mock<IBoltOnLogger<StopwatchInterceptor>>();
 			var boltOnClock = new Mock<IBoltOnClock>();
@@ -139,7 +138,6 @@ namespace BoltOn.Tests.Mediator
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var interceptor = new Mock<IInterceptor>();
 			var logger = new Mock<IBoltOnLogger<UnitOfWorkInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
@@ -173,7 +171,6 @@ namespace BoltOn.Tests.Mediator
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var interceptor = new Mock<IInterceptor>();
 			var logger = new Mock<IBoltOnLogger<UnitOfWorkInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
@@ -192,11 +189,12 @@ namespace BoltOn.Tests.Mediator
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			testHandler.Setup(s => s.HandleAsync(request, default(CancellationToken))).Throws<Exception>();
 
-			// act 
-			var result = await Record.ExceptionAsync(async () => await sut.ProcessAsync(request));
+            // act 
+		    var result = await Record.ExceptionAsync(async () => await sut.ProcessAsync(request));
 
-			//assert 
-			uowManager.Verify(u => u.Get(uowOptions.Object));
+            //assert 
+            Assert.NotNull(result);
+            uowManager.Verify(u => u.Get(uowOptions.Object));
 			uow.Verify(u => u.Commit(), Times.Never);
 			logger.Verify(l => l.Debug($"About to start UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
 			logger.Verify(l => l.Debug("UnitOfWorkInterceptor ended"), Times.Never);
@@ -253,7 +251,6 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
-			var testHandler = new Mock<TestHandler>();
 			serviceProvider.Setup(s => s.GetService(typeof(IRequestHandler<TestRequest, bool>)))
 						  .Returns(null);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>());
@@ -324,7 +321,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.True(result);
 			Assert.True(changeTrackerContext.IsQueryRequest);
 			logger.Verify(l => l.Debug($"Entering {nameof(CustomChangeTrackerInterceptor)}..."));
-			logger.Verify(l => l.Debug($"IsQueryRequest: {true}"));
+			logger.Verify(l => l.Debug($"IsQueryRequest or IQueryUncommitted: {true}"));
 		}
 
 		[Fact]

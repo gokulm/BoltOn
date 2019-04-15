@@ -16,10 +16,7 @@ namespace BoltOn.Tests.Bootstrapping
 		[Fact, TestPriority(1)]
 		public void Container_CallContainerBeforeInitializingContainer_ThrowsException()
 		{
-			// arrange
-			var bootstrapper = Bootstrapper.Instance;
-
-			// act and assert
+		    // act and assert
 			Assert.Throws<Exception>(() => Bootstrapper.Instance.Container);
 		}
 
@@ -205,7 +202,7 @@ namespace BoltOn.Tests.Bootstrapping
 	{
 		public void Run(PostRegistrationTaskContext context)
 		{
-			BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {this.GetType().Name}");
+			BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
 		}
 	}
 
@@ -213,7 +210,7 @@ namespace BoltOn.Tests.Bootstrapping
 	{
 		public void Run(RegistrationTaskContext context)
 		{
-			BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {this.GetType().Name}");
+			BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
 			context.Container
 				   .AddTransient<Employee>()
 				   .AddTransient<ClassWithInjectedDependency>();

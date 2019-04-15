@@ -15,6 +15,7 @@ namespace BoltOn.Bootstrapping
 		private IServiceProvider _serviceProvider;
 		private BoltOnOptions _options;
 		private bool _isBolted;
+		private RegistrationTaskContext _registrationTaskContext;
 
 		private Bootstrapper()
 		{
@@ -27,7 +28,7 @@ namespace BoltOn.Bootstrapping
 
 		internal static Bootstrapper Instance => _instance.Value;
 
-	    internal IServiceCollection Container
+		internal IServiceCollection Container
 		{
 			get
 			{
@@ -35,7 +36,7 @@ namespace BoltOn.Bootstrapping
 				return _serviceCollection;
 			}
 			set => _serviceCollection = value;
-	    }
+		}
 
 		internal IServiceProvider ServiceProvider
 		{
@@ -111,14 +112,23 @@ namespace BoltOn.Bootstrapping
 										 && t.IsClass
 										 select t).ToList();
 
-			var registrationTaskContext = new RegistrationTaskContext(this);
+			_registrationTaskContext = new RegistrationTaskContext(this);
 			foreach (var type in registrationTaskTypes)
 			{
 				var task = Activator.CreateInstance(type) as IRegistrationTask;
-				task?.Run(registrationTaskContext);
+				task?.Run(_registrationTaskContext);
 			}
 
+			FinalizeRegistrations();
 			RegisterPostRegistrationTasks();
+		}
+
+		private void FinalizeRegistrations()
+		{
+			foreach (var interceptorImplementation in _registrationTaskContext.InterceptorTypes)
+			{
+				_serviceCollection.AddInterceptor(interceptorImplementation);
+			}
 		}
 
 		private void RegisterPostRegistrationTasks()
@@ -138,6 +148,7 @@ namespace BoltOn.Bootstrapping
 			{
 				_serviceCollection = null;
 				_serviceProvider = null;
+				_registrationTaskContext = null;
 				Assemblies = null;
 				_callingAssembly = null;
 				_isBolted = false;
