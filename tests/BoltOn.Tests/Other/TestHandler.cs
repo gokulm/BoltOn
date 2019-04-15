@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Ovverides.Mediator;
+using BoltOn.Overrides.Mediator;
 
 namespace BoltOn.Tests.Other
 {

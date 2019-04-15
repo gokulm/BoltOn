@@ -2,7 +2,7 @@
 using System.Transactions;
 using BoltOn.Logging;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Ovverides.Mediator;
+using BoltOn.Overrides.Mediator;
 using BoltOn.UoW;
 
 namespace BoltOn.Tests.Other
