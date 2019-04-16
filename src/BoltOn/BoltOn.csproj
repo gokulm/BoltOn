@@ -6,11 +6,10 @@
         <Owners>Gokulnath Murugesan</Owners>
         <PackageProjectUrl>https://github.com/gokulm/BoltOn</PackageProjectUrl>
         <Title>BoltOn</Title>
-        <ReleaseVersion>1.0.0</ReleaseVersion>
         <SynchReleaseVersion>false</SynchReleaseVersion>
         <PackageId>BoltOn</PackageId>
         <Description>BoltOn is an open source framework to build any .NET application with proper separation of concerns.</Description>
-        <PackageVersion>0.2.0-beta</PackageVersion>
+        <PackageVersion>0.2.0</PackageVersion>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <PackageTags>C#, .NET Core</PackageTags>
     </PropertyGroup>
