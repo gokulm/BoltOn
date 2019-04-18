@@ -33,6 +33,7 @@ x86/
 bld/
 [Bb]in/
 [Oo]bj/
+nupkgs/
 
 # Roslyn cache directories
 *.ide/

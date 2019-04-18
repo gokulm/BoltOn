@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>BoltOn.Data.EF</id>
+    <version>0.1.0</version>
+    <title>BoltOn.Data.EF</title>
+    <authors>Gokulnath Murugesan</authors>
+    <owners>Gokulnath Murugesan</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/gokulm/BoltOn</projectUrl>
+    <description>This is an add-on to BoltOn NuGet package to support Entity Framework</description>
+    <summary></summary>
+    <releaseNotes></releaseNotes>
+    <copyright></copyright>
+    <language></language>
+    <tags>C#, .NET</tags>
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Microsoft.EntityFrameworkCore" version="2.2.0" />
+        <dependency id="BoltOn" version="0.2.0" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
