@@ -16,34 +16,34 @@ namespace BoltOn.Logging
 	{
 		readonly ILogger<TType> _logger;
 
-		public BoltOnLogger(ILogger<TType> logger)
+		public BoltOnLogger(IServiceProvider serviceProvider)
 		{
-			_logger = logger;
+			_logger = serviceProvider.GetService(typeof(ILogger<TType>)) as ILogger<TType>;
 		}
 
 		public virtual void Debug(string message)
 		{
-			_logger.LogDebug(message);
+			_logger?.LogDebug(message);
 		}
 
 		public virtual void Info(string message)
 		{
-			_logger.LogInformation(message);
+			_logger?.LogInformation(message);
 		}
 
 		public virtual void Warn(string message)
 		{
-			_logger.LogWarning(message);
+			_logger?.LogWarning(message);
 		}
 
 		public virtual void Error(string message)
 		{
-			_logger.LogError(message);
+			_logger?.LogError(message);
 		}
 
 		public virtual void Error(Exception exception)
 		{
-			_logger.LogError(null, exception);
+			_logger?.LogError(null, exception);
 		}
 	}
 }
