@@ -81,7 +81,7 @@ namespace BoltOn.Mediator.Pipeline
 				   (handleDelegate, interceptor) => (req, token) => interceptor.RunAsync<IRequest<TResponse>, TResponse>(req, token, handleDelegate));
 			try
 			{
-				return await next.Invoke(request, cancellationToken);
+				return await next.Invoke(request, cancellationToken).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
@@ -144,7 +144,7 @@ namespace BoltOn.Mediator.Pipeline
 				_logger.Debug($"Resolved handler: {handler?.GetType()}");
 				dynamic decorator = Activator.CreateInstance(typeof(RequestAsyncHandlerDecorator<>)
 																	   .MakeGenericType(requestType), handler);
-				var response = await decorator.HandleAsync(request, cancellationToken);
+				var response = await decorator.HandleAsync(request, cancellationToken).ConfigureAwait(false);
 				return response;
 			}
 			else
@@ -158,7 +158,7 @@ namespace BoltOn.Mediator.Pipeline
 				_logger.Debug($"Resolved handler: {handler?.GetType()}");
 				dynamic decorator = Activator.CreateInstance(typeof(RequestAsyncHandlerDecorator<,>)
 																	   .MakeGenericType(requestType, typeof(TResponse)), handler);
-				var response = await decorator.HandleAsync(request, cancellationToken);
+				var response = await decorator.HandleAsync(request, cancellationToken).ConfigureAwait(false);
 				return response;
 			}
 		}
