@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>BoltOn.ConsoleTemplate</id>
+    <version>1.0.0</version>
+    <description>
+      Creates the BoltOn console app.
+    </description>
+    <authors>Gokulnath Murugesan</authors>
+    <packageTypes>
+      <packageType name="Template" />
+    </packageTypes>
+  </metadata>
+</package>

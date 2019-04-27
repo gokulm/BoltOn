@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Gokulnath Murugesan",
+  "classifications": [ "Common", "Console" ],
+  "identity": "BoltOn.ConsoleTemplate",
+  "name": "BoltOn Console Application",
+  "shortName": "boconsole",
+  "tags": {
+    "language": "C#",
+    "type":"project"
+  },
+  "sourceName": "BoltOn.Console",
+  "preferNameDirectory": true,
+  "symbols":{
+    "projectname": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "Test"
+    }
+  }
+}
