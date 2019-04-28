@@ -10,12 +10,5 @@
     "type":"project"
   },
   "sourceName": "BoltOn.Console",
-  "preferNameDirectory": true,
-  "symbols":{
-    "projectname": {
-      "type": "parameter",
-      "datatype": "string",
-      "defaultValue": "Test"
-    }
-  }
+  "preferNameDirectory": true
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using BoltOn;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Console
 {
@@ -6,7 +8,11 @@ namespace BoltOn.Console
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.BoltOn();
+            //serviceCollection.AddLogging();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            serviceProvider.TightenBolts();
         }
     }
 }
