@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Gokulnath Murugesan",
+  "classifications": [ "Common", "Console" ],
+  "identity": "BoltOn.HandlerTemplate",
+  "name": "BoltOn Handler Template",
+  "shortName": "bohandler",
+  "tags": {
+    "language": "C#",
+    "type":"class"
+  },
+  "sourceName": "BoltOnHandler"
+}
