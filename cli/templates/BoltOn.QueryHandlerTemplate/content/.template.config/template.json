@@ -1,15 +1,17 @@
 {
   "$schema": "http://json.schemastore.org/template",
   "author": "Gokulnath Murugesan",
-  "classifications": [ "Common" ],
+  "classifications": [
+    "Common"
+  ],
   "identity": "BoltOn.QueryHandlerTemplate",
   "name": "BoltOn Query Handler Template",
   "shortName": "queryhandler",
   "tags": {
     "language": "C#",
-    "type":"class"
+    "type": "class"
   },
-  "sourceName": "QuerySourceName",
+  "sourceName": "QueryHandlerTemplate",
   "preferNameDirectory": false,
   "symbols": {
     "Response": {
@@ -17,7 +19,7 @@
       "description": "Handler response",
       "datatype": "string",
       "defaultValue": "string",
-      "replaces":"ResponseType"
+      "replaces": "ResponseType"
     }
   }
 }

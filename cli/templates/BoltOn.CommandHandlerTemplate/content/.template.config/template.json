@@ -1,13 +1,15 @@
 {
   "$schema": "http://json.schemastore.org/template",
   "author": "Gokulnath Murugesan",
-  "classifications": [ "Common" ],
+  "classifications": [
+    "Common"
+  ],
   "identity": "BoltOn.CommandHandlerTemplate",
   "name": "BoltOn Command Handler Template",
   "shortName": "commandhandler",
   "tags": {
     "language": "C#",
-    "type":"class"
+    "type": "class"
   },
   "sourceName": "CommandSourceName",
   "preferNameDirectory": false,
@@ -17,7 +19,7 @@
       "description": "Handler response",
       "datatype": "string",
       "defaultValue": "string",
-      "replaces":"ResponseType"
+      "replaces": "ResponseType"
     }
   }
 }
