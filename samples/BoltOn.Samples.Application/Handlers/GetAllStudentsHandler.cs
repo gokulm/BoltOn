@@ -6,6 +6,7 @@ using BoltOn.Mediator.Pipeline;
 using BoltOn.Samples.Application.Abstractions.Data;
 using BoltOn.Samples.Application.DTOs;
 using BoltOn.Samples.Domain.Entities;
+using Microsoft.Azure.Documents.Client;
 
 namespace BoltOn.Samples.Application.Handlers
 {
@@ -34,8 +35,8 @@ namespace BoltOn.Samples.Application.Handlers
                                   LastName = s.LastName
                               };
 
-            _gradeRepository.RequestOptions = new Microsoft.Azure.Documents.Client.RequestOptions();
-            _gradeRepository.FeedOptions = new Microsoft.Azure.Documents.Client.FeedOptions();
+            _gradeRepository.SetOptions(new RequestOptions());
+            _gradeRepository.SetOptions(new FeedOptions());
 
             return studentDtos;
         }

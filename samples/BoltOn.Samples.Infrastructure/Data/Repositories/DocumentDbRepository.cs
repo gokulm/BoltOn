@@ -1,7 +1,6 @@
 ﻿using BoltOn.Data;
 using BoltOn.Data.EF;
 using BoltOn.Samples.Application.Abstractions.Data;
-using Microsoft.Azure.Documents.Client;
 
 namespace BoltOn.Samples.Infrastructure.Data.Repositories
 {
@@ -9,33 +8,6 @@ namespace BoltOn.Samples.Infrastructure.Data.Repositories
     {
         public DocumentDbRepository() : base("dbname", "collectionname")
         {
-        }
-
-        public FeedOptions FeedOptions { get; set; }
-        public RequestOptions RequestOptions { get; set; }
-
-        protected override RequestOptions requestOptions
-        {
-            get
-            {
-                return RequestOptions;
-            }
-            set
-            {
-                RequestOptions = value;
-            }
-        }
-
-        protected override FeedOptions feedOptions
-        {
-            get
-            {
-                return FeedOptions;
-            }
-            set
-            {
-                FeedOptions = value;
-            }
         }
     }
 }

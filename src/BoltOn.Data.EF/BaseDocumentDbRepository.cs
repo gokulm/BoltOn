@@ -15,8 +15,8 @@ namespace BoltOn.Data.EF
         protected readonly string _databaseName;
         protected readonly string _collectionName;
         protected readonly DocumentClient _client;
-        protected abstract RequestOptions requestOptions { get; set; }
-        protected abstract FeedOptions feedOptions { get; set; }
+        protected RequestOptions RequestOptions { get; set; }
+        protected FeedOptions FeedOptions { get; set; }
 
         public BaseDocumentDbRepository(string databaseName, string collectionName = null)
         {
@@ -27,19 +27,19 @@ namespace BoltOn.Data.EF
 
         public virtual TEntity Add(TEntity entity)
         {
-            _client.CreateDocumentAsync(GetDocumentCollectionUri(), entity, requestOptions).Wait();
+            _client.CreateDocumentAsync(GetDocumentCollectionUri(), entity, RequestOptions).Wait();
             return entity;
         }
 
         public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await _client.CreateDocumentAsync(GetDocumentCollectionUri(), entity, requestOptions);
+            await _client.CreateDocumentAsync(GetDocumentCollectionUri(), entity, RequestOptions);
             return entity;
         }
 
         public virtual IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
         {
-            var query = _client.CreateDocumentQuery<TEntity>(GetDocumentCollectionUri(), feedOptions)
+            var query = _client.CreateDocumentQuery<TEntity>(GetDocumentCollectionUri(), FeedOptions)
                 .Where(predicate)
                 .AsDocumentQuery();
 
@@ -49,7 +49,7 @@ namespace BoltOn.Data.EF
         public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
             CancellationToken cancellationToken = default(CancellationToken), params Expression<Func<TEntity, object>>[] includes)
         {
-            var query = _client.CreateDocumentQuery<TEntity>(GetDocumentCollectionUri(), feedOptions)
+            var query = _client.CreateDocumentQuery<TEntity>(GetDocumentCollectionUri(), FeedOptions)
                .Where(predicate)
                .AsDocumentQuery();
 
@@ -59,7 +59,7 @@ namespace BoltOn.Data.EF
         public virtual IEnumerable<TEntity> GetAll()
         {
             return _client.CreateDocumentQuery<TEntity>
-                (GetDocumentCollectionUri(), feedOptions)
+                (GetDocumentCollectionUri(), FeedOptions)
                 .ToList()
                 .AsEnumerable();
         }
@@ -67,31 +67,31 @@ namespace BoltOn.Data.EF
         public virtual Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(_client.CreateDocumentQuery<TEntity>
-                (GetDocumentCollectionUri(), feedOptions)
+                (GetDocumentCollectionUri(), FeedOptions)
                 .ToList()
                 .AsEnumerable());
         }
 
         public virtual TEntity GetById<TId>(TId id)
         {
-            var document = _client.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()), requestOptions).Result;
+            var document = _client.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()), RequestOptions).Result;
             return document.Document;
         }
 
         public virtual async Task<TEntity> GetByIdAsync<TId>(TId id)
         {
-            var document = await _client.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()), requestOptions);
+            var document = await _client.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()), RequestOptions);
             return document.Document;
         }
 
         public virtual void Update(TEntity entity)
         {
-            _client.UpsertDocumentAsync(GetDocumentCollectionUri(), entity, requestOptions).Wait();
+            _client.UpsertDocumentAsync(GetDocumentCollectionUri(), entity, RequestOptions).Wait();
         }
 
         public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await _client.UpsertDocumentAsync(GetDocumentCollectionUri(), entity, requestOptions);
+            await _client.UpsertDocumentAsync(GetDocumentCollectionUri(), entity, RequestOptions);
         }
 
         protected Uri GetDocumentCollectionUri()
@@ -112,6 +112,15 @@ namespace BoltOn.Data.EF
                 results.AddRange(await query.ExecuteNextAsync<TEntity>());
             }
             return results;
+        }
+
+        public void SetOptions<TOptions>(TOptions options)
+        {
+            if (options is RequestOptions requestOptions)
+                RequestOptions = requestOptions;
+
+            if (options is FeedOptions feedOptions)
+                FeedOptions = feedOptions;
         }
     }
 }

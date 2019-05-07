@@ -8,6 +8,7 @@ namespace BoltOn.Data
 {
     public interface IRepository<TEntity> where TEntity : class
     {
+        void SetOptions<TOptions>(TOptions options);
         TEntity GetById<TId>(TId id);
         Task<TEntity> GetByIdAsync<TId>(TId id);
         IEnumerable<TEntity> GetAll();
