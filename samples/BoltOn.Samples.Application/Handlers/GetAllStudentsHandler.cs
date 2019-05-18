@@ -17,9 +17,9 @@ namespace BoltOn.Samples.Application.Handlers
     public class GetAllStudentsHandler : IRequestAsyncHandler<GetAllStudentsRequest, IEnumerable<StudentDto>>
     {
         private readonly IStudentRepository _studentRepository;
-        private readonly IDocumentDbRepository<Grade> _gradeRepository;
+        private readonly IGradeRepository _gradeRepository;
 
-        public GetAllStudentsHandler(IStudentRepository studentRepository, IDocumentDbRepository<Grade> gradeRepository)
+        public GetAllStudentsHandler(IStudentRepository studentRepository, IGradeRepository gradeRepository)
         {
             _studentRepository = studentRepository;
             _gradeRepository = gradeRepository;
@@ -27,6 +27,9 @@ namespace BoltOn.Samples.Application.Handlers
 
         public async Task<IEnumerable<StudentDto>> HandleAsync(GetAllStudentsRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
+            //_gradeRepository.Init(new RequestOptions());
+            var result = _gradeRepository.GetAll();
+
             var students = (await _studentRepository.GetAllAsync()).ToList();
             var studentDtos = from s in students
                               select new StudentDto
@@ -35,8 +38,8 @@ namespace BoltOn.Samples.Application.Handlers
                                   LastName = s.LastName
                               };
 
-            _gradeRepository.SetOptions(new RequestOptions());
-            _gradeRepository.SetOptions(new FeedOptions());
+
+
 
             return studentDtos;
         }

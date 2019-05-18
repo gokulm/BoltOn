@@ -7,27 +7,42 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 
-namespace BoltOn.Data.EF
+namespace BoltOn.Data.Cosmos
 {
-    public abstract class BaseDocumentDbRepository<TEntity> : IRepository<TEntity>
+    public abstract class BaseCosmosRepository<TEntity, TCosmosContext> : IRepository<TEntity>
         where TEntity : class
+        where TCosmosContext : BaseCosmosContext
     {
+        private readonly TCosmosContext _cosmosContext;
         protected readonly string _databaseName;
         protected readonly string _collectionName;
         protected readonly DocumentClient _client;
         protected RequestOptions RequestOptions { get; set; }
         protected FeedOptions FeedOptions { get; set; }
 
-        public BaseDocumentDbRepository(string databaseName, string collectionName = null)
+        public BaseCosmosRepository(ICosmosContextFactory cosmosContextFactory, string collectionName = null)
         {
-            _databaseName = databaseName;
+            _cosmosContext = cosmosContextFactory.Get<TCosmosContext>();
+            _databaseName = _cosmosContext.CosmosSetting.DatabaseName;
             _collectionName = collectionName ?? typeof(TEntity).Name.Pluralize();
-            _client = new DocumentClient(new Uri(""), "");
+            _client = new DocumentClient(new Uri(_cosmosContext.CosmosSetting.Uri), _cosmosContext.CosmosSetting.AuthorizationKey);
         }
 
         public virtual TEntity Add(TEntity entity)
         {
             _client.CreateDocumentAsync(GetDocumentCollectionUri(), entity, RequestOptions).Wait();
+            return entity;
+        }
+
+        public virtual TEntity AddCosmosEntity<TCosmosOptions>(TEntity entity, TCosmosOptions requestOptions = null) where TCosmosOptions : class
+        {
+            if (requestOptions == null)
+                _client.CreateDocumentAsync(GetDocumentCollectionUri(), entity).Wait();
+            else
+            {
+                var options = requestOptions as RequestOptions;
+                _client.CreateDocumentAsync(GetDocumentCollectionUri(), entity, options).Wait();
+            }
             return entity;
         }
 
@@ -60,7 +75,6 @@ namespace BoltOn.Data.EF
         {
             return _client.CreateDocumentQuery<TEntity>
                 (GetDocumentCollectionUri(), FeedOptions)
-                .ToList()
                 .AsEnumerable();
         }
 
@@ -68,7 +82,6 @@ namespace BoltOn.Data.EF
         {
             return Task.FromResult(_client.CreateDocumentQuery<TEntity>
                 (GetDocumentCollectionUri(), FeedOptions)
-                .ToList()
                 .AsEnumerable());
         }
 
@@ -114,7 +127,7 @@ namespace BoltOn.Data.EF
             return results;
         }
 
-        public void SetOptions<TOptions>(TOptions options)
+        public void Init<TOptions>(TOptions options)
         {
             if (options is RequestOptions requestOptions)
                 RequestOptions = requestOptions;

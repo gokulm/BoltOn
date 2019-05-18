@@ -99,5 +99,9 @@ namespace BoltOn.Data.EF
         {
             throw new NotImplementedException();
         }
+
+        public void Init<TOptions>(TOptions options)
+        {
+        }
     }
 }

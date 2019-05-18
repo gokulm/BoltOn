@@ -20,5 +20,6 @@
     <ProjectReference Include="..\BoltOn.Samples.Domain\BoltOn.Samples.Domain.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />
+    <ProjectReference Include="..\..\src\BoltOn.Data.Cosmos\BoltOn.Data.Cosmos.csproj" />
   </ItemGroup>
 </Project>
