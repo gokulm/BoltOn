@@ -5,7 +5,6 @@ namespace BoltOn.Logging
 	public interface IBoltOnLoggerFactory
     {
         IBoltOnLogger<TType> Create<TType>();
-		IBoltOnLogger GetLogger(string categoryName);
 	}
 
 	public sealed class BoltOnLoggerFactory : IBoltOnLoggerFactory
@@ -20,11 +19,6 @@ namespace BoltOn.Logging
 		public IBoltOnLogger<TType> Create<TType>()
 		{
 			return new BoltOnLogger<TType>(_serviceProvider);
-		}
-
-		public IBoltOnLogger GetLogger(string categoryName)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

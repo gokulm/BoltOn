@@ -13,7 +13,6 @@ namespace BoltOn.Samples.Console
 			{
 				o.BoltOnAssemblies(typeof(GetAllStudentsRequest).Assembly);
 			});
-			//serviceCollection.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 
