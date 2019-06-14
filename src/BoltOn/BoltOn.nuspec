@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>BoltOn</id>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
     <title>BoltOn</title>
     <authors>Gokulnath Murugesan</authors>
     <owners>Gokulnath Murugesan</owners>
