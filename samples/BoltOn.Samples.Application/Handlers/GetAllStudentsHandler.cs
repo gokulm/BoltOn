@@ -27,7 +27,7 @@ namespace BoltOn.Samples.Application.Handlers
 
         public async Task<IEnumerable<StudentDto>> HandleAsync(GetAllStudentsRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
-            //_gradeRepository.Init(new RequestOptions());
+            //_gradeRepository.Init(new RequestOptions()); //To set either requestoptions/feedoptions
             var result = _gradeRepository.GetAll();
 
             var students = (await _studentRepository.GetAllAsync()).ToList();
@@ -37,9 +37,6 @@ namespace BoltOn.Samples.Application.Handlers
                                   FirstName = s.FirstName,
                                   LastName = s.LastName
                               };
-
-
-
 
             return studentDtos;
         }

@@ -34,18 +34,6 @@ namespace BoltOn.Data.Cosmos
             return entity;
         }
 
-        public virtual TEntity AddCosmosEntity<TCosmosOptions>(TEntity entity, TCosmosOptions requestOptions = null) where TCosmosOptions : class
-        {
-            if (requestOptions == null)
-                _client.CreateDocumentAsync(GetDocumentCollectionUri(), entity).Wait();
-            else
-            {
-                var options = requestOptions as RequestOptions;
-                _client.CreateDocumentAsync(GetDocumentCollectionUri(), entity, options).Wait();
-            }
-            return entity;
-        }
-
         public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
         {
             await _client.CreateDocumentAsync(GetDocumentCollectionUri(), entity, RequestOptions);
