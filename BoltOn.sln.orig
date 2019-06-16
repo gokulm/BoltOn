@@ -24,9 +24,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn", "src\BoltOn\BoltOn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Overrides", "src\BoltOn.Overrides\BoltOn.Overrides.csproj", "{54108E57-EC19-43AD-A9FA-44222BC1C0B4}"
 EndProject
+<<<<<<< .merge_file_1iP3nU
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Data.Cosmos", "src\BoltOn.Data.Cosmos\BoltOn.Data.Cosmos.csproj", "{AED7EB49-4AB6-46B8-806B-13EB6B28D7A3}"
-EndProject
+=======
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Samples.Console", "samples\BoltOn.Samples.Console\BoltOn.Samples.Console.csproj", "{FD5F35F9-FC73-4CC4-AFE3-95F3B1C668D9}"
+>>>>>>> .merge_file_EAgu6S
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,14 +68,17 @@ Global
 		{54108E57-EC19-43AD-A9FA-44222BC1C0B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54108E57-EC19-43AD-A9FA-44222BC1C0B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54108E57-EC19-43AD-A9FA-44222BC1C0B4}.Release|Any CPU.Build.0 = Release|Any CPU
+<<<<<<< .merge_file_1iP3nU
+		{AED7EB49-4AB6-46B8-806B-13EB6B28D7A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AED7EB49-4AB6-46B8-806B-13EB6B28D7A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AED7EB49-4AB6-46B8-806B-13EB6B28D7A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AED7EB49-4AB6-46B8-806B-13EB6B28D7A3}.Release|Any CPU.Build.0 = Release|Any CPU
+=======
 		{FD5F35F9-FC73-4CC4-AFE3-95F3B1C668D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FD5F35F9-FC73-4CC4-AFE3-95F3B1C668D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD5F35F9-FC73-4CC4-AFE3-95F3B1C668D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD5F35F9-FC73-4CC4-AFE3-95F3B1C668D9}.Release|Any CPU.Build.0 = Release|Any CPU
-{AED7EB49-4AB6-46B8-806B-13EB6B28D7A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-{AED7EB49-4AB6-46B8-806B-13EB6B28D7A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-{AED7EB49-4AB6-46B8-806B-13EB6B28D7A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-{AED7EB49-4AB6-46B8-806B-13EB6B28D7A3}.Release|Any CPU.Build.0 = Release|Any CPU
+>>>>>>> .merge_file_EAgu6S
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,8 +92,11 @@ Global
 		{5A571C42-5FED-4568-94DC-0D7340E2BC4E} = {15E5CCAC-85EB-4C98-B1FA-B5DEFD213FCD}
 		{440B9E87-690B-4475-BD11-BF6D4B1CA246} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 		{54108E57-EC19-43AD-A9FA-44222BC1C0B4} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
+<<<<<<< .merge_file_1iP3nU
+		{AED7EB49-4AB6-46B8-806B-13EB6B28D7A3} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
+=======
 		{FD5F35F9-FC73-4CC4-AFE3-95F3B1C668D9} = {15E5CCAC-85EB-4C98-B1FA-B5DEFD213FCD}
-{AED7EB49-4AB6-46B8-806B-13EB6B28D7A3} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
+>>>>>>> .merge_file_EAgu6S
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {530F371A-8A38-41FE-9A1E-A03ACCDE867B}

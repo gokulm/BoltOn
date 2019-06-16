@@ -1,24 +1,24 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
 
 namespace BoltOn.Logging
 {
-    public interface IBoltOnLoggerFactory
+	public interface IBoltOnLoggerFactory
     {
         IBoltOnLogger<TType> Create<TType>();
-    }
+	}
 
 	public sealed class BoltOnLoggerFactory : IBoltOnLoggerFactory
 	{
-		private readonly ILoggerFactory _loggerFactory;
+		private readonly IServiceProvider _serviceProvider;
 
-		public BoltOnLoggerFactory(ILoggerFactory loggerFactory)
+		public BoltOnLoggerFactory(IServiceProvider serviceProvider)
 		{
-			_loggerFactory = loggerFactory;
+			_serviceProvider = serviceProvider;
 		}
 
 		public IBoltOnLogger<TType> Create<TType>()
 		{
-			return new BoltOnLogger<TType>(_loggerFactory.CreateLogger<TType>());
+			return new BoltOnLogger<TType>(_serviceProvider);
 		}
 	}
 }

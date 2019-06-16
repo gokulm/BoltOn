@@ -12,6 +12,7 @@ applicationhost.config
 *.log
 applicationhost.config
 site
+temp
 
 
 # User-specific files
