@@ -95,11 +95,6 @@ namespace BoltOn.Data.EF
             return await _dbSets.FindAsync(id);
         }
 
-        public void SetOptions<TOptions>(TOptions options)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Init<TOptions>(TOptions options)
         {
         }

@@ -5,18 +5,10 @@ namespace BoltOn.Samples.Infrastructure.Data
 {
     public class CollegeDbContext : BaseCosmosDbContext
     {
-        //private readonly CosmosSettings _settings;
-        private const string DatabaseName = "College";
+        private const string DATABASE_NAME = "College";
 
-        public CollegeDbContext(IOptions<CosmosDbSettings> settings) : base(settings.Value, DatabaseName)
+        public CollegeDbContext(IOptions<CosmosDbSettings> settings) : base(settings, DATABASE_NAME)
         {
-            // _settings = settings.Value;
-        }
-
-        protected override void SetCosmosDbSetting()
-        {
-            // If need to override setting
-            //CosmosSetting = _settings.CosmosDbs[DatabaseName]; 
         }
     }
 }

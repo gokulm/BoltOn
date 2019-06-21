@@ -1,14 +1,16 @@
-﻿namespace BoltOn.Data.CosmosDb
+﻿using Microsoft.Extensions.Options;
+
+namespace BoltOn.Data.CosmosDb
 {
     public abstract class BaseCosmosDbContext
     {
-        public CosmosDbDetails CosmosDbSetting;
+        public CosmosDbConfiguration CosmosDbSetting;
 
-        protected BaseCosmosDbContext(CosmosDbSettings settings, string databaseName)
+        protected BaseCosmosDbContext(IOptions<CosmosDbSettings> settings, string databaseName)
         {
-            CosmosDbSetting = settings.CosmosDbs[databaseName];
+            CosmosDbSetting = settings.Value.CosmosDbs[databaseName];
         }
 
-        protected abstract void SetCosmosDbSetting();
+        protected virtual void SetCosmosDbSetting() { }
     }
 }

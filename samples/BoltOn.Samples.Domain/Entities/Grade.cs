@@ -5,7 +5,8 @@ namespace BoltOn.Samples.Domain.Entities
 {
     public class Grade : BaseEntity<string>
     {
-        [JsonProperty("studentId")] //if you are using any property in cosmosdb query make sure propertyname matches exactly as it is in stored in document collection. 
+        //while using any property in cosmosdb query make sure propertyname matches exactly as it is in stored in document collection. 
+        [JsonProperty("studentId")]
         public int StudentId { get; set; }
         public string CourseName { get; set; }
         public int Year { get; set; }
