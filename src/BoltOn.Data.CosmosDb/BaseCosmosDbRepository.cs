@@ -13,19 +13,17 @@ namespace BoltOn.Data.CosmosDb
         where TEntity : class
         where TCosmosDbContext : BaseCosmosDbContext
     {
-        private readonly TCosmosDbContext _CosmosDbContext;
         protected readonly string _databaseName;
         protected readonly string _collectionName;
         protected readonly DocumentClient _client;
         protected RequestOptions RequestOptions { get; set; }
         protected FeedOptions FeedOptions { get; set; }
 
-        public BaseCosmosDbRepository(ICosmosDbContextFactory CosmosDbContextFactory, string collectionName = null)
+        public BaseCosmosDbRepository(TCosmosDbContext cosmosDbContext, string collectionName = null)
         {
-            _CosmosDbContext = CosmosDbContextFactory.Get<TCosmosDbContext>();
-            _databaseName = _CosmosDbContext.CosmosDbSetting.DatabaseName;
+            _databaseName = cosmosDbContext.CosmosDbConfiguration.DatabaseName;
             _collectionName = collectionName ?? typeof(TEntity).Name.Pluralize();
-            _client = new DocumentClient(new Uri(_CosmosDbContext.CosmosDbSetting.Uri), _CosmosDbContext.CosmosDbSetting.AuthorizationKey);
+            _client = new DocumentClient(new Uri(cosmosDbContext.CosmosDbConfiguration.Uri), cosmosDbContext.CosmosDbConfiguration.AuthorizationKey);
         }
 
         public virtual TEntity Add(TEntity entity)

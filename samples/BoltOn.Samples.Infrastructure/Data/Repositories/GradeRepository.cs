@@ -6,7 +6,7 @@ namespace BoltOn.Samples.Infrastructure.Data.Repositories
 {
     public class GradeRepository : BaseCosmosDbRepository<Grade, CollegeDbContext>, IGradeRepository
     {
-        public GradeRepository(ICosmosDbContextFactory cosmosContextFactory) : base(cosmosContextFactory)
+        public GradeRepository(CollegeDbContext collegeDbContext) : base(collegeDbContext)
         {
         }
     }
