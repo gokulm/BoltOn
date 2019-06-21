@@ -2,13 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <LangVersion>latest</LangVersion>
-    <AssemblyName>BoltOn.Data.Cosmos</AssemblyName>
+    <AssemblyName>BoltOn.Data.CosmosDb</AssemblyName>
+    <PackageVersion>0.1.0</PackageVersion>
+    <Authors>Gokulnath Murugesan</Authors>
+    <Owners>Gokulnath Murugesan</Owners>
+    <PackageProjectUrl>https://github.com/gokulm/BoltOn</PackageProjectUrl>
+    <PackageTags>C#, .NET</PackageTags>
+    <Title>BoltOn.Data.CosmosDb</Title>
+    <PackageId>BoltOn.Data.CosmosDb</PackageId>
+    <Description>This is an add-on to BoltOn NuGet package to support CosmosDb</Description>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Class1.cs" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.4.0" />
     <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
