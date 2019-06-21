@@ -24,7 +24,7 @@ namespace BoltOn.Samples.Application.Handlers
 
         public async Task<IEnumerable<Grade>> HandleAsync(GetAllGradesRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
-            _gradeRepository.Init(new FeedOptions { EnableCrossPartitionQuery = true }); //Only if you have to set either requestoptions/feedoptions
+            _gradeRepository.Init(new FeedOptions { EnableCrossPartitionQuery = true }); //Only if you have to set either requestoptions/feedoptions use init method
 
             return await _gradeRepository.FindByAsync(g => g.StudentId == request.StudentId, cancellationToken);
         }

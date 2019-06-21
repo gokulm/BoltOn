@@ -2,11 +2,11 @@
 {
     public abstract class BaseCosmosDbContext
     {
-        public Inner CosmosDbSetting;
+        public CosmosDbDetails CosmosDbSetting;
 
         protected BaseCosmosDbContext(CosmosDbSettings settings, string databaseName)
         {
-            CosmosDbSetting = settings.CosmosDbDbs[databaseName];
+            CosmosDbSetting = settings.CosmosDbs[databaseName];
         }
 
         protected abstract void SetCosmosDbSetting();
