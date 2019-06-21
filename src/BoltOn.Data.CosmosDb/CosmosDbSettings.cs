@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace BoltOn.Data.Cosmos
+namespace BoltOn.Data.CosmosDb
 {
-    public class CosmosSettings
+    public class CosmosDbSettings
     {
-        public Dictionary<string, Inner> CosmosDbs { get; set; }
+        public Dictionary<string, Inner> CosmosDbDbs { get; set; }
     }
 
     public class Inner

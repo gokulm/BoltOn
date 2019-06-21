@@ -8,7 +8,7 @@ using BoltOn.Samples.Application.Handlers;
 using Microsoft.EntityFrameworkCore;
 using BoltOn.Samples.Infrastructure.Data;
 using BoltOn.Samples.Infrastructure.Data.Repositories;
-using BoltOn.Data.Cosmos;
+using BoltOn.Data.CosmosDb;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -27,7 +27,7 @@ namespace BoltOn.Samples.WebApi
             services.BoltOn(options =>
             {
                 options.BoltOnEFModule();
-                options.BoltOnCosmosModule();
+                options.BoltOnCosmosDbModule();
                 options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(StudentRepository).Assembly);
             });
 
@@ -36,7 +36,7 @@ namespace BoltOn.Samples.WebApi
                  options.UseSqlServer("Data Source=127.0.0.1;initial catalog=Testing;persist security info=True;User ID=sa;Password=$Password1;");
              });
 
-            services.Configure<CosmosSettings>(options => Configuration.GetSection("CosmosSettings").Bind(options));
+            services.Configure<CosmosDbSettings>(options => Configuration.GetSection("CosmosSettings").Bind(options));
             services.AddSingleton<CollegeDbContext>();
         }
 

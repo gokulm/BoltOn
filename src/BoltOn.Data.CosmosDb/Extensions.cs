@@ -2,7 +2,7 @@
 using BoltOn.Bootstrapping;
 using Pluralize.NET.Core;
 
-namespace BoltOn.Data.Cosmos
+namespace BoltOn.Data.CosmosDb
 {
     public static class Extensions
     {
@@ -14,7 +14,7 @@ namespace BoltOn.Data.Cosmos
             return _pluralizer.Pluralize(word);
         }
 
-        public static BoltOnOptions BoltOnCosmosModule(this BoltOnOptions boltOnOptions)
+        public static BoltOnOptions BoltOnCosmosDbModule(this BoltOnOptions boltOnOptions)
         {
             boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
             return boltOnOptions;

@@ -7,25 +7,25 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 
-namespace BoltOn.Data.Cosmos
+namespace BoltOn.Data.CosmosDb
 {
-    public abstract class BaseCosmosRepository<TEntity, TCosmosContext> : IRepository<TEntity>
+    public abstract class BaseCosmosDbRepository<TEntity, TCosmosDbContext> : IRepository<TEntity>
         where TEntity : class
-        where TCosmosContext : BaseCosmosContext
+        where TCosmosDbContext : BaseCosmosDbContext
     {
-        private readonly TCosmosContext _cosmosContext;
+        private readonly TCosmosDbContext _CosmosDbContext;
         protected readonly string _databaseName;
         protected readonly string _collectionName;
         protected readonly DocumentClient _client;
         protected RequestOptions RequestOptions { get; set; }
         protected FeedOptions FeedOptions { get; set; }
 
-        public BaseCosmosRepository(ICosmosContextFactory cosmosContextFactory, string collectionName = null)
+        public BaseCosmosDbRepository(ICosmosDbContextFactory CosmosDbContextFactory, string collectionName = null)
         {
-            _cosmosContext = cosmosContextFactory.Get<TCosmosContext>();
-            _databaseName = _cosmosContext.CosmosSetting.DatabaseName;
+            _CosmosDbContext = CosmosDbContextFactory.Get<TCosmosDbContext>();
+            _databaseName = _CosmosDbContext.CosmosDbSetting.DatabaseName;
             _collectionName = collectionName ?? typeof(TEntity).Name.Pluralize();
-            _client = new DocumentClient(new Uri(_cosmosContext.CosmosSetting.Uri), _cosmosContext.CosmosSetting.AuthorizationKey);
+            _client = new DocumentClient(new Uri(_CosmosDbContext.CosmosDbSetting.Uri), _CosmosDbContext.CosmosDbSetting.AuthorizationKey);
         }
 
         public virtual TEntity Add(TEntity entity)
