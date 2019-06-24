@@ -36,7 +36,7 @@ namespace BoltOn.Samples.WebApi
                  options.UseSqlServer("Data Source=127.0.0.1;initial catalog=Testing;persist security info=True;User ID=sa;Password=$Password1;");
              });
 
-            services.Configure<CosmosDbSettings>(options => Configuration.GetSection("CosmosSettings").Bind(options));
+            services.Configure<CosmosDbSettings>(options => Configuration.GetSection("CosmosDbSettings").Bind(options));
             services.AddSingleton<CollegeDbContext>();
         }
 
