@@ -22,13 +22,32 @@ namespace BoltOn.Data.CosmosDb
             return boltOnOptions;
         }
 
-        public static IServiceCollection AddCosmosDbContext<TCosmosDbContext>(this IServiceCollection serviceCollection, CosmosDbConfiguration configuration)
-        where TCosmosDbContext : BaseCosmosDbContext
-        {
-            var instance = Activator.CreateInstance<TCosmosDbContext>();
-            instance.SetConfiguration(configuration);
+        //public static IServiceCollection AddCosmosDbContext<TCosmosDbContext>(this IServiceCollection serviceCollection, CosmosDbConfiguration configuration)
+        //where TCosmosDbContext : BaseCosmosDbContext, new()
+        //{
+        //    serviceCollection.AddSingleton(typeof(TCosmosDbContext), svc =>
+        //    {
+        //        var cosmosDbContext = new TCosmosDbContext();
+        //        cosmosDbContext.SetConfiguration(configuration);
+        //        return cosmosDbContext;
+        //    });
 
-            serviceCollection.AddSingleton(instance);
+        //    var instance = Activator.CreateInstance<TCosmosDbContext>();
+        //    instance.SetConfiguration(configuration);
+
+        //    serviceCollection.AddSingleton(instance);
+        //    return serviceCollection;
+        //}
+        
+        public static IServiceCollection AddCosmosDbContext<TCosmosDbContext>(this IServiceCollection serviceCollection, Action<CosmosDbContextOptions> action)
+            where TCosmosDbContext : BaseCosmosDbContext<TCosmosDbContext>
+        {
+            var options = new CosmosDbContextOptions();
+            action(options);
+
+            serviceCollection.AddSingleton(svc => new CosmosDbContextOptions<TCosmosDbContext>(options));
+            serviceCollection.AddSingleton<TCosmosDbContext>();
+
             return serviceCollection;
         }
     }

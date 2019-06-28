@@ -11,7 +11,7 @@ namespace BoltOn.Data.CosmosDb
 {
     public abstract class BaseCosmosDbRepository<TEntity, TCosmosDbContext> : IRepository<TEntity>
         where TEntity : class
-        where TCosmosDbContext : BaseCosmosDbContext
+        where TCosmosDbContext : BaseCosmosDbContext<TCosmosDbContext>
     {
         protected readonly string _databaseName;
         protected readonly string _collectionName;
@@ -28,7 +28,7 @@ namespace BoltOn.Data.CosmosDb
 
         public virtual TEntity Add(TEntity entity)
         {
-            _client.CreateDocumentAsync(GetDocumentCollectionUri(), entity, RequestOptions).Wait();
+            _client.CreateDocumentAsync(GetDocumentCollectionUri(), entity, RequestOptions);
             return entity;
         }
 
