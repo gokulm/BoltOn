@@ -22,11 +22,14 @@ namespace BoltOn.Data.CosmosDb
             return boltOnOptions;
         }
 
-        public static IServiceCollection AddCosmosDbContext<TCosmosDbContext>(this IServiceCollection serviceCollection, CosmosDbConfiguration configuration)
-        where TCosmosDbContext : BaseCosmosDbContext
+        public static IServiceCollection AddCosmosDbContext<TCosmosDbContext>(this IServiceCollection serviceCollection, Action<CosmosDbOptions> action = null)
+        where TCosmosDbContext : BaseCosmosDbContext, new()
         {
-            var instance = Activator.CreateInstance<TCosmosDbContext>();
-            instance.SetConfiguration(configuration);
+            var options = new CosmosDbOptions();
+            action?.Invoke(options);
+
+            var instance = new TCosmosDbContext();
+            instance.Configure(options);
 
             serviceCollection.AddSingleton(instance);
             return serviceCollection;

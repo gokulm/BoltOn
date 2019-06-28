@@ -10,7 +10,7 @@ namespace BoltOn.Data.CosmosDb
         public string DatabaseName { get; set; }
         public DocumentClient DocumentClient { get; set; }
 
-        public void SetConfiguration(CosmosDbConfiguration configuration)
+        public void Configure(CosmosDbOptions configuration)
         {
             Uri = configuration.Uri;
             AuthorizationKey = configuration.AuthorizationKey;
