@@ -1,16 +1,21 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System;
+using Microsoft.Azure.Documents.Client;
 
 namespace BoltOn.Data.CosmosDb
 {
     public abstract class BaseCosmosDbContext
     {
-        public CosmosDbConfiguration CosmosDbConfiguration;
+        public string Uri { get; set; }
+        public string AuthorizationKey { get; set; }
+        public string DatabaseName { get; set; }
+        public DocumentClient DocumentClient { get; set; }
 
-        protected BaseCosmosDbContext(IOptions<CosmosDbSettings> settings, string databaseName)
+        public void SetConfiguration(CosmosDbConfiguration configuration)
         {
-            CosmosDbConfiguration = settings.Value.CosmosDbs[databaseName];
+            Uri = configuration.Uri;
+            AuthorizationKey = configuration.AuthorizationKey;
+            DatabaseName = configuration.DatabaseName;
+            DocumentClient = new DocumentClient(new Uri(Uri), AuthorizationKey);
         }
-
-        protected virtual void SetCosmosDbSetting() { }
     }
 }

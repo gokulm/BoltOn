@@ -21,9 +21,9 @@ namespace BoltOn.Data.CosmosDb
 
         public BaseCosmosDbRepository(TCosmosDbContext cosmosDbContext, string collectionName = null)
         {
-            _databaseName = cosmosDbContext.CosmosDbConfiguration.DatabaseName;
+            _databaseName = cosmosDbContext.DatabaseName;
             _collectionName = collectionName ?? typeof(TEntity).Name.Pluralize();
-            _client = new DocumentClient(new Uri(cosmosDbContext.CosmosDbConfiguration.Uri), cosmosDbContext.CosmosDbConfiguration.AuthorizationKey);
+            _client = cosmosDbContext.DocumentClient;
         }
 
         public virtual TEntity Add(TEntity entity)

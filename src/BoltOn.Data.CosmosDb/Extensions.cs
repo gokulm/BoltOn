@@ -1,5 +1,7 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using BoltOn.Bootstrapping;
+using Microsoft.Extensions.DependencyInjection;
 using Pluralize.NET.Core;
 
 namespace BoltOn.Data.CosmosDb
@@ -18,6 +20,16 @@ namespace BoltOn.Data.CosmosDb
         {
             boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
             return boltOnOptions;
+        }
+
+        public static IServiceCollection AddCosmosDbContext<TCosmosDbContext>(this IServiceCollection serviceCollection, CosmosDbConfiguration configuration)
+        where TCosmosDbContext : BaseCosmosDbContext
+        {
+            var instance = Activator.CreateInstance<TCosmosDbContext>();
+            instance.SetConfiguration(configuration);
+
+            serviceCollection.AddSingleton(instance);
+            return serviceCollection;
         }
     }
 }

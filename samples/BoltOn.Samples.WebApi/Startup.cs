@@ -32,12 +32,17 @@ namespace BoltOn.Samples.WebApi
             });
 
             services.AddDbContext<SchoolDbContext>(options =>
-             {
-                 options.UseSqlServer("Data Source=127.0.0.1;initial catalog=Testing;persist security info=True;User ID=sa;Password=$Password1;");
-             });
+            {
+                options.UseSqlServer("Data Source=127.0.0.1;initial catalog=Testing;persist security info=True;User ID=sa;Password=$Password1;");
+            });
 
-            services.Configure<CosmosDbSettings>(options => Configuration.GetSection("CosmosDbSettings").Bind(options));
-            services.AddSingleton<CollegeDbContext>();
+            //services.Configure<CosmosDbSettings>(options => Configuration.GetSection("CosmosDbSettings").Bind(options));
+            services.AddCosmosDbContext<CollegeDbContext>(new CosmosDbConfiguration
+            {
+                Uri = "https://engagedb.documents.azure.com:443/",
+                AuthorizationKey = "sswjWYMOGgfq8WpIxvTpSMfjeX05xJ6gQp971HsTdiIgQ0Dq9r0oXjABLtrQHj8CzYS60yXhZC8GvoFPUaSsuw==",
+                DatabaseName = "College"
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
