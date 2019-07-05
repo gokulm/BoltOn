@@ -29,8 +29,7 @@ namespace BoltOn.Samples.WebApi.Controllers
         [HttpGet]
         public async Task<IEnumerable<Grade>> GetGrades([FromRoute] GetAllGradesRequest request)
         {
-            var grades = await _mediator.ProcessAsync(request);
-            return grades;
+            return await _mediator.ProcessAsync(request);
         }
     }
 }
