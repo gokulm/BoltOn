@@ -1,6 +1,9 @@
-﻿using BoltOn.Data.CosmosDb;
+﻿using System.Threading.Tasks;
+using BoltOn.Data.CosmosDb;
 using BoltOn.Samples.Application.Abstractions.Data;
 using BoltOn.Samples.Domain.Entities;
+using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
 
 namespace BoltOn.Samples.Infrastructure.Data.Repositories
 {
@@ -8,6 +11,19 @@ namespace BoltOn.Samples.Infrastructure.Data.Repositories
     {
         public GradeRepository(CollegeDbContext collegeDbContext) : base(collegeDbContext)
         {
+        }
+
+        public virtual Grade GetById<TId>(TId id, object partitionKey)
+        {
+            var document = _client.ReadDocumentAsync<Grade>(GetDocumentUri(id.ToString()), new RequestOptions { PartitionKey = new PartitionKey(partitionKey) })
+                .GetAwaiter().GetResult();
+            return document.Document;
+        }
+
+        public virtual async Task<Grade> GetByIdAsync<TId>(TId id, object partitionKey)
+        {
+            var document = await _client.ReadDocumentAsync<Grade>(GetDocumentUri(id.ToString()), new RequestOptions { PartitionKey = new PartitionKey(partitionKey) });
+            return document.Document;
         }
     }
 }

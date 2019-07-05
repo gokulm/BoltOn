@@ -3,18 +3,18 @@ using Microsoft.Azure.Documents.Client;
 
 namespace BoltOn.Data.CosmosDb
 {
-    public abstract class BaseCosmosDbContext
+    public abstract class BaseCosmosDbContext<TCosmosDbContext> where TCosmosDbContext : BaseCosmosDbContext<TCosmosDbContext>
     {
         public string Uri { get; set; }
         public string AuthorizationKey { get; set; }
         public string DatabaseName { get; set; }
         public DocumentClient DocumentClient { get; set; }
 
-        public void Configure(CosmosDbOptions configuration)
+        protected BaseCosmosDbContext(CosmosDbContextOptions<TCosmosDbContext> options)
         {
-            Uri = configuration.Uri;
-            AuthorizationKey = configuration.AuthorizationKey;
-            DatabaseName = configuration.DatabaseName;
+            Uri = options.Uri;
+            AuthorizationKey = options.AuthorizationKey;
+            DatabaseName = options.DatabaseName;
             DocumentClient = new DocumentClient(new Uri(Uri), AuthorizationKey);
         }
     }
