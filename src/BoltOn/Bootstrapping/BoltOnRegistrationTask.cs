@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using BoltOn.Bootstrapping;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
@@ -7,7 +6,7 @@ using BoltOn.Other;
 using BoltOn.UoW;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BoltOn
+namespace BoltOn.Bootstrapping
 {
 	internal class BoltOnRegistrationTask : IRegistrationTask
 	{

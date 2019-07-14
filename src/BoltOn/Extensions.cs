@@ -13,6 +13,7 @@ namespace BoltOn
 		{
 			var options = new BoltOnOptions();
 			action?.Invoke(options);
+			options.ServiceCollection = serviceCollection;
 			Bootstrapper.Instance.BoltOn(serviceCollection, options, Assembly.GetCallingAssembly());
 			return serviceCollection;
 		}

@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Overrides", "src\Bol
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Samples.Console", "samples\BoltOn.Samples.Console\BoltOn.Samples.Console.csproj", "{FD5F35F9-FC73-4CC4-AFE3-95F3B1C668D9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Bus.RabbitMq", "src\BoltOn.Bus.RabbitMq\BoltOn.Bus.RabbitMq.csproj", "{818B6322-EEB0-43CE-A373-5144DB086F25}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,10 @@ Global
 		{FD5F35F9-FC73-4CC4-AFE3-95F3B1C668D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD5F35F9-FC73-4CC4-AFE3-95F3B1C668D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD5F35F9-FC73-4CC4-AFE3-95F3B1C668D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{818B6322-EEB0-43CE-A373-5144DB086F25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{818B6322-EEB0-43CE-A373-5144DB086F25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{818B6322-EEB0-43CE-A373-5144DB086F25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{818B6322-EEB0-43CE-A373-5144DB086F25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,6 +88,7 @@ Global
 		{440B9E87-690B-4475-BD11-BF6D4B1CA246} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 		{54108E57-EC19-43AD-A9FA-44222BC1C0B4} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 		{FD5F35F9-FC73-4CC4-AFE3-95F3B1C668D9} = {15E5CCAC-85EB-4C98-B1FA-B5DEFD213FCD}
+		{818B6322-EEB0-43CE-A373-5144DB086F25} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {530F371A-8A38-41FE-9A1E-A03ACCDE867B}
