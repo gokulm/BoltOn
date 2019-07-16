@@ -29,7 +29,7 @@ namespace BoltOn.Data.CosmosDb
             action(options);
 
             serviceCollection.AddSingleton(svc => new CosmosDbContextOptions<TCosmosDbContext>(options));
-            serviceCollection.AddSingleton<TCosmosDbContext>();
+            serviceCollection.AddScoped<TCosmosDbContext>();
 
             return serviceCollection;
         }

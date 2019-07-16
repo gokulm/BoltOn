@@ -5,10 +5,10 @@ namespace BoltOn.Data.CosmosDb
 {
     public abstract class BaseCosmosDbContext<TCosmosDbContext> where TCosmosDbContext : BaseCosmosDbContext<TCosmosDbContext>
     {
-        public string Uri { get; set; }
-        public string AuthorizationKey { get; set; }
-        public string DatabaseName { get; set; }
-        public DocumentClient DocumentClient { get; set; }
+        public string Uri { get; private set; }
+        public string AuthorizationKey { get; private set; }
+        public string DatabaseName { get; private set; }
+        public DocumentClient DocumentClient { get; private set; }
 
         protected BaseCosmosDbContext(CosmosDbContextOptions<TCosmosDbContext> options)
         {

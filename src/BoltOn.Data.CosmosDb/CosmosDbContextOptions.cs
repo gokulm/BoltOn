@@ -16,8 +16,8 @@
             DatabaseName = options.DatabaseName;
         }
 
-        public string Uri { get; set; }
-        public string AuthorizationKey { get; set; }
-        public string DatabaseName { get; set; }
+        public string Uri { get; private set; }
+        public string AuthorizationKey { get; private set; }
+        public string DatabaseName { get; private set; }
     }
 }

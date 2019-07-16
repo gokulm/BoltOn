@@ -16,29 +16,31 @@ namespace BoltOn.Data.CosmosDb
         protected readonly string _databaseName;
         protected readonly string _collectionName;
         protected readonly DocumentClient _client;
+        private readonly Uri _documentCollectionUri;
 
         public BaseCosmosDbRepository(TCosmosDbContext cosmosDbContext, string collectionName = null)
         {
             _databaseName = cosmosDbContext.DatabaseName;
             _collectionName = collectionName ?? typeof(TEntity).Name.Pluralize();
             _client = cosmosDbContext.DocumentClient;
+            _documentCollectionUri = GetDocumentCollectionUri();
         }
 
         public virtual TEntity Add(TEntity entity)
         {
-            _client.CreateDocumentAsync(GetDocumentCollectionUri(), entity).GetAwaiter().GetResult();
+            _client.CreateDocumentAsync(_documentCollectionUri, entity).GetAwaiter().GetResult();
             return entity;
         }
 
         public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await _client.CreateDocumentAsync(GetDocumentCollectionUri(), entity);
+            await _client.CreateDocumentAsync(_documentCollectionUri, entity);
             return entity;
         }
 
         public virtual IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
         {
-            var query = _client.CreateDocumentQuery<TEntity>(GetDocumentCollectionUri())
+            var query = _client.CreateDocumentQuery<TEntity>(_documentCollectionUri)
                 .Where(predicate)
                 .AsDocumentQuery();
 
@@ -48,7 +50,7 @@ namespace BoltOn.Data.CosmosDb
         public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
             CancellationToken cancellationToken = default(CancellationToken), params Expression<Func<TEntity, object>>[] includes)
         {
-            var query = _client.CreateDocumentQuery<TEntity>(GetDocumentCollectionUri())
+            var query = _client.CreateDocumentQuery<TEntity>(_documentCollectionUri)
                .Where(predicate)
                .AsDocumentQuery();
 
@@ -58,7 +60,7 @@ namespace BoltOn.Data.CosmosDb
         public virtual IEnumerable<TEntity> GetAll()
         {
             var query = _client.CreateDocumentQuery<TEntity>
-                (GetDocumentCollectionUri())
+                (_documentCollectionUri)
                 .AsDocumentQuery();
 
             return GetResultsFromDocumentQuery(query).GetAwaiter().GetResult();
@@ -67,7 +69,7 @@ namespace BoltOn.Data.CosmosDb
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             var query = _client.CreateDocumentQuery<TEntity>
-                (GetDocumentCollectionUri())
+                (_documentCollectionUri)
                 .AsDocumentQuery();
 
             return await GetResultsFromDocumentQuery(query);
@@ -87,12 +89,12 @@ namespace BoltOn.Data.CosmosDb
 
         public virtual void Update(TEntity entity)
         {
-            _client.UpsertDocumentAsync(GetDocumentCollectionUri(), entity).GetAwaiter().GetResult();
+            _client.UpsertDocumentAsync(_documentCollectionUri, entity).GetAwaiter().GetResult();
         }
 
         public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await _client.UpsertDocumentAsync(GetDocumentCollectionUri(), entity);
+            await _client.UpsertDocumentAsync(_documentCollectionUri, entity);
         }
 
         protected Uri GetDocumentCollectionUri()
