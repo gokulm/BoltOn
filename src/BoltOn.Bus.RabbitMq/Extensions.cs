@@ -2,39 +2,35 @@ using System;
 using System.Reflection;
 using BoltOn.Bootstrapping;
 using MassTransit;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bus.RabbitMq
 {
 	public static class Extensions
 	{
-		public static BoltOnOptions BoltOnRabbitMqBus(this BoltOnOptions boltOnOptions, Action<RabbitMqBusOptions> action)
-		{
+		public static BoltOnOptions BoltOnRabbitMqBus(this BoltOnOptions boltOnOptions)
+        {
 			boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-
-			var options = new RabbitMqBusOptions();
-			action(options);
-
-			//boltOnOptions.Set(options);
-
-			var busControl = MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
-			{
-				cfg.Host(new Uri(options.HostAddress), h =>
-				{
-					h.Username(options.Username);
-					h.Password(options.Password);
-				});
-			});
-			busControl.Start();
-
 			return boltOnOptions;
 		}
-	}
 
-	public class RegistrationTask : IRegistrationTask
-	{
-		public void Run(RegistrationTaskContext context)
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public static IServiceCollection AddRabbitMqBus(this IServiceCollection serviceCollection, Action<RabbitMqBusOptions> action)
+        {
+            var options = new RabbitMqBusOptions();
+            action(options);
+
+            var busControl = MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
+            {
+                cfg.Host(new Uri(options.HostAddress), h =>
+                {
+                    h.Username(options.Username);
+                    h.Password(options.Password);
+                });
+            });
+            busControl.Start();
+            serviceCollection.AddSingleton(busControl);
+
+            return serviceCollection;
+        }
+    }
 }
