@@ -12,17 +12,17 @@ using BoltOn.Samples.Infrastructure.Data.Repositories;
 namespace BoltOn.Samples.WebApi
 {
 	public class Startup
-    {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+	{
+		public Startup(IConfiguration configuration)
+		{
+			Configuration = configuration;
+		}
 
-        public IConfiguration Configuration { get; }
+		public IConfiguration Configuration { get; }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+		public void ConfigureServices(IServiceCollection services)
+		{
+			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 			services.BoltOn(options =>
 			{
 				options.BoltOnEFModule();
@@ -35,10 +35,10 @@ namespace BoltOn.Samples.WebApi
 			 });
 		}
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
-            app.UseMvc();
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+		{
+			app.UseMvc();
 			app.ApplicationServices.TightenBolts();
 		}
-    }
+	}
 }

@@ -13,7 +13,6 @@ namespace BoltOn
 		{
 			var options = new BoltOnOptions();
 			action?.Invoke(options);
-			options.ServiceCollection = serviceCollection;
 			Bootstrapper.Instance.BoltOn(serviceCollection, options, Assembly.GetCallingAssembly());
 			return serviceCollection;
 		}
@@ -29,21 +28,6 @@ namespace BoltOn
 			if (serviceDescriptor == null)
 				services.AddTransient(typeof(IInterceptor), interceptorType);
 			return services;
-		}
-
-		public static void AddInterceptor<TInterceptor>(this RegistrationTaskContext context) where TInterceptor : IInterceptor
-		{
-			context.AddInterceptor<TInterceptor>();
-		}
-
-		public static void RemoveInterceptor<TInterceptor>(this RegistrationTaskContext context) where TInterceptor : IInterceptor
-		{
-			context.RemoveInterceptor<TInterceptor>();
-		}
-
-		public static void RemoveAllInterceptors(this RegistrationTaskContext context)
-		{
-			context.RemoveAllInterceptors();
 		}
 	}
 }

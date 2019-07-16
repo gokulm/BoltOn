@@ -2,7 +2,6 @@ using System;
 using System.Reflection;
 using BoltOn.Bootstrapping;
 using MassTransit;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bus.RabbitMq
 {
@@ -10,11 +9,12 @@ namespace BoltOn.Bus.RabbitMq
 	{
 		public static BoltOnOptions BoltOnRabbitMqBus(this BoltOnOptions boltOnOptions, Action<RabbitMqBusOptions> action)
 		{
-			var serviceCollection = boltOnOptions.ServiceCollection;
 			boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
 
 			var options = new RabbitMqBusOptions();
 			action(options);
+
+			//boltOnOptions.Set(options);
 
 			var busControl = MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
 			{
@@ -25,9 +25,16 @@ namespace BoltOn.Bus.RabbitMq
 				});
 			});
 			busControl.Start();
-			serviceCollection.AddSingleton(busControl);
 
 			return boltOnOptions;
+		}
+	}
+
+	public class RegistrationTask : IRegistrationTask
+	{
+		public void Run(RegistrationTaskContext context)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
