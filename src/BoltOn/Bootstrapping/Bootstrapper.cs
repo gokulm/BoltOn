@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -44,6 +45,14 @@ namespace BoltOn.Bootstrapping
 			{
 				Check.Requires(_serviceProvider != null, "ServiceProvider not initialized");
 				return _serviceProvider;
+			}
+		}
+
+		internal Hashtable AppOptions
+		{
+			get
+			{
+				return _options.AppOptions;
 			}
 		}
 

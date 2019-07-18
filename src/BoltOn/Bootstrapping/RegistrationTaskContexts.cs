@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using BoltOn.Mediator.Interceptors;
+using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
@@ -20,6 +21,13 @@ namespace BoltOn.Bootstrapping
 		public IServiceCollection Container => _bootstrapper.Container;
 
 	    public IReadOnlyList<Assembly> Assemblies => _bootstrapper.Assemblies;
+
+		public TOptions Get<TOptions>() where TOptions : class
+		{
+			var key = typeof(TOptions).FullName;
+			Check.Requires(_bootstrapper.AppOptions.ContainsKey(key), "Options not found");
+			return (TOptions)_bootstrapper.AppOptions[key];
+		}
 
 		public void AddInterceptor<TInterceptor>() where TInterceptor : IInterceptor
 		{

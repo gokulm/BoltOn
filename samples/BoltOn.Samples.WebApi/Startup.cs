@@ -8,6 +8,7 @@ using BoltOn.Samples.Application.Handlers;
 using Microsoft.EntityFrameworkCore;
 using BoltOn.Samples.Infrastructure.Data;
 using BoltOn.Samples.Infrastructure.Data.Repositories;
+using BoltOn.Bus.RabbitMq;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -26,6 +27,11 @@ namespace BoltOn.Samples.WebApi
 			services.BoltOn(options =>
 			{
 				options.BoltOnEFModule();
+				options.BoltOnRabbitMqBus(o =>
+				{
+					o.HostAddress = "";
+					o.Username = "";
+				});
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(StudentRepository).Assembly);
 			});
 
