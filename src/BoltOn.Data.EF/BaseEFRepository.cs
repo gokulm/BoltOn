@@ -94,9 +94,5 @@ namespace BoltOn.Data.EF
         {
             return await _dbSets.FindAsync(id);
         }
-
-        public void Init<TOptions>(TOptions options)
-        {
-        }
     }
 }
