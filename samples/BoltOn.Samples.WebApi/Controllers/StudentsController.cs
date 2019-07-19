@@ -15,7 +15,7 @@ namespace BoltOn.Samples.WebApi.Controllers
 
         public StudentsController(IMediator mediator)
         {
-            this._mediator = mediator;
+            _mediator = mediator;
         }
 
         [HttpGet]

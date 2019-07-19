@@ -4,6 +4,7 @@ using BoltOn.Samples.Application.Abstractions.Data;
 using BoltOn.Samples.Domain.Entities;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Nito.AsyncEx;
 
 namespace BoltOn.Samples.Infrastructure.Data.Repositories
 {
@@ -15,8 +16,7 @@ namespace BoltOn.Samples.Infrastructure.Data.Repositories
 
         public virtual Grade GetById<TId>(TId id, object partitionKey)
         {
-            var document = _client.ReadDocumentAsync<Grade>(GetDocumentUri(id.ToString()), new RequestOptions { PartitionKey = new PartitionKey(partitionKey) })
-                .GetAwaiter().GetResult();
+            var document = AsyncContext.Run(() => _client.ReadDocumentAsync<Grade>(GetDocumentUri(id.ToString()), new RequestOptions { PartitionKey = new PartitionKey(partitionKey) }));
             return document.Document;
         }
 

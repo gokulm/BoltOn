@@ -38,9 +38,9 @@ namespace BoltOn.Samples.WebApi
 
             services.AddCosmosDbContext<CollegeDbContext>(options =>
             {
-                options.Uri = "https://engagedb.documents.azure.com:443/";
-                options.AuthorizationKey = "sswjWYMOGgfq8WpIxvTpSMfjeX05xJ6gQp971HsTdiIgQ0Dq9r0oXjABLtrQHj8CzYS60yXhZC8GvoFPUaSsuw==";
-                options.DatabaseName = "College";
+                options.Uri = "";
+                options.AuthorizationKey = "";
+                options.DatabaseName = "";
             });
         }
 

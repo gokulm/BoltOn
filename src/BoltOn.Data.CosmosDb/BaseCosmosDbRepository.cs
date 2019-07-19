@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
+using Nito.AsyncEx;
 
 namespace BoltOn.Data.CosmosDb
 {
@@ -28,7 +29,7 @@ namespace BoltOn.Data.CosmosDb
 
         public virtual TEntity Add(TEntity entity)
         {
-            _client.CreateDocumentAsync(_documentCollectionUri, entity).GetAwaiter().GetResult();
+            AsyncContext.Run(() => _client.CreateDocumentAsync(_documentCollectionUri, entity));
             return entity;
         }
 
@@ -44,7 +45,7 @@ namespace BoltOn.Data.CosmosDb
                 .Where(predicate)
                 .AsDocumentQuery();
 
-            return GetResultsFromDocumentQuery(query).GetAwaiter().GetResult();
+            return AsyncContext.Run(() => GetResultsFromDocumentQuery(query));
         }
 
         public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
@@ -63,7 +64,7 @@ namespace BoltOn.Data.CosmosDb
                 (_documentCollectionUri)
                 .AsDocumentQuery();
 
-            return GetResultsFromDocumentQuery(query).GetAwaiter().GetResult();
+            return AsyncContext.Run(() => GetResultsFromDocumentQuery(query));
         }
 
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default(CancellationToken))
@@ -77,7 +78,7 @@ namespace BoltOn.Data.CosmosDb
 
         public virtual TEntity GetById<TId>(TId id)
         {
-            var document = _client.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString())).GetAwaiter().GetResult();
+            var document = AsyncContext.Run(() => _client.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString())));
             return document.Document;
         }
 
@@ -89,7 +90,7 @@ namespace BoltOn.Data.CosmosDb
 
         public virtual void Update(TEntity entity)
         {
-            _client.UpsertDocumentAsync(_documentCollectionUri, entity).GetAwaiter().GetResult();
+            AsyncContext.Run(() => _client.UpsertDocumentAsync(_documentCollectionUri, entity));
         }
 
         public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))

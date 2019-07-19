@@ -19,6 +19,7 @@
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.5.1" />
     <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
+    <PackageReference Include="Nito.AsyncEx" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
