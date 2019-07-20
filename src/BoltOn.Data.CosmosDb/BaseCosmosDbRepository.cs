@@ -15,9 +15,9 @@ namespace BoltOn.Data.CosmosDb
         where TCosmosDbContext : BaseCosmosDbContext<TCosmosDbContext>
     {
 
-		protected string DatabaseName { get; set; }
-		protected string CollectionName { get; set; }
-		protected DocumentClient DocumentClient { get; set; }
+		protected string DatabaseName { get; private set; }
+		protected string CollectionName { get; private set; }
+		protected DocumentClient DocumentClient { get; private set; }
 		protected Uri DocumentCollectionUri { get; private set; }
 
 		protected BaseCosmosDbRepository(TCosmosDbContext cosmosDbContext, string collectionName = null)
