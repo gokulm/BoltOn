@@ -16,13 +16,13 @@ namespace BoltOn.Samples.Infrastructure.Data.Repositories
 
         public virtual Grade GetById<TId>(TId id, object partitionKey)
         {
-            var document = AsyncContext.Run(() => _client.ReadDocumentAsync<Grade>(GetDocumentUri(id.ToString()), new RequestOptions { PartitionKey = new PartitionKey(partitionKey) }));
+            var document = AsyncContext.Run(() => DocumentClient.ReadDocumentAsync<Grade>(GetDocumentUri(id.ToString()), new RequestOptions { PartitionKey = new PartitionKey(partitionKey) }));
             return document.Document;
         }
 
         public virtual async Task<Grade> GetByIdAsync<TId>(TId id, object partitionKey)
         {
-            var document = await _client.ReadDocumentAsync<Grade>(GetDocumentUri(id.ToString()), new RequestOptions { PartitionKey = new PartitionKey(partitionKey) });
+            var document = await DocumentClient.ReadDocumentAsync<Grade>(GetDocumentUri(id.ToString()), new RequestOptions { PartitionKey = new PartitionKey(partitionKey) });
             return document.Document;
         }
     }
