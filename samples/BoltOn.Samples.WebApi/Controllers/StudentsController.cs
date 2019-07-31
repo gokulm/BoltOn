@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BoltOn.Bus;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Samples.Application.DTOs;
 using BoltOn.Samples.Application.Handlers;
+using BoltOn.Samples.Application.Messages;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BoltOn.Samples.WebApi.Controllers
@@ -11,10 +13,12 @@ namespace BoltOn.Samples.WebApi.Controllers
 	public class StudentsController : Controller
 	{
 		private readonly IMediator _mediator;
+		private readonly IBus _bus;
 
-		public StudentsController(IMediator mediator)
+		public StudentsController(IMediator mediator, IBus bus)
 		{
 			this._mediator = mediator;
+			this._bus = bus;
 		}
 
 		[HttpGet]
@@ -22,6 +26,13 @@ namespace BoltOn.Samples.WebApi.Controllers
 		{
 			var students = await _mediator.ProcessAsync(new GetAllStudentsRequest());
 			return students;
+		}
+
+		[HttpPost]
+		public async Task<StudentDto> Post()
+		{
+			await _bus.Publish(new CreateStudent { FirstName = "new" });
+			return new StudentDto { FirstName = "test", LastName = "test" };
 		}
 	}
 }

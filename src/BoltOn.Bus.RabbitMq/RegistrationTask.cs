@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bus.RabbitMq
 {
-    public class RegistrationTask : IRegistrationTask
+    public class RegistrationTask 
     {
         public void Run(RegistrationTaskContext context)
         {

@@ -27,12 +27,14 @@ namespace BoltOn.Samples.WebApi
 			services.BoltOn(options =>
 			{
 				options.BoltOnEFModule();
-				options.BoltOnRabbitMqBus(o =>
-				{
-					o.HostAddress = "";
-					o.Username = "";
-				});
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(StudentRepository).Assembly);
+			});
+
+			services.BoltOnRabbitMqBus(o =>
+			{
+				o.HostAddress = "rabbitmq://localhost:5672";
+				o.Username = "guest";
+				o.Password = "guest";
 			});
 
 			services.AddDbContext<SchoolDbContext>(options =>

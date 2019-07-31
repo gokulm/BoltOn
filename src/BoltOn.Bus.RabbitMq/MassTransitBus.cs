@@ -14,7 +14,8 @@ namespace BoltOn.Bus.RabbitMq
 		}
 
 
-		public async Task Publish<TMessage>(TMessage message, CancellationToken cancellationToken = default)
+		public async Task Publish<TMessage>(TMessage message, CancellationToken cancellationToken = default) 
+			where TMessage : IMessage
 		{
 			await _busControl.Publish(message, cancellationToken).ConfigureAwait(false);
 		}
