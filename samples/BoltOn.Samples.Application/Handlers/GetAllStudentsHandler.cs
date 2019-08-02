@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Samples.Application.Abstractions.Data;
 using BoltOn.Samples.Application.DTOs;
+using BoltOn.Samples.Application.Messages;
 
 namespace BoltOn.Samples.Application.Handlers
 {
@@ -31,6 +32,15 @@ namespace BoltOn.Samples.Application.Handlers
 								   LastName = s.LastName
 							   };
 			return studentDtos;
+		}
+	}
+
+
+	public class CreateStudentHandler : IRequestAsyncHandler<CreateStudent>
+	{
+		public async Task HandleAsync(CreateStudent request, CancellationToken cancellationToken)
+		{
+			await Task.FromResult("testing");
 		}
 	}
 }

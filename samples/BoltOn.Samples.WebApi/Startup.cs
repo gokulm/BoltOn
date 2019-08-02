@@ -37,6 +37,7 @@ namespace BoltOn.Samples.WebApi
 				o.Password = "guest";
 			});
 
+
 			services.AddDbContext<SchoolDbContext>(options =>
 			 {
 				 options.UseSqlServer("Data Source=127.0.0.1;initial catalog=Testing;persist security info=True;User ID=sa;Password=$Password1;");
@@ -46,6 +47,13 @@ namespace BoltOn.Samples.WebApi
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 		{
 			app.UseMvc();
+			app.ApplicationServices.UseRabbitMqBus(o =>
+			{
+				o.HostAddress = "rabbitmq://localhost:5672";
+				o.Username = "guest";
+				o.Password = "guest";
+			}, typeof(CreateStudentHandler).Assembly);
+
 			app.ApplicationServices.TightenBolts();
 		}
 	}
