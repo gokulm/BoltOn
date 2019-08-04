@@ -32,7 +32,7 @@ namespace BoltOn.Bus.RabbitMq
 			});
 			//busControl.Start();
 			serviceCollection.AddSingleton(busControl);
-			serviceCollection.AddScoped<IBus, MassTransitBus>();
+			serviceCollection.AddScoped<IBus, MassTransitBoltOnBus>();
 
 			return serviceCollection;
 		}

@@ -5,6 +5,7 @@ using BoltOn.Mediator.Pipeline;
 using BoltOn.Samples.Application.DTOs;
 using BoltOn.Samples.Application.Handlers;
 using BoltOn.Samples.Application.Messages;
+using BoltOn.Samples.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BoltOn.Samples.WebApi.Controllers
@@ -27,6 +28,13 @@ namespace BoltOn.Samples.WebApi.Controllers
 			var students = await _mediator.ProcessAsync(new GetAllStudentsRequest());
 			return students;
 		}
+		
+        [Route("{studentId}/Grades")]
+        [HttpGet]
+        public async Task<IEnumerable<Grade>> GetGrades([FromRoute] GetAllGradesRequest request)
+        {
+            return await _mediator.ProcessAsync(request);
+        }
 
 		[HttpPost]
 		public async Task<StudentDto> Post()

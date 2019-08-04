@@ -17,6 +17,7 @@
     <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Infrastructure\BoltOn.Samples.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\BoltOn.Data.CosmosDb\BoltOn.Data.CosmosDb.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.Bus.RabbitMq\BoltOn.Bus.RabbitMq.csproj" />
   </ItemGroup>
 </Project>

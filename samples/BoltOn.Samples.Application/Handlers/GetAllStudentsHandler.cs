@@ -9,19 +9,19 @@ using BoltOn.Samples.Application.Messages;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class GetAllStudentsRequest : IQuery<IEnumerable<StudentDto>>
-	{
-	}
+    public class GetAllStudentsRequest : IQuery<IEnumerable<StudentDto>>
+    {
+    }
 
-	public class GetAllStudentsHandler : IRequestAsyncHandler<GetAllStudentsRequest, IEnumerable<StudentDto>>
-	{
-		private readonly IStudentRepository _studentRepository;
+    public class GetAllStudentsHandler : IRequestAsyncHandler<GetAllStudentsRequest, IEnumerable<StudentDto>>
+    {
+        private readonly IStudentRepository _studentRepository;
 
-		public GetAllStudentsHandler(IStudentRepository studentRepository)
-		{
-			_studentRepository = studentRepository;
-		}
-
+        public GetAllStudentsHandler(IStudentRepository studentRepository)
+        {
+            _studentRepository = studentRepository;
+        }
+        
 		public async Task<IEnumerable<StudentDto>> HandleAsync(GetAllStudentsRequest request, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var students = (await _studentRepository.GetAllAsync()).ToList();
