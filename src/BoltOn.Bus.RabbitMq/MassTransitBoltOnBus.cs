@@ -4,11 +4,11 @@ using MassTransit;
 
 namespace BoltOn.Bus.RabbitMq
 {
-	public class MassTransitBus : IBus
+	public class MassTransitBoltOnBus : IBus
 	{
 		private readonly IBusControl _busControl;
 
-		public MassTransitBus(IBusControl busControl)
+		public MassTransitBoltOnBus(IBusControl busControl)
 		{
 			_busControl = busControl;
 		}

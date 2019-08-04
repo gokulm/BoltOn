@@ -42,36 +42,39 @@ namespace BoltOn.Bus.RabbitMq
 		{
 			var options = new RabbitMqBusOptions();
 			action(options);
-			var mediator = serviceProvider.GetService<IMediator>();
-
-			var types = from type in assembly.GetTypes()
-						  where typeof(IMessage).IsAssignableFrom(type)
-						  select type;
-
-
-			var busControl = MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
+			using (var scope = serviceProvider.CreateScope())
 			{
-				var host = cfg.Host(new Uri(options.HostAddress), h =>
-				{
-					h.Username(options.Username);
-					h.Password(options.Password);
-				});
+				var mediator = scope.ServiceProvider.GetService<IMediator>();
 
-				foreach (var type in types)
+				var types = from type in assembly.GetTypes()
+							where typeof(IMessage).IsAssignableFrom(type)
+							select type;
+
+
+				var busControl = MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
 				{
-					var consumer = Activator.CreateInstance(typeof(MassTransitRequestConsumer<>)
-																   .MakeGenericType(type), mediator) as IConsumer;
-					cfg.ReceiveEndpoint(host, $"{type.Name}_queue", endpoint =>
+					var host = cfg.Host(new Uri(options.HostAddress), h =>
 					{
-						endpoint.Instance(consumer);
+						h.Username(options.Username);
+						h.Password(options.Password);
 					});
-				}
+
+					foreach (var type in types)
+					{
+						var consumer = Activator.CreateInstance(typeof(MassTransitRequestConsumer<>)
+																	   .MakeGenericType(type), mediator) as IConsumer;
+						cfg.ReceiveEndpoint(host, $"{type.Name}_queue", endpoint =>
+						{
+							endpoint.Instance(consumer);
+						});
+					}
 
 
-			});
-			busControl.Start();
+				});
+				busControl.Start();
 
-			return serviceProvider;
+				return serviceProvider;
+			}
 		}
 
 		internal class MassTransitRequestConsumer<TRequest> : IConsumer<TRequest> where TRequest : class, IMessage

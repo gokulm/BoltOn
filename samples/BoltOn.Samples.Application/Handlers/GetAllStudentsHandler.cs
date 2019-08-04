@@ -40,6 +40,7 @@ namespace BoltOn.Samples.Application.Handlers
 	{
 		public async Task HandleAsync(CreateStudent request, CancellationToken cancellationToken)
 		{
+			await Task.Delay(3000);
 			await Task.FromResult("testing");
 		}
 	}
