@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BoltOn.Bootstrapping;
 using BoltOn.Mediator.Pipeline;
 using MassTransit;
+using MassTransit.RabbitMqTransport;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bus.RabbitMq
@@ -29,10 +30,15 @@ namespace BoltOn.Bus.RabbitMq
 					h.Username(options.Username);
 					h.Password(options.Password);
 				});
+
+				serviceCollection.AddSingleton(cfg);
 			});
-			//busControl.Start();
+
+			busControl.Start();
 			serviceCollection.AddSingleton(busControl);
 			serviceCollection.AddScoped<IBus, MassTransitBoltOnBus>();
+			//serviceCollection.AddTransient(typeof(MassTransitRequestConsumer<>));
+			//serviceCollection.AddTransient(typeof(IConsumer<>), typeof(MassTransitRequestConsumer<>));
 
 			return serviceCollection;
 		}
@@ -50,27 +56,45 @@ namespace BoltOn.Bus.RabbitMq
 							where typeof(IMessage).IsAssignableFrom(type)
 							select type;
 
-
-				var busControl = MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
-				{
-					var host = cfg.Host(new Uri(options.HostAddress), h =>
+				var busControl = scope.ServiceProvider.GetService<IBusControl>();
+				var busFactoryConfigurator = scope.ServiceProvider.GetService<IRabbitMqBusFactoryConfigurator>();
+				var host = busFactoryConfigurator.Host(new Uri(options.HostAddress), h =>
 					{
 						h.Username(options.Username);
 						h.Password(options.Password);
 					});
-
-					foreach (var type in types)
+				foreach (var type in types)
+				{
+					var consumer = Activator.CreateInstance(typeof(MassTransitRequestConsumer<>)
+					.MakeGenericType(type), mediator) as IConsumer;
+					//var consumer = scope.ServiceProvider.GetService<MassTransitRequestConsumer>();											   
+					busFactoryConfigurator.ReceiveEndpoint(host, $"{type.Name}_queue", endpoint =>
 					{
-						var consumer = Activator.CreateInstance(typeof(MassTransitRequestConsumer<>)
-																	   .MakeGenericType(type), mediator) as IConsumer;
-						cfg.ReceiveEndpoint(host, $"{type.Name}_queue", endpoint =>
-						{
-							endpoint.Instance(consumer);
-						});
-					}
+						endpoint.Instance(consumer);
+					});
+				}
+
+				//var busControl = MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
+				//{
+				//	var host = cfg.Host(new Uri(options.HostAddress), h =>
+				//	{
+				//		h.Username(options.Username);
+				//		h.Password(options.Password);
+				//	});
+
+				//	foreach (var type in types)
+				//	{
+				//		var consumer = Activator.CreateInstance(typeof(MassTransitRequestConsumer<>)
+				//		.MakeGenericType(type), mediator) as IConsumer;
+				//		//var consumer = scope.ServiceProvider.GetService<MassTransitRequestConsumer>();											   
+				//		cfg.ReceiveEndpoint(host, $"{type.Name}_queue", endpoint =>
+				//		{
+				//			endpoint.Instance(consumer);
+				//		});
+				//	}
 
 
-				});
+				//});
 				busControl.Start();
 
 				return serviceProvider;

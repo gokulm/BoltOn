@@ -30,6 +30,7 @@
     <Folder Include="Data\" />
     <Folder Include="Data\EF\" />
     <Folder Include="Other\" />
+    <Folder Include="Bus\" />
   </ItemGroup>
 
   <ItemGroup>
