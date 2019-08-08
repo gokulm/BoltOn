@@ -34,7 +34,7 @@ namespace BoltOn.Bus.RabbitMq
 				serviceCollection.AddSingleton(cfg);
 			});
 
-			busControl.Start();
+			//busControl.Start();
 			serviceCollection.AddSingleton(busControl);
 			serviceCollection.AddScoped<IBus, MassTransitBoltOnBus>();
 			//serviceCollection.AddTransient(typeof(MassTransitRequestConsumer<>));

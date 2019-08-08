@@ -39,7 +39,7 @@ namespace BoltOn.Samples.WebApi.Controllers
 		[HttpPost]
 		public async Task<StudentDto> Post()
 		{
-			await _bus.Publish(new CreateStudent { FirstName = "new" });
+			await _bus.PublishAsync(new CreateStudent { FirstName = "new" });
 			return new StudentDto { FirstName = "test", LastName = "test" };
 		}
 	}
