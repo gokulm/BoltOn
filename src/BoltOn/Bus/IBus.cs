@@ -7,7 +7,8 @@ namespace BoltOn.Bus
 {
 	public interface IBus
 	{
-		Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default) where TMessage : IMessage;
+		Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default) 
+			where TMessage : IMessage;
 	}
 
 	public interface IMessage : IRequest

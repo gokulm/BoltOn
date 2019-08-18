@@ -4,15 +4,14 @@ using MassTransit;
 
 namespace BoltOn.Bus.RabbitMq
 {
-	public class MassTransitBoltOnBus : IBus
+	public class BoltOnMassTransitBus : IBus
 	{
 		private readonly IBusControl _busControl;
 
-		public MassTransitBoltOnBus(IBusControl busControl)
+		public BoltOnMassTransitBus(IBusControl busControl)
 		{
 			_busControl = busControl;
 		}
-
 
 		public async Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default) 
 			where TMessage : IMessage

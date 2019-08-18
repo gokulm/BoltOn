@@ -53,14 +53,14 @@ namespace BoltOn.Tests.Bus
 				h.Username("guest");
 				h.Password("password");
 			});
-			cfg.ReceiveEndpoint(host, $"Test_queue", endpoint =>
-			{
-				endpoint.Handler<CreateStudent>(async c =>
-				{
-					await Task.Delay(1000);
-					Console.WriteLine("test");
-				});
-			});
+			//cfg.ReceiveEndpoint(host, $"Test_queue", endpoint =>
+			//{
+			//	endpoint.Handler<CreateStudent>(async c =>
+			//	{
+			//		await Task.Delay(1000);
+			//		Console.WriteLine("test jj");
+			//	});
+			//});
 
 
 			await bus.PublishAsync(new CreateStudent { FirstName = "test" });

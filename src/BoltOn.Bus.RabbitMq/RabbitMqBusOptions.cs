@@ -1,8 +1,5 @@
-using System;
-using BoltOn.Mediator.Pipeline;
-using MassTransit;
-using MassTransit.RabbitMqTransport;
-using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace BoltOn.Bus.RabbitMq
 {
@@ -14,28 +11,6 @@ namespace BoltOn.Bus.RabbitMq
 
 		public string Password { get; set; }
 
-		public IServiceCollection ServiceCollection { get; set; }
-
-		public void AddConsumer<T>(IRabbitMqBusFactoryConfigurator configurator) where T : class, IMessage
-		{
-			var host = configurator.Host(new Uri("rabbitmq://localhost:5672/"), h =>
-			{
-				h.Username("guest");
-				h.Password("guest");
-			});
-
-			ServiceCollection.AddTransient<T>((sp) =>
-			{
-				var mediator = sp.GetService<IMediator>();
-				configurator.ReceiveEndpoint(host, $"{typeof(T).Name}_queue", endpoint =>
-				{
-					endpoint.Handler<T>(async context =>
-					{
-						await mediator.ProcessAsync(context.Message);
-					});
-				});
-				return null;
-			});
-		}
+		public List<Assembly> AssembliesWithConsumers { get; set; } = new List<Assembly>();
 	}
 }

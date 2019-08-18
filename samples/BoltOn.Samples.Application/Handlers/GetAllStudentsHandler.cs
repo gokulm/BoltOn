@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Samples.Application.Abstractions.Data;
 using BoltOn.Samples.Application.DTOs;
-using BoltOn.Samples.Application.Messages;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-    public class GetAllStudentsRequest : IQuery<IEnumerable<StudentDto>>
+	public class GetAllStudentsRequest : IQuery<IEnumerable<StudentDto>>
     {
     }
 
@@ -32,16 +31,6 @@ namespace BoltOn.Samples.Application.Handlers
 								   LastName = s.LastName
 							   };
 			return studentDtos;
-		}
-	}
-
-
-	public class CreateStudentHandler : IRequestAsyncHandler<CreateStudent>
-	{
-		public async Task HandleAsync(CreateStudent request, CancellationToken cancellationToken)
-		{
-			await Task.Delay(3000);
-			await Task.FromResult("testing");
 		}
 	}
 }

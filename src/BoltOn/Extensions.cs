@@ -20,6 +20,7 @@ namespace BoltOn
 
 		public static void TightenBolts(this IServiceProvider serviceProvider)
 		{
+			BoltOnServiceProvider.Current = serviceProvider;
 			Bootstrapper.Instance.RunPostRegistrationTasks(serviceProvider);
 		}
 

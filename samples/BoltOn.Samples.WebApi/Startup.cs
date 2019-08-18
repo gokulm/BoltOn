@@ -10,13 +10,10 @@ using BoltOn.Samples.Infrastructure.Data;
 using BoltOn.Samples.Infrastructure.Data.Repositories;
 using BoltOn.Data.CosmosDb;
 using BoltOn.Bus.RabbitMq;
-using MassTransit;
-using System;
-using BoltOn.Samples.Application.Messages;
 
 namespace BoltOn.Samples.WebApi
 {
-    public class Startup
+	public class Startup
     {
         public Startup(IConfiguration configuration)
         {
@@ -35,36 +32,12 @@ namespace BoltOn.Samples.WebApi
                 options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(StudentRepository).Assembly);
             });
 
-			//services.BoltOnRabbitMqBus(o =>
-			//{
-			//	o.HostAddress = "rabbitmq://localhost:5672";
-			//	o.Username = "guest";
-			//	o.Password = "guest";
-			//});
-
-			var bus = MassTransit.Bus.Factory.CreateUsingRabbitMq(sbc =>
+			services.BoltOnRabbitMqBus(o =>
 			{
-				var host = sbc.Host(new Uri("rabbitmq://localhost"), h =>
-				{
-					h.Username("guest");
-					h.Password("guest");
-				});
-
-				sbc.ReceiveEndpoint(host, "test_queue", ep =>
-				{
-					ep.Handler<CreateStudent>(context =>
-					{
-						return Console.Out.WriteLineAsync($"Received: test");
-					});
-				});
-
-
+				o.HostAddress = "rabbitmq://localhost:5672";
+				o.Username = "guest";
+				o.Password = "guest";
 			});
-			services.AddSingleton(bus);
-			services.AddScoped<BoltOn.Bus.IBus, MassTransitBoltOnBus>();
-
-			bus.Start(); // This is important!
-
 
 			services.AddDbContext<SchoolDbContext>(options =>
             {
@@ -82,15 +55,7 @@ namespace BoltOn.Samples.WebApi
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseMvc();
-			var bus = app.ApplicationServices.GetService<IBusControl>();
-			bus.Start();
-			//app.ApplicationServices.UseRabbitMqBus(o =>
-			//{
-			//	o.HostAddress = "rabbitmq://localhost:5672";
-			//	o.Username = "guest";
-			//	o.Password = "guest";
-			//}, typeof(CreateStudentHandler).Assembly);
-            app.ApplicationServices.TightenBolts();
+			app.ApplicationServices.TightenBolts();
         }
     }
 }
