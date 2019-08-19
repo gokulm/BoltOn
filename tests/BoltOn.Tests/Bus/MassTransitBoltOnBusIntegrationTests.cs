@@ -6,8 +6,12 @@ using BoltOn.Mediator.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using BoltOn.Bus.RabbitMq;
-using MassTransit.RabbitMqTransport;
-using MassTransit;
+using System.Reflection;
+using BoltOn.Logging;
+using Moq;
+using BoltOn.Tests.Other;
+using System.Linq;
+using BoltOn.Bootstrapping;
 
 namespace BoltOn.Tests.Bus
 {
@@ -16,70 +20,65 @@ namespace BoltOn.Tests.Bus
 	{
 		public MassTransitBoltOnBusIntegrationTests()
 		{
+			//Bootstrapper
+				//.Instance
+				//.Dispose();
 		}
 
-
 		[Fact]
-		public async void Publish_Message_GetsConsumed()
+		public async Task Publish_Message_GetsConsumed()
 		{
-			var services = new ServiceCollection();
-			services.BoltOn(b =>
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn(b =>
 			{
 				b.BoltOnAssemblies(GetType().Assembly);
 			});
 
-
-			services.BoltOnRabbitMqBus(o =>
+			serviceCollection.BoltOnRabbitMqBus(o =>
 			{
 				o.HostAddress = "rabbitmq://localhost:5672";
 				o.Username = "guest";
 				o.Password = "guest";
+				o.AssembliesWithConsumers.Add(Assembly.GetExecutingAssembly());
 			});
 
-			var serviceProvider = services.BuildServiceProvider();
+			var logger = new Mock<IBoltOnLogger<CreateTestStudentHandler>>();
+			logger.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddTransient((s) => logger.Object);
 
-			//serviceProvider.UseRabbitMqBus(o =>
-			//{
-			//	o.HostAddress = "rabbitmq://localhost:5672";
-			//	o.Username = "guest";
-			//	o.Password = "guest";
-			//}, typeof(CreateStudentHandler).Assembly);
+			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
+			var bus = serviceProvider.GetService<IBus>();
 
-			var bus = serviceProvider.GetService<BoltOn.Bus.IBus>();
-			var cfg = serviceProvider.GetService<IRabbitMqBusFactoryConfigurator>();
-			var host = cfg.Host(new Uri("rabbitmq://localhost:5672"), h =>
-			{
-				h.Username("guest");
-				h.Password("password");
-			});
-			//cfg.ReceiveEndpoint(host, $"Test_queue", endpoint =>
-			//{
-			//	endpoint.Handler<CreateStudent>(async c =>
-			//	{
-			//		await Task.Delay(1000);
-			//		Console.WriteLine("test jj");
-			//	});
-			//});
+			// act
+			await bus.PublishAsync(new CreateTestStudent { FirstName = "test" });
 
-
-			await bus.PublishAsync(new CreateStudent { FirstName = "test" });
-
+			// assert
+			var test = MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"{nameof(CreateTestStudentHandler)} invoked");
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"{nameof(CreateTestStudentHandler)} invoked"));
 		}
 	}
 
-	public class CreateStudent : IMessage
+	public class CreateTestStudent : IMessage
 	{
 		public string FirstName { get; set; }
 		public Guid CorrelationId { get; set; } = Guid.NewGuid();
 	}
 
 
-	public class CreateStudentHandler : IRequestAsyncHandler<CreateStudent>
+	public class CreateTestStudentHandler : IRequestAsyncHandler<CreateTestStudent>
 	{
-		public async Task HandleAsync(CreateStudent request, CancellationToken cancellationToken)
+		private readonly IBoltOnLogger<CreateTestStudentHandler> _logger;
+
+		public CreateTestStudentHandler(IBoltOnLogger<CreateTestStudentHandler> logger)
 		{
-			await Task.Delay(3000);
+			this._logger = logger;
+		}
+
+		public async Task HandleAsync(CreateTestStudent request, CancellationToken cancellationToken)
+		{
+			_logger.Debug($"{nameof(CreateTestStudentHandler)} invoked");
 			await Task.FromResult("testing");
 		}
 	}

@@ -94,10 +94,6 @@ namespace BoltOn.Tests.Other
 										 .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
 				context.Container.AddTransient((s) => customChangeTrackerInterceptorLogger.Object);
 			}
-			else
-			{
-				//context.AddInterceptor<CustomChangeTrackerInterceptor>();
-			}
 
 			if (MediatorTestHelper.IsRemoveStopwatchInterceptor)
 				context.RemoveInterceptor<StopwatchInterceptor>();
