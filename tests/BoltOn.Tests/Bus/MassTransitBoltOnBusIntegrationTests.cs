@@ -6,23 +6,23 @@ using BoltOn.Mediator.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using BoltOn.Bus.RabbitMq;
-using System.Reflection;
 using BoltOn.Logging;
 using Moq;
 using BoltOn.Tests.Other;
 using System.Linq;
 using BoltOn.Bootstrapping;
+using MassTransit;
 
 namespace BoltOn.Tests.Bus
 {
 	[Collection("IntegrationTests")]
-	public class MassTransitBoltOnBusIntegrationTests
+	public class MassTransitBoltOnBusIntegrationTests : IDisposable
 	{
 		public MassTransitBoltOnBusIntegrationTests()
 		{
-			//Bootstrapper
-				//.Instance
-				//.Dispose();
+			Bootstrapper
+				.Instance
+				.Dispose();
 		}
 
 		[Fact]
@@ -32,15 +32,23 @@ namespace BoltOn.Tests.Bus
 			serviceCollection.BoltOn(b =>
 			{
 				b.BoltOnAssemblies(GetType().Assembly);
+				b.BoltOnRabbitMqBusModule();
 			});
 
-			serviceCollection.BoltOnRabbitMqBus(o =>
+			serviceCollection.AddMassTransit(x =>
 			{
-				o.HostAddress = "rabbitmq://localhost:5672";
-				o.Username = "guest";
-				o.Password = "guest";
-				o.AssembliesWithConsumers.Add(Assembly.GetExecutingAssembly());
+				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
+				{
+					var host = cfg.Host(new Uri("rabbitmq://localhost:5672"), hostConfigurator =>
+					{
+						hostConfigurator.Username("guest");
+						hostConfigurator.Password("guest");
+					});
+
+					cfg.BoltOnConsumer<CreateTestStudent>(host);
+				}));
 			});
+
 
 			var logger = new Mock<IBoltOnLogger<CreateTestStudentHandler>>();
 			logger.Setup(s => s.Debug(It.IsAny<string>()))
@@ -49,14 +57,25 @@ namespace BoltOn.Tests.Bus
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var bus = serviceProvider.GetService<IBus>();
+			var bus = serviceProvider.GetService<BoltOn.Bus.IBus>();
 
 			// act
 			await bus.PublishAsync(new CreateTestStudent { FirstName = "test" });
+			// as assert not working after async method, added sleep
+			Thread.Sleep(1000);
 
 			// assert
-			var test = MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"{nameof(CreateTestStudentHandler)} invoked");
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"{nameof(CreateTestStudentHandler)} invoked"));
+			var result = MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"{nameof(CreateTestStudentHandler)} invoked");
+			Assert.NotNull(result);
+		}
+
+		public void Dispose()
+		{
+			MediatorTestHelper.LoggerStatements.Clear();
+			Bootstrapper
+				.Instance
+				.Dispose();
 		}
 	}
 

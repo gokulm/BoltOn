@@ -10,6 +10,9 @@ using BoltOn.Samples.Infrastructure.Data;
 using BoltOn.Samples.Infrastructure.Data.Repositories;
 using BoltOn.Data.CosmosDb;
 using BoltOn.Bus.RabbitMq;
+using MassTransit;
+using System;
+using BoltOn.Samples.Application.Messages;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -29,14 +32,22 @@ namespace BoltOn.Samples.WebApi
             {
                 options.BoltOnEFModule();
                 options.BoltOnCosmosDbModule();
+				options.BoltOnRabbitMqBusModule();
                 options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(StudentRepository).Assembly);
             });
 
-			services.BoltOnRabbitMqBus(o =>
+			services.AddMassTransit(x =>
 			{
-				o.HostAddress = "rabbitmq://localhost:5672";
-				o.Username = "guest";
-				o.Password = "guest";
+				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
+				{
+					var host = cfg.Host(new Uri("rabbitmq://localhost:5672"), hostConfigurator =>
+					{
+						hostConfigurator.Username("guest");
+						hostConfigurator.Password("guest");
+					});
+
+					//cfg.BoltOnConsumer<CreateStudent>(host);
+				}));
 			});
 
 			services.AddDbContext<SchoolDbContext>(options =>
