@@ -12,7 +12,6 @@ using BoltOn.Data.CosmosDb;
 using BoltOn.Bus.RabbitMq;
 using MassTransit;
 using System;
-using BoltOn.Samples.Application.Messages;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -45,8 +44,6 @@ namespace BoltOn.Samples.WebApi
 						hostConfigurator.Username("guest");
 						hostConfigurator.Password("guest");
 					});
-
-					//cfg.BoltOnConsumer<CreateStudent>(host);
 				}));
 			});
 

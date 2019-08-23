@@ -8,7 +8,7 @@ namespace BoltOn.Bus.RabbitMq
 {
     public static partial class Extensions
     {
-        public class MassTransitRequestConsumer<TRequest> : IConsumer<TRequest> where TRequest : class, IMessage
+        public class MassTransitRequestConsumer<TRequest> : IConsumer<TRequest> where TRequest : class, IRequest
         {
             public async Task Consume(ConsumeContext<TRequest> context)
             {

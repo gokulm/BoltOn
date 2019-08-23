@@ -5,11 +5,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace BoltOn.Bus.RabbitMq
 {
-    public class BusService : IHostedService
+    public class BusHostedService : IHostedService
     {
         private readonly IBusControl _busControl;
 
-        public BusService(IBusControl busControl)
+        public BusHostedService(IBusControl busControl)
         {
             _busControl = busControl;
         }

@@ -10,7 +10,7 @@ namespace BoltOn.Bus.RabbitMq
         public void Run(PostRegistrationTaskContext context)
         {
             var busControl = context.ServiceProvider.GetService<IBusControl>();
-            busControl.Start();
+            busControl?.Start();
         }
     }
 }

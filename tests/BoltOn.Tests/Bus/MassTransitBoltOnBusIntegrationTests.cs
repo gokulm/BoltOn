@@ -79,7 +79,7 @@ namespace BoltOn.Tests.Bus
 		}
 	}
 
-	public class CreateTestStudent : IMessage
+	public class CreateTestStudent : IRequest
 	{
 		public string FirstName { get; set; }
 		public Guid CorrelationId { get; set; } = Guid.NewGuid();

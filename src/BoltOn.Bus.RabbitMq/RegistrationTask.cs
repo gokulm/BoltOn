@@ -8,6 +8,7 @@ namespace BoltOn.Bus.RabbitMq
         public void Run(RegistrationTaskContext context)
         {
             var serviceCollection = context.Container;
+			serviceCollection.AddHostedService<BusHostedService>();
             serviceCollection.AddSingleton<IBus, BoltOnMassTransitBus>();
         }
     }

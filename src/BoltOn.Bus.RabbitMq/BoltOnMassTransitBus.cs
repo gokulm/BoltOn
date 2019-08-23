@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using BoltOn.Mediator.Pipeline;
 using MassTransit;
 
 namespace BoltOn.Bus.RabbitMq
@@ -14,7 +15,7 @@ namespace BoltOn.Bus.RabbitMq
 		}
 
 		public async Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default) 
-			where TMessage : IMessage
+			where TMessage : IRequest
 		{
 			await _busControl.Publish(message, cancellationToken).ConfigureAwait(false);
 		}

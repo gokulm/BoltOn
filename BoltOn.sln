@@ -8,7 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C751203D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{15E5CCAC-85EB-4C98-B1FA-B5DEFD213FCD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Samples.WebApi", "samples\BoltOn.Samples.WebApi\BoltOn.Samples.WebApi.csproj", "{DABC3AEA-F889-4B63-962A-911696F02733}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Samples.WebApi", "samples\BoltOn.Samples.WebApi\BoltOn.Samples.WebApi.csproj", "{DABC3AEA-F889-4B63-962A-911696F02733}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Samples.Domain", "samples\BoltOn.Samples.Domain\BoltOn.Samples.Domain.csproj", "{D5E25819-7EA3-4B05-B95D-BEE3EB9A18AB}"
 EndProject
