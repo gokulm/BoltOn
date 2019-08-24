@@ -40,7 +40,7 @@ namespace BoltOn.Tests.Bus
 				{
 					cfg.ReceiveEndpoint("CreateTestStudent_queue", ep =>
 					{
-						ep.Consumer<MassTransitRequestConsumer<CreateTestStudent>>();
+						ep.Consumer(() => provider.GetService<MassTransitRequestConsumer<CreateTestStudent>>());
 					});
 				}));
 			});

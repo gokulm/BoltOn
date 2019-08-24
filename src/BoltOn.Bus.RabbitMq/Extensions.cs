@@ -1,12 +1,14 @@
+using System;
 using System.Reflection;
 using BoltOn.Bootstrapping;
 using BoltOn.Mediator.Pipeline;
 using MassTransit;
 using MassTransit.RabbitMqTransport;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bus.RabbitMq
 {
-	public static partial class Extensions
+	public static class Extensions
 	{
 		public static BoltOnOptions BoltOnRabbitMqBusModule(this BoltOnOptions boltOnOptions)
 		{
@@ -14,13 +16,13 @@ namespace BoltOn.Bus.RabbitMq
 			return boltOnOptions;
 		}
 
-		public static void BoltOnConsumer<TRequest>(this IRabbitMqBusFactoryConfigurator configurator, IRabbitMqHost host)
+		public static void BoltOnConsumer<TRequest>(this IRabbitMqBusFactoryConfigurator configurator, 
+			IServiceProvider serviceProvider, IRabbitMqHost host, string queueName = null)
 			 where TRequest : class, IRequest
 		{
-			// todo (med): support passing queue name convention or name generator as param		
-			configurator.ReceiveEndpoint(host, $"{typeof(TRequest).Name}_queue", endpoint =>
+			configurator.ReceiveEndpoint(host, queueName ?? $"{typeof(TRequest).Name}_queue", endpoint =>
 			{
-				endpoint.Consumer<MassTransitRequestConsumer<TRequest>>();
+				endpoint.Consumer(() => serviceProvider.GetService<MassTransitRequestConsumer<TRequest>>());
 			});
 		}
 	}

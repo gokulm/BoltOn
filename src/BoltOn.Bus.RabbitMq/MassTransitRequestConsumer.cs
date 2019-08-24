@@ -1,21 +1,22 @@
 ﻿using System.Threading.Tasks;
-using BoltOn.Bootstrapping;
 using BoltOn.Mediator.Pipeline;
 using MassTransit;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bus.RabbitMq
 {
 	public class MassTransitRequestConsumer<TRequest> : IConsumer<TRequest> where TRequest : class, IRequest
 	{
+		private readonly IMediator _mediator;
+
+		public MassTransitRequestConsumer(IMediator mediator)
+		{
+			_mediator = mediator;
+		}
+
 		public async Task Consume(ConsumeContext<TRequest> context)
 		{
 			var request = context.Message;
-			using (var scope = BoltOnServiceProvider.Current.CreateScope())
-			{
-				var mediator = scope.ServiceProvider.GetService<IMediator>();
-				await mediator.ProcessAsync(request);
-			}
+			await _mediator.ProcessAsync(request);
 		}
 	}
 }

@@ -43,7 +43,7 @@ namespace BoltOn.Tests.Bus
 						hostConfigurator.Password("guest");
 					});
 
-					cfg.BoltOnConsumer<CreateTestStudent>(host);
+					cfg.BoltOnConsumer<CreateTestStudent>(provider, host);
 				}));
 			});
 

@@ -29,7 +29,7 @@ namespace BoltOn.Samples.Console
 						hostConfigurator.Password("guest");
 					});
 
-					cfg.BoltOnConsumer<CreateStudent>(host);
+					cfg.BoltOnConsumer<CreateStudent>(provider, host);
 				}));
 			});
 
