@@ -10,7 +10,7 @@ namespace BoltOn.Bus.RabbitMq
             var serviceCollection = context.Container;
 			serviceCollection.AddHostedService<BusHostedService>();
             serviceCollection.AddSingleton<IBus, BoltOnMassTransitBus>();
-			serviceCollection.AddTransient(typeof(MassTransitRequestConsumer<>));
+			serviceCollection.AddTransient(typeof(BoltOnMassTransitConsumer<>));
         }
     }
 }

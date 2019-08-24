@@ -22,7 +22,7 @@ namespace BoltOn.Bus.RabbitMq
 		{
 			configurator.ReceiveEndpoint(host, queueName ?? $"{typeof(TRequest).Name}_queue", endpoint =>
 			{
-				endpoint.Consumer(() => serviceProvider.GetService<MassTransitRequestConsumer<TRequest>>());
+				endpoint.Consumer(() => serviceProvider.GetService<BoltOnMassTransitConsumer<TRequest>>());
 			});
 		}
 	}

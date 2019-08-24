@@ -4,11 +4,11 @@ using MassTransit;
 
 namespace BoltOn.Bus.RabbitMq
 {
-	public class MassTransitRequestConsumer<TRequest> : IConsumer<TRequest> where TRequest : class, IRequest
+	public class BoltOnMassTransitConsumer<TRequest> : IConsumer<TRequest> where TRequest : class, IRequest
 	{
 		private readonly IMediator _mediator;
 
-		public MassTransitRequestConsumer(IMediator mediator)
+		public BoltOnMassTransitConsumer(IMediator mediator)
 		{
 			_mediator = mediator;
 		}
@@ -16,7 +16,7 @@ namespace BoltOn.Bus.RabbitMq
 		public async Task Consume(ConsumeContext<TRequest> context)
 		{
 			var request = context.Message;
-			await _mediator.ProcessAsync(request);
+			await _mediator.ProcessAsync(request, context.CancellationToken);
 		}
 	}
 }

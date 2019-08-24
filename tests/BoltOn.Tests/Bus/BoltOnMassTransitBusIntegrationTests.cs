@@ -14,9 +14,9 @@ using MassTransit;
 namespace BoltOn.Tests.Bus
 {
 	[Collection("IntegrationTests")]
-	public class MassTransitBoltOnBusIntegrationTests : IDisposable
+	public class BoltOnMassTransitBusIntegrationTests : IDisposable
 	{
-		public MassTransitBoltOnBusIntegrationTests()
+		public BoltOnMassTransitBusIntegrationTests()
 		{
 			Bootstrapper
 				.Instance
@@ -24,7 +24,49 @@ namespace BoltOn.Tests.Bus
 		}
 
 		[Fact]
-		public async Task Publish_Message_GetsConsumed()
+		public async Task PublishAsync_InMemoryHost_GetsConsumed()
+		{
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn(b =>
+			{
+				b.BoltOnAssemblies(GetType().Assembly);
+				b.BoltOnRabbitMqBusModule();
+			});
+
+			serviceCollection.AddMassTransit(x =>
+			{
+				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
+				{
+					cfg.ReceiveEndpoint("CreateTestStudent_queue", ep =>
+					{
+						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CreateTestStudent>>());
+					});
+				}));
+			});
+
+
+			var logger = new Mock<IBoltOnLogger<CreateTestStudentHandler>>();
+			logger.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddTransient((s) => logger.Object);
+
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var bus = serviceProvider.GetService<BoltOn.Bus.IBus>();
+
+			// act
+			await bus.PublishAsync(new CreateTestStudent { FirstName = "test" });
+			// as assert not working after async method, added sleep
+			Thread.Sleep(1000);
+
+			// assert
+			var result = MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"{nameof(CreateTestStudentHandler)} invoked");
+			Assert.NotNull(result);
+		}
+
+		[Fact]
+		public async Task PublishAsync_Message_GetsConsumed()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
