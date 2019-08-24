@@ -4,8 +4,8 @@ using Moq.AutoMock;
 using Xunit;
 using BoltOn.Bus.RabbitMq;
 using MassTransit;
-using Moq;
 using System.Threading;
+using BoltOn.Logging;
 
 namespace BoltOn.Tests.Bus
 {
@@ -17,16 +17,18 @@ namespace BoltOn.Tests.Bus
 			// arrange
 			var autoMocker = new AutoMocker();
 			var busControl = autoMocker.GetMock<IBusControl>();
+			var logger = autoMocker.GetMock<IBoltOnLogger<BoltOnMassTransitBus>>();
 			var sut = autoMocker.CreateInstance<BoltOnMassTransitBus>();
 			var request = new CreateTestStudent();
 			var cts = new CancellationTokenSource();
-			//busControl.Setup(s => s.Publish(request, cts.Token));//.Verifiable();
 
 			// act
 			await sut.PublishAsync(request, cts.Token);
 
 			// assert 
-			busControl.Verify(m => m.Publish(request, cts.Token));
+			logger.Verify(l => l.Debug($"Publishing message of type - {request.GetType().Name} ..."));
+			logger.Verify(l => l.Debug("Message published"));
+			//busControl.Verify(m => m.Publish(request, cts.Token));
 		}
 	}
 }

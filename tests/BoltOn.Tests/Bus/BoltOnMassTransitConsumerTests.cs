@@ -8,6 +8,7 @@ using MassTransit;
 using Moq;
 using Moq.AutoMock;
 using Xunit;
+using BoltOn.Logging;
 
 namespace BoltOn.Tests.Bus
 {
@@ -19,7 +20,8 @@ namespace BoltOn.Tests.Bus
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<BoltOnMassTransitConsumer<CreateTestStudent>>();
-			var mediator = autoMocker.GetMock<IMediator>(); 
+			var mediator = autoMocker.GetMock<IMediator>();
+			var logger = autoMocker.GetMock<IBoltOnLogger<BoltOnMassTransitConsumer<CreateTestStudent>>>();
 			var consumerContext = new Mock<ConsumeContext<CreateTestStudent>>();
 			var request = new CreateTestStudent();
 			consumerContext.Setup(c => c.Message).Returns(request);
@@ -28,6 +30,9 @@ namespace BoltOn.Tests.Bus
 			await sut.Consume(consumerContext.Object);
 
 			// assert 
+			logger.Verify(l => l.Debug($"Message of type {request.GetType().Name} consumer. " +
+				"Sending to mediatiator..."));
+			logger.Verify(l => l.Debug("Message sent to Mediator"));
 			mediator.Verify(m => m.ProcessAsync(request, It.IsAny<CancellationToken>()));
 		}
 	}
