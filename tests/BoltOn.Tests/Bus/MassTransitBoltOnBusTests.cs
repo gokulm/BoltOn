@@ -10,13 +10,14 @@ using BoltOn.Tests.Other;
 using System.Linq;
 using BoltOn.Bootstrapping;
 using MassTransit;
+using static BoltOn.Bus.RabbitMq.Extensions;
 
 namespace BoltOn.Tests.Bus
 {
 	[Collection("IntegrationTests")]
-	public class MassTransitBoltOnBusIntegrationTests : IDisposable
+	public class MassTransitBoltOnBusTests : IDisposable
 	{
-		public MassTransitBoltOnBusIntegrationTests()
+		public MassTransitBoltOnBusTests()
 		{
 			Bootstrapper
 				.Instance
@@ -35,15 +36,12 @@ namespace BoltOn.Tests.Bus
 
 			serviceCollection.AddMassTransit(x =>
 			{
-				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
+				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
 				{
-					var host = cfg.Host(new Uri("rabbitmq://localhost:5672"), hostConfigurator =>
+					cfg.ReceiveEndpoint("CreateTestStudent_queue", ep =>
 					{
-						hostConfigurator.Username("guest");
-						hostConfigurator.Password("guest");
+						ep.Consumer<MassTransitRequestConsumer<CreateTestStudent>>();
 					});
-
-					cfg.BoltOnConsumer<CreateTestStudent>(host);
 				}));
 			});
 

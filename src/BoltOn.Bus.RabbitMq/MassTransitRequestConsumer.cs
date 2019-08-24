@@ -6,19 +6,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bus.RabbitMq
 {
-    public static partial class Extensions
-    {
-        public class MassTransitRequestConsumer<TRequest> : IConsumer<TRequest> where TRequest : class, IRequest
-        {
-            public async Task Consume(ConsumeContext<TRequest> context)
-            {
-                var request = context.Message;
-                using (var scope = BoltOnServiceProvider.Current.CreateScope())
-                {
-                    var mediator = scope.ServiceProvider.GetService<IMediator>();
-                    await mediator.ProcessAsync(request);
-                }
-            }
-        }
-    }
+	public class MassTransitRequestConsumer<TRequest> : IConsumer<TRequest> where TRequest : class, IRequest
+	{
+		public async Task Consume(ConsumeContext<TRequest> context)
+		{
+			var request = context.Message;
+			using (var scope = BoltOnServiceProvider.Current.CreateScope())
+			{
+				var mediator = scope.ServiceProvider.GetService<IMediator>();
+				await mediator.ProcessAsync(request);
+			}
+		}
+	}
 }
