@@ -5,6 +5,7 @@ using BoltOn.Bus.RabbitMq;
 using MassTransit;
 using BoltOn.Samples.Application.Messages;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace BoltOn.Samples.Console
 {
@@ -13,6 +14,7 @@ namespace BoltOn.Samples.Console
 		static void Main(string[] args)
 		{
 			var serviceCollection = new ServiceCollection();
+			serviceCollection.AddLogging(configure => configure.AddConsole());
 			serviceCollection.BoltOn(o =>
 			{
 				o.BoltOnAssemblies(typeof(GetAllStudentsRequest).Assembly);
