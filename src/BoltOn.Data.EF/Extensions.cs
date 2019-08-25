@@ -7,8 +7,8 @@ namespace BoltOn.Data.EF
     {
         public static BoltOnOptions BoltOnEFModule(this BoltOnOptions boltOnOptions)
         {
-			boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-			return boltOnOptions;
+            boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
+            return boltOnOptions;
         }
     }
 }
