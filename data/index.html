@@ -72,6 +72,9 @@
     <li class="toctree-l2"><a href="#dbcontextfactory">DbContextFactory</a></li>
     
 
+    <li class="toctree-l2"><a href="#cosmosdb">CosmosDb</a></li>
+    
+
     </ul>
 	    </li>
           
@@ -175,6 +178,71 @@ public class StudentRepository : BaseEFRepository&lt;Student, SchoolDbContext&gt
 <h2 id="dbcontextfactory">DbContextFactory</h2>
 <p>This factory uses IServiceProvider to resolve DbContexts, and if the request implements <code>IQuery&lt;&gt;</code>, it sets the DbContexts' <code>ChangeTracker.QueryTrackingBehavior</code> to <code>QueryTrackingBehavior.NoTracking</code> and <code>ChangeTracker.AutoDetectChangesEnabled</code> to false with the help of <code>MediatorContextInterceptor</code>. </p>
 <p><strong>Note:</strong> You could disable this behavior by removing the interceptor from the pipeline using <code>RemoveInterceptor&lt;TInterceptor&gt;</code> extension method.</p>
+<h2 id="cosmosdb">CosmosDb</h2>
+<p><code>BaseCosmosDbRepository&lt;TEntity, TCosmosDbContext&gt;</code> implements <code>IRepository&lt;TEntity&gt;</code>, so any Entity Framework SQL repository can be used against CosmosDb. </p>
+<p>In order to use CosmosDb, you need do the following:</p>
+<ol>
+<li>Install <strong>BoltOn.Data.CosmosDb</strong> NuGet package.</li>
+<li>Call <code>BoltOnCosmosDbModule()</code> in your startup's BoltOn() method.</li>
+<li>Use AddCosmosDbContext extension method to initialize options like URI, AuthorizationKey and Database Name.</li>
+<li>Create an entity by inheriting <code>BaseEntity&lt;TIdType&gt;</code>. The inheritance is not mandatory though.</li>
+<li>Create a DbContext by inheriting <code>BaseCosmosDbContext&lt;TDbContext&gt;</code>. </li>
+<li>Inherit <code>BaseCosmosDbRepository&lt;TEntity, TCosmosDbContext&gt;</code>.</li>
+</ol>
+<p>Example:</p>
+<pre><code>services.BoltOn(options =&gt;
+{
+    options.BoltOnCosmosDbModule();
+});
+
+services.AddCosmosDbContext&lt;CollegeDbContext&gt;(options =&gt;
+{
+    options.Uri = "&lt;&lt;SPECIFY URI&gt;&gt;";
+    options.AuthorizationKey = "&lt;&lt;SPECIFY AUTHORIZATION KEY&gt;&gt;";
+    options.DatabaseName = "&lt;&lt;DATABASE NAME&gt;&gt;";
+});
+
+// DbContext
+public class CollegeDbContext : BaseCosmosDbContext&lt;CollegeDbContext&gt;
+{
+    public CollegeDbContext(CosmosDbContextOptions&lt;CollegeDbContext&gt; options) : base(options)
+    {
+    }
+}
+
+// Entity
+public class Grade : BaseEntity&lt;string&gt;
+{
+    [JsonProperty("id")]
+    public override string Id { get; set; }
+    [JsonProperty("studentId")]
+    public int StudentId { get; set; }
+    public string CourseName { get; set; }
+    public int Year { get; set; }
+    public string Score { get; set; }
+}
+
+// Repository
+public interface IGradeRepository : IRepository&lt;Grade&gt;
+{
+    // CosmosDb specific query methods can be added
+    Task&lt;Grade&gt; GetByIdAsync&lt;TId&gt;(TId id, object partitionKey);
+}
+
+public class GradeRepository : BaseCosmosDbRepository&lt;Grade, CollegeDbContext&gt;, IGradeRepository
+{
+    public GradeRepository(CollegeDbContext collegeDbContext) : base(collegeDbContext)
+    {
+    }
+
+    public virtual async Task&lt;Grade&gt; GetByIdAsync&lt;TId&gt;(TId id, object partitionKey)
+    {
+        var document = await DocumentClient.ReadDocumentAsync&lt;Grade&gt;(GetDocumentUri(id.ToString()), new RequestOptions { PartitionKey = new PartitionKey(partitionKey) });
+        return document.Document;
+    }
+}
+</code></pre>
+<p><strong>Note:</strong> While using any property in CosmosDb query, make sure propertyname matches exactly as it is in stored in the document collection.</p>
               
             </div>
           </div>
