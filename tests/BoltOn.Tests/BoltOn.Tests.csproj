@@ -30,12 +30,14 @@
     <Folder Include="Data\" />
     <Folder Include="Data\EF\" />
     <Folder Include="Other\" />
+    <Folder Include="Data\CosmosDb\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.Overrides\BoltOn.Overrides.csproj" />
+    <ProjectReference Include="..\..\src\BoltOn.Data.CosmosDb\BoltOn.Data.CosmosDb.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Other\TGetStudentHandler.cs" />
