@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
 using BoltOn.Tests.Other;
+using BoltOn.Data.CosmosDb;
 
 namespace BoltOn.Tests.Data.CosmosDb
 {
@@ -19,18 +20,16 @@ namespace BoltOn.Tests.Data.CosmosDb
 
         public RepositoryTests()
         {
-            // this flag can be set to true for [few] tests. Running all the tests with this set to true might slow down.
-            MediatorTestHelper.IsSqlServer = false;
             var serviceCollection = new ServiceCollection();
             serviceCollection
                 .BoltOn(options =>
                 {
                     options
-                        .BoltOnEFModule();
+                        .BoltOnCosmosDbModule();
                 });
             var serviceProvider = serviceCollection.BuildServiceProvider();
             serviceProvider.TightenBolts();
-            MediatorTestHelper.IsSeedData = true;
+      
             _sut = serviceProvider.GetService<IGradeRepository>();
         }
 

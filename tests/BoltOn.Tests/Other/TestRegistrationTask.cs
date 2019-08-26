@@ -1,6 +1,7 @@
 ﻿using System;
 using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
+using BoltOn.Data.CosmosDb;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Overrides.Mediator;
@@ -38,15 +39,22 @@ namespace BoltOn.Tests.Other
 			}
 			else
 			{
-				context.Container.AddDbContext<SchoolDbContext>(options =>
-				{
-					options.UseInMemoryDatabase("InMemoryDbForTesting");
-					options.ConfigureWarnings(x => x.Ignore(RelationalEventId.AmbientTransactionWarning));
+                context.Container.AddDbContext<SchoolDbContext>(options =>
+                {
+                    options.UseInMemoryDatabase("InMemoryDbForTesting");
+                    options.ConfigureWarnings(x => x.Ignore(RelationalEventId.AmbientTransactionWarning));
 
-				});
+                });
+            }
 
-			}
-		}
+            context.Container.AddCosmosDbContext<CollegeDbContext>(options =>
+            {
+                options.Uri = "";
+                options.AuthorizationKey = "";
+                options.DatabaseName = "";
+
+            });
+        }
 
 		private static void RegisterMediatorFakes(RegistrationTaskContext context)
 		{
