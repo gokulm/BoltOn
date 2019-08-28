@@ -70,3 +70,71 @@ This factory uses IServiceProvider to resolve DbContexts, and if the request imp
 
 **Note:** You could disable this behavior by removing the interceptor from the pipeline using `RemoveInterceptor<TInterceptor>` extension method.
 
+CosmosDb
+--------
+`BaseCosmosDbRepository<TEntity, TCosmosDbContext>` implements `IRepository<TEntity>`, so any Entity Framework SQL repository can be used against CosmosDb. 
+
+In order to use CosmosDb, you need do the following:
+
+1. Install **BoltOn.Data.CosmosDb** NuGet package.
+2. Call `BoltOnCosmosDbModule()` in your startup's BoltOn() method.
+3. Use AddCosmosDbContext extension method to initialize options like URI, AuthorizationKey and Database Name.
+4. Create an entity by inheriting `BaseEntity<TIdType>`. The inheritance is not mandatory though.
+5. Create a DbContext by inheriting `BaseCosmosDbContext<TDbContext>`. 
+6. Inherit `BaseCosmosDbRepository<TEntity, TCosmosDbContext>`.
+
+Example:
+
+	services.BoltOn(options =>
+	{
+		options.BoltOnCosmosDbModule();
+	});
+
+	services.AddCosmosDbContext<CollegeDbContext>(options =>
+	{
+		options.Uri = "<<SPECIFY URI>>";
+		options.AuthorizationKey = "<<SPECIFY AUTHORIZATION KEY>>";
+		options.DatabaseName = "<<DATABASE NAME>>";
+	});
+
+	// DbContext
+	public class CollegeDbContext : BaseCosmosDbContext<CollegeDbContext>
+    {
+        public CollegeDbContext(CosmosDbContextOptions<CollegeDbContext> options) : base(options)
+        {
+        }
+    }
+
+	// Entity
+	public class Grade : BaseEntity<string>
+    {
+        [JsonProperty("id")]
+        public override string Id { get; set; }
+        [JsonProperty("studentId")]
+        public int StudentId { get; set; }
+        public string CourseName { get; set; }
+        public int Year { get; set; }
+        public string Score { get; set; }
+    }
+
+	// Repository
+	public interface IGradeRepository : IRepository<Grade>
+    {
+		// CosmosDb specific query methods can be added
+        Task<Grade> GetByIdAsync<TId>(TId id, object partitionKey);
+    }
+
+	public class GradeRepository : BaseCosmosDbRepository<Grade, CollegeDbContext>, IGradeRepository
+    {
+        public GradeRepository(CollegeDbContext collegeDbContext) : base(collegeDbContext)
+        {
+        }
+
+        public virtual async Task<Grade> GetByIdAsync<TId>(TId id, object partitionKey)
+        {
+            var document = await DocumentClient.ReadDocumentAsync<Grade>(GetDocumentUri(id.ToString()), new RequestOptions { PartitionKey = new PartitionKey(partitionKey) });
+            return document.Document;
+        }
+    }
+
+**Note:** While using any property in CosmosDb query, make sure propertyname matches exactly as it is in stored in the document collection.
