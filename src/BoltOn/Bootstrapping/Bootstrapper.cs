@@ -48,14 +48,6 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
-		internal Hashtable AppOptions
-		{
-			get
-			{
-				return _options.AppOptions;
-			}
-		}
-
 		internal IReadOnlyList<Assembly> Assemblies { get; private set; }
 
 		internal void BoltOn(IServiceCollection serviceCollection, BoltOnOptions options, Assembly callingAssembly = null)
@@ -156,6 +148,7 @@ namespace BoltOn.Bootstrapping
 			if (disposing)
 			{
 				_serviceCollection = null;
+				BoltOnServiceProvider.Current = null;
 				_serviceProvider = null;
 				_registrationTaskContext = null;
 				Assemblies = null;

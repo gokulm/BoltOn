@@ -21,7 +21,7 @@ namespace BoltOn.Bus.RabbitMq
 		{
 			var request = context.Message;
 			_logger.Debug($"Message of type {request.GetType().Name} consumer. " +
-				"Sending to mediatiator...");
+				"Sending to mediator...");
 			await _mediator.ProcessAsync(request, context.CancellationToken);
 			_logger.Debug("Message sent to Mediator");
 		}
