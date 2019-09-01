@@ -20,7 +20,7 @@ namespace BoltOn.Bus.RabbitMq
 			IServiceProvider serviceProvider, IRabbitMqHost host, string queueName = null)
 			 where TRequest : class, IRequest
 		{
-			configurator.ReceiveEndpoint(host, queueName ?? $"{typeof(TRequest).Name}_queue", endpoint =>
+			configurator.ReceiveEndpoint(host, queueName ?? $"{typeof(TRequest).Name}_Queue", endpoint =>
 			{
 				endpoint.Consumer(() => serviceProvider.GetService<BoltOnMassTransitConsumer<TRequest>>());
 			});
