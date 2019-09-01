@@ -4,4 +4,9 @@
 	{
 		void Run(RegistrationTaskContext context);
 	}
+
+	public interface ICleanupTask
+	{
+		void Run();
+	}
 }

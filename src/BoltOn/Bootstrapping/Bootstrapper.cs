@@ -122,6 +122,7 @@ namespace BoltOn.Bootstrapping
 
 			FinalizeRegistrations();
 			RegisterPostRegistrationTasks();
+			RegisterCleanupTasks();
 		}
 
 		private void FinalizeRegistrations()
@@ -143,12 +144,33 @@ namespace BoltOn.Bootstrapping
 			registrationTaskTypes.ForEach(r => _serviceCollection.AddTransient(registrationTaskType, r));
 		}
 
+		private void RegisterCleanupTasks()
+		{
+			var cleanupTaskType = typeof(ICleanupTask);
+			var cleanupTaskTypes = (from a in Assemblies
+										 from t in a.GetTypes()
+										 where cleanupTaskType.IsAssignableFrom(t)
+										 && t.IsClass
+										 select t).ToList();
+			cleanupTaskTypes.ForEach(r => _serviceCollection.AddTransient(cleanupTaskType, r));
+		}
+
+		private void RunCleanupTasks()
+		{
+			if (_serviceProvider != null)
+			{
+				var postRegistrationTasks = _serviceProvider.GetService<IEnumerable<ICleanupTask>>();
+				postRegistrationTasks.Reverse().ToList().ForEach(t => t.Run());
+			}
+		}
+
 		private void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
+				RunCleanupTasks();
 				_serviceCollection = null;
-				BoltOnServiceProvider.Current = null;
+				BoltOnServiceLocator.Current = null;
 				_serviceProvider = null;
 				_registrationTaskContext = null;
 				Assemblies = null;
