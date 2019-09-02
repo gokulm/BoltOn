@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using BoltOn.Samples.Infrastructure.Data;
 using BoltOn.Samples.Infrastructure.Data.Repositories;
 using BoltOn.Data.CosmosDb;
-using BoltOn.Bus.RabbitMq;
+using BoltOn.Bus.MassTransit;
 using MassTransit;
 using System;
 using BoltOn.Utilities;
@@ -32,7 +32,7 @@ namespace BoltOn.Samples.WebApi
             {
                 options.BoltOnEFModule();
                 options.BoltOnCosmosDbModule();
-				options.BoltOnRabbitMqBusModule();
+				options.BoltOnMassTransitBusModule();
                 options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(StudentRepository).Assembly);
             });
 

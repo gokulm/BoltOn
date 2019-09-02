@@ -1,10 +1,10 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using BoltOn.Logging;
 using BoltOn.Mediator.Pipeline;
 using MassTransit;
+using System.Threading;
 
-namespace BoltOn.Bus.RabbitMq
+namespace BoltOn.Bus.MassTransit
 {
 	public class BoltOnMassTransitBus : IBus
 	{

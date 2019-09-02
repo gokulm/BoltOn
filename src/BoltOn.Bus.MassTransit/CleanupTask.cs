@@ -4,7 +4,7 @@ using BoltOn.Logging;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BoltOn.Bus.RabbitMq
+namespace BoltOn.Bus.MassTransit
 {
     public class CleanupTask : ICleanupTask
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Bus.RabbitMq;
+using BoltOn.Bus.MassTransit;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Tests.Other;
 using MassTransit;

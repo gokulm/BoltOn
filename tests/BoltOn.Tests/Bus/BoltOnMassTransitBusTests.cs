@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using BoltOn.Tests.Other;
 using Moq.AutoMock;
 using Xunit;
-using BoltOn.Bus.RabbitMq;
+using BoltOn.Bus.MassTransit;
 using MassTransit;
 using System.Threading;
 using BoltOn.Logging;

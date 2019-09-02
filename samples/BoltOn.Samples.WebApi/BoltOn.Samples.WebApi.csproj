@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="5.5.4" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="5.5.5" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +21,6 @@
     <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Infrastructure\BoltOn.Samples.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.Data.CosmosDb\BoltOn.Data.CosmosDb.csproj" />
-    <ProjectReference Include="..\..\src\BoltOn.Bus.RabbitMq\BoltOn.Bus.RabbitMq.csproj" />
+    <ProjectReference Include="..\..\src\BoltOn.Bus.MassTransit\BoltOn.Bus.MassTransit.csproj" />
   </ItemGroup>
 </Project>

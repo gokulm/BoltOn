@@ -3,7 +3,7 @@ using BoltOn.Mediator.Pipeline;
 using MassTransit;
 using BoltOn.Logging;
 
-namespace BoltOn.Bus.RabbitMq
+namespace BoltOn.Bus.MassTransit
 {
 	public class BoltOnMassTransitConsumer<TRequest> : IConsumer<TRequest> where TRequest : class, IRequest
 	{

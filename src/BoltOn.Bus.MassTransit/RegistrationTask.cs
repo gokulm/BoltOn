@@ -1,7 +1,7 @@
 ﻿using BoltOn.Bootstrapping;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BoltOn.Bus.RabbitMq
+namespace BoltOn.Bus.MassTransit
 {
 	public class RegistrationTask : IRegistrationTask
     {

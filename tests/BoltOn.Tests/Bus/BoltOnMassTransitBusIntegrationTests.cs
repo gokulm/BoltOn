@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-using BoltOn.Bus.RabbitMq;
+using BoltOn.Bus.MassTransit;
 using BoltOn.Logging;
 using Moq;
 using BoltOn.Tests.Other;
@@ -30,7 +30,7 @@ namespace BoltOn.Tests.Bus
 			serviceCollection.BoltOn(b =>
 			{
 				b.BoltOnAssemblies(GetType().Assembly);
-				b.BoltOnRabbitMqBusModule();
+				b.BoltOnMassTransitBusModule();
 			});
 
 			serviceCollection.AddMassTransit(x =>
@@ -72,7 +72,7 @@ namespace BoltOn.Tests.Bus
 			serviceCollection.BoltOn(b =>
 			{
 				b.BoltOnAssemblies(GetType().Assembly);
-				b.BoltOnRabbitMqBusModule();
+				b.BoltOnMassTransitBusModule();
 			});
 
 			serviceCollection.AddMassTransit(x =>
@@ -85,10 +85,12 @@ namespace BoltOn.Tests.Bus
 						hostConfigurator.Password("guest");
 					});
 
-					cfg.BoltOnConsumer<CreateTestStudent>(provider, host);
+					cfg.ReceiveEndpoint(host, "CreateTestStudent_Queue", endpoint =>
+					{
+						endpoint.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CreateTestStudent>>());
+					});
 				}));
 			});
-
 
 			var logger = new Mock<IBoltOnLogger<CreateTestStudentHandler>>();
 			logger.Setup(s => s.Debug(It.IsAny<string>()))

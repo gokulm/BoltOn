@@ -1,8 +1,9 @@
 ﻿using BoltOn.Mediator.Pipeline;
 using BoltOn.Samples.Application.Handlers;
 using Microsoft.Extensions.DependencyInjection;
-using BoltOn.Bus.RabbitMq;
+using BoltOn.Bus.MassTransit;
 using MassTransit;
+using MassTransit.RabbitMqTransport;
 using BoltOn.Samples.Application.Messages;
 using System;
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,7 @@ namespace BoltOn.Samples.Console
 			serviceCollection.BoltOn(o =>
 			{
 				o.BoltOnAssemblies(typeof(GetAllStudentsRequest).Assembly);
-				o.BoltOnRabbitMqBusModule();
+				o.BoltOnMassTransitBusModule();
 			});
 
 			serviceCollection.AddMassTransit(x =>
@@ -31,10 +32,12 @@ namespace BoltOn.Samples.Console
 						hostConfigurator.Password("guest");
 					});
 
-					cfg.BoltOnConsumer<CreateStudent>(provider, host);
+					cfg.ReceiveEndpoint(host, "CreateStudent_Queue", endpoint =>
+					{
+						endpoint.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CreateStudent>>());
+					});
 				}));
 			});
-
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
