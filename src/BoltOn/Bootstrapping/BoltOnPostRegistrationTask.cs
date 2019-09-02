@@ -1,4 +1,6 @@
-﻿namespace BoltOn.Bootstrapping
+﻿using BoltOn.Utilities;
+
+namespace BoltOn.Bootstrapping
 {
     public class BoltOnPostRegistrationTask : IPostRegistrationTask
     {

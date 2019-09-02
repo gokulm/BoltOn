@@ -12,6 +12,7 @@ using BoltOn.Data.CosmosDb;
 using BoltOn.Bus.RabbitMq;
 using MassTransit;
 using System;
+using BoltOn.Utilities;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -60,10 +61,11 @@ namespace BoltOn.Samples.WebApi
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IApplicationLifetime appLifetime)
         {
             app.UseMvc();
 			app.ApplicationServices.TightenBolts();
-        }
-    }
+			appLifetime.ApplicationStopping.Register(() => BoltOnAppCleaner.Clean());
+		}
+	}
 }

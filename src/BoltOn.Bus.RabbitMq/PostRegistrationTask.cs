@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace BoltOn.Bus.RabbitMq
 {
-    public class PostRegistrationTask : IPostRegistrationTask
+	public class PostRegistrationTask : IPostRegistrationTask
     {
 		private readonly IServiceProvider _serviceProvider;
 
@@ -21,20 +21,4 @@ namespace BoltOn.Bus.RabbitMq
             busControl?.Start();
         }
     }
-
-	public class CleanupTask : ICleanupTask
-	{
-		private readonly IServiceProvider _serviceProvider;
-
-		public CleanupTask(IServiceProvider serviceProvider)
-		{
-			_serviceProvider = serviceProvider;
-		}
-
-		public void Run()
-		{
-			var busControl = _serviceProvider.GetService<IBusControl>();
-			busControl?.Stop();
-		}
-	}
 }
