@@ -1,11 +1,9 @@
 using System;
-using BoltOn.Data.EF;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using BoltOn.Bootstrapping;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Threading;
 using BoltOn.Tests.Other;
 using BoltOn.Data.CosmosDb;
 
@@ -42,24 +40,12 @@ namespace BoltOn.Tests.Data.CosmosDb
             _sut.Add(grade);
 
             // act
-            var result = _sut.GetById(id);
+            var result = _sut.GetById(id, grade.StudentId);
 
             // assert
-            _sut.DeleteById(id);
+            _sut.DeleteById(id, grade.StudentId);
             Assert.NotNull(result);
             Assert.Equal("A-", result.Score);
-        }
-
-        [Fact, Trait("Category", "Integration")]
-        public void GetById_WhenRecordDoesNotExist_ReturnsNull()
-        {
-            // arrange
-
-            // act
-            var result = _sut.GetById(Guid.NewGuid());
-
-            // assert
-            Assert.Null(result);
         }
 
         [Fact, Trait("Category", "Integration")]
@@ -71,10 +57,10 @@ namespace BoltOn.Tests.Data.CosmosDb
             await _sut.AddAsync(grade);
 
             // act
-            var result = await _sut.GetByIdAsync(id);
+            var result = await _sut.GetByIdAsync(id, grade.StudentId);
 
             // assert
-            await _sut.DeleteByIdAsync(id);
+            await _sut.DeleteByIdAsync(id, grade.StudentId);
             Assert.NotNull(result);
             Assert.Equal(2017, result.Year);
         }
@@ -92,12 +78,12 @@ namespace BoltOn.Tests.Data.CosmosDb
             
 
             // act
-            var result = _sut.GetAll().ToList();
+            var result = _sut.GetAll();
 
             // assert
-            _sut.DeleteById(id1);
-            _sut.DeleteById(id2);
-            Assert.Equal(2, result.Count);
+            _sut.DeleteById(id1, grade1.StudentId);
+            _sut.DeleteById(id2, grade2.StudentId);
+            Assert.Equal(2, result.Count());
         }
 
         [Fact, Trait("Category", "Integration")]
@@ -115,8 +101,8 @@ namespace BoltOn.Tests.Data.CosmosDb
             var result = await _sut.GetAllAsync();
 
             // assert
-            await _sut.DeleteByIdAsync(id1);
-            await _sut.DeleteByIdAsync(id2);
+            await _sut.DeleteByIdAsync(id1, grade1.StudentId);
+            await _sut.DeleteByIdAsync(id2, grade2.StudentId);
             Assert.Equal(2, result.Count());
         }
 
@@ -129,10 +115,10 @@ namespace BoltOn.Tests.Data.CosmosDb
             _sut.Add(grade);
 
             // act
-            var result = _sut.FindBy(f => f.Id == id).FirstOrDefault();
+            var result = _sut.FindBy(f => f.StudentId == 1).FirstOrDefault();
 
             // assert
-            _sut.DeleteById(id);
+            _sut.DeleteById(id, grade.StudentId);
             Assert.NotNull(result);
             Assert.Equal(1, result.StudentId);
         }
@@ -159,10 +145,10 @@ namespace BoltOn.Tests.Data.CosmosDb
             
             // act
             var result = _sut.Add(grade);
-            var queryResult = _sut.GetById(id);
+            var queryResult = _sut.GetById(id, grade.StudentId);
 
             // assert
-            _sut.DeleteById(id);
+            _sut.DeleteById(id, grade.StudentId);
             Assert.NotNull(queryResult);
             Assert.Equal(1, queryResult.StudentId);
             Assert.Equal(result.CourseName, queryResult.CourseName);
@@ -177,10 +163,10 @@ namespace BoltOn.Tests.Data.CosmosDb
 
             // act
             var result = await _sut.AddAsync(grade);
-            var queryResult = await _sut.GetByIdAsync(id);
+            var queryResult = await _sut.GetByIdAsync(id, grade.StudentId);
 
             // assert
-            await _sut.DeleteByIdAsync(id);
+            await _sut.DeleteByIdAsync(id, grade.StudentId);
             Assert.NotNull(queryResult);
             Assert.Equal("A-", queryResult.Score);
         }
@@ -196,10 +182,10 @@ namespace BoltOn.Tests.Data.CosmosDb
             // act
             grade.Score = "A";
             _sut.Update(grade);
-            var queryResult = _sut.GetById(id);
+            var queryResult = _sut.GetById(id, grade.StudentId);
 
             // assert
-            _sut.DeleteById(id);
+            _sut.DeleteById(id, grade.StudentId);
             Assert.NotNull(queryResult);
             Assert.Equal("A", queryResult.Score);
         }
@@ -215,10 +201,10 @@ namespace BoltOn.Tests.Data.CosmosDb
             // act
             grade.StudentId = 2;
             await _sut.UpdateAsync(grade);
-            var queryResult = _sut.GetById(id);
+            var queryResult = _sut.GetById(id, grade.StudentId);
 
             // assert
-            await _sut.DeleteByIdAsync(id); 
+            await _sut.DeleteByIdAsync(id, grade.StudentId); 
             Assert.NotNull(queryResult);
             Assert.Equal(2, queryResult.StudentId);
         }
