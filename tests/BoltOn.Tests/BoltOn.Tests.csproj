@@ -30,6 +30,7 @@
         <Folder Include="Data\EF\" />
         <Folder Include="Other\" />
         <Folder Include="Bus\" />
+        <Folder Include="Utilities\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />

@@ -3,7 +3,6 @@ using BoltOn.Samples.Application.Handlers;
 using Microsoft.Extensions.DependencyInjection;
 using BoltOn.Bus.MassTransit;
 using MassTransit;
-using MassTransit.RabbitMqTransport;
 using BoltOn.Samples.Application.Messages;
 using System;
 using Microsoft.Extensions.Logging;
