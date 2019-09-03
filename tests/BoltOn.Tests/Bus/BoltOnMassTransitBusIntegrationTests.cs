@@ -68,6 +68,9 @@ namespace BoltOn.Tests.Bus
 		[Fact]
 		public async Task PublishAsync_Message_GetsConsumed()
 		{
+			if (!IntegrationTestHelper.IsRabbitMqRunning)
+				return;
+
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
 			{
