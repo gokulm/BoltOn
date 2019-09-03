@@ -19,7 +19,7 @@ namespace BoltOn.Tests.Bootstrapping
 				.Dispose();
 		}
 
-		//[Fact]
+		[Fact]
 		public void BoltOnAppCleaner_Clean_ExecutesAllCleanupTasksInOrder()
 		{
 			// arrange
