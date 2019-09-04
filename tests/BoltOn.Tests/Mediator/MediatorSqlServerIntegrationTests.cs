@@ -45,10 +45,13 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(addedStudent);
 		}
 
-		//[Fact]
+		[Fact]
 		[TestPriority(2)]
 		public void Process_MediatorWithQueryRequestInSqlServer_GetsRecord()
 		{
+			if (!IntegrationTestHelper.IsSqlRunning)
+				return;
+
 			// arrange
 			MediatorTestHelper.IsSqlServer = true;
 			MediatorTestHelper.IsSeedData = false;
