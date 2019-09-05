@@ -14,7 +14,7 @@ namespace BoltOn.Bootstrapping
 		private IServiceCollection _serviceCollection;
 		private IServiceProvider _serviceProvider;
 		private BoltOnOptions _options;
-		private bool _isBolted;
+		private bool _isBolted, _isAppCleaned;
 		private RegistrationTaskContext _registrationTaskContext;
 
 		private Bootstrapper()
@@ -156,10 +156,11 @@ namespace BoltOn.Bootstrapping
 
 		internal void RunCleanupTasks()
 		{
-			if (_serviceProvider != null && _isBolted)
+			if (_serviceProvider != null && !_isAppCleaned && _isBolted)
 			{
 				var postRegistrationTasks = _serviceProvider.GetService<IEnumerable<ICleanupTask>>();
 				postRegistrationTasks.Reverse().ToList().ForEach(t => t.Run());
+				_isAppCleaned = true;
 			}
 		}
 
@@ -175,6 +176,7 @@ namespace BoltOn.Bootstrapping
 				Assemblies = null;
 				_callingAssembly = null;
 				_isBolted = false;
+				_isAppCleaned = false;
 			}
 		}
 

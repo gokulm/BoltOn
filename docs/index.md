@@ -75,7 +75,7 @@ Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other 
 
 TightenBolts()
 --------------
-This extension method scans all the `IPostRegistrationTask` in the assemblies collection formed by BoltOn() and executes them.
+This extension method scans all the `IPostRegistrationTask` in the assembly collection formed by BoltOn() and executes them.
 
 To run any task that involves resolving dependencies, like seeding data using any of the registered DbContexts, implement `IPostRegistrationTask`. 
 
@@ -90,3 +90,9 @@ Example:
             testDbContext.Database.EnsureCreated();
         }
     }
+
+Cleanup
+-------
+BoltOn internally uses a class called Bootstrapper to invoke all the registration and post registration tasks, and when it gets disposed, it calls cleanup tasks in all the modules. It's basically done by scanning all the `ICleanupTask` in the assembly collection formed by BoltOn() and executing them.
+
+The cleanup tasks can be invoked on demand using [BoltOnAppCleaner](../utilities/#BoltOnAppCleaner).

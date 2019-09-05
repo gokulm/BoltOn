@@ -19,6 +19,8 @@ And then create a custom interceptor in case if you want to tweak the ChangeTrac
 Interceptor
 -----------
 
+You could create your custom interceptor for change tracking something like this:
+
     public class CustomChangeTrackerInterceptor : IInterceptor
 	{
 		private readonly ChangeTrackerContext _changeTrackerContext;
@@ -51,6 +53,8 @@ Interceptor
 
 UnitOfWorkOptionsBuilder
 ------------------------
+
+You could create your custom UnitOfWorkOptionsBuilder to change the isolation level and/or transaction timeout based on request type something like this:
 
     public class CustomUnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
     {

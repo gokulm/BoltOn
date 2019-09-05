@@ -79,7 +79,7 @@ Every request flows thru a set of built-in interceptors (mentioned below), and t
 * `UnitOfWorkInterceptor`
 <br> This interceptor starts a transaction with an isolation level based on the interface like IQuery or ICommand etc., (mentioned above) that the request implements. This interceptor is enabled only if the request implements `IEnableUnitOfWorkInterceptor`
 
-You can create an interceptor by implementing `IInterceptor` interface, like [this](../optional/#interceptor). If you want to enable or disable an interceptor based on a marker interface implementation, you can inherit `BaseRequestSpecificInterceptor<T>`
+You could create an interceptor by implementing `IInterceptor` interface, like [this](../optional/#interceptor). If you want to enable or disable an interceptor based on a marker interface implementation, you can inherit `BaseRequestSpecificInterceptor<T>`
 
 **Note: **
 
