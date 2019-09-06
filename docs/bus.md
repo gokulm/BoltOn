@@ -1,10 +1,10 @@
 BoltOn uses [MassTransit](https://masstransit-project.com/) bus for all the queueing. 
 
-In order to use the bus with RabbitMq as the underlying transport, do the following:
+In order to use the bus, do the following:
 
 * Install **BoltOn.Bus.MassTransit** NuGet package.
 * Call `BoltOnMassTransitModule()` in your startup's BoltOn() method. 
-* For all the applications that will be just publishing to the queue, configure RabbitMq host and all other settings using MassTransit's extension method for `AddMassTransit`. Refer [this link](https://masstransit-project.com/MassTransit/usage/containers/msdi.html). Refer MassTransit's documentation for all the other transports too.
+* For all the applications that will be just publishing to the queue, configure RabbitMq host and all other settings using MassTransit's extension method for `AddMassTransit`. Check out [this page](https://masstransit-project.com/MassTransit/usage/containers/msdi.html) for the supported configuration. Also refer MassTransit's documentation for all the other supported transports (other than RabbitMq), BoltOnMassTransitModule is transport agnostic.
 * For all the applications that will be consuming messages from the queue, follow all the above steps and then configure BoltOn's `BoltOnMassTransitConsumer<TMessage>` provided by the above mentioned NuGet package. 
 * Finally, inject `IBus` anywhere in your application and call `PublishAsync` method to publish your message. 
 
@@ -30,8 +30,6 @@ Example:
     });
 
 **Consumer Configuration**
-
-Apart from the publisher configuration, configure the consumer using `BoltOnConsumer` extension method:
 
     serviceCollection.AddMassTransit(x =>
     {
@@ -69,4 +67,4 @@ and then call `BoltOnConsumer<CreateStudent>(provider, host)`
 * As MassTransit had abstracted out the transport like RabbitMq, Azure Service Bus etc., and all the other things very well BoltOn just adds a minor add-on `BoltOnMassTransitConsumer<TMessage>` to it, which injects `IMediator` for processing the message of type `TMessage`.
 * As the consumer injects `IMediator` and uses it for processing the messages, all the messages should implement any of the interfaces mentioned [here](../mediator/#request-response-and-requesthandler). 
 Please refer to [Mediator](../mediator) documentation to know how to add handlers and its internals.
-* Starting and stopping bus gets taken care by PostRegistrationTask and CleanupTask respectively. 
+* Starting and stopping bus gets taken care by [PostRegistrationTask](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Bus.MassTransit/PostRegistrationTask.cs) and [CleanupTask](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Bus.MassTransit/CleanupTask.cs) respectively. 

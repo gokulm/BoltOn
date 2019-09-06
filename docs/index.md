@@ -1,4 +1,4 @@
-BoltOn is an [open source](https://github.com/gokulm/BoltOn) framework to build any .NET application (like Console, MVC, WebAPI, Windows Service etc.,) with proper separation of concerns.
+BoltOn is an [open source](https://github.com/gokulm/BoltOn) framework to build any .NET application like Console, MVC, WebAPI, Windows Service etc., with proper separation of concerns.
 
 Installation
 ------------
@@ -47,11 +47,11 @@ To use other BoltOn packages and/or add other assemblies, you can add them using
 
 BoltOn()
 --------
-This extension method does the following:
+This method does the following:
 
 * It groups the executing assembly, all the assemblies of the other modules and the assemblies passed to BoltOnAssemblies() to a collection, sorts them based on the assembly dependencies, and finally scans for all the classes that implement `IRegistrationTask` and executes them in the order of the assembly dependencies. 
 <br />The assemblies collection can be accessed from `RegistrationTaskContext` and `PostRegistrationTaskContext` of the registration tasks.
-* A built-in registration task called `BoltOnRegistrationTask` registers all the interfaces with **single** implementation as trasient. 
+* A built-in registration task called [BoltOnRegistrationTask](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Bootstrapping/BoltOnRegistrationTask.cs) registers all the interfaces with **single** implementation as trasient. 
 
 **Custom registrations:**
 
@@ -95,4 +95,4 @@ Cleanup
 -------
 BoltOn internally uses a class called [Bootstrapper](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Bootstrapping/Bootstrapper.cs) to invoke all the registration and post registration tasks, and when it gets disposed, it calls cleanup tasks in all the modules. It's basically done by scanning all the `ICleanupTask` in the assembly collection formed by BoltOn() and executing them.
 
-The cleanup tasks can be invoked on demand using [BoltOnAppCleaner](../utilities/#BoltOnAppCleaner).
+The cleanup tasks can be invoked on demand using [BoltOnAppCleaner](../utilities/#boltonappcleaner).
