@@ -114,11 +114,11 @@
             <div class="section">
               
                 <p>BoltOn uses <a href="https://masstransit-project.com/">MassTransit</a> bus for all the queueing. </p>
-<p>In order to use the bus with RabbitMq as the underlying transport, do the following:</p>
+<p>In order to use the bus, do the following:</p>
 <ul>
 <li>Install <strong>BoltOn.Bus.MassTransit</strong> NuGet package.</li>
 <li>Call <code>BoltOnMassTransitModule()</code> in your startup's BoltOn() method. </li>
-<li>For all the applications that will be just publishing to the queue, configure RabbitMq host and all other settings using MassTransit's extension method for <code>AddMassTransit</code>. Refer <a href="https://masstransit-project.com/MassTransit/usage/containers/msdi.html">this link</a>. Refer MassTransit's documentation for all the other transports too.</li>
+<li>For all the applications that will be just publishing to the queue, configure RabbitMq host and all other settings using MassTransit's extension method for <code>AddMassTransit</code>. Check out <a href="https://masstransit-project.com/MassTransit/usage/containers/msdi.html">this page</a> for the supported configuration. Also refer MassTransit's documentation for all the other supported transports (other than RabbitMq), BoltOnMassTransitModule is transport agnostic.</li>
 <li>For all the applications that will be consuming messages from the queue, follow all the above steps and then configure BoltOn's <code>BoltOnMassTransitConsumer&lt;TMessage&gt;</code> provided by the above mentioned NuGet package. </li>
 <li>Finally, inject <code>IBus</code> anywhere in your application and call <code>PublishAsync</code> method to publish your message. </li>
 </ul>
@@ -142,7 +142,6 @@ services.AddMassTransit(x =&gt;
 });
 </code></pre>
 <p><strong>Consumer Configuration</strong></p>
-<p>Apart from the publisher configuration, configure the consumer using <code>BoltOnConsumer</code> extension method:</p>
 <pre><code>serviceCollection.AddMassTransit(x =&gt;
 {
     x.AddBus(provider =&gt; MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =&gt;
@@ -177,7 +176,7 @@ services.AddMassTransit(x =&gt;
 <li>As MassTransit had abstracted out the transport like RabbitMq, Azure Service Bus etc., and all the other things very well BoltOn just adds a minor add-on <code>BoltOnMassTransitConsumer&lt;TMessage&gt;</code> to it, which injects <code>IMediator</code> for processing the message of type <code>TMessage</code>.</li>
 <li>As the consumer injects <code>IMediator</code> and uses it for processing the messages, all the messages should implement any of the interfaces mentioned <a href="../mediator/#request-response-and-requesthandler">here</a>. 
 Please refer to <a href="../mediator">Mediator</a> documentation to know how to add handlers and its internals.</li>
-<li>Starting and stopping bus gets taken care by PostRegistrationTask and CleanupTask respectively. </li>
+<li>Starting and stopping bus gets taken care by <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Bus.MassTransit/PostRegistrationTask.cs">PostRegistrationTask</a> and <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Bus.MassTransit/CleanupTask.cs">CleanupTask</a> respectively. </li>
 </ul>
               
             </div>

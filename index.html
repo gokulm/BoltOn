@@ -128,7 +128,7 @@
           <div role="main">
             <div class="section">
               
-                <p>BoltOn is an <a href="https://github.com/gokulm/BoltOn">open source</a> framework to build any .NET application (like Console, MVC, WebAPI, Windows Service etc.,) with proper separation of concerns.</p>
+                <p>BoltOn is an <a href="https://github.com/gokulm/BoltOn">open source</a> framework to build any .NET application like Console, MVC, WebAPI, Windows Service etc., with proper separation of concerns.</p>
 <h2 id="installation">Installation</h2>
 <p>There are a <a href="https://www.nuget.org/packages?q=BoltOn">couple of packages</a> for BoltOn available on NuGet. To install BoltOn in your .NET application, type the following command into the Package Manager Console window:</p>
 <pre><code>PM&gt; Install-Package BoltOn
@@ -169,11 +169,11 @@
 </code></pre>
 <p><strong> Note: </strong> BoltOn uses .NET core's dependency injection internally. In case if you want to use any other DI framework, you can configure it after the BoltOn() call. </p>
 <h2 id="bolton">BoltOn()</h2>
-<p>This extension method does the following:</p>
+<p>This method does the following:</p>
 <ul>
 <li>It groups the executing assembly, all the assemblies of the other modules and the assemblies passed to BoltOnAssemblies() to a collection, sorts them based on the assembly dependencies, and finally scans for all the classes that implement <code>IRegistrationTask</code> and executes them in the order of the assembly dependencies. 
 <br />The assemblies collection can be accessed from <code>RegistrationTaskContext</code> and <code>PostRegistrationTaskContext</code> of the registration tasks.</li>
-<li>A built-in registration task called <code>BoltOnRegistrationTask</code> registers all the interfaces with <strong>single</strong> implementation as trasient. </li>
+<li>A built-in registration task called <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Bootstrapping/BoltOnRegistrationTask.cs">BoltOnRegistrationTask</a> registers all the interfaces with <strong>single</strong> implementation as trasient. </li>
 </ul>
 <p><strong>Custom registrations:</strong></p>
 <ul>
@@ -209,7 +209,7 @@ Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other 
 </code></pre>
 <h2 id="cleanup">Cleanup</h2>
 <p>BoltOn internally uses a class called <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Bootstrapping/Bootstrapper.cs">Bootstrapper</a> to invoke all the registration and post registration tasks, and when it gets disposed, it calls cleanup tasks in all the modules. It's basically done by scanning all the <code>ICleanupTask</code> in the assembly collection formed by BoltOn() and executing them.</p>
-<p>The cleanup tasks can be invoked on demand using <a href="../utilities/#BoltOnAppCleaner">BoltOnAppCleaner</a>.</p>
+<p>The cleanup tasks can be invoked on demand using <a href="../utilities/#boltonappcleaner">BoltOnAppCleaner</a>.</p>
               
             </div>
           </div>
@@ -258,5 +258,5 @@ Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other 
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-09-06 11:47:32
+Build Date UTC : 2019-09-06 12:30:34
 -->

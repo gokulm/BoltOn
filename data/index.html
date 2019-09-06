@@ -134,8 +134,8 @@
 <li>Install <strong>BoltOn.Data.EF</strong> NuGet package.</li>
 <li>Call <code>BoltOnEFModule()</code> in your startup's BoltOn() method.</li>
 <li>Create an entity by inheriting <code>BaseEntity&lt;TIdType&gt;</code>. The inheritance is not mandatory though.</li>
-<li>Create a DbContext by inheriting <code>BaseDbContext&lt;TDbContext&gt;</code>. You could inherit EF's DbContext directy if you're not interested in any of the benefits that BaseDbContext offers.</li>
-<li>Inherit <code>BaseEFRepository&lt;TEntity, TDbContext&gt;</code>.</li>
+<li>Create a DbContext by inheriting <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseDbContext.cs"><code>BaseDbContext&lt;TDbContext&gt;</code></a>. You could inherit EF's DbContext directy if you're not interested in any of the benefits that BaseDbContext offers.</li>
+<li>Inherit <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseEFRepository.cs"><code>BaseEFRepository&lt;TEntity, TDbContext&gt;</code></a>.</li>
 <li>Add all the database columns to entity properties mapping inside a mapping class by implementing <code>IEntityTypeConfiguration&lt;TEntity&gt;</code> interface.
 <br>
 The mapping classes will be automatically added to your DbContext if you inherit <code>BaseDbContext&lt;TDbContext&gt;</code> and if they are in the same assembly where the DbContext resides. </li>
@@ -189,7 +189,7 @@ public class StudentRepository : BaseEFRepository&lt;Student, SchoolDbContext&gt
 <p>This factory uses IServiceProvider to resolve DbContexts, and if the request implements <code>IQuery&lt;&gt;</code>, it sets the DbContexts' <code>ChangeTracker.QueryTrackingBehavior</code> to <code>QueryTrackingBehavior.NoTracking</code> and <code>ChangeTracker.AutoDetectChangesEnabled</code> to false with the help of <code>MediatorContextInterceptor</code>. </p>
 <p><strong>Note:</strong> You could disable this behavior by removing the interceptor from the pipeline using <code>RemoveInterceptor&lt;TInterceptor&gt;</code> extension method.</p>
 <h2 id="cosmosdb">CosmosDb</h2>
-<p><code>BaseCosmosDbRepository&lt;TEntity, TCosmosDbContext&gt;</code> implements <code>IRepository&lt;TEntity&gt;</code>, so any Entity Framework SQL repository can be used against CosmosDb. </p>
+<p><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.CosmosDb/BaseCosmosDbRepository.cs"><code>BaseCosmosDbRepository&lt;TEntity, TCosmosDbContext&gt;</code></a> implements <code>IRepository&lt;TEntity&gt;</code>, so any Entity Framework SQL repository can be used against CosmosDb. </p>
 <p>In order to use CosmosDb, you need do the following:</p>
 <ol>
 <li>Install <strong>BoltOn.Data.CosmosDb</strong> NuGet package.</li>
@@ -235,7 +235,6 @@ public class Grade : BaseEntity&lt;string&gt;
 // Repository
 public interface IGradeRepository : IRepository&lt;Grade&gt;
 {
-    // CosmosDb specific query methods can be added
     Task&lt;Grade&gt; GetByIdAsync&lt;TId&gt;(TId id, object partitionKey);
 }
 
@@ -252,7 +251,7 @@ public class GradeRepository : BaseCosmosDbRepository&lt;Grade, CollegeDbContext
     }
 }
 </code></pre>
-<p><strong>Note:</strong> While using any property in CosmosDb query, make sure propertyname matches exactly as it is in stored in the document collection.</p>
+<p><strong>Note:</strong> While using any property in CosmosDb query, make sure property name matches exactly as it is in stored in the document collection.</p>
               
             </div>
           </div>
