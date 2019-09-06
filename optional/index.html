@@ -63,15 +63,22 @@
     <a class="" href="../data/">Data</a>
 	    </li>
           
+            <li class="toctree-l1">
+		
+    <a class="" href="../bus/">Bus</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../utilities/">Utilities</a>
+	    </li>
+          
             <li class="toctree-l1 current">
 		
     <a class="current" href="./">Optional</a>
     <ul class="subnav">
             
     <li class="toctree-l2"><a href="#logging">Logging</a></li>
-    
-
-    <li class="toctree-l2"><a href="#utilities">Utilities</a></li>
     
 
     <li class="toctree-l2"><a href="#iqueryuncommitted">IQueryUncommitted</a></li>
@@ -120,29 +127,6 @@
               
                 <h2 id="logging">Logging</h2>
 <p>BoltOn uses .NET Core's logger internally, with just a custom adapter to help in unit testing. You could use any logging provider as you wish, or you could inherit <code>BoltOnLogger&lt;TType&gt;</code> and override the logging methods.</p>
-<h2 id="utilities">Utilities</h2>
-<ul>
-<li>
-<p><strong>Check.Requires</strong>
-<br>
-There are instances where you have to check for a condition and throw exception if the condition fails, in those instances you could use <code>Check.Requires</code></p>
-<p>Example:</p>
-<pre><code>Check.Requires(_serviceCollection != null, "ServiceCollection not initialized");
-</code></pre>
-<p>is equivalent to</p>
-<pre><code>if(_serviceCollection == null)
-    throw new Exception("ServiceCollection not initialized");
-</code></pre>
-<p>and custom exceptions can be thrown like this:</p>
-<pre><code>Check.Requires&lt;CustomException&gt;(_serviceCollection != null, "ServiceCollection not initialized");
-</code></pre>
-</li>
-<li>
-<p><strong>IBoltOnClock/BoltOnClock</strong>
-<br>
-There are instances where you have to use static properties DateTime.Now or DateTimeOffset.UtcNow, which makes hard to unit test, in those instances you could inject <code>IBoltOnClock</code></p>
-</li>
-</ul>
 <h2 id="iqueryuncommitted">IQueryUncommitted</h2>
 <p>In case if you want a custom request type which is completely different from IQuery or ICommand in terms of the transaction isolation level or transaction timeout, you could create one something like this:</p>
 <pre><code>public interface IQueryUncommitted&lt;out TResponse&gt; : IRequest&lt;TResponse&gt;, IEnableUnitOfWorkInterceptor
@@ -155,6 +139,7 @@ serviceCollection.AddInterceptor&lt;CustomChangeTrackerInterceptor&gt;();
 serviceCollection.AddTransient&lt;IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOptionsBuilder&gt;();
 </code></pre>
 <h2 id="interceptor">Interceptor</h2>
+<p>You could create your custom interceptor for change tracking something like this:</p>
 <pre><code>public class CustomChangeTrackerInterceptor : IInterceptor
 {
     private readonly ChangeTrackerContext _changeTrackerContext;
@@ -186,6 +171,7 @@ serviceCollection.AddTransient&lt;IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOpt
 }
 </code></pre>
 <h2 id="unitofworkoptionsbuilder">UnitOfWorkOptionsBuilder</h2>
+<p>You could create your custom UnitOfWorkOptionsBuilder to change the isolation level and/or transaction timeout based on request type something like this:</p>
 <pre><code>public class CustomUnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
 {
     private readonly IBoltOnLogger&lt;CustomUnitOfWorkOptionsBuilder&gt; _logger;
@@ -225,7 +211,7 @@ serviceCollection.AddTransient&lt;IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOpt
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="../data/" class="btn btn-neutral" title="Data"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../utilities/" class="btn btn-neutral" title="Utilities"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -251,7 +237,7 @@ serviceCollection.AddTransient&lt;IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOpt
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../data/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../utilities/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
     </span>

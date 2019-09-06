@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Bus - BoltOn</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Bus";
+    var mkdocs_page_input_path = "bus.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> BoltOn</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Introduction</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../mediator/">Mediator</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../data/">Data</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Bus</a>
+    <ul class="subnav">
+            
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../utilities/">Utilities</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../optional/">Optional</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">BoltOn</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Bus</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p>BoltOn uses <a href="https://masstransit-project.com/">MassTransit</a> bus for all the queueing. </p>
+<p>In order to use the bus with RabbitMq as the underlying transport, do the following:</p>
+<ul>
+<li>Install <strong>BoltOn.Bus.MassTransit</strong> NuGet package.</li>
+<li>Call <code>BoltOnMassTransitModule()</code> in your startup's BoltOn() method. </li>
+<li>For all the applications that will be just publishing to the queue, configure RabbitMq host and all other settings using MassTransit's extension method for <code>AddMassTransit</code>. Refer <a href="https://masstransit-project.com/MassTransit/usage/containers/msdi.html">this link</a>. Refer MassTransit's documentation for all the other transports too.</li>
+<li>For all the applications that will be consuming messages from the queue, follow all the above steps and then configure BoltOn's <code>BoltOnMassTransitConsumer&lt;TMessage&gt;</code> provided by the above mentioned NuGet package. </li>
+<li>Finally, inject <code>IBus</code> anywhere in your application and call <code>PublishAsync</code> method to publish your message. </li>
+</ul>
+<p>Example:</p>
+<p><strong>Publisher Configuration</strong></p>
+<pre><code>services.BoltOn(options =&gt;
+{
+    options.BoltOnRabbitMqBusModule();
+});
+
+services.AddMassTransit(x =&gt;
+{
+    x.AddBus(provider =&gt; MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =&gt;
+    {
+        var host = cfg.Host(new Uri("rabbitmq://localhost:5672"), hostConfigurator =&gt;
+        {
+            hostConfigurator.Username("guest");
+            hostConfigurator.Password("guest");
+        });
+    }));
+});
+</code></pre>
+<p><strong>Consumer Configuration</strong></p>
+<p>Apart from the publisher configuration, configure the consumer using <code>BoltOnConsumer</code> extension method:</p>
+<pre><code>serviceCollection.AddMassTransit(x =&gt;
+{
+    x.AddBus(provider =&gt; MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =&gt;
+    {
+        var host = cfg.Host(new Uri("rabbitmq://localhost:5672"), hostConfigurator =&gt;
+        {
+            hostConfigurator.Username("guest");
+            hostConfigurator.Password("guest");
+        });
+
+        cfg.ReceiveEndpoint(host, "CreateStudent_Queue", endpoint =&gt;
+        {
+            endpoint.Consumer(() =&gt; provider.GetService&lt;BoltOnMassTransitConsumer&lt;CreateStudent&gt;&gt;());
+        });
+    }));
+});
+</code></pre>
+<p>You could add an extension method for your transport something like the one mentioned below to configure consumers:</p>
+<pre><code>public static void BoltOnConsumer&lt;TRequest&gt;(this IRabbitMqBusFactoryConfigurator configurator, 
+    IServiceProvider serviceProvider, IRabbitMqHost host, string queueName = null)
+        where TRequest : class, IRequest
+{
+    configurator.ReceiveEndpoint(host, queueName ?? $"{typeof(TRequest).Name}_Queue", endpoint =&gt;
+    {
+        endpoint.Consumer(() =&gt; serviceProvider.GetService&lt;BoltOnMassTransitConsumer&lt;TRequest&gt;&gt;());
+    });
+}
+</code></pre>
+<p>and then call <code>BoltOnConsumer&lt;CreateStudent&gt;(provider, host)</code></p>
+<p><strong>Note:</strong></p>
+<ul>
+<li>As MassTransit had abstracted out the transport like RabbitMq, Azure Service Bus etc., and all the other things very well BoltOn just adds a minor add-on <code>BoltOnMassTransitConsumer&lt;TMessage&gt;</code> to it, which injects <code>IMediator</code> for processing the message of type <code>TMessage</code>.</li>
+<li>As the consumer injects <code>IMediator</code> and uses it for processing the messages, all the messages should implement any of the interfaces mentioned <a href="../mediator/#request-response-and-requesthandler">here</a>. 
+Please refer to <a href="../mediator">Mediator</a> documentation to know how to add handlers and its internals.</li>
+<li>Starting and stopping bus gets taken care by PostRegistrationTask and CleanupTask respectively. </li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../utilities/" class="btn btn-neutral float-right" title="Utilities">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../data/" class="btn btn-neutral" title="Data"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../data/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../utilities/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>

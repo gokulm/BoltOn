@@ -77,6 +77,16 @@
           
             <li class="toctree-l1">
 		
+    <a class="" href="../bus/">Bus</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../utilities/">Utilities</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
     <a class="" href="../optional/">Optional</a>
 	    </li>
           
@@ -155,6 +165,28 @@ public class GetAllStudentsHandler : IRequestAsyncHandler&lt;GetAllStudentsReque
     }
 }
 </code></pre>
+<ul>
+<li>Finally, inject <code>IMediator</code> anywhere in your application, like a controller in WebAPI or a MVC application, and call <code>Process</code> or <code>ProcessAsync</code> method. </li>
+</ul>
+<p>Example:</p>
+<pre><code>[Route("api/[controller]")]
+public class StudentsController : Controller
+{
+    private readonly IMediator _mediator;
+
+    public StudentsController(IMediator mediator)
+    {
+        this._mediator = mediator;
+    }
+
+    [HttpGet]
+    public async Task&lt;IEnumerable&lt;StudentDto&gt;&gt; Get()
+    {
+        var students = await _mediator.ProcessAsync(new GetAllStudentsRequest());
+        return students;
+    }
+}
+</code></pre>
 <h2 id="interceptors">Interceptors</h2>
 <p>Every request flows thru a set of built-in interceptors (mentioned below), and the execution of them can be controlled by implementing appropriate marker interfaces. </p>
 <ul>
@@ -167,7 +199,7 @@ public class GetAllStudentsHandler : IRequestAsyncHandler&lt;GetAllStudentsReque
 <br> This interceptor starts a transaction with an isolation level based on the interface like IQuery or ICommand etc., (mentioned above) that the request implements. This interceptor is enabled only if the request implements <code>IEnableUnitOfWorkInterceptor</code></p>
 </li>
 </ul>
-<p>You can create an interceptor by implementing <code>IInterceptor</code> interface, like <a href="../optional/#interceptor">this</a>. If you want to enable or disable an interceptor based on a marker interface implementation, you can inherit <code>BaseRequestSpecificInterceptor&lt;T&gt;</code></p>
+<p>You could create an interceptor by implementing <code>IInterceptor</code> interface, like <a href="../optional/#interceptor">this</a>. If you want to enable or disable an interceptor based on a marker interface implementation, you can inherit <code>BaseRequestSpecificInterceptor&lt;T&gt;</code></p>
 <p><strong>Note: </strong></p>
 <ul>
 <li>Interceptors from all the bolted modules and assemblies <strong>must be</strong> added explicitly in the registration tasks using <code>AddInterceptor&lt;TInterceptor&gt;</code> extension method.</li>
