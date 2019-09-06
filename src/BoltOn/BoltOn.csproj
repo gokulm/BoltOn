@@ -9,9 +9,21 @@
         <SynchReleaseVersion>false</SynchReleaseVersion>
         <PackageId>BoltOn</PackageId>
         <Description>BoltOn is an open source framework to build any .NET application with proper separation of concerns.</Description>
-        <PackageVersion>0.3.0</PackageVersion>
+        <PackageVersion>0.4.0</PackageVersion>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <PackageTags>C#, .NET Core</PackageTags>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+      <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+      <LangVersion>latest</LangVersion>
+      <DefineConstants>TRACE;RELEASE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
+      <DocumentationFile></DocumentationFile>
+      <NoStdLib>true</NoStdLib>
+      <DefineConstants>TRACE;RELEASE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
+      <DocumentationFile></DocumentationFile>
+      <NoStdLib>true</NoStdLib>
     </PropertyGroup>
     <ItemGroup>
         <Folder Include="Logging\" />
@@ -23,6 +35,7 @@
         <Folder Include="Mediator\Interceptors\" />
         <Folder Include="Mediator\Pipeline\" />
         <Folder Include="Data\" />
+        <Folder Include="Bus\" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />

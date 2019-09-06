@@ -2,29 +2,6 @@ Logging
 -------
 BoltOn uses .NET Core's logger internally, with just a custom adapter to help in unit testing. You could use any logging provider as you wish, or you could inherit `BoltOnLogger<TType>` and override the logging methods.
 
-Utilities
----------
-* **Check.Requires**
-<br>
-There are instances where you have to check for a condition and throw exception if the condition fails, in those instances you could use `Check.Requires`
-
-    Example:
-
-        Check.Requires(_serviceCollection != null, "ServiceCollection not initialized"); 
-
-    is equivalent to
-
-        if(_serviceCollection == null)
-            throw new Exception("ServiceCollection not initialized");
-
-    and custom exceptions can be thrown like this:
-
-        Check.Requires<CustomException>(_serviceCollection != null, "ServiceCollection not initialized"); 
-
-* **IBoltOnClock/BoltOnClock**
-<br>
-There are instances where you have to use static properties DateTime.Now or DateTimeOffset.UtcNow, which makes hard to unit test, in those instances you could inject `IBoltOnClock`
-
 IQueryUncommitted
 -----------------
 In case if you want a custom request type which is completely different from IQuery or ICommand in terms of the transaction isolation level or transaction timeout, you could create one something like this:
@@ -41,6 +18,8 @@ And then create a custom interceptor in case if you want to tweak the ChangeTrac
 
 Interceptor
 -----------
+
+You could create your custom interceptor for change tracking something like this:
 
     public class CustomChangeTrackerInterceptor : IInterceptor
 	{
@@ -74,6 +53,8 @@ Interceptor
 
 UnitOfWorkOptionsBuilder
 ------------------------
+
+You could create your custom UnitOfWorkOptionsBuilder to change the isolation level and/or transaction timeout based on request type something like this:
 
     public class CustomUnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
     {

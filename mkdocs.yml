@@ -3,6 +3,8 @@ nav:
     - Introduction: index.md
     - Mediator: mediator.md
     - Data: data.md
+    - Bus: bus.md
+    - Utilities: utilities.md
     - Optional: optional.md
 theme: readthedocs
 

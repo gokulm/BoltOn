@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <LangVersion>latest</LangVersion>
+        <AssemblyName>BoltOn.Bus.MassTransit</AssemblyName>
+        <PackageVersion>0.1.0</PackageVersion>
+        <Authors>Gokulnath Murugesan</Authors>
+        <Owners>Gokulnath Murugesan</Owners>
+        <PackageProjectUrl>https://github.com/gokulm/BoltOn</PackageProjectUrl>
+        <PackageTags>C#, .NET</PackageTags>
+        <Title>BoltOn.Bus.MassTransit</Title>
+        <PackageId>BoltOn.Bus.MassTransit</PackageId>
+        <Description>This is an add-on to BoltOn NuGet package to add Service Bus support using MassTransit</Description>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="MassTransit" Version="5.5.2" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="2.2.0" />
+    </ItemGroup>
+</Project>

@@ -14,7 +14,7 @@ namespace BoltOn.Bootstrapping
 		private IServiceCollection _serviceCollection;
 		private IServiceProvider _serviceProvider;
 		private BoltOnOptions _options;
-		private bool _isBolted;
+		private bool _isBolted, _isAppCleaned;
 		private RegistrationTaskContext _registrationTaskContext;
 
 		private Bootstrapper()
@@ -121,6 +121,7 @@ namespace BoltOn.Bootstrapping
 
 			FinalizeRegistrations();
 			RegisterPostRegistrationTasks();
+			RegisterCleanupTasks();
 		}
 
 		private void FinalizeRegistrations()
@@ -142,16 +143,40 @@ namespace BoltOn.Bootstrapping
 			registrationTaskTypes.ForEach(r => _serviceCollection.AddTransient(registrationTaskType, r));
 		}
 
+		private void RegisterCleanupTasks()
+		{
+			var cleanupTaskType = typeof(ICleanupTask);
+			var cleanupTaskTypes = (from a in Assemblies
+										 from t in a.GetTypes()
+										 where cleanupTaskType.IsAssignableFrom(t)
+										 && t.IsClass
+										 select t).ToList();
+			cleanupTaskTypes.ForEach(r => _serviceCollection.AddTransient(cleanupTaskType, r));
+		}
+
+		internal void RunCleanupTasks()
+		{
+			if (_serviceProvider != null && !_isAppCleaned && _isBolted)
+			{
+				var postRegistrationTasks = _serviceProvider.GetService<IEnumerable<ICleanupTask>>();
+				postRegistrationTasks.Reverse().ToList().ForEach(t => t.Run());
+				_isAppCleaned = true;
+			}
+		}
+
 		private void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
+				RunCleanupTasks();
 				_serviceCollection = null;
+				BoltOnServiceLocator.Current = null;
 				_serviceProvider = null;
 				_registrationTaskContext = null;
 				Assemblies = null;
 				_callingAssembly = null;
 				_isBolted = false;
+				_isAppCleaned = false;
 			}
 		}
 

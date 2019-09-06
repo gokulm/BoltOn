@@ -47,6 +47,28 @@ Example:
 		}
 	}
 
+* Finally, inject `IMediator` anywhere in your application, like a controller in WebAPI or a MVC application, and call `Process` or `ProcessAsync` method. 
+
+Example:
+
+	[Route("api/[controller]")]
+	public class StudentsController : Controller
+	{
+		private readonly IMediator _mediator;
+
+		public StudentsController(IMediator mediator)
+		{
+			this._mediator = mediator;
+		}
+
+		[HttpGet]
+		public async Task<IEnumerable<StudentDto>> Get()
+		{
+			var students = await _mediator.ProcessAsync(new GetAllStudentsRequest());
+			return students;
+		}
+	}
+
 Interceptors
 ------------
 Every request flows thru a set of built-in interceptors (mentioned below), and the execution of them can be controlled by implementing appropriate marker interfaces. 
@@ -57,7 +79,7 @@ Every request flows thru a set of built-in interceptors (mentioned below), and t
 * `UnitOfWorkInterceptor`
 <br> This interceptor starts a transaction with an isolation level based on the interface like IQuery or ICommand etc., (mentioned above) that the request implements. This interceptor is enabled only if the request implements `IEnableUnitOfWorkInterceptor`
 
-You can create an interceptor by implementing `IInterceptor` interface, like [this](../optional/#interceptor). If you want to enable or disable an interceptor based on a marker interface implementation, you can inherit `BaseRequestSpecificInterceptor<T>`
+You could create an interceptor by implementing `IInterceptor` interface, like [this](../optional/#interceptor). If you want to enable or disable an interceptor based on a marker interface implementation, you can inherit `BaseRequestSpecificInterceptor<T>`
 
 **Note: **
 
