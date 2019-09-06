@@ -1,6 +1,6 @@
 Check.Requires
 --------------
-There are instances where you have to check for a condition and throw exception if the condition fails, in those instances you could use `Check.Requires`
+There are instances where you have to check for a condition and throw exception if the condition fails, in those instances you could use the `Requires` in  [`Check`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Utilities/Check.cs)
 
 Example:
 
@@ -17,7 +17,7 @@ and custom exceptions can be thrown like this:
 
 IBoltOnClock/BoltOnClock
 ------------------------
-There are instances where you have to use static properties DateTime.Now or DateTimeOffset.UtcNow, which makes hard to unit test, in those instances you could inject `IBoltOnClock`
+There are instances where you have to use static properties DateTime.Now or DateTimeOffset.UtcNow, which makes hard to unit test, in those instances you could inject [`IBoltOnClock`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Utilities/BoltOnClock.cs)
 
 BoltOnAppCleaner
 ----------------
@@ -34,4 +34,4 @@ In a WebAPI, you could call this method using IApplicationLifetime:
 
 BoltOnServiceLocator
 --------------------
-Service Locator is an [Anti-Pattern](https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/), so try to avoid using it. In case if you want to use it, you can use the Current property in this class which is of type `IServiceProvider`.
+Service Locator is an [Anti-Pattern](https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/), so try to avoid using it. In case if you want to use it, you could use the Current property in the class which is of type `IServiceProvider`.

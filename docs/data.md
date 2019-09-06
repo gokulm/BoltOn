@@ -11,8 +11,8 @@ In order to use Entity Framework implementation of the repository, you need to d
 1. Install **BoltOn.Data.EF** NuGet package.
 2. Call `BoltOnEFModule()` in your startup's BoltOn() method.
 3. Create an entity by inheriting `BaseEntity<TIdType>`. The inheritance is not mandatory though.
-4. Create a DbContext by inheriting `BaseDbContext<TDbContext>`. You could inherit EF's DbContext directy if you're not interested in any of the benefits that BaseDbContext offers.
-5. Inherit `BaseEFRepository<TEntity, TDbContext>`.
+4. Create a DbContext by inheriting [`BaseDbContext<TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseDbContext.cs). You could inherit EF's DbContext directy if you're not interested in any of the benefits that BaseDbContext offers.
+5. Inherit [`BaseEFRepository<TEntity, TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseEFRepository.cs).
 6. Add all the database columns to entity properties mapping inside a mapping class by implementing `IEntityTypeConfiguration<TEntity>` interface.
 <br>
 The mapping classes will be automatically added to your DbContext if you inherit `BaseDbContext<TDbContext>` and if they are in the same assembly where the DbContext resides. 
@@ -72,7 +72,7 @@ This factory uses IServiceProvider to resolve DbContexts, and if the request imp
 
 CosmosDb
 --------
-`BaseCosmosDbRepository<TEntity, TCosmosDbContext>` implements `IRepository<TEntity>`, so any Entity Framework SQL repository can be used against CosmosDb. 
+[`BaseCosmosDbRepository<TEntity, TCosmosDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.CosmosDb/BaseCosmosDbRepository.cs) implements `IRepository<TEntity>`, so any Entity Framework SQL repository can be used against CosmosDb. 
 
 In order to use CosmosDb, you need do the following:
 
@@ -120,7 +120,6 @@ Example:
 	// Repository
 	public interface IGradeRepository : IRepository<Grade>
     {
-		// CosmosDb specific query methods can be added
         Task<Grade> GetByIdAsync<TId>(TId id, object partitionKey);
     }
 
@@ -137,4 +136,4 @@ Example:
         }
     }
 
-**Note:** While using any property in CosmosDb query, make sure propertyname matches exactly as it is in stored in the document collection.
+**Note:** While using any property in CosmosDb query, make sure property name matches exactly as it is in stored in the document collection.
