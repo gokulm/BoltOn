@@ -7,9 +7,14 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="5.5.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="5.5.5" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />
     <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
+    <ProjectReference Include="..\..\src\BoltOn.Bus.MassTransit\BoltOn.Bus.MassTransit.csproj" />
   </ItemGroup>
 </Project>

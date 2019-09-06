@@ -12,6 +12,7 @@
     <Folder Include="Abstractions\" />
     <Folder Include="Abstractions\Data\" />
     <Folder Include="DTOs\" />
+    <Folder Include="Messages\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />

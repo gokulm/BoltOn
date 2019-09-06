@@ -13,10 +13,13 @@ namespace BoltOn.Tests.Mediator
 	[Collection("IntegrationTests")]
 	public class MediatorSqlServerIntegrationTests : IDisposable
 	{
-		//[Fact]
+		[Fact]
 		[TestPriority(1)]
 		public async Task Process_MediatorWithCommandRequestInSqlServer_AddsRecordInDbWithUoW()
 		{
+			if (!IntegrationTestHelper.IsSqlRunning)
+				return;
+
 			// arrange
 			MediatorTestHelper.IsSeedData = true;
 			MediatorTestHelper.IsSqlServer = true;
@@ -42,10 +45,13 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(addedStudent);
 		}
 
-		//[Fact]
+		[Fact]
 		[TestPriority(2)]
 		public void Process_MediatorWithQueryRequestInSqlServer_GetsRecord()
 		{
+			if (!IntegrationTestHelper.IsSqlRunning)
+				return;
+
 			// arrange
 			MediatorTestHelper.IsSqlServer = true;
 			MediatorTestHelper.IsSeedData = false;

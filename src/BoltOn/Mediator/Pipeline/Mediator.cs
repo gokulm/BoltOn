@@ -13,8 +13,8 @@ namespace BoltOn.Mediator.Pipeline
 	{
 		TResponse Process<TResponse>(IRequest<TResponse> request);
 		void Process(IRequest request);
-		Task<TResponse> ProcessAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken));
-		Task ProcessAsync(IRequest request, CancellationToken cancellationToken = default(CancellationToken));
+		Task<TResponse> ProcessAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default);
+		Task ProcessAsync(IRequest request, CancellationToken cancellationToken = default);
 	}
 
 	public class Mediator : IMediator
@@ -42,12 +42,12 @@ namespace BoltOn.Mediator.Pipeline
 			ExecuteInterceptors(castedRequest, Handle);
 		}
 
-		public async Task<TResponse> ProcessAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<TResponse> ProcessAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
 		{
 			return await ExecuteInterceptorsAsync(request, HandleAsync, cancellationToken);
 		}
 
-		public async Task ProcessAsync(IRequest request, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ProcessAsync(IRequest request, CancellationToken cancellationToken = default)
 		{
 		    await ExecuteInterceptorsAsync(request, HandleAsync, cancellationToken);
 		}
@@ -110,7 +110,7 @@ namespace BoltOn.Mediator.Pipeline
 				dynamic decorator = Activator.CreateInstance(typeof(RequestHandlerDecorator<>)
 																   .MakeGenericType(requestType), handler);
 				decorator.Handle(request);
-				return default(TResponse);
+				return default;
 			}
 			else
 			{

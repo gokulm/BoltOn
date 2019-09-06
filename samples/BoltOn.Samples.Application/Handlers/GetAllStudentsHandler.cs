@@ -8,7 +8,7 @@ using BoltOn.Samples.Application.DTOs;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-    public class GetAllStudentsRequest : IQuery<IEnumerable<StudentDto>>
+	public class GetAllStudentsRequest : IQuery<IEnumerable<StudentDto>>
     {
     }
 
@@ -20,19 +20,17 @@ namespace BoltOn.Samples.Application.Handlers
         {
             _studentRepository = studentRepository;
         }
-
-        public async Task<IEnumerable<StudentDto>> HandleAsync(GetAllStudentsRequest request, CancellationToken cancellationToken = default(CancellationToken))
-        {
-
-            var students = (await _studentRepository.GetAllAsync()).ToList();
-            var studentDtos = from s in students
-                              select new StudentDto
-                              {
-                                  FirstName = s.FirstName,
-                                  LastName = s.LastName
-                              };
-
-            return studentDtos;
-        }
-    }
+        
+		public async Task<IEnumerable<StudentDto>> HandleAsync(GetAllStudentsRequest request, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var students = (await _studentRepository.GetAllAsync()).ToList();
+			var studentDtos = from s in students
+							   select new StudentDto
+							   {
+								   FirstName = s.FirstName,
+								   LastName = s.LastName
+							   };
+			return studentDtos;
+		}
+	}
 }
