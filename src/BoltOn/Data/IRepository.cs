@@ -11,15 +11,15 @@ namespace BoltOn.Data
         TEntity GetById<TId>(TId id);
         Task<TEntity> GetByIdAsync<TId>(TId id);
         IEnumerable<TEntity> GetAll();
-        Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default(CancellationToken));
+        Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
         IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate,
             params Expression<Func<TEntity, object>>[] includes);
         Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
-            CancellationToken cancellationToken = default(CancellationToken),
+            CancellationToken cancellationToken = default,
             params Expression<Func<TEntity, object>>[] includes);
         TEntity Add(TEntity entity);
-        Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken));
+        Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default);
         void Update(TEntity entity);
-        Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken));
+        Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
     }
 }

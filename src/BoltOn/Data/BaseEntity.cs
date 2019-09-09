@@ -1,6 +1,8 @@
+using System;
+
 namespace BoltOn.Data
 {
-	public class BaseEntity<TIdType>
+	public abstract class BaseEntity<TIdType>
 	{
 		public virtual TIdType Id { get; set; }
 	}

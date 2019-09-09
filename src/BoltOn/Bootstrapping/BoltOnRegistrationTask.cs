@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using BoltOn.Cqrs;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
@@ -51,6 +52,7 @@ namespace BoltOn.Bootstrapping
 			});
 			serviceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
 			serviceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
+			serviceCollection.AddScoped<IEventHub, EventHub>();
 		}
 
 		public void RegisterMediator(RegistrationTaskContext context)
