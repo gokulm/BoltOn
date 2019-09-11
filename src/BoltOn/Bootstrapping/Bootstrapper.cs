@@ -13,7 +13,6 @@ namespace BoltOn.Bootstrapping
 		private Assembly _callingAssembly;
 		private IServiceCollection _serviceCollection;
 		private IServiceProvider _serviceProvider;
-		private BoltOnOptions _options;
 		private bool _isBolted, _isAppCleaned;
 		private RegistrationTaskContext _registrationTaskContext;
 
@@ -23,7 +22,7 @@ namespace BoltOn.Bootstrapping
 			_isBolted = false;
 			_serviceCollection = null;
 			_serviceProvider = null;
-			_options = null;
+			Options = null;
 		}
 
 		internal static Bootstrapper Instance => _instance.Value;
@@ -47,6 +46,12 @@ namespace BoltOn.Bootstrapping
 			}
 		}
 
+		internal BoltOnOptions Options
+		{
+			get;
+			private set;
+		}
+
 		internal IReadOnlyList<Assembly> Assemblies { get; private set; }
 
 		internal void BoltOn(IServiceCollection serviceCollection, BoltOnOptions options, Assembly callingAssembly = null)
@@ -54,7 +59,7 @@ namespace BoltOn.Bootstrapping
 			Check.Requires(!_isBolted, "Components are already bolted");
 			_isBolted = true;
 			_serviceCollection = serviceCollection;
-			_options = options;
+			Options = options;
 			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
 			LoadAssemblies();
 			RunRegistrationTasks();
@@ -73,7 +78,7 @@ namespace BoltOn.Bootstrapping
 			var assemblies = new List<Assembly> { Assembly.GetExecutingAssembly(), _callingAssembly };
 			var sortedAssemblies = new HashSet<Assembly>();
 			assemblies = assemblies.Distinct().ToList();
-			assemblies.AddRange(_options.AssembliesToBeIncluded);
+			assemblies.AddRange(Options.AssembliesToBeIncluded);
 
 			// load assemblies in the order of dependency
 			var index = 0;
@@ -175,6 +180,7 @@ namespace BoltOn.Bootstrapping
 				_registrationTaskContext = null;
 				Assemblies = null;
 				_callingAssembly = null;
+				Options = null;
 				_isBolted = false;
 				_isAppCleaned = false;
 			}
