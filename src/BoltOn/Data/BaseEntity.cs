@@ -1,5 +1,3 @@
-using System;
-
 namespace BoltOn.Data
 {
 	public abstract class BaseEntity<TIdType>

@@ -40,7 +40,7 @@ namespace BoltOn.Tests.Other
 				.HasColumnName("StudentId")
 				.ValueGeneratedNever();
 			builder
-				.HasMany(p => p.Addresses)
+				.HasMany(p => p.Addresses) 
 				.WithOne(p => p.Student);
 		}
 	}

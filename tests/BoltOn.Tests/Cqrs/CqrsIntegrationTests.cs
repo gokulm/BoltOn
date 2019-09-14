@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using BoltOn.Data;
 
-namespace BoltOn.Tests.Bus
+namespace BoltOn.Tests.Cqrs
 {
 	[Collection("IntegrationTests")]
 	public class CqrsIntegrationTests : IDisposable
@@ -29,15 +29,18 @@ namespace BoltOn.Tests.Bus
 				.Dispose();
 		}
 
-		//[Fact]
+		[Fact]
 		public async Task MediatorHandle_WithCqrs_ReturnsResult()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
 			{
 				b.BoltOnAssemblies(GetType().Assembly);
+				b.BoltOnEFModule();
 				b.EnableCqrs();
 			});
+
+			MediatorTestHelper.IsSqlServer = false;
 
 			//serviceCollection.AddMassTransit(x =>
 			//{
@@ -51,13 +54,15 @@ namespace BoltOn.Tests.Bus
 			//});
 
 
-			//var logger = new Mock<IBoltOnLogger<CreateTestStudentHandler>>();
-			//logger.Setup(s => s.Debug(It.IsAny<string>()))
-			//					.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-			//serviceCollection.AddTransient((s) => logger.Object);
+			var logger = new Mock<IBoltOnLogger<TestCqrsHandler>>();
+			logger.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddTransient((s) => logger.Object);
+
+
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			//serviceProvider.TightenBolts();
+			serviceProvider.TightenBolts();
 			//var bus = serviceProvider.GetService<BoltOn.Bus.IBus>();
 			var mediator = serviceProvider.GetService<IMediator>();
 
@@ -66,7 +71,7 @@ namespace BoltOn.Tests.Bus
 
 			// assert
 			var result = MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(CreateTestStudentHandler)} invoked");
+										$"{nameof(TestCqrsHandler)} invoked");
 			Assert.NotNull(result);
 		}
 
@@ -85,18 +90,24 @@ namespace BoltOn.Tests.Bus
 		public string Input { get; set; }
 	}
 
-	public class TestCqrsHandler : IRequestHandler<TestCqrsRequest>
+	public class TestCqrsHandler : IRequestAsyncHandler<TestCqrsRequest>
 	{
-		private readonly IBoltOnLogger<TestCqrsRequest> _logger;
+		private readonly IBoltOnLogger<TestCqrsHandler> _logger;
+		private readonly ITestCqrsEntityRepository _repository;
 
-		public TestCqrsHandler(IBoltOnLogger<TestCqrsRequest> logger)
+		public TestCqrsHandler(IBoltOnLogger<TestCqrsHandler> logger,
+			ITestCqrsEntityRepository repository)
 		{
 			_logger = logger;
+			_repository = repository;
 		}
 
-		public void Handle(TestCqrsRequest request)
+		public async Task HandleAsync(TestCqrsRequest request, CancellationToken cancellationToken)
 		{
-			_logger.Debug($"Handled {request.Input}");
+			_logger.Debug($"{nameof(TestCqrsHandler)} invoked");
+			var testCqrsEntity = new TestCqrsEntity();
+			testCqrsEntity.Update(request);
+			await _repository.AddAsync(testCqrsEntity);
 		}
 	}
 
@@ -111,7 +122,7 @@ namespace BoltOn.Tests.Bus
 		}
 	}
 
-	public class TestCqrsUpdatedEvent : BaseEvent
+	public class TestCqrsUpdatedEvent : BoltOnEvent
 	{
 	}
 
@@ -120,19 +131,30 @@ namespace BoltOn.Tests.Bus
 		public void Configure(EntityTypeBuilder<TestCqrsEntity> builder)
 		{
 			builder
-				.ToTable("Address")
+				.ToTable("TestCqrsEntity")
+				.HasKey(k => k.Id);
+			builder
+				.HasMany(p => p.Events);
+		}
+	}
+
+	public class BoltOnEventMapping : IEntityTypeConfiguration<BoltOnEvent>
+	{
+		public void Configure(EntityTypeBuilder<BoltOnEvent> builder)
+		{
+			builder
+				.ToTable("BoltOnEvent")
 				.HasKey(k => k.Id);
 		}
 	}
 
 	public interface ITestCqrsEntityRepository : IRepository<TestCqrsEntity>
 	{
-
 	}
 
 	public class TestCqrsEntityRepository : BaseEFCqrsRepository<TestCqrsEntity, SchoolDbContext>, ITestCqrsEntityRepository
 	{
-		public TestCqrsEntityRepository(IDbContextFactory dbContextFactory, IEventHub eventHub) : base(dbContextFactory, eventHub)
+		public TestCqrsEntityRepository(IDbContextFactory dbContextFactory, EventBag eventBag) : base(dbContextFactory, eventBag)
 		{
 		}
 	}

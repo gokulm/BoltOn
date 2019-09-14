@@ -11,18 +11,23 @@ namespace BoltOn.Cqrs
 {
 	public interface ICqrsEntity
 	{
-		List<IEvent> Events { get; set; }
+		List<BoltOnEvent> Events { get; set; }
 		bool IsDisbursed { get; set; }
 	}
 
 	public abstract class BaseCqrsEntity<TIdType> : BaseEntity<TIdType>, ICqrsEntity
     {
-        public List<IEvent> Events { get; set; }
+		public List<BoltOnEvent> Events { get; set; } = new List<BoltOnEvent>();
 
         public bool IsDisbursed { get; set; }
 
-        protected void RaiseEvent(IEvent @event)
+        protected void RaiseEvent(BoltOnEvent @event)
         {
+			IsDisbursed = true;
+
+			if (@event.Id != Guid.Empty)
+				@event.Id = Guid.NewGuid();
+
             Events.Add(@event);
         }
     }
@@ -50,14 +55,14 @@ namespace BoltOn.Cqrs
 
 	public class CqrsInterceptor : IInterceptor
 	{
-		private readonly IEventHub _eventHub;
+		private readonly EventBag _eventBag;
 		private readonly IBoltOnLogger<CqrsInterceptor> _logger;
 		private readonly IEventDispatcher _eventDispatcher;
 
-		public CqrsInterceptor(IEventHub eventHub, IBoltOnLogger<CqrsInterceptor> logger,
+		public CqrsInterceptor(EventBag eventBag, IBoltOnLogger<CqrsInterceptor> logger,
 			IEventDispatcher eventDispatcher)
 		{
-			_eventHub = eventHub;
+			_eventBag = eventBag;
 			_logger = logger;
 			_eventDispatcher = eventDispatcher;
 		}
@@ -66,7 +71,7 @@ namespace BoltOn.Cqrs
 			Func<IRequest<TResponse>, TResponse> next) where TRequest : IRequest<TResponse>
 		{
 			var response = next(request);
-			foreach (var @event in _eventHub.Events)
+			foreach (var @event in _eventBag.Events)
 			{
 				_logger.Debug($"Publishing event: {@event.Id} {@event.SourceTypeName}");
 			}
@@ -78,7 +83,7 @@ namespace BoltOn.Cqrs
 			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
 			var response = await next(request, cancellationToken);
-			foreach (var @event in _eventHub.Events)
+			foreach (var @event in _eventBag.Events)
 			{
 				_logger.Debug($"Publishing event: {@event.Id} {@event.SourceTypeName}");
 				await _eventDispatcher.PublishAsync(@event);

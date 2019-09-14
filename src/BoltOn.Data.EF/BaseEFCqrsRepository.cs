@@ -9,11 +9,11 @@ namespace BoltOn.Data.EF
        where TDbContext : DbContext
        where TEntity : class
     {
-        private readonly IEventHub _eventHub;
+        private readonly EventBag _eventBag;
 
-        protected BaseEFCqrsRepository(IDbContextFactory dbContextFactory, IEventHub eventHub) : base(dbContextFactory)
+        protected BaseEFCqrsRepository(IDbContextFactory dbContextFactory, EventBag eventBag) : base(dbContextFactory)
         {
-            _eventHub = eventHub;
+            _eventBag = eventBag;
         }
 
         protected override void SaveChanges(TEntity entity)
@@ -35,7 +35,7 @@ namespace BoltOn.Data.EF
                 var cqrsEntity = entity as ICqrsEntity;
                 foreach (var @event in cqrsEntity.Events)
                 {
-                    _eventHub.Publish(@event);
+                    _eventBag.Events.Add(@event);
                 }
             }
         }

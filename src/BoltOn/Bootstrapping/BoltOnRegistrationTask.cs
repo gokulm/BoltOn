@@ -52,7 +52,7 @@ namespace BoltOn.Bootstrapping
 			});
 			serviceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
 			serviceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
-			serviceCollection.AddScoped<IEventHub, EventHub>();
+			serviceCollection.AddScoped<EventBag>();
 		}
 
 		public void RegisterMediator(RegistrationTaskContext context)
@@ -71,6 +71,7 @@ namespace BoltOn.Bootstrapping
 		{
 			context.AddInterceptor<StopwatchInterceptor>();
 			context.AddInterceptor<UnitOfWorkInterceptor>();
+
 			if (Bootstrapper.Instance.Options.IsCqrsEnabled)
 				context.AddInterceptor<CqrsInterceptor>();
 		}
