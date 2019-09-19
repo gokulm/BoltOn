@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using BoltOn.Cqrs;
+using BoltOn.Data;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
@@ -73,7 +74,10 @@ namespace BoltOn.Bootstrapping
 			context.AddInterceptor<UnitOfWorkInterceptor>();
 
 			if (Bootstrapper.Instance.Options.IsCqrsEnabled)
+			{
 				context.AddInterceptor<CqrsInterceptor>();
+				//context.Container.AddTransient(typeof(CqrsRepository<>));
+			}
 		}
 
 		private static void RegisterHandlers(RegistrationTaskContext context)

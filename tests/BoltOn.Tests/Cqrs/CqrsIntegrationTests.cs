@@ -73,7 +73,8 @@ namespace BoltOn.Tests.Cqrs
 			// act
 			await mediator.ProcessAsync(new TestCqrsRequest { Input = "test" });
 			// as assert not working after async method, added sleep
-			Thread.Sleep(1000);
+			await Task.Delay(1000);
+			//Console.ReadLine();
 
 			// assert
 			var result = MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
@@ -113,20 +114,20 @@ namespace BoltOn.Tests.Cqrs
 		public async Task HandleAsync(TestCqrsRequest request, CancellationToken cancellationToken)
 		{
 			_logger.Debug($"{nameof(TestCqrsHandler)} invoked");
-			var testCqrsEntity = new TestCqrsEntity();
+			var testCqrsEntity = new TestCqrsEntity { Id = Guid.NewGuid().ToString() };
 			testCqrsEntity.Update(request);
 			await _repository.AddAsync(testCqrsEntity);
 		}
 	}
 
-	public class TestCqrsEntity : BaseCqrsEntity<Guid>
+	public class TestCqrsEntity : BaseCqrsEntity
 	{
 		public string Input { get; set; }
 
 		public void Update(TestCqrsRequest request)
 		{
 			Input = request.Input;
-			RaiseEvent(new TestCqrsUpdatedEvent { Input = request.Input + " event" });
+			RaiseEvent(new TestCqrsUpdatedEvent { Input = request.Input + " event", SourceId = Id });
 		}
 	}
 
@@ -182,6 +183,19 @@ namespace BoltOn.Tests.Cqrs
 	{
 		public TestCqrsEntityRepository(IDbContextFactory dbContextFactory, EventBag eventBag) : base(dbContextFactory, eventBag)
 		{
+		}
+
+		//public  void Update2(BaseCqrsEntity entity)
+		//{
+		//	base.Update(entity as TestCqrsEntity);
+		//}
+	}
+
+	public class TestCqrsRegistrationTask : IRegistrationTask
+	{
+		public void Run(RegistrationTaskContext context)
+		{
+			context.Container.AddTransient<IRepository<TestCqrsEntity>, TestCqrsEntityRepository>();
 		}
 	}
 }

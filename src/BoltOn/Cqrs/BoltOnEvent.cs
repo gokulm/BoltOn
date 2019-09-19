@@ -11,7 +11,8 @@ namespace BoltOn.Cqrs
 
 	public class BoltOnEvent : IEvent
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public string SourceTypeName { get; set; }
+		public string SourceId { get; set; }
     }
 }
