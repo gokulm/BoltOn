@@ -34,9 +34,9 @@ namespace BoltOn.Data.CosmosDb
             return entity;
         }
 
-        public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            await DocumentClient.CreateDocumentAsync(DocumentCollectionUri, entity);
+            await DocumentClient.CreateDocumentAsync(DocumentCollectionUri, entity, cancellationToken: cancellationToken);
             return entity;
         }
 
@@ -50,7 +50,7 @@ namespace BoltOn.Data.CosmosDb
         }
 
         public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
-            CancellationToken cancellationToken = default(CancellationToken), params Expression<Func<TEntity, object>>[] includes)
+            CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
         {
             var query = DocumentClient.CreateDocumentQuery<TEntity>(DocumentCollectionUri)
                .Where(predicate)
@@ -68,7 +68,7 @@ namespace BoltOn.Data.CosmosDb
             return AsyncContext.Run(() => GetResultsFromDocumentQuery(query));
         }
 
-        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             var query = DocumentClient.CreateDocumentQuery<TEntity>
                 (DocumentCollectionUri)
@@ -94,9 +94,9 @@ namespace BoltOn.Data.CosmosDb
             AsyncContext.Run(() => DocumentClient.UpsertDocumentAsync(DocumentCollectionUri, entity));
         }
 
-        public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            await DocumentClient.UpsertDocumentAsync(DocumentCollectionUri, entity);
+            await DocumentClient.UpsertDocumentAsync(DocumentCollectionUri, entity, cancellationToken: cancellationToken);
         }
 
         protected Uri GetDocumentUri(string id)

@@ -51,15 +51,14 @@ namespace BoltOn.Cqrs
 			foreach (var @event in _eventBag.Events.ToList())
 			{
 				_logger.Debug($"Publishing event: {@event.Id} {@event.SourceTypeName}");
-				await _eventDispatcher.DispatchAsync(@event);
+				await _eventDispatcher.DispatchAsync(@event, cancellationToken);
 				_eventBag.Events.Remove(@event);
 			}
 
-			if (request is BoltOnEvent)
+			if (request is CqrsEvent boltOnEvent)
 			{
 				_logger.Debug("Removing event from entity...");
-				var boltOnEvent = request as BoltOnEvent;
-				var method = _cqrsRepositoryFactory.GetType().GetMethod("GetRepository");
+                var method = _cqrsRepositoryFactory.GetType().GetMethod("GetRepository");
 				var sourceEntityType = Type.GetType(boltOnEvent.SourceTypeName);
 				var generic = method.MakeGenericMethod(sourceEntityType);
 				dynamic repository = generic.Invoke(_cqrsRepositoryFactory, null);
@@ -68,7 +67,7 @@ namespace BoltOn.Cqrs
 				{
 					var cqrsEntity = await repository.GetByIdAsync(boltOnEvent.SourceId);
 					var baseCqrsEntity = cqrsEntity as BaseCqrsEntity;
-					var @event = baseCqrsEntity.Events.FirstOrDefault(f => f.Id == boltOnEvent.Id);
+					var @event = baseCqrsEntity?.Events.FirstOrDefault(f => f.Id == boltOnEvent.Id);
 					if (@event != null)
 					{
 						_logger.Debug("Removing event...");

@@ -3,13 +3,14 @@ using BoltOn.Mediator.Pipeline;
 
 namespace BoltOn.Cqrs
 {
-	public interface IEvent : IRequest
+	public interface ICqrsEvent : IRequest
 	{
 		Guid Id { get; set; }
 		string SourceTypeName { get; set; }
-	}
+        string SourceId { get; set; }
+    }
 
-	public class BoltOnEvent : IEvent
+	public class CqrsEvent : ICqrsEvent
     {
         public Guid Id { get; set; }
         public string SourceTypeName { get; set; }

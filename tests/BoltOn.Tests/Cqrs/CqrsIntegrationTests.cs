@@ -102,10 +102,10 @@ namespace BoltOn.Tests.Cqrs
 	public class TestCqrsHandler : IRequestAsyncHandler<TestCqrsRequest>
 	{
 		private readonly IBoltOnLogger<TestCqrsHandler> _logger;
-		private readonly ITestCqrsEntityRepository _repository;
+		private readonly IRepository<TestCqrsEntity> _repository;
 
 		public TestCqrsHandler(IBoltOnLogger<TestCqrsHandler> logger,
-			ITestCqrsEntityRepository repository)
+            IRepository<TestCqrsEntity> repository)
 		{
 			_logger = logger;
 			_repository = repository;
@@ -131,7 +131,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 	}
 
-	public class TestCqrsUpdatedEvent : BoltOnEvent
+	public class TestCqrsUpdatedEvent : CqrsEvent
 	{
 		public string Input { get; set; }
 	}
@@ -165,9 +165,9 @@ namespace BoltOn.Tests.Cqrs
 		}
 	}
 
-	public class BoltOnEventMapping : IEntityTypeConfiguration<BoltOnEvent>
+	public class BoltOnEventMapping : IEntityTypeConfiguration<CqrsEvent>
 	{
-		public void Configure(EntityTypeBuilder<BoltOnEvent> builder)
+		public void Configure(EntityTypeBuilder<CqrsEvent> builder)
 		{
 			builder
 				.ToTable("BoltOnEvent")
@@ -175,19 +175,8 @@ namespace BoltOn.Tests.Cqrs
 		}
 	}
 
-	public interface ITestCqrsEntityRepository : IRepository<TestCqrsEntity>
-	{
-	}
-
-	//public class TestCqrsEntityRepository : BaseEFCqrsRepository<TestCqrsEntity, SchoolDbContext>, ITestCqrsEntityRepository
-	//{
-	//	public TestCqrsEntityRepository(IDbContextFactory dbContextFactory, EventBag eventBag) : base(dbContextFactory, eventBag)
-	//	{
-	//	}
-	//}
-
-	public class TestCqrsEntityRepository : BaseEFRepository<TestCqrsEntity, SchoolDbContext>, ITestCqrsEntityRepository
-	{
+	public class TestCqrsEntityRepository : BaseEFRepository<TestCqrsEntity, SchoolDbContext>, IRepository<TestCqrsEntity>
+    {
 		public TestCqrsEntityRepository(IDbContextFactory dbContextFactory) : base(dbContextFactory)
 		{
 		}

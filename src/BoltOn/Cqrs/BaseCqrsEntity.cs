@@ -6,17 +6,17 @@ namespace BoltOn.Cqrs
 {
 	public interface ICqrsEntity
 	{
-		List<BoltOnEvent> Events { get; set; }
+		List<CqrsEvent> Events { get; set; }
 		bool IsDisbursed { get; set; }
 	}
 
 	public abstract class BaseCqrsEntity : BaseEntity<string>, ICqrsEntity
 	{
-		public List<BoltOnEvent> Events { get; set; } = new List<BoltOnEvent>();
+		public List<CqrsEvent> Events { get; set; } = new List<CqrsEvent>();
 
 		public bool IsDisbursed { get; set; }
 
-		protected void RaiseEvent(BoltOnEvent @event)
+		protected void RaiseEvent(CqrsEvent @event)
 		{
 			IsDisbursed = true;
 
