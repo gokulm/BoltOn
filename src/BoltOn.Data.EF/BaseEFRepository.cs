@@ -5,7 +5,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using BoltOn.Cqrs;
+using BoltOn.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Data.EF
 {
@@ -98,11 +101,26 @@ namespace BoltOn.Data.EF
 		protected virtual void SaveChanges(TEntity entity)
 		{
 			_dbContext.SaveChanges();
+			PublishEvents(entity);
 		}
 
 		protected virtual async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
 			await _dbContext.SaveChangesAsync(cancellationToken);
+			PublishEvents(entity);
+		}
+
+		private void PublishEvents(TEntity entity)
+		{
+			if (entity is ICqrsEntity)
+			{
+				var cqrsEntity = entity as ICqrsEntity;
+				var eventBag = BoltOnServiceLocator.Current.GetService<EventBag>();
+				foreach (var @event in cqrsEntity.Events)
+				{
+					eventBag.Events.Add(@event);
+				}
+			}
 		}
 	}
 }

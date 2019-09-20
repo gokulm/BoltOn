@@ -7,7 +7,7 @@ namespace BoltOn.Cqrs
 {
 	public interface IEventDispatcher
 	{
-		Task PublishAsync(IEvent @event, CancellationToken cancellationToken = default);
+		Task DispatchAsync(IEvent @event, CancellationToken cancellationToken = default);
 	}
 
 	public class EventDispatcher : IEventDispatcher
@@ -22,7 +22,7 @@ namespace BoltOn.Cqrs
             _bus = bus;
         }
 
-        public async Task PublishAsync(IEvent @event, CancellationToken cancellationToken = default)
+        public async Task DispatchAsync(IEvent @event, CancellationToken cancellationToken = default)
         {
             _logger.Debug($"Publishing event: {@event.Id} {@event.SourceTypeName}");
             await _bus.PublishAsync(@event);

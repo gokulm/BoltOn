@@ -6,6 +6,8 @@ using BoltOn.Data;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.UoW;
+using System.Transactions;
 
 namespace BoltOn.Cqrs
 {
@@ -15,15 +17,18 @@ namespace BoltOn.Cqrs
 		private readonly IBoltOnLogger<CqrsInterceptor> _logger;
 		private readonly IEventDispatcher _eventDispatcher;
 		private readonly ICqrsRepositoryFactory _cqrsRepositoryFactory;
+		private readonly IUnitOfWorkManager _unitOfWorkManager;
 
 		public CqrsInterceptor(EventBag eventBag, IBoltOnLogger<CqrsInterceptor> logger,
 			IEventDispatcher eventDispatcher, 
-			ICqrsRepositoryFactory cqrsRepositoryFactory)
+			ICqrsRepositoryFactory cqrsRepositoryFactory,
+			IUnitOfWorkManager unitOfWorkManager)
 		{
 			_eventBag = eventBag;
 			_logger = logger;
 			_eventDispatcher = eventDispatcher;
 			_cqrsRepositoryFactory = cqrsRepositoryFactory;
+			_unitOfWorkManager = unitOfWorkManager;
 		}
 
 		public TResponse Run<TRequest, TResponse>(IRequest<TResponse> request,
@@ -42,12 +47,11 @@ namespace BoltOn.Cqrs
 			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
 			var response = await next(request, cancellationToken);
-			// created a new list as the events in the original list need to be removed
-			var events = _eventBag.Events.ToList();
-			foreach (var @event in events)
+			// creating a new list by calling .ToList() as the events in the original list need to be removed
+			foreach (var @event in _eventBag.Events.ToList())
 			{
 				_logger.Debug($"Publishing event: {@event.Id} {@event.SourceTypeName}");
-				await _eventDispatcher.PublishAsync(@event);
+				await _eventDispatcher.DispatchAsync(@event);
 				_eventBag.Events.Remove(@event);
 			}
 
@@ -55,18 +59,24 @@ namespace BoltOn.Cqrs
 			{
 				_logger.Debug("Removing event from entity...");
 				var boltOnEvent = request as BoltOnEvent;
-				var method = typeof(CqrsRepositoryFactory).GetMethod("GetRepository");
-				var sourceEntityType = Type.GetType((boltOnEvent).SourceTypeName);
+				var method = _cqrsRepositoryFactory.GetType().GetMethod("GetRepository");
+				var sourceEntityType = Type.GetType(boltOnEvent.SourceTypeName);
 				var generic = method.MakeGenericMethod(sourceEntityType);
 				dynamic repository = generic.Invoke(_cqrsRepositoryFactory, null);
 				_logger.Debug("Built repository...");
-				var cqrsEntity = await repository.GetByIdAsync(boltOnEvent.SourceId);
-				var baseCqrsEntity = cqrsEntity as BaseCqrsEntity;
-				var @event = baseCqrsEntity.Events.FirstOrDefault(f => f.Id == boltOnEvent.Id);
-				if (@event != null)
+				using (var uow = _unitOfWorkManager.Get(u => u.TransactionScopeOption = TransactionScopeOption.RequiresNew))
 				{
-					baseCqrsEntity.Events.Remove(@event);
-					await repository.UpdateAsync(cqrsEntity);
+					var cqrsEntity = await repository.GetByIdAsync(boltOnEvent.SourceId);
+					var baseCqrsEntity = cqrsEntity as BaseCqrsEntity;
+					var @event = baseCqrsEntity.Events.FirstOrDefault(f => f.Id == boltOnEvent.Id);
+					if (@event != null)
+					{
+						_logger.Debug("Removing event...");
+						baseCqrsEntity.Events.Remove(@event);
+						await repository.UpdateAsync(cqrsEntity);
+						_logger.Debug("Removed event");
+					}
+					uow.Commit();
 				}
 			}
 

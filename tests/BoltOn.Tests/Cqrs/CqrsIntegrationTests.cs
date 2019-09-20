@@ -179,16 +179,18 @@ namespace BoltOn.Tests.Cqrs
 	{
 	}
 
-	public class TestCqrsEntityRepository : BaseEFCqrsRepository<TestCqrsEntity, SchoolDbContext>, ITestCqrsEntityRepository
+	//public class TestCqrsEntityRepository : BaseEFCqrsRepository<TestCqrsEntity, SchoolDbContext>, ITestCqrsEntityRepository
+	//{
+	//	public TestCqrsEntityRepository(IDbContextFactory dbContextFactory, EventBag eventBag) : base(dbContextFactory, eventBag)
+	//	{
+	//	}
+	//}
+
+	public class TestCqrsEntityRepository : BaseEFRepository<TestCqrsEntity, SchoolDbContext>, ITestCqrsEntityRepository
 	{
-		public TestCqrsEntityRepository(IDbContextFactory dbContextFactory, EventBag eventBag) : base(dbContextFactory, eventBag)
+		public TestCqrsEntityRepository(IDbContextFactory dbContextFactory) : base(dbContextFactory)
 		{
 		}
-
-		//public  void Update2(BaseCqrsEntity entity)
-		//{
-		//	base.Update(entity as TestCqrsEntity);
-		//}
 	}
 
 	public class TestCqrsRegistrationTask : IRegistrationTask
