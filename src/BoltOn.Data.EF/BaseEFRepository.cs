@@ -88,12 +88,12 @@ namespace BoltOn.Data.EF
 			await SaveChangesAsync(entity, cancellationToken);
 		}
 
-		public virtual TEntity GetById<TId>(TId id)
+		public virtual TEntity GetById(object id)
 		{
 			return _dbSets.Find(id);
 		}
 
-		public virtual async Task<TEntity> GetByIdAsync<TId>(TId id)
+		public virtual async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default)
 		{
 			return await _dbSets.FindAsync(id);
 		}

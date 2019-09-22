@@ -77,15 +77,15 @@ namespace BoltOn.Data.CosmosDb
             return await GetResultsFromDocumentQuery(query);
         }
 
-        public virtual TEntity GetById<TId>(TId id)
+        public virtual TEntity GetById(object id)
         {
             var document = AsyncContext.Run(() => DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString())));
             return document.Document;
         }
 
-        public virtual async Task<TEntity> GetByIdAsync<TId>(TId id)
+        public virtual async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default)
         {
-            var document = await DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()));
+            var document = await DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()), cancellationToken: cancellationToken);
             return document.Document;
         }
 

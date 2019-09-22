@@ -10,8 +10,8 @@ namespace BoltOn.Data
 {
 	public interface IRepository<TEntity> where TEntity : class
 	{
-		TEntity GetById<TId>(TId id);
-		Task<TEntity> GetByIdAsync<TId>(TId id);
+		TEntity GetById(object id);
+		Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default);
 		IEnumerable<TEntity> GetAll();
 		Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
 		IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate,
