@@ -65,23 +65,40 @@ namespace BoltOn.Tests.Cqrs
 								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger2.Object);
 
+			var logger3 = new Mock<IBoltOnLogger<CqrsInterceptor>>();
+			logger3.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddTransient((s) => logger3.Object);
+
+			var logger4 = new Mock<IBoltOnLogger<EventDispatcher>>();
+			logger4.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddTransient((s) => logger4.Object);
+
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			//var bus = serviceProvider.GetService<BoltOn.Bus.IBus>();
 			var mediator = serviceProvider.GetService<IMediator>();
 
 			// act
 			await mediator.ProcessAsync(new TestCqrsRequest { Input = "test" });
 			// as assert not working after async method, added sleep
 			await Task.Delay(1000);
-			//Console.ReadLine();
 
 			// assert
-			var result = MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(TestCqrsHandler)} invoked");
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"{nameof(TestCqrsHandler)} invoked"));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(TestCqrsUpdatedEventHandler)} invoked"));
-			Assert.NotNull(result);
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"Publishing event. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb SourceType: {typeof(TestCqrsEntity).AssemblyQualifiedName}"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"Publish event to bus from EventDispatcher. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb SourceType: {typeof(TestCqrsEntity).AssemblyQualifiedName}"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"Building repository. SourceType: {typeof(TestCqrsEntity).AssemblyQualifiedName}"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"Removed event. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb"));
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										"Fetched BaseCqrsEntity. Id: b33cac30-5595-4ada-97dd-f5f7c35c0f4c"));
 		}
 
 		public void Dispose()
@@ -105,7 +122,7 @@ namespace BoltOn.Tests.Cqrs
 		private readonly IRepository<TestCqrsEntity> _repository;
 
 		public TestCqrsHandler(IBoltOnLogger<TestCqrsHandler> logger,
-            IRepository<TestCqrsEntity> repository)
+			IRepository<TestCqrsEntity> repository)
 		{
 			_logger = logger;
 			_repository = repository;
@@ -114,7 +131,7 @@ namespace BoltOn.Tests.Cqrs
 		public async Task HandleAsync(TestCqrsRequest request, CancellationToken cancellationToken)
 		{
 			_logger.Debug($"{nameof(TestCqrsHandler)} invoked");
-			var testCqrsEntity = new TestCqrsEntity { Id = Guid.NewGuid().ToString() };
+			var testCqrsEntity = new TestCqrsEntity { Id = "b33cac30-5595-4ada-97dd-f5f7c35c0f4c" };
 			testCqrsEntity.Update(request);
 			await _repository.AddAsync(testCqrsEntity);
 		}
@@ -127,7 +144,7 @@ namespace BoltOn.Tests.Cqrs
 		public void Update(TestCqrsRequest request)
 		{
 			Input = request.Input;
-			RaiseEvent(new TestCqrsUpdatedEvent { Input = request.Input + " event", SourceId = Id });
+			RaiseEvent(new TestCqrsUpdatedEvent { Input = request.Input + " event", SourceId = Id, Id = Guid.Parse("42bc65b2-f8a6-4371-9906-e7641d9ae9cb") });
 		}
 	}
 
@@ -176,7 +193,7 @@ namespace BoltOn.Tests.Cqrs
 	}
 
 	public class TestCqrsEntityRepository : BaseEFRepository<TestCqrsEntity, SchoolDbContext>, IRepository<TestCqrsEntity>
-    {
+	{
 		public TestCqrsEntityRepository(IDbContextFactory dbContextFactory) : base(dbContextFactory)
 		{
 		}

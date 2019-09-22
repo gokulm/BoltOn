@@ -45,33 +45,4 @@ namespace BoltOn.Data
 			return repository;
 		}
 	}
-
-	//public interface ICqrsRepository<TEntity> where TEntity : BaseCqrsEntity
-	//{
-	//	Task<TEntity> FindByIdAsync(Guid id);
-	//	Task UpdateAsync(TEntity entity);
-	//}
-
-	//public class CqrsRepository<TEntity> : ICqrsRepository<TEntity>
-	//	where TEntity : BaseCqrsEntity
-	//{
-	//	private readonly IRepository<TEntity> _repository;
-
-	//	public CqrsRepository(IRepository<TEntity> repository)
-	//	{
-	//		_repository = repository;
-	//	}
-
-	//	public async Task<TEntity> FindByIdAsync(Guid id)
-	//	{
-	//		var root = await _repository.GetByIdAsync(id);
-
-	//		return root;
-	//	}
-
-	//	public Task UpdateAsync(TEntity entity)
-	//	{
-	//		return _repository.UpdateAsync(entity);
-	//	}
-	//}
 }
