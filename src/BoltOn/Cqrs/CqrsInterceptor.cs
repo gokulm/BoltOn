@@ -29,9 +29,15 @@ namespace BoltOn.Cqrs
 			Func<IRequest<TResponse>, TResponse> next) where TRequest : IRequest<TResponse>
 		{
 			var response = next(request);
-			foreach (var @event in _eventBag.Events)
+			// creating a new list by calling .ToList() as the events in the original list need to be removed
+			foreach (var @event in _eventBag.Events.ToList())
 			{
-				_logger.Debug($"Publishing event: {@event.Id} {@event.SourceTypeName}");
+				throw new NotSupportedException("CQRS not supported for non-async calls");
+			}
+
+			if (request is CqrsEvent cqrsEvent)
+			{
+				throw new NotSupportedException("CQRS not supported for non-async calls");
 			}
 
 			return response;
@@ -51,7 +57,7 @@ namespace BoltOn.Cqrs
 
 			if (request is CqrsEvent cqrsEvent)
 			{
-				await _processedEventPurger.PurgeAsync(cqrsEvent);
+				await _processedEventPurger.PurgeAsync(cqrsEvent, cancellationToken);
 			}
 
 			return response;

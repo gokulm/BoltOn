@@ -53,7 +53,6 @@ namespace BoltOn.Tests.Cqrs
 				}));
 			});
 
-
 			var logger = new Mock<IBoltOnLogger<TestCqrsHandler>>();
 			logger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
@@ -105,6 +104,48 @@ namespace BoltOn.Tests.Cqrs
 										"Fetched BaseCqrsEntity. Id: b33cac30-5595-4ada-97dd-f5f7c35c0f4c"));
 		}
 
+		[Fact]
+		public void MediatorHandle_WithCqrsAndNonAsync_ThrowsException()
+		{
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn(b =>
+			{
+				b.BoltOnAssemblies(GetType().Assembly);
+				b.BoltOnEFModule();
+				b.EnableCqrs();
+				b.BoltOnMassTransitBusModule();
+			});
+
+			serviceCollection.AddMassTransit(x =>
+			{
+				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
+				{
+					cfg.ReceiveEndpoint("TestCqrsUpdatedEvent_queue", ep =>
+					{
+						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<TestCqrsUpdatedEvent>>());
+					});
+				}));
+			});
+
+			var logger = new Mock<IBoltOnLogger<TestCqrsHandler>>();
+			logger.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddTransient((s) => logger.Object);
+
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var mediator = serviceProvider.GetService<IMediator>();
+
+			// act 
+			var ex = Record.Exception(() => mediator.Process(new TestCqrsRequest { Input = "test" }));
+
+			// assert
+			Assert.NotNull(ex);
+			Assert.Equal("CQRS not supported for non-async calls", ex.Message);
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"{nameof(TestCqrsHandler)} invoked"));
+		}
+
+
 		public void Dispose()
 		{
 			CqrsTestHelper.LoggerStatements.Clear();
@@ -120,7 +161,8 @@ namespace BoltOn.Tests.Cqrs
 		public string Input { get; set; }
 	}
 
-	public class TestCqrsHandler : IRequestAsyncHandler<TestCqrsRequest>
+	public class TestCqrsHandler : IRequestAsyncHandler<TestCqrsRequest>,
+		IRequestHandler<TestCqrsRequest>
 	{
 		private readonly IBoltOnLogger<TestCqrsHandler> _logger;
 		private readonly IRepository<TestCqrsEntity> _repository;
@@ -130,6 +172,14 @@ namespace BoltOn.Tests.Cqrs
 		{
 			_logger = logger;
 			_repository = repository;
+		}
+
+		public void Handle(TestCqrsRequest request)
+		{
+			_logger.Debug($"{nameof(TestCqrsHandler)} invoked");
+			var testCqrsEntity = new TestCqrsEntity { Id = "b33cac30-5595-4ada-97dd-f5f7c35c0f4c" };
+			testCqrsEntity.Update(request);
+			_repository.Add(testCqrsEntity);
 		}
 
 		public async Task HandleAsync(TestCqrsRequest request, CancellationToken cancellationToken)
@@ -211,7 +261,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 	}
 
-	public class CqrsTestHelper
+	public static class CqrsTestHelper
 	{
 		public static List<string> LoggerStatements { get; set; } = new List<string>();
 	}
