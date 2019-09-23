@@ -16,6 +16,7 @@ using BoltOn.Data.EF;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using BoltOn.Data;
+using System.Collections.Generic;
 
 namespace BoltOn.Tests.Cqrs
 {
@@ -41,8 +42,6 @@ namespace BoltOn.Tests.Cqrs
 				b.BoltOnMassTransitBusModule();
 			});
 
-			MediatorTestHelper.IsSqlServer = false;
-
 			serviceCollection.AddMassTransit(x =>
 			{
 				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
@@ -57,23 +56,28 @@ namespace BoltOn.Tests.Cqrs
 
 			var logger = new Mock<IBoltOnLogger<TestCqrsHandler>>();
 			logger.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger.Object);
 
 			var logger2 = new Mock<IBoltOnLogger<TestCqrsUpdatedEventHandler>>();
 			logger2.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger2.Object);
 
 			var logger3 = new Mock<IBoltOnLogger<CqrsInterceptor>>();
 			logger3.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger3.Object);
 
 			var logger4 = new Mock<IBoltOnLogger<EventDispatcher>>();
 			logger4.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger4.Object);
+
+			var logger5 = new Mock<IBoltOnLogger<ProcessedEventPurger>>();
+			logger5.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddTransient((s) => logger5.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
@@ -85,25 +89,25 @@ namespace BoltOn.Tests.Cqrs
 			await Task.Delay(1000);
 
 			// assert
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(TestCqrsHandler)} invoked"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(TestCqrsUpdatedEventHandler)} invoked"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Publishing event. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb SourceType: {typeof(TestCqrsEntity).AssemblyQualifiedName}"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Publish event to bus from EventDispatcher. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb SourceType: {typeof(TestCqrsEntity).AssemblyQualifiedName}"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Building repository. SourceType: {typeof(TestCqrsEntity).AssemblyQualifiedName}"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Removed event. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										"Fetched BaseCqrsEntity. Id: b33cac30-5595-4ada-97dd-f5f7c35c0f4c"));
 		}
 
 		public void Dispose()
 		{
-			MediatorTestHelper.LoggerStatements.Clear();
+			CqrsTestHelper.LoggerStatements.Clear();
 			Bootstrapper
 				.Instance
 				.Dispose();
@@ -205,5 +209,10 @@ namespace BoltOn.Tests.Cqrs
 		{
 			context.Container.AddTransient<IRepository<TestCqrsEntity>, TestCqrsEntityRepository>();
 		}
+	}
+
+	public class CqrsTestHelper
+	{
+		public static List<string> LoggerStatements { get; set; } = new List<string>();
 	}
 }
