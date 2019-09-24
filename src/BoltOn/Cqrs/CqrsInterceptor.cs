@@ -53,12 +53,13 @@ namespace BoltOn.Cqrs
 				_logger.Debug($"Publishing event. Id: {@event.Id} SourceType: {@event.SourceTypeName}");
 				await _eventDispatcher.DispatchAsync(@event, cancellationToken);
 				_eventBag.Events.Remove(@event);
+				await _processedEventPurger.PurgeAsync(@event, cancellationToken);
 			}
 
-			if (request is CqrsEvent cqrsEvent)
-			{
-				await _processedEventPurger.PurgeAsync(cqrsEvent, cancellationToken);
-			}
+			//if (request is CqrsEvent cqrsEvent)
+			//{
+			//	await _processedEventPurger.PurgeAsync(cqrsEvent, cancellationToken);
+			//}
 
 			return response;
 		}

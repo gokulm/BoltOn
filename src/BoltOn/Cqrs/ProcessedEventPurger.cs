@@ -22,7 +22,7 @@ namespace BoltOn.Cqrs
 
         public ProcessedEventPurger(IBoltOnLogger<ProcessedEventPurger> logger,
             ICqrsRepositoryFactory cqrsRepositoryFactory,
-            IUnitOfWorkManager unitOfWorkManager)
+            IUnitOfWorkManager unitOfWorkManager)	
         {
             _logger = logger;
             _cqrsRepositoryFactory = cqrsRepositoryFactory;
