@@ -104,9 +104,9 @@ namespace BoltOn.Tests.Cqrs
 										"Fetched BaseCqrsEntity. Id: b33cac30-5595-4ada-97dd-f5f7c35c0f4c"));
 			var repository = serviceProvider.GetService<IRepository<TestCqrsEntity>>();
 			var entity = repository.GetById("b33cac30-5595-4ada-97dd-f5f7c35c0f4c");
-			Assert.Equal(0, entity.Events.Count);
+			Assert.True(entity.Events.Count == 0);
 			var eventBag = serviceProvider.GetService<EventBag>();
-			Assert.Equal(0, eventBag.Events.Count);
+			Assert.True(eventBag.Events.Count == 0);
 		}
 
 		[Fact]
@@ -224,11 +224,10 @@ namespace BoltOn.Tests.Cqrs
 			var repository = serviceProvider.GetService<IRepository<TestCqrsEntity>>();
 			var entity = repository.GetById("b33cac30-5595-4ada-97dd-f5f7c35c0f4c");
 			Assert.NotNull(entity);
-			Assert.Equal(1, entity.Events.Count);
+			Assert.True(entity.Events.Count == 1);
 			var eventBag = serviceProvider.GetService<EventBag>();
-			Assert.Equal(1, eventBag.Events.Count);
+			Assert.True(eventBag.Events.Count == 1);
 		}
-
 
 		public void Dispose()
 		{
@@ -330,18 +329,11 @@ namespace BoltOn.Tests.Cqrs
 		}
 	}
 
-	public class TestCqrsEntityRepository : BaseEFRepository<TestCqrsEntity, SchoolDbContext>, IRepository<TestCqrsEntity>
-	{
-		public TestCqrsEntityRepository(IDbContextFactory dbContextFactory) : base(dbContextFactory)
-		{
-		}
-	}
-
 	public class TestCqrsRegistrationTask : IRegistrationTask
 	{
 		public void Run(RegistrationTaskContext context)
 		{
-			context.Container.AddTransient<IRepository<TestCqrsEntity>, TestCqrsEntityRepository>();
+			context.Container.AddTransient<IRepository<TestCqrsEntity>, EFCqrsRepository<TestCqrsEntity, SchoolDbContext>>();
 		}
 	}
 

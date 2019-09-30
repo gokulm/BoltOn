@@ -46,7 +46,7 @@ namespace BoltOn.Cqrs
 		public async Task<TResponse> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken,
 			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
-			var response = await next(request, cancellationToken);
+			var response = await next(request, cancellationToken); 
 			// creating a new list by calling .ToList() as the events in the original list need to be removed
 			foreach (var @event in _eventBag.Events.ToList())
 			{

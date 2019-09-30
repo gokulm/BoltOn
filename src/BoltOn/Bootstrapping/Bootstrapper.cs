@@ -13,7 +13,7 @@ namespace BoltOn.Bootstrapping
 		private Assembly _callingAssembly;
 		private IServiceCollection _serviceCollection;
 		private IServiceProvider _serviceProvider;
-		private bool _isBolted, _isAppCleaned;
+		private bool _isBolted, _isAppCleaned, _isTightened;
 		private RegistrationTaskContext _registrationTaskContext;
 
 		private Bootstrapper()
@@ -56,21 +56,27 @@ namespace BoltOn.Bootstrapping
 
 		internal void BoltOn(IServiceCollection serviceCollection, BoltOnOptions options, Assembly callingAssembly = null)
 		{
-			Check.Requires(!_isBolted, "Components are already bolted");
-			_isBolted = true;
+			if (_isBolted)
+				return;
+
 			_serviceCollection = serviceCollection;
 			Options = options;
 			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
 			LoadAssemblies();
 			RunRegistrationTasks();
+			_isBolted = true;
 		}
 
 		internal void RunPostRegistrationTasks(IServiceProvider serviceProvider)
 		{
+			if (_isTightened)
+				return;
+
 			_serviceProvider = serviceProvider;
 			var context = new PostRegistrationTaskContext(this);
 			var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IPostRegistrationTask>>();
 			postRegistrationTasks.ToList().ForEach(t => t.Run(context));
+			_isTightened = true;
 		}
 
 		private void LoadAssemblies()
@@ -183,6 +189,7 @@ namespace BoltOn.Bootstrapping
 				Options = null;
 				_isBolted = false;
 				_isAppCleaned = false;
+				_isTightened = false;
 			}
 		}
 
