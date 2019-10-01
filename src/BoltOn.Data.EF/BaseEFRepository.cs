@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Data.EF
 {
-	public abstract class BaseEFRepository<TEntity, TDbContext> : IRepository<TEntity>
+	public class BaseEFRepository<TEntity, TDbContext> : IRepository<TEntity>
 		where TDbContext : DbContext
 		where TEntity : class
 	{

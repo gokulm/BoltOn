@@ -281,7 +281,7 @@ namespace BoltOn.Tests.Cqrs
 		public void Update(TestCqrsRequest request)
 		{
 			Input = request.Input;
-			RaiseEvent(new TestCqrsUpdatedEvent { Input = request.Input + " event", SourceId = Id, Id = Guid.Parse("42bc65b2-f8a6-4371-9906-e7641d9ae9cb") });
+			RaiseEvent(new TestCqrsUpdatedEvent { Input = request.Input + " event", Id = Guid.Parse("42bc65b2-f8a6-4371-9906-e7641d9ae9cb") });
 		}
 	}
 

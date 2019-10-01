@@ -54,12 +54,7 @@ namespace BoltOn.Cqrs
 				await _eventDispatcher.DispatchAsync(@event, cancellationToken);
 				_eventBag.Events.Remove(@event);
 				await _processedEventPurger.PurgeAsync(@event, cancellationToken);
-			}
-
-			//if (request is CqrsEvent cqrsEvent)
-			//{
-			//	await _processedEventPurger.PurgeAsync(cqrsEvent, cancellationToken);
-			//}
+			} 
 
 			return response;
 		}
