@@ -30,12 +30,7 @@ namespace BoltOn.Cqrs
 		{
 			var response = next(request);
 			// creating a new list by calling .ToList() as the events in the original list need to be removed
-			foreach (var @event in _eventBag.Events.ToList())
-			{
-				throw new NotSupportedException("CQRS not supported for non-async calls");
-			}
-
-			if (request is CqrsEvent cqrsEvent)
+			if(_eventBag.Events.Any())
 			{
 				throw new NotSupportedException("CQRS not supported for non-async calls");
 			}
@@ -53,7 +48,6 @@ namespace BoltOn.Cqrs
 				_logger.Debug($"Publishing event. Id: {@event.Id} SourceType: {@event.SourceTypeName}");
 				await _eventDispatcher.DispatchAsync(@event, cancellationToken);
 				_eventBag.Events.Remove(@event);
-				await _processedEventPurger.PurgeAsync(@event, cancellationToken);
 			} 
 
 			return response;

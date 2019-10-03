@@ -104,7 +104,7 @@ namespace BoltOn.Tests.Cqrs
 										"Fetched BaseCqrsEntity. Id: b33cac30-5595-4ada-97dd-f5f7c35c0f4c"));
 			var repository = serviceProvider.GetService<IRepository<TestCqrsEntity>>();
 			var entity = repository.GetById("b33cac30-5595-4ada-97dd-f5f7c35c0f4c");
-			Assert.True(entity.Events.Count == 0);
+			Assert.True(entity.EventsToBeProcessed.Count == 0);
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.Events.Count == 0);
 		}
@@ -224,7 +224,7 @@ namespace BoltOn.Tests.Cqrs
 			var repository = serviceProvider.GetService<IRepository<TestCqrsEntity>>();
 			var entity = repository.GetById("b33cac30-5595-4ada-97dd-f5f7c35c0f4c");
 			Assert.NotNull(entity);
-			Assert.True(entity.Events.Count == 1);
+			Assert.True(entity.EventsToBeProcessed.Count == 1);
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.Events.Count == 1);
 		}
@@ -237,7 +237,6 @@ namespace BoltOn.Tests.Cqrs
 				.Dispose();
 		}
 	}
-
 
 	public class TestCqrsRequest : IRequest
 	{
@@ -285,11 +284,10 @@ namespace BoltOn.Tests.Cqrs
 		}
 	}
 
-	public class TestCqrsUpdatedEvent : CqrsEvent
+	public class TestCqrsUpdatedEvent : EventToBeProcessed
 	{
 		public string Input { get; set; }
 	}
-
 
 	public class TestCqrsUpdatedEventHandler : IRequestAsyncHandler<TestCqrsUpdatedEvent>
 	{
@@ -315,16 +313,28 @@ namespace BoltOn.Tests.Cqrs
 				.ToTable("TestCqrsEntity")
 				.HasKey(k => k.Id);
 			builder
-				.HasMany(p => p.Events);
+				.HasMany(p => p.EventsToBeProcessed);
+			builder
+				.HasMany(p => p.ProcessedEvents);
 		}
 	}
 
-	public class BoltOnEventMapping : IEntityTypeConfiguration<CqrsEvent>
+	public class EventToBeProcessedMapping : IEntityTypeConfiguration<EventToBeProcessed>
 	{
-		public void Configure(EntityTypeBuilder<CqrsEvent> builder)
+		public void Configure(EntityTypeBuilder<EventToBeProcessed> builder)
 		{
 			builder
-				.ToTable("BoltOnEvent")
+				.ToTable("EventToBeProcessed")
+				.HasKey(k => k.Id);
+		}
+	}
+
+	public class ProcessedEventMapping : IEntityTypeConfiguration<ProcessedEvent>
+	{
+		public void Configure(EntityTypeBuilder<ProcessedEvent> builder)
+		{
+			builder
+				.ToTable("ProcessedEvent")
 				.HasKey(k => k.Id);
 		}
 	}

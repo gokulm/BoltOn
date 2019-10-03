@@ -4,7 +4,7 @@ using BoltOn.Samples.Domain.Entities;
 
 namespace BoltOn.Samples.Infrastructure.Data.Repositories
 {
-	public class StudentRepository : BaseEFRepository<Student, SchoolDbContext>, IStudentRepository
+	public class StudentRepository : EFRepository<Student, SchoolDbContext>, IStudentRepository
 	{
 		public StudentRepository(IDbContextFactory dbContextFactory) : base(dbContextFactory)
 		{

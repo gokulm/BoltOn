@@ -42,11 +42,11 @@ namespace BoltOn.Cqrs
                 var cqrsEntity = await repository.GetByIdAsync(cqrsEvent.SourceId, cancellationToken);
                 var baseCqrsEntity = cqrsEntity as BaseCqrsEntity;
                 _logger.Debug($"Fetched BaseCqrsEntity. Id: {cqrsEvent.SourceId}");
-                var @event = baseCqrsEntity?.Events.FirstOrDefault(f => f.Id == cqrsEvent.Id);
+                var @event = baseCqrsEntity?.EventsToBeProcessed.FirstOrDefault(f => f.Id == cqrsEvent.Id);
                 if (@event != null)
                 {
                     _logger.Debug("Removing event...");
-                    baseCqrsEntity.Events.Remove(@event);
+                    baseCqrsEntity.EventsToBeProcessed.Remove(@event);
                     await repository.UpdateAsync(cqrsEntity, cancellationToken);
                     _logger.Debug($"Removed event. Id: {@event.Id}");
                 }

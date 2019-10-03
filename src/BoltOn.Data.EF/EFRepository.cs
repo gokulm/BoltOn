@@ -9,14 +9,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Data.EF
 {
-	public class BaseEFRepository<TEntity, TDbContext> : IRepository<TEntity>
+	public class EFRepository<TEntity, TDbContext> : IRepository<TEntity>
 		where TDbContext : DbContext
 		where TEntity : class
 	{
 		private readonly TDbContext _dbContext;
 		private readonly DbSet<TEntity> _dbSets;
 
-		protected BaseEFRepository(IDbContextFactory dbContextFactory)
+		protected EFRepository(IDbContextFactory dbContextFactory)
 		{
 			_dbContext = dbContextFactory.Get<TDbContext>();
 			_dbSets = _dbContext.Set<TEntity>();

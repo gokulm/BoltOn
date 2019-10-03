@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Data.EF
 {
-	public class EFCqrsRepository<TEntity, TDbContext> : BaseEFRepository<TEntity, TDbContext>, IRepository<TEntity>
+	public class EFCqrsRepository<TEntity, TDbContext> : EFRepository<TEntity, TDbContext>, IRepository<TEntity>
 		where TEntity : BaseCqrsEntity
 		where TDbContext : DbContext
 	{
@@ -20,7 +20,7 @@ namespace BoltOn.Data.EF
 		public override async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default)
 		{
 			var stringId = id.ToString();
-			return (await base.FindByAsync(f => f.Id == stringId, cancellationToken, i => i.Events)).FirstOrDefault();
+			return (await base.FindByAsync(f => f.Id == stringId, cancellationToken, i => i.EventsToBeProcessed)).FirstOrDefault();
 		}
 
 		protected override void SaveChanges(TEntity entity)
@@ -40,7 +40,7 @@ namespace BoltOn.Data.EF
 			if (entity is ICqrsEntity)
 			{
 				var cqrsEntity = entity as ICqrsEntity;
-				foreach (var @event in cqrsEntity.Events)
+				foreach (var @event in cqrsEntity.EventsToBeProcessed)
 				{
 					if (string.IsNullOrEmpty(@event.SourceId))
 						@event.SourceId = entity.Id;
