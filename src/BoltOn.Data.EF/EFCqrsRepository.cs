@@ -20,7 +20,8 @@ namespace BoltOn.Data.EF
 		public override async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default)
 		{
 			var stringId = id.ToString();
-			return (await base.FindByAsync(f => f.Id == stringId, cancellationToken, i => i.EventsToBeProcessed)).FirstOrDefault();
+			return (await base.FindByAsync(f => f.Id == stringId, cancellationToken, 
+				i => i.EventsToBeProcessed, i  => i.ProcessedEvents)).FirstOrDefault();
 		}
 
 		protected override void SaveChanges(TEntity entity)

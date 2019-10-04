@@ -93,16 +93,16 @@ namespace BoltOn.Tests.Cqrs
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(TestCqrsUpdatedEventHandler)} invoked"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"Publishing event. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb SourceType: {typeof(TestCqrsEntity).AssemblyQualifiedName}"));
+										$"Publishing event. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"Publishing event to bus from EventDispatcher. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb SourceType: {typeof(TestCqrsEntity).AssemblyQualifiedName}"));
+										$"Publishing event to bus from EventDispatcher. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"Building repository. SourceType: {typeof(TestCqrsEntity).AssemblyQualifiedName}"));
+										$"Building repository. SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Removed event. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										"Fetched BaseCqrsEntity. Id: b33cac30-5595-4ada-97dd-f5f7c35c0f4c"));
-			var repository = serviceProvider.GetService<IRepository<TestCqrsEntity>>();
+			var repository = serviceProvider.GetService<IRepository<TestCqrsWriteEntity>>();
 			var entity = repository.GetById("b33cac30-5595-4ada-97dd-f5f7c35c0f4c");
 			Assert.True(entity.EventsToBeProcessed.Count == 0);
 			var eventBag = serviceProvider.GetService<EventBag>();
@@ -217,11 +217,11 @@ namespace BoltOn.Tests.Cqrs
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(TestCqrsHandler)} invoked"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"Publishing event. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb SourceType: {typeof(TestCqrsEntity).AssemblyQualifiedName}"));
+										$"Publishing event. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"Publishing event to bus from EventDispatcher. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb SourceType: {typeof(TestCqrsEntity).AssemblyQualifiedName}"));
+										$"Publishing event to bus from EventDispatcher. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
 
-			var repository = serviceProvider.GetService<IRepository<TestCqrsEntity>>();
+			var repository = serviceProvider.GetService<IRepository<TestCqrsWriteEntity>>();
 			var entity = repository.GetById("b33cac30-5595-4ada-97dd-f5f7c35c0f4c");
 			Assert.NotNull(entity);
 			Assert.True(entity.EventsToBeProcessed.Count == 1);
@@ -247,10 +247,10 @@ namespace BoltOn.Tests.Cqrs
 		IRequestHandler<TestCqrsRequest>
 	{
 		private readonly IBoltOnLogger<TestCqrsHandler> _logger;
-		private readonly IRepository<TestCqrsEntity> _repository;
+		private readonly IRepository<TestCqrsWriteEntity> _repository;
 
 		public TestCqrsHandler(IBoltOnLogger<TestCqrsHandler> logger,
-			IRepository<TestCqrsEntity> repository)
+			IRepository<TestCqrsWriteEntity> repository)
 		{
 			_logger = logger;
 			_repository = repository;
@@ -259,58 +259,97 @@ namespace BoltOn.Tests.Cqrs
 		public void Handle(TestCqrsRequest request)
 		{
 			_logger.Debug($"{nameof(TestCqrsHandler)} invoked");
-			var testCqrsEntity = new TestCqrsEntity { Id = "b33cac30-5595-4ada-97dd-f5f7c35c0f4c" };
-			testCqrsEntity.Update(request);
-			_repository.Add(testCqrsEntity);
+			var testCqrsWriteEntity = _repository.GetById("b33cac30-5595-4ada-97dd-f5f7c35c0f4c");
+			testCqrsWriteEntity.Update(request);
+			 _repository.Update(testCqrsWriteEntity);
 		}
 
 		public async Task HandleAsync(TestCqrsRequest request, CancellationToken cancellationToken)
 		{
 			_logger.Debug($"{nameof(TestCqrsHandler)} invoked");
-			var testCqrsEntity = new TestCqrsEntity { Id = "b33cac30-5595-4ada-97dd-f5f7c35c0f4c" };
-			testCqrsEntity.Update(request);
-			await _repository.AddAsync(testCqrsEntity);
+			var testCqrsWriteEntity = await _repository.GetByIdAsync("b33cac30-5595-4ada-97dd-f5f7c35c0f4c");
+			testCqrsWriteEntity.Update(request);
+			await _repository.UpdateAsync(testCqrsWriteEntity, cancellationToken);
 		}
 	}
 
-	public class TestCqrsEntity : BaseCqrsEntity
+	public class TestCqrsWriteEntity : BaseCqrsEntity
 	{
 		public string Input { get; set; }
 
 		public void Update(TestCqrsRequest request)
 		{
 			Input = request.Input;
-			RaiseEvent(new TestCqrsUpdatedEvent { Input = request.Input + " event", Id = Guid.Parse("42bc65b2-f8a6-4371-9906-e7641d9ae9cb") });
+			RaiseEvent(new TestCqrsUpdatedEvent
+			{
+				Input = request.Input + " event",
+				Id = Guid.Parse("42bc65b2-f8a6-4371-9906-e7641d9ae9cb"),
+				EntityId = "b33cac30-5595-4ada-97dd-f5f7c35c0f4c"
+			});
+		}
+	}
+
+	public class TestCqrsReadEntity : BaseCqrsEntity
+	{
+		public string Input { get; set; }
+
+		public void Handle(TestCqrsUpdatedEvent @event)
+		{
+			MarkEventAsProcessed(@event, e =>
+			{
+				Input = e.Input;
+			});
 		}
 	}
 
 	public class TestCqrsUpdatedEvent : EventToBeProcessed
 	{
 		public string Input { get; set; }
+
+		public string EntityId { get; set; }
 	}
 
 	public class TestCqrsUpdatedEventHandler : IRequestAsyncHandler<TestCqrsUpdatedEvent>
 	{
 		private readonly IBoltOnLogger<TestCqrsUpdatedEventHandler> _logger;
+		private readonly IRepository<TestCqrsReadEntity> _repository;
 
-		public TestCqrsUpdatedEventHandler(IBoltOnLogger<TestCqrsUpdatedEventHandler> logger)
+		public TestCqrsUpdatedEventHandler(IBoltOnLogger<TestCqrsUpdatedEventHandler> logger,
+			IRepository<TestCqrsReadEntity> repository)
 		{
 			_logger = logger;
+			_repository = repository;
 		}
 
 		public async Task HandleAsync(TestCqrsUpdatedEvent request, CancellationToken cancellationToken)
 		{
 			_logger.Debug($"{nameof(TestCqrsUpdatedEventHandler)} invoked");
-			await Task.FromResult(1);
+			var testCqrsReadEntity = await _repository.GetByIdAsync(request.EntityId);
+			testCqrsReadEntity.Handle(request);
+			await _repository.UpdateAsync(testCqrsReadEntity);
 		}
 	}
 
-	public class TestCqrsEntityMapping : IEntityTypeConfiguration<TestCqrsEntity>
+	public class TestCqrsWriteEntityMapping : IEntityTypeConfiguration<TestCqrsWriteEntity>
 	{
-		public void Configure(EntityTypeBuilder<TestCqrsEntity> builder)
+		public void Configure(EntityTypeBuilder<TestCqrsWriteEntity> builder)
 		{
 			builder
-				.ToTable("TestCqrsEntity")
+				.ToTable("TestCqrsWriteEntity")
+				.HasKey(k => k.Id);
+			builder
+				.HasMany(p => p.EventsToBeProcessed);
+			builder
+				.HasMany(p => p.ProcessedEvents);
+		}
+	}
+
+	public class TestCqrsReadEntityMapping : IEntityTypeConfiguration<TestCqrsReadEntity>
+	{
+		public void Configure(EntityTypeBuilder<TestCqrsReadEntity> builder)
+		{
+			builder
+				.ToTable("TestCqrsReadEntity")
 				.HasKey(k => k.Id);
 			builder
 				.HasMany(p => p.EventsToBeProcessed);
@@ -343,7 +382,31 @@ namespace BoltOn.Tests.Cqrs
 	{
 		public void Run(RegistrationTaskContext context)
 		{
-			context.Container.AddTransient<IRepository<TestCqrsEntity>, EFCqrsRepository<TestCqrsEntity, SchoolDbContext>>();
+			context.Container.AddTransient<IRepository<TestCqrsWriteEntity>, EFCqrsRepository<TestCqrsWriteEntity, SchoolDbContext>>();
+			context.Container.AddTransient<IRepository<TestCqrsReadEntity>, EFCqrsRepository<TestCqrsReadEntity, SchoolDbContext>>();
+		}
+	}
+
+	public class TestCqrsPostRegistrationTask : IPostRegistrationTask
+	{
+		public void Run(PostRegistrationTaskContext context)
+		{
+			var serviceProvider = context.ServiceProvider;
+			var testDbContext = serviceProvider.GetService<SchoolDbContext>();
+			testDbContext.Database.EnsureDeleted();
+			testDbContext.Database.EnsureCreated();
+
+			testDbContext.Set<TestCqrsWriteEntity>().Add(new TestCqrsWriteEntity
+			{
+				Id = "b33cac30-5595-4ada-97dd-f5f7c35c0f4c",
+				Input = "value to be replaced"
+			});
+			testDbContext.Set<TestCqrsReadEntity>().Add(new TestCqrsReadEntity
+			{
+				Id = "b33cac30-5595-4ada-97dd-f5f7c35c0f4c",
+				Input = "value to be replaced"
+			});
+			testDbContext.SaveChanges();
 		}
 	}
 

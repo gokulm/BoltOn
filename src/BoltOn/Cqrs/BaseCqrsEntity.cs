@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BoltOn.Data;
 
 namespace BoltOn.Cqrs
@@ -27,8 +28,14 @@ namespace BoltOn.Cqrs
 			EventsToBeProcessed.Add(@event);
 		}
 
-		protected void MarkEventAsProcessed(EventToBeProcessed @event)
+		protected void MarkEventAsProcessed<TEvent>(TEvent @event, Action<TEvent> action) 
+			where TEvent : ICqrsEvent
 		{
+			if (ProcessedEvents.FirstOrDefault(c => c.Id == @event.Id) != null)
+				return;
+
+			action(@event);
+
 			var processedEvent = new ProcessedEvent
 			{
 				Id = @event.Id,

@@ -8,7 +8,8 @@ namespace BoltOn.Cqrs
 		Guid Id { get; set; }
 		string SourceTypeName { get; set; }
         string SourceId { get; set; }
-    }
+		DateTime? CreatedDate { get; set; }
+	}
 
 	public class CqrsEvent : ICqrsEvent
     {
