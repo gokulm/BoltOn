@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using BoltOn.Data;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace BoltOn.Tests.Cqrs
 {
@@ -260,42 +261,41 @@ namespace BoltOn.Tests.Cqrs
 		{
 			_logger.Debug($"{nameof(TestCqrsHandler)} invoked");
 			var testCqrsWriteEntity = _repository.GetById("b33cac30-5595-4ada-97dd-f5f7c35c0f4c");
-			testCqrsWriteEntity.Update(request);
-			 _repository.Update(testCqrsWriteEntity);
+			testCqrsWriteEntity.ChangeInput(request);
+			_repository.Update(testCqrsWriteEntity);
 		}
 
 		public async Task HandleAsync(TestCqrsRequest request, CancellationToken cancellationToken)
 		{
 			_logger.Debug($"{nameof(TestCqrsHandler)} invoked");
 			var testCqrsWriteEntity = await _repository.GetByIdAsync("b33cac30-5595-4ada-97dd-f5f7c35c0f4c");
-			testCqrsWriteEntity.Update(request);
+			testCqrsWriteEntity.ChangeInput(request);
 			await _repository.UpdateAsync(testCqrsWriteEntity, cancellationToken);
 		}
 	}
 
 	public class TestCqrsWriteEntity : BaseCqrsEntity
 	{
-		public string Input { get; set; }
+		public string Input { get; internal set; }
 
-		public void Update(TestCqrsRequest request)
+		public void ChangeInput(TestCqrsRequest request)
 		{
 			Input = request.Input;
 			RaiseEvent(new TestCqrsUpdatedEvent
 			{
-				Input = request.Input + " event",
 				Id = Guid.Parse("42bc65b2-f8a6-4371-9906-e7641d9ae9cb"),
-				EntityId = "b33cac30-5595-4ada-97dd-f5f7c35c0f4c"
+				Input = request.Input + " event",
 			});
 		}
 	}
 
 	public class TestCqrsReadEntity : BaseCqrsEntity
 	{
-		public string Input { get; set; }
+		public virtual string Input { get; internal set; }
 
-		public void Handle(TestCqrsUpdatedEvent @event)
+		public void UpdateInput(TestCqrsUpdatedEvent @event)
 		{
-			MarkEventAsProcessed(@event, e =>
+			ProcessEvent(@event, e =>
 			{
 				Input = e.Input;
 			});
@@ -305,8 +305,6 @@ namespace BoltOn.Tests.Cqrs
 	public class TestCqrsUpdatedEvent : EventToBeProcessed
 	{
 		public string Input { get; set; }
-
-		public string EntityId { get; set; }
 	}
 
 	public class TestCqrsUpdatedEventHandler : IRequestAsyncHandler<TestCqrsUpdatedEvent>
@@ -324,8 +322,8 @@ namespace BoltOn.Tests.Cqrs
 		public async Task HandleAsync(TestCqrsUpdatedEvent request, CancellationToken cancellationToken)
 		{
 			_logger.Debug($"{nameof(TestCqrsUpdatedEventHandler)} invoked");
-			var testCqrsReadEntity = await _repository.GetByIdAsync(request.EntityId);
-			testCqrsReadEntity.Handle(request);
+			var testCqrsReadEntity = await _repository.GetByIdAsync(request.SourceId);
+			testCqrsReadEntity.UpdateInput(request);
 			await _repository.UpdateAsync(testCqrsReadEntity);
 		}
 	}
@@ -382,17 +380,30 @@ namespace BoltOn.Tests.Cqrs
 	{
 		public void Run(RegistrationTaskContext context)
 		{
-			context.Container.AddTransient<IRepository<TestCqrsWriteEntity>, EFCqrsRepository<TestCqrsWriteEntity, SchoolDbContext>>();
-			context.Container.AddTransient<IRepository<TestCqrsReadEntity>, EFCqrsRepository<TestCqrsReadEntity, SchoolDbContext>>();
+
+			context.Container.AddDbContext<CqrsDbContext>(options =>
+			{
+				options.UseInMemoryDatabase("InMemoryDbCqrsDbContext");
+				options.ConfigureWarnings(x => x.Ignore(RelationalEventId.AmbientTransactionWarning));
+			});
+
+			context.Container.AddTransient<IRepository<TestCqrsWriteEntity>, EFCqrsRepository<TestCqrsWriteEntity, CqrsDbContext>>();
+			context.Container.AddTransient<IRepository<TestCqrsReadEntity>, EFCqrsRepository<TestCqrsReadEntity, CqrsDbContext>>();
 		}
 	}
 
 	public class TestCqrsPostRegistrationTask : IPostRegistrationTask
 	{
+		private readonly IServiceProvider _serviceProvider;
+
+		public TestCqrsPostRegistrationTask(IServiceProvider serviceProvider)
+		{
+			_serviceProvider = serviceProvider;
+		}
+
 		public void Run(PostRegistrationTaskContext context)
 		{
-			var serviceProvider = context.ServiceProvider;
-			var testDbContext = serviceProvider.GetService<SchoolDbContext>();
+			var testDbContext = _serviceProvider.GetService<CqrsDbContext>();
 			testDbContext.Database.EnsureDeleted();
 			testDbContext.Database.EnsureCreated();
 
@@ -413,5 +424,20 @@ namespace BoltOn.Tests.Cqrs
 	public static class CqrsTestHelper
 	{
 		public static List<string> LoggerStatements { get; set; } = new List<string>();
+	}
+
+	public class CqrsDbContext : BaseDbContext<CqrsDbContext>
+	{
+		public CqrsDbContext(DbContextOptions<CqrsDbContext> options) : base(options)
+		{
+		}
+
+		protected override void ApplyConfigurations(ModelBuilder modelBuilder)
+		{
+			modelBuilder.ApplyConfiguration(new TestCqrsWriteEntityMapping());
+			modelBuilder.ApplyConfiguration(new TestCqrsReadEntityMapping());
+			modelBuilder.ApplyConfiguration(new EventToBeProcessedMapping());
+			modelBuilder.ApplyConfiguration(new ProcessedEventMapping());
+		}
 	}
 }

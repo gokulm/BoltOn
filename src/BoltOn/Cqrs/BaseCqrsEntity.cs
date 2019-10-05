@@ -28,7 +28,7 @@ namespace BoltOn.Cqrs
 			EventsToBeProcessed.Add(@event);
 		}
 
-		protected void MarkEventAsProcessed<TEvent>(TEvent @event, Action<TEvent> action) 
+		protected void ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action) 
 			where TEvent : ICqrsEvent
 		{
 			if (ProcessedEvents.FirstOrDefault(c => c.Id == @event.Id) != null)
