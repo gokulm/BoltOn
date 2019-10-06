@@ -6,7 +6,6 @@ using Xunit;
 using BoltOn.Bus.MassTransit;
 using BoltOn.Logging;
 using Moq;
-using BoltOn.Tests.Other;
 using System.Linq;
 using BoltOn.Bootstrapping;
 using MassTransit;
@@ -84,7 +83,7 @@ namespace BoltOn.Tests.Cqrs
 			var mediator = serviceProvider.GetService<IMediator>();
 
 			// act
-			await mediator.ProcessAsync(new TestCqrsRequest { Input = "test" });
+			await mediator.ProcessAsync(new TestCqrsRequest { Input = "test input" });
 
 			// assert
 			// as assert not working after async method, added sleep
@@ -103,6 +102,8 @@ namespace BoltOn.Tests.Cqrs
 										$"Removed event. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										"Fetched BaseCqrsEntity. Id: b33cac30-5595-4ada-97dd-f5f7c35c0f4c"));
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"{nameof(TestCqrsReadEntity)} updated. Input1: test input Input2Property1: prop1 Input2Propert2: 10"));
 			var repository = serviceProvider.GetService<IRepository<TestCqrsWriteEntity>>();
 			var entity = repository.GetById("b33cac30-5595-4ada-97dd-f5f7c35c0f4c");
 			Assert.True(entity.EventsToBeProcessed.Count == 0);
@@ -284,27 +285,43 @@ namespace BoltOn.Tests.Cqrs
 			RaiseEvent(new TestCqrsUpdatedEvent
 			{
 				Id = Guid.Parse("42bc65b2-f8a6-4371-9906-e7641d9ae9cb"),
-				Input = request.Input + " event",
+				Input1 = request.Input,
+				Input2 = new TestInput { Property1 = "prop1", Property2 = 10 }
 			});
 		}
 	}
 
 	public class TestCqrsReadEntity : BaseCqrsEntity
 	{
-		public virtual string Input { get; internal set; }
+		public virtual string Input1 { get; internal set; }
+
+		public virtual string Input2Property1 { get; internal set; }
+
+		public virtual int Input2Property2 { get; internal set; }
 
 		public void UpdateInput(TestCqrsUpdatedEvent @event)
 		{
 			ProcessEvent(@event, e =>
 			{
-				Input = e.Input;
+				Input1 = e.Input1;
+				Input2Property1 = e.Input2.Property1;
+				Input2Property2 = e.Input2.Property2;
 			});
 		}
 	}
 
 	public class TestCqrsUpdatedEvent : EventToBeProcessed
 	{
-		public string Input { get; set; }
+		public string Input1 { get; set; }
+
+		public TestInput Input2 { get; set; }
+	}
+
+	public class TestInput
+	{
+		public string Property1 { get; set; }
+
+		public int Property2 { get; set; }
 	}
 
 	public class TestCqrsUpdatedEventHandler : IRequestAsyncHandler<TestCqrsUpdatedEvent>
@@ -324,6 +341,9 @@ namespace BoltOn.Tests.Cqrs
 			_logger.Debug($"{nameof(TestCqrsUpdatedEventHandler)} invoked");
 			var testCqrsReadEntity = await _repository.GetByIdAsync(request.SourceId);
 			testCqrsReadEntity.UpdateInput(request);
+			_logger.Debug($"{nameof(TestCqrsReadEntity)} updated. " +
+				$"Input1: {testCqrsReadEntity.Input1} Input2Property1: {testCqrsReadEntity.Input2Property1} " +
+				$"Input2Propert2: {testCqrsReadEntity.Input2Property2}");
 			await _repository.UpdateAsync(testCqrsReadEntity);
 		}
 	}
@@ -415,7 +435,7 @@ namespace BoltOn.Tests.Cqrs
 			testDbContext.Set<TestCqrsReadEntity>().Add(new TestCqrsReadEntity
 			{
 				Id = "b33cac30-5595-4ada-97dd-f5f7c35c0f4c",
-				Input = "value to be replaced"
+				Input1 = "value to be replaced"
 			});
 			testDbContext.SaveChanges();
 		}

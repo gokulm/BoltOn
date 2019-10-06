@@ -17,15 +17,21 @@ namespace BoltOn.Cqrs
 
 		public HashSet<ProcessedEvent> ProcessedEvents { get; set; } = new HashSet<ProcessedEvent>();
 
-		protected void RaiseEvent(EventToBeProcessed @event)
+		protected void RaiseEvent<TEvent>(TEvent @event) 
+			where TEvent : ICqrsEvent
 		{
+			if (EventsToBeProcessed.FirstOrDefault(c => c.Id == @event.Id) != null)
+				return;
+
 			if (@event.Id == Guid.Empty)
 				@event.Id = Guid.NewGuid();
 
 			@event.SourceTypeName = GetType().AssemblyQualifiedName;
+
 			if (!@event.CreatedDate.HasValue)
 				@event.CreatedDate = DateTime.Now;
-			EventsToBeProcessed.Add(@event);
+
+			EventsToBeProcessed.Add(@event as EventToBeProcessed);
 		}
 
 		protected void ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action) 
@@ -46,6 +52,7 @@ namespace BoltOn.Cqrs
 
 			if (!processedEvent.CreatedDate.HasValue)
 				processedEvent.CreatedDate = DateTime.Now;
+
 			ProcessedEvents.Add(processedEvent);
 		}
 	}
