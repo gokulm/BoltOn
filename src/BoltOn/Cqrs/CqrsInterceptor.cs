@@ -45,12 +45,20 @@ namespace BoltOn.Cqrs
 			// creating a new list by calling .ToList() as the events in the original list need to be removed
 			foreach (var @event in _eventBag.Events.ToList())
 			{
-				_logger.Debug($"Publishing event. Id: {@event.Id} SourceType: {@event.SourceTypeName}");
-				var exception = await _eventDispatcher.DispatchAsync(@event, cancellationToken);
-				if (exception != null)
-					_logger.Error(exception);
-
-				_eventBag.Events.Remove(@event);
+				try
+				{
+					_logger.Debug($"Publishing event. Id: {@event.Id} SourceType: {@event.SourceTypeName}");
+					await _eventDispatcher.DispatchAsync(@event, cancellationToken);
+				}
+				catch(Exception ex)
+				{
+					_logger.Error($"Dispatching failed. Id: {@event.Id}");
+					_logger.Error(ex);
+				}
+				finally
+				{
+					_eventBag.Events.Remove(@event);
+				}
 			}
 
 			return response;
