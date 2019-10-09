@@ -185,13 +185,15 @@ namespace BoltOn.Tests.Cqrs
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger2.Object);
 
-			var logger3 = new Mock<IBoltOnLogger<CqrsInterceptor>>();
-			logger3.Setup(s => s.Debug(It.IsAny<string>()))
+			var cqrsInterceptorLogger = new Mock<IBoltOnLogger<CqrsInterceptor>>();
+			cqrsInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			serviceCollection.AddTransient((s) => logger3.Object);
+			serviceCollection.AddTransient((s) => cqrsInterceptorLogger.Object);
 
 			var logger4 = new Mock<IBoltOnLogger<EventDispatcher>>();
 			logger4.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			logger4.Setup(s => s.Error(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger4.Object);
 
@@ -201,8 +203,9 @@ namespace BoltOn.Tests.Cqrs
 			serviceCollection.AddTransient((s) => logger5.Object);
 
 			var dispatcher = new Mock<BoltOn.Bus.IBus>();
+			var failedBusException = new Exception("failed bus");
 			dispatcher.Setup(d => d.PublishAsync(It.IsAny<ICqrsEvent>(), default(CancellationToken)))
-				.Throws(new Exception("failed bus"));
+				.Throws(failedBusException);
 			serviceCollection.AddSingleton(dispatcher.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -210,25 +213,26 @@ namespace BoltOn.Tests.Cqrs
 			var mediator = serviceProvider.GetService<IMediator>();
 
 			// act
-			var ex = await Record.ExceptionAsync(async () => await mediator.ProcessAsync(new TestCqrsRequest { Input = "test" }));
+			await mediator.ProcessAsync(new TestCqrsRequest { Input = "test" });
 
 			// assert
 			// as assert not working after async method, added sleep
 			await Task.Delay(1000);
-			Assert.NotNull(ex);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(TestCqrsHandler)} invoked"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Publishing event. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Publishing event to bus from EventDispatcher. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
-
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"Publishing or Purging event failed. Id: 42bc65b2-f8a6-4371-9906-e7641d9ae9cb"));
+			cqrsInterceptorLogger.Verify(v => v.Error(failedBusException), Times.Once);
 			var repository = serviceProvider.GetService<IRepository<TestCqrsWriteEntity>>();
 			var entity = repository.GetById("b33cac30-5595-4ada-97dd-f5f7c35c0f4c");
 			Assert.NotNull(entity);
 			Assert.True(entity.EventsToBeProcessed.Count == 1);
 			var eventBag = serviceProvider.GetService<EventBag>();
-			Assert.True(eventBag.Events.Count == 1);
+			Assert.True(eventBag.Events.Count == 0);
 		}
 
 		public void Dispose()
