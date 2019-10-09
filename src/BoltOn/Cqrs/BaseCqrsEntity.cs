@@ -17,11 +17,11 @@ namespace BoltOn.Cqrs
 
 		public HashSet<ProcessedEvent> ProcessedEvents { get; set; } = new HashSet<ProcessedEvent>();
 
-		protected void RaiseEvent<TEvent>(TEvent @event) 
+		protected bool RaiseEvent<TEvent>(TEvent @event) 
 			where TEvent : ICqrsEvent
 		{
 			if (EventsToBeProcessed.FirstOrDefault(c => c.Id == @event.Id) != null)
-				return;
+				return false;
 
 			if (@event.Id == Guid.Empty)
 				@event.Id = Guid.NewGuid();
@@ -32,13 +32,14 @@ namespace BoltOn.Cqrs
 				@event.CreatedDate = DateTime.Now;
 
 			EventsToBeProcessed.Add(@event as EventToBeProcessed);
+			return true;
 		}
 
-		protected void ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action) 
+		protected bool ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action) 
 			where TEvent : ICqrsEvent
 		{
 			if (ProcessedEvents.FirstOrDefault(c => c.Id == @event.Id) != null)
-				return;
+				return false;
 
 			action(@event);
 
@@ -54,6 +55,7 @@ namespace BoltOn.Cqrs
 				processedEvent.CreatedDate = DateTime.Now;
 
 			ProcessedEvents.Add(processedEvent);
+			return true;
 		}
 	}
 }

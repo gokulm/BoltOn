@@ -13,23 +13,19 @@ namespace BoltOn.Cqrs
 		private readonly EventBag _eventBag;
 		private readonly IBoltOnLogger<CqrsInterceptor> _logger;
 		private readonly IEventDispatcher _eventDispatcher;
-		private readonly IProcessedEventPurger _processedEventPurger;
 
 		public CqrsInterceptor(EventBag eventBag, IBoltOnLogger<CqrsInterceptor> logger,
-			IEventDispatcher eventDispatcher,
-			IProcessedEventPurger processedEventPurger)
+			IEventDispatcher eventDispatcher)
 		{
 			_eventBag = eventBag;
 			_logger = logger;
 			_eventDispatcher = eventDispatcher;
-			_processedEventPurger = processedEventPurger;
 		}
 
 		public TResponse Run<TRequest, TResponse>(IRequest<TResponse> request,
 			Func<IRequest<TResponse>, TResponse> next) where TRequest : IRequest<TResponse>
 		{
 			var response = next(request);
-			// creating a new list by calling .ToList() as the events in the original list need to be removed
 			if (_eventBag.Events.Any())
 			{
 				throw new NotSupportedException("CQRS not supported for non-async calls");
@@ -42,7 +38,6 @@ namespace BoltOn.Cqrs
 			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
 			var response = await next(request, cancellationToken);
-			// creating a new list by calling .ToList() as the events in the original list need to be removed
 			foreach (var @event in _eventBag.Events.ToList())
 			{
 				try
