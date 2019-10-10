@@ -76,7 +76,11 @@ namespace BoltOn.Bootstrapping
 			if (Bootstrapper.Instance.Options.IsCqrsEnabled)
 			{
 				context.AddInterceptor<CqrsInterceptor>();
-				//context.Container.AddTransient(typeof(CqrsRepository<>));
+				context.Container.AddTransient<IEventDispatcher, EventDispatcher>();
+			}
+			else
+			{
+				context.Container.AddTransient<IEventDispatcher, DefaultEventDispatcher>();
 			}
 		}
 

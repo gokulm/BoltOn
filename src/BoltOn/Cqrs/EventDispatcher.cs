@@ -34,4 +34,12 @@ namespace BoltOn.Cqrs
 			await _processedEventPurger.PurgeAsync(@event, cancellationToken);
 		}
 	}
+
+	public class DefaultEventDispatcher : IEventDispatcher
+	{
+		public Task DispatchAsync(ICqrsEvent @event, CancellationToken cancellationToken = default)
+		{
+			return Task.CompletedTask;
+		}
+	}
 }

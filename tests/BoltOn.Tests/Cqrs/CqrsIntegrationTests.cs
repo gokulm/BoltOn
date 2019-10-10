@@ -31,7 +31,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 
 		[Fact]
-		public async Task MediatorHandle_WithCqrs_ReturnsResult()
+		public async Task MediatorProcessAsync_WithCqrs_ReturnsResult()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -113,7 +113,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 
 		[Fact]
-		public void MediatorHandle_WithCqrsAndNonAsync_ThrowsException()
+		public void MediatorProcessAsync_WithCqrsAndNonAsync_ThrowsException()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -154,7 +154,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 
 		[Fact]
-		public async Task MediatorHandle_WithCqrsAndFailedBus_EventsDoNotGetProcessed()
+		public async Task MediatorProcessAsync_WithCqrsAndFailedBus_EventsDoNotGetProcessed()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -222,7 +222,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 
 		[Fact]
-		public async Task MediatorHandle_WithCqrsAndFailedPurger_EventsGetProcessed()
+		public async Task MediatorProcessAsync_WithCqrsAndFailedPurger_EventsGetProcessed()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -243,7 +243,6 @@ namespace BoltOn.Tests.Cqrs
 					});
 				}));
 			});
-
 
 			var cqrsInterceptorLogger = new Mock<IBoltOnLogger<CqrsInterceptor>>();
 			cqrsInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
@@ -290,6 +289,38 @@ namespace BoltOn.Tests.Cqrs
 			Assert.True(entity.EventsToBeProcessed.Count == 1);
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.Events.Count == 0);
+		}
+
+		[Fact]
+		public async Task MediatorProcessAsync_ProcessAlreadyProcessedEvent_EventDoNotGetProcessed()
+		{
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn(b =>
+			{
+				b.BoltOnAssemblies(GetType().Assembly);
+				b.BoltOnEFModule();
+			});
+
+			var logger2 = new Mock<IBoltOnLogger<TestCqrsUpdatedEventHandler>>();
+			logger2.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddTransient((s) => logger2.Object);
+
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var mediator = serviceProvider.GetService<IMediator>();
+
+			// act
+			await mediator.ProcessAsync(new TestCqrsUpdatedEvent { Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId), 
+ 																	SourceId = CqrsConstants.EntityId });
+
+			// assert
+			// as assert not working after async method, added sleep
+			await Task.Delay(1000);
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"{nameof(TestCqrsUpdatedEventHandler)} invoked"));
+			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"{nameof(TestCqrsReadEntity)} updated. Input1: test Input2Property1: prop1 Input2Propert2: 10"));
 		}
 
 		private static void MockForFailedBusOrFailedPurger(ServiceCollection serviceCollection)
@@ -522,7 +553,11 @@ namespace BoltOn.Tests.Cqrs
 			testDbContext.Set<TestCqrsReadEntity>().Add(new TestCqrsReadEntity
 			{
 				Id = CqrsConstants.EntityId,
-				Input1 = "value to be replaced"
+				Input1 = "value to be replaced",
+				ProcessedEvents = new HashSet<ProcessedEvent>
+				{
+					new ProcessedEvent { Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId) }
+				}
 			});
 			testDbContext.SaveChanges();
 		}
@@ -551,6 +586,7 @@ namespace BoltOn.Tests.Cqrs
 	public static class CqrsConstants
 	{
 		public const string EventId = "42bc65b2-f8a6-4371-9906-e7641d9ae9cb";
+		public const string AlreadyProcessedEventId = "90f7f995-c930-4f2c-9621-7c3763a4df1d";
 		public const string EntityId = "b33cac30-5595-4ada-97dd-f5f7c35c0f4c";
 	}
 }

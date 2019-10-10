@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Cqrs;
+using BoltOn.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Data.EF
@@ -11,17 +12,20 @@ namespace BoltOn.Data.EF
 		where TDbContext : DbContext
 	{
 		private readonly EventBag _eventBag;
+		private readonly IBoltOnClock _boltOnClock;
 
-		public EFCqrsRepository(IDbContextFactory dbContextFactory, EventBag eventBag) : base(dbContextFactory)
+		public EFCqrsRepository(IDbContextFactory dbContextFactory, EventBag eventBag,
+			IBoltOnClock boltOnClock) : base(dbContextFactory)
 		{
 			_eventBag = eventBag;
+			_boltOnClock = boltOnClock;
 		}
 
 		public override async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default)
 		{
 			var stringId = id.ToString();
-			return (await base.FindByAsync(f => f.Id == stringId, cancellationToken, 
-				i => i.EventsToBeProcessed, i  => i.ProcessedEvents)).FirstOrDefault();
+			return (await base.FindByAsync(f => f.Id == stringId, cancellationToken,
+				i => i.EventsToBeProcessed, i => i.ProcessedEvents)).FirstOrDefault();
 		}
 
 		protected override void SaveChanges(TEntity entity)
@@ -43,11 +47,22 @@ namespace BoltOn.Data.EF
 				var cqrsEntity = entity as ICqrsEntity;
 				foreach (var @event in cqrsEntity.EventsToBeProcessed)
 				{
-					if (string.IsNullOrEmpty(@event.SourceId))
-						@event.SourceId = entity.Id;
+					SetCreatedDateAndSourceId(@event, entity);
 					_eventBag.Events.Add(@event);
 				}
+
+				foreach (var @event in cqrsEntity.ProcessedEvents)
+					SetCreatedDateAndSourceId(@event, entity);
 			}
+		}
+
+		private void SetCreatedDateAndSourceId(ICqrsEvent @event, TEntity entity)
+		{
+			if (!@event.CreatedDate.HasValue)
+				@event.CreatedDate = _boltOnClock.Now;
+
+			if (string.IsNullOrEmpty(@event.SourceId))
+				@event.SourceId = entity.Id;
 		}
 	}
 }

@@ -28,9 +28,6 @@ namespace BoltOn.Cqrs
 
 			@event.SourceTypeName = GetType().AssemblyQualifiedName;
 
-			if (!@event.CreatedDate.HasValue)
-				@event.CreatedDate = DateTime.Now;
-
 			EventsToBeProcessed.Add(@event as EventToBeProcessed);
 			return true;
 		}
@@ -50,9 +47,6 @@ namespace BoltOn.Cqrs
 				SourceTypeName = @event.SourceTypeName,
 				CreatedDate = @event.CreatedDate
 			};
-
-			if (!processedEvent.CreatedDate.HasValue)
-				processedEvent.CreatedDate = DateTime.Now;
 
 			ProcessedEvents.Add(processedEvent);
 			return true;
