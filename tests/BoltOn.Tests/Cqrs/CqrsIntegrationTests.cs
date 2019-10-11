@@ -165,25 +165,7 @@ namespace BoltOn.Tests.Cqrs
 				b.BoltOnMassTransitBusModule();
 			});
 
-			serviceCollection.AddMassTransit(x =>
-			{
-				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
-				{
-					cfg.ReceiveEndpoint("TestCqrsUpdatedEvent_queue", ep =>
-					{
-						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<TestCqrsUpdatedEvent>>());
-					});
-				}));
-			});
-
-
-			var cqrsInterceptorLogger = new Mock<IBoltOnLogger<CqrsInterceptor>>();
-			cqrsInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			cqrsInterceptorLogger.Setup(s => s.Error(It.IsAny<string>()))
-								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			serviceCollection.AddTransient((s) => cqrsInterceptorLogger.Object);
-			MockForFailedBusOrFailedPurger(serviceCollection);
+			var cqrsInterceptorLogger = MockForFailedBusOrFailedPurger(serviceCollection);
 
 			var bus = new Mock<BoltOn.Bus.IBus>();
 			var failedBusException = new Exception("failed bus");
@@ -233,24 +215,7 @@ namespace BoltOn.Tests.Cqrs
 				b.BoltOnMassTransitBusModule();
 			});
 
-			serviceCollection.AddMassTransit(x =>
-			{
-				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
-				{
-					cfg.ReceiveEndpoint("TestCqrsUpdatedEvent_queue", ep =>
-					{
-						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<TestCqrsUpdatedEvent>>());
-					});
-				}));
-			});
-
-			var cqrsInterceptorLogger = new Mock<IBoltOnLogger<CqrsInterceptor>>();
-			cqrsInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			cqrsInterceptorLogger.Setup(s => s.Error(It.IsAny<string>()))
-								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			serviceCollection.AddTransient((s) => cqrsInterceptorLogger.Object);
-			MockForFailedBusOrFailedPurger(serviceCollection);
+			var cqrsInterceptorLogger = MockForFailedBusOrFailedPurger(serviceCollection);
 
 			var purger = new Mock<IProcessedEventPurger>();
 			var failedPurger = new Exception("failed purger");
@@ -323,8 +288,19 @@ namespace BoltOn.Tests.Cqrs
 										$"{nameof(TestCqrsReadEntity)} updated. Input1: test Input2Property1: prop1 Input2Propert2: 10"));
 		}
 
-		private static void MockForFailedBusOrFailedPurger(ServiceCollection serviceCollection)
+		private static Mock<IBoltOnLogger<CqrsInterceptor>> MockForFailedBusOrFailedPurger(ServiceCollection serviceCollection)
 		{
+			serviceCollection.AddMassTransit(x =>
+			{
+				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
+				{
+					cfg.ReceiveEndpoint("TestCqrsUpdatedEvent_queue", ep =>
+					{
+						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<TestCqrsUpdatedEvent>>());
+					});
+				}));
+			});
+
 			var logger = new Mock<IBoltOnLogger<TestCqrsHandler>>();
 			logger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
@@ -344,6 +320,15 @@ namespace BoltOn.Tests.Cqrs
 			logger5.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger5.Object);
+
+			var cqrsInterceptorLogger = new Mock<IBoltOnLogger<CqrsInterceptor>>();
+			cqrsInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			cqrsInterceptorLogger.Setup(s => s.Error(It.IsAny<string>()))
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddTransient((s) => cqrsInterceptorLogger.Object);
+
+			return cqrsInterceptorLogger;
 		}
 
 		public void Dispose()

@@ -31,7 +31,8 @@ namespace BoltOn.Bootstrapping
 		{
 			get
 			{
-				Check.Requires(_serviceCollection != null, "ServiceCollection not initialized");
+				if (_serviceCollection == null)
+					throw new Exception("ServiceCollection not initialized");
 				return _serviceCollection;
 			}
 			set => _serviceCollection = value;
@@ -41,7 +42,8 @@ namespace BoltOn.Bootstrapping
 		{
 			get
 			{
-				Check.Requires(_serviceProvider != null, "ServiceProvider not initialized");
+				if (_serviceProvider == null)
+					throw new Exception("ServiceProvider not initialized");
 				return _serviceProvider;
 			}
 		}
@@ -158,10 +160,10 @@ namespace BoltOn.Bootstrapping
 		{
 			var cleanupTaskType = typeof(ICleanupTask);
 			var cleanupTaskTypes = (from a in Assemblies
-										 from t in a.GetTypes()
-										 where cleanupTaskType.IsAssignableFrom(t)
-										 && t.IsClass
-										 select t).ToList();
+									from t in a.GetTypes()
+									where cleanupTaskType.IsAssignableFrom(t)
+									&& t.IsClass
+									select t).ToList();
 			cleanupTaskTypes.ForEach(r => _serviceCollection.AddTransient(cleanupTaskType, r));
 		}
 
