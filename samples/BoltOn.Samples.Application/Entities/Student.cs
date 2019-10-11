@@ -1,6 +1,6 @@
 using BoltOn.Data;
 
-namespace BoltOn.Samples.Domain.Entities
+namespace BoltOn.Samples.Application.Entities
 {
 	public class Student : BaseEntity<int>
 	{

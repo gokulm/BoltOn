@@ -3,7 +3,6 @@ using BoltOn.Samples.Application.Handlers;
 using Microsoft.Extensions.DependencyInjection;
 using BoltOn.Bus.MassTransit;
 using MassTransit;
-using BoltOn.Samples.Application.Messages;
 using System;
 using Microsoft.Extensions.Logging;
 
@@ -33,7 +32,7 @@ namespace BoltOn.Samples.Console
 
 					cfg.ReceiveEndpoint(host, "CreateStudent_Queue", endpoint =>
 					{
-						endpoint.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CreateStudent>>());
+						endpoint.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CreateStudentRequest>>());
 					});
 				}));
 			});

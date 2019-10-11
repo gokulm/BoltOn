@@ -1,6 +1,6 @@
 using BoltOn.Data.EF;
 using BoltOn.Samples.Application.Abstractions.Data;
-using BoltOn.Samples.Domain.Entities;
+using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Infrastructure.Data.Repositories
 {

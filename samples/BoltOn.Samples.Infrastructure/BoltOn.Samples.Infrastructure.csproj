@@ -18,7 +18,6 @@
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.5.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BoltOn.Samples.Domain\BoltOn.Samples.Domain.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />
     <ProjectReference Include="..\..\src\BoltOn.Data.CosmosDb\BoltOn.Data.CosmosDb.csproj" />

@@ -1,4 +1,4 @@
-using BoltOn.Samples.Domain.Entities;
+using BoltOn.Samples.Application.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
