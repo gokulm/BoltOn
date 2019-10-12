@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Cqrs;
@@ -23,7 +24,7 @@ namespace BoltOn.Data.EF
 
 		public override async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default)
 		{
-			var stringId = id.ToString();
+			var stringId = Guid.Parse(id.ToString());
 			return (await base.FindByAsync(f => f.Id == stringId, cancellationToken,
 				i => i.EventsToBeProcessed, i => i.ProcessedEvents)).FirstOrDefault();
 		}
@@ -61,7 +62,7 @@ namespace BoltOn.Data.EF
 			if (!@event.CreatedDate.HasValue)
 				@event.CreatedDate = _boltOnClock.Now;
 
-			if (string.IsNullOrEmpty(@event.SourceId))
+			if (@event.SourceId == Guid.Empty)
 				@event.SourceId = entity.Id;
 		}
 	}

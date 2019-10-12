@@ -29,7 +29,7 @@ namespace BoltOn.Samples.Application.Handlers
 			await _studentRepository.AddAsync(
 				new Student
 				(
-					1,
+					Guid.NewGuid(),
 					request.FirstName,
 					request.LastName
 				), cancellationToken);

@@ -241,7 +241,7 @@ namespace BoltOn.Tests.Cqrs
 										$"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.EventId} " +
 											$"SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"Dispatching failed. Id: {CqrsConstants.EventId}")); 
+										$"Dispatching failed. Id: {CqrsConstants.EventId}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == "Published event"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(TestCqrsUpdatedEventHandler)} invoked"));
@@ -276,8 +276,11 @@ namespace BoltOn.Tests.Cqrs
 			var mediator = serviceProvider.GetService<IMediator>();
 
 			// act
-			await mediator.ProcessAsync(new TestCqrsUpdatedEvent { Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId), 
- 																	SourceId = CqrsConstants.EntityId });
+			await mediator.ProcessAsync(new TestCqrsUpdatedEvent
+			{
+				Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId),
+				SourceId = CqrsConstants.EntityId
+			});
 
 			// assert
 			// as assert not working after async method, added sleep
@@ -384,7 +387,7 @@ namespace BoltOn.Tests.Cqrs
 			Input = request.Input;
 			RaiseEvent(new TestCqrsUpdatedEvent
 			{
-				Id = Guid.Parse(CqrsConstants.EventId),
+				Id = CqrsConstants.EventId,
 				Input1 = request.Input,
 				Input2 = new TestInput { Property1 = "prop1", Property2 = 10 }
 			});
@@ -570,8 +573,8 @@ namespace BoltOn.Tests.Cqrs
 
 	public static class CqrsConstants
 	{
-		public const string EventId = "42bc65b2-f8a6-4371-9906-e7641d9ae9cb";
+		public static Guid EventId = Guid.Parse("42bc65b2-f8a6-4371-9906-e7641d9ae9cb");
 		public const string AlreadyProcessedEventId = "90f7f995-c930-4f2c-9621-7c3763a4df1d";
-		public const string EntityId = "b33cac30-5595-4ada-97dd-f5f7c35c0f4c";
+		public static Guid EntityId = Guid.Parse("b33cac30-5595-4ada-97dd-f5f7c35c0f4c");
 	}
 }

@@ -1,3 +1,4 @@
+using System;
 using BoltOn.Cqrs;
 using BoltOn.Samples.Application.Handlers;
 
@@ -12,9 +13,9 @@ namespace BoltOn.Samples.Application.Entities
 		{
 		}
 
-		public Student(int id, string firstName, string lastName)
+		public Student(Guid id, string firstName, string lastName)
 		{
-			Id = id.ToString();
+			Id = id;
 			FirstName = firstName;
 			LastName = lastName;
 

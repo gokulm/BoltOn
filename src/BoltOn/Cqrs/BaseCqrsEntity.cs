@@ -11,7 +11,7 @@ namespace BoltOn.Cqrs
 		HashSet<ProcessedEvent> ProcessedEvents { get; set; }
 	}
 
-	public abstract class BaseCqrsEntity : BaseEntity<string>, ICqrsEntity
+	public abstract class BaseCqrsEntity : BaseEntity<Guid>, ICqrsEntity
 	{
 		public HashSet<EventToBeProcessed> EventsToBeProcessed { get; set; } = new HashSet<EventToBeProcessed>();
 

@@ -7,7 +7,7 @@ namespace BoltOn.Cqrs
 	{
 		Guid Id { get; set; }
 		string SourceTypeName { get; set; }
-        string SourceId { get; set; }
+        Guid SourceId { get; set; }
 		DateTime? CreatedDate { get; set; }
 	}
 
@@ -15,7 +15,7 @@ namespace BoltOn.Cqrs
     {
         public Guid Id { get; set; }
         public string SourceTypeName { get; set; }
-		public string SourceId { get; set; }
+		public Guid SourceId { get; set; }
 		public DateTime? CreatedDate { get; set; }
 
 		public override bool Equals(object obj)
