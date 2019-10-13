@@ -27,6 +27,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.0" />
         <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
