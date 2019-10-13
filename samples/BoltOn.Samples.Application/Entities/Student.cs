@@ -1,6 +1,7 @@
 using System;
 using BoltOn.Cqrs;
 using BoltOn.Samples.Application.Handlers;
+using Newtonsoft.Json;
 
 namespace BoltOn.Samples.Application.Entities
 {
@@ -19,26 +20,27 @@ namespace BoltOn.Samples.Application.Entities
 			FirstName = firstName;
 			LastName = lastName;
 
-			RaiseEvent(new StudentCreatedEvent { Student = this });
+			RaiseEvent(new StudentCreatedEvent { Body = JsonConvert.SerializeObject(this) });
 		}
 	}
 
-	public class StudentQueryEntity : BaseCqrsEntity
+	public class StudentFlattened : BaseCqrsEntity
 	{
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
 
-		private StudentQueryEntity()
+		private StudentFlattened()
 		{
 		}
 
-		public StudentQueryEntity(StudentCreatedEvent @event)
+		public StudentFlattened(StudentCreatedEvent @event)
 		{
 			ProcessEvent(@event, e =>
 			{
-				Id = e.Student.Id;
-				FirstName = e.Student.FirstName;
-				LastName = e.Student.LastName;
+				var student = JsonConvert.DeserializeObject<Student>(e.Body);
+				Id = student.Id;
+				FirstName = student.FirstName;
+				LastName = student.LastName;
 			});
 		}
 	}

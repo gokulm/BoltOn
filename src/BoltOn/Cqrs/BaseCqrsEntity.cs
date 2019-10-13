@@ -26,6 +26,9 @@ namespace BoltOn.Cqrs
 			if (@event.Id == Guid.Empty)
 				@event.Id = Guid.NewGuid();
 
+			if (@event.SourceId == Guid.Empty)
+				@event.SourceId = Id;
+
 			@event.SourceTypeName = GetType().AssemblyQualifiedName;
 
 			EventsToBeProcessed.Add(@event as EventToBeProcessed);

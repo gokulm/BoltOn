@@ -5,6 +5,11 @@ using BoltOn.Bus.MassTransit;
 using MassTransit;
 using System;
 using Microsoft.Extensions.Logging;
+using BoltOn.Data;
+using BoltOn.Samples.Application.Entities;
+using BoltOn.Data.EF;
+using BoltOn.Samples.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Samples.Console
 {
@@ -18,6 +23,8 @@ namespace BoltOn.Samples.Console
 			{
 				o.BoltOnAssemblies(typeof(GetAllStudentsRequest).Assembly);
 				o.BoltOnMassTransitBusModule();
+				o.EnableCqrs();
+				o.BoltOnEFModule();
 			});
 
 			serviceCollection.AddMassTransit(x =>
@@ -30,12 +37,24 @@ namespace BoltOn.Samples.Console
 						hostConfigurator.Password("guest");
 					});
 
-					cfg.ReceiveEndpoint(host, "CreateStudent_Queue", endpoint =>
+					//cfg.ReceiveEndpoint(host, "CreateStudent_Queue", endpoint =>
+					//{
+						//endpoint.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CreateStudentRequest>>());
+					//});
+
+					cfg.ReceiveEndpoint("StudentCreatedEvent_queue", ep =>
 					{
-						endpoint.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CreateStudentRequest>>());
+						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<StudentCreatedEvent>>());
 					});
 				}));
 			});
+
+			serviceCollection.AddDbContext<SchoolDbContext>(options =>
+			{
+				options.UseSqlServer("Data Source=127.0.0.1;initial catalog=Testing;persist security info=True;User ID=sa;Password=Password1;");
+			});
+
+			serviceCollection.AddTransient<IRepository<StudentFlattened>, EFCqrsRepository<StudentFlattened, SchoolDbContext>>();
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();

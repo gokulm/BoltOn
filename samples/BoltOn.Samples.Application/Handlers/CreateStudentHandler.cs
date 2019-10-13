@@ -39,21 +39,21 @@ namespace BoltOn.Samples.Application.Handlers
 
 	public class StudentCreatedEvent : EventToBeProcessed
 	{
-		public Student Student { get; set; }
 	}
 
 	public class StudentCreatedEventHandler : IRequestAsyncHandler<StudentCreatedEvent>
 	{
-		private readonly IRepository<StudentQueryEntity> _repository;
+		private readonly IRepository<StudentFlattened> _repository;
 
-		public StudentCreatedEventHandler(IRepository<StudentQueryEntity> repository)
+		public StudentCreatedEventHandler(IRepository<StudentFlattened> repository)
 		{
 			_repository = repository;
 		}
 
 		public async Task HandleAsync(StudentCreatedEvent request, CancellationToken cancellationToken)
 		{
-			await _repository.AddAsync(new StudentQueryEntity(request), cancellationToken);
+			await _repository.AddAsync(new StudentFlattened(request), cancellationToken);
+			//await Task.CompletedTask;
 		}
 	}
 }

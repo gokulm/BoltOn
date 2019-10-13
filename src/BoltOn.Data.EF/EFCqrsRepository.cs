@@ -31,14 +31,14 @@ namespace BoltOn.Data.EF
 
 		protected override void SaveChanges(TEntity entity)
 		{
-			base.SaveChanges(entity);
 			PublishEvents(entity);
+			base.SaveChanges(entity);
 		}
 
 		protected override async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
-			await base.SaveChangesAsync(entity, cancellationToken);
 			PublishEvents(entity);
+			await base.SaveChangesAsync(entity, cancellationToken);
 		}
 
 		private void PublishEvents(TEntity entity)
@@ -48,22 +48,19 @@ namespace BoltOn.Data.EF
 				var cqrsEntity = entity as ICqrsEntity;
 				foreach (var @event in cqrsEntity.EventsToBeProcessed)
 				{
-					SetCreatedDateAndSourceId(@event, entity);
+					SetCreatedDate(@event);
 					_eventBag.Events.Add(@event);
 				}
 
 				foreach (var @event in cqrsEntity.ProcessedEvents)
-					SetCreatedDateAndSourceId(@event, entity);
+					SetCreatedDate(@event);
 			}
 		}
 
-		private void SetCreatedDateAndSourceId(ICqrsEvent @event, TEntity entity)
+		private void SetCreatedDate(ICqrsEvent @event)
 		{
 			if (!@event.CreatedDate.HasValue)
 				@event.CreatedDate = _boltOnClock.Now;
-
-			if (@event.SourceId == Guid.Empty)
-				@event.SourceId = entity.Id;
 		}
 	}
 }

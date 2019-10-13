@@ -17,6 +17,7 @@ namespace BoltOn.Cqrs
         public string SourceTypeName { get; set; }
 		public Guid SourceId { get; set; }
 		public DateTime? CreatedDate { get; set; }
+		public string Body { get; set; }
 
 		public override bool Equals(object obj)
 		{

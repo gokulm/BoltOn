@@ -13,12 +13,10 @@ namespace BoltOn.Samples.WebApi.Controllers
 	public class StudentsController : Controller
 	{
 		private readonly IMediator _mediator;
-		private readonly IBus _bus;
 
-		public StudentsController(IMediator mediator, IBus bus)
+		public StudentsController(IMediator mediator)
 		{
 			this._mediator = mediator;
-			this._bus = bus;
 		}
 
 		[HttpGet]
@@ -36,10 +34,10 @@ namespace BoltOn.Samples.WebApi.Controllers
         }
 
 		[HttpPost]
-		public async Task<StudentDto> Post(CreateStudentRequest student)
+		public async Task<StudentDto> Post(CreateStudentRequest request)
 		{
-			await _bus.PublishAsync(student);
-			return new StudentDto { FirstName = student.FirstName, LastName = student.FirstName };
+			await _mediator.ProcessAsync(request);
+			return new StudentDto { FirstName = request.FirstName, LastName = request.FirstName };
 		}
 	}
 }
