@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BoltOn.Bus;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Samples.Application.DTOs;
 using BoltOn.Samples.Application.Entities;
@@ -34,10 +33,10 @@ namespace BoltOn.Samples.WebApi.Controllers
         }
 
 		[HttpPost]
-		public async Task<StudentDto> Post(CreateStudentRequest request)
+		public async Task<string> Post(CreateStudentRequest request)
 		{
 			await _mediator.ProcessAsync(request);
-			return new StudentDto { FirstName = request.FirstName, LastName = request.FirstName };
+			return "Added";
 		}
 	}
 }

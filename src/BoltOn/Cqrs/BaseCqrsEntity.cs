@@ -7,18 +7,18 @@ namespace BoltOn.Cqrs
 {
 	public interface ICqrsEntity
 	{
-		HashSet<EventToBeProcessed> EventsToBeProcessed { get; set; }
-		HashSet<ProcessedEvent> ProcessedEvents { get; set; }
+		HashSet<CqrsEvent> EventsToBeProcessed { get; set; }
+		HashSet<CqrsEvent> ProcessedEvents { get; set; }
 	}
 
 	public abstract class BaseCqrsEntity : BaseEntity<Guid>, ICqrsEntity
 	{
-		public HashSet<EventToBeProcessed> EventsToBeProcessed { get; set; } = new HashSet<EventToBeProcessed>();
+		public HashSet<CqrsEvent> EventsToBeProcessed { get; set; } = new HashSet<CqrsEvent>();
 
-		public HashSet<ProcessedEvent> ProcessedEvents { get; set; } = new HashSet<ProcessedEvent>();
+		public HashSet<CqrsEvent> ProcessedEvents { get; set; } = new HashSet<CqrsEvent>();
 
 		protected bool RaiseEvent<TEvent>(TEvent @event) 
-			where TEvent : ICqrsEvent
+			where TEvent : CqrsEvent
 		{
 			if (EventsToBeProcessed.FirstOrDefault(c => c.Id == @event.Id) != null)
 				return false;
@@ -31,27 +31,19 @@ namespace BoltOn.Cqrs
 
 			@event.SourceTypeName = GetType().AssemblyQualifiedName;
 
-			EventsToBeProcessed.Add(@event as EventToBeProcessed);
+			EventsToBeProcessed.Add(@event);
 			return true;
 		}
 
 		protected bool ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action) 
-			where TEvent : ICqrsEvent
+			where TEvent : CqrsEvent
 		{
 			if (ProcessedEvents.FirstOrDefault(c => c.Id == @event.Id) != null)
 				return false;
 
 			action(@event);
 
-			var processedEvent = new ProcessedEvent
-			{
-				Id = @event.Id,
-				SourceId = @event.SourceId,
-				SourceTypeName = @event.SourceTypeName,
-				CreatedDate = @event.CreatedDate
-			};
-
-			ProcessedEvents.Add(processedEvent);
+			ProcessedEvents.Add(@event);
 			return true;
 		}
 	}

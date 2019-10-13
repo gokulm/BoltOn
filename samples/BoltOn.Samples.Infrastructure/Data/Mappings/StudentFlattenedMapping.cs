@@ -1,14 +1,16 @@
-﻿using BoltOn.Cqrs;
+﻿using BoltOn.Data.EF;
 using BoltOn.Samples.Application.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BoltOn.Samples.Infrastructure.Data.Mappings
 {
-    public class StudentFlattenedMapping : IEntityTypeConfiguration<StudentFlattened>
+	public class StudentFlattenedMapping : BaseCqrsEntityMapping<StudentFlattened>
     {
-        public void Configure(EntityTypeBuilder<StudentFlattened> builder)
+        public override void Configure(EntityTypeBuilder<StudentFlattened> builder)
         {
+			base.Configure(builder);
+
             builder
                 .ToTable("StudentFlattened")
                 .HasKey(k => k.Id);
@@ -16,34 +18,6 @@ namespace BoltOn.Samples.Infrastructure.Data.Mappings
                 .Property(p => p.Id)
                 .HasColumnName("StudentId")
                 .ValueGeneratedNever();
-			builder
-				.Ignore(p => p.EventsToBeProcessed);
-			builder
-				.Ignore(p => p.ProcessedEvents);
-			//builder
-			//	.HasMany(p => p.EventsToBeProcessed);
-			//builder
-			//.HasMany(p => p.ProcessedEvents);
 		}
     }
-
-	public class EventToBeProcessedMapping : IEntityTypeConfiguration<EventToBeProcessed>
-	{
-		public void Configure(EntityTypeBuilder<EventToBeProcessed> builder)
-		{
-			builder
-				.ToTable("EventToBeProcessed")
-				.HasKey(k => k.Id);
-		}
-	}
-
-	public class ProcessedEventMapping : IEntityTypeConfiguration<ProcessedEvent>
-	{
-		public void Configure(EntityTypeBuilder<ProcessedEvent> builder)
-		{
-			builder
-				.ToTable("ProcessedEvent")
-				.HasKey(k => k.Id);
-		}
-	}
 }

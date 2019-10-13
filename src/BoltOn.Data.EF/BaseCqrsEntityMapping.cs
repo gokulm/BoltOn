@@ -15,12 +15,12 @@ namespace BoltOn.Data.EF
 				.Property(p => p.EventsToBeProcessed)
 				.HasConversion(
 						v => JsonConvert.SerializeObject(v),
-						v => JsonConvert.DeserializeObject<HashSet<EventToBeProcessed>>(v));
+						v => JsonConvert.DeserializeObject<HashSet<CqrsEvent>>(v));
 			builder
 				.Property(p => p.ProcessedEvents)
 				.HasConversion(
 						v => JsonConvert.SerializeObject(v),
-						v => JsonConvert.DeserializeObject<HashSet<ProcessedEvent>>(v));
+						v => JsonConvert.DeserializeObject<HashSet<CqrsEvent>>(v));
 		}
 	}
 }

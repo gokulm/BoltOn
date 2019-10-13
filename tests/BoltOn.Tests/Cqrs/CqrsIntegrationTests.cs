@@ -346,7 +346,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 	}
 
-	public class TestCqrsUpdatedEvent : EventToBeProcessed
+	public class TestCqrsUpdatedEvent : CqrsEvent
 	{
 		public string Input1 { get; set; }
 
@@ -415,26 +415,6 @@ namespace BoltOn.Tests.Cqrs
 		}
 	}
 
-	public class EventToBeProcessedMapping : IEntityTypeConfiguration<EventToBeProcessed>
-	{
-		public void Configure(EntityTypeBuilder<EventToBeProcessed> builder)
-		{
-			builder
-				.ToTable("EventToBeProcessed")
-				.HasKey(k => k.Id);
-		}
-	}
-
-	public class ProcessedEventMapping : IEntityTypeConfiguration<ProcessedEvent>
-	{
-		public void Configure(EntityTypeBuilder<ProcessedEvent> builder)
-		{
-			builder
-				.ToTable("ProcessedEvent")
-				.HasKey(k => k.Id);
-		}
-	}
-
 	public class TestCqrsRegistrationTask : IRegistrationTask
 	{
 		public void Run(RegistrationTaskContext context)
@@ -475,9 +455,9 @@ namespace BoltOn.Tests.Cqrs
 			{
 				Id = CqrsConstants.EntityId,
 				Input1 = "value to be replaced",
-				ProcessedEvents = new HashSet<ProcessedEvent>
+				ProcessedEvents = new HashSet<CqrsEvent>
 				{
-					new ProcessedEvent { Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId) }
+					new CqrsEvent { Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId) }
 				}
 			});
 			testDbContext.SaveChanges();
@@ -499,8 +479,6 @@ namespace BoltOn.Tests.Cqrs
 		{
 			modelBuilder.ApplyConfiguration(new TestCqrsWriteEntityMapping());
 			modelBuilder.ApplyConfiguration(new TestCqrsReadEntityMapping());
-			modelBuilder.ApplyConfiguration(new EventToBeProcessedMapping());
-			modelBuilder.ApplyConfiguration(new ProcessedEventMapping());
 		}
 	}
 

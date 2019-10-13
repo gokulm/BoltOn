@@ -1,10 +1,9 @@
 ﻿using BoltOn.Cqrs;
 using BoltOn.Samples.Application.Handlers;
-using Newtonsoft.Json;
 
 namespace BoltOn.Samples.Application.Entities
 {
-    public class StudentFlattened : BaseCqrsEntity
+	public class StudentFlattened : BaseCqrsEntity
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -17,10 +16,9 @@ namespace BoltOn.Samples.Application.Entities
         {
             ProcessEvent(@event, e =>
             {
-                var student = JsonConvert.DeserializeObject<Student>(e.Body);
-                Id = student.Id;
-                FirstName = student.FirstName;
-                LastName = student.LastName;
+                Id = e.StudentId;
+                FirstName = e.FirstName;
+                LastName = e.LastName;
             });
         }
     }

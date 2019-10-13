@@ -20,7 +20,7 @@ namespace BoltOn.Samples.Application.Entities
 			FirstName = request.FirstName;
 			LastName = request.LastName;
 
-			RaiseEvent(new StudentCreatedEvent { Body = JsonConvert.SerializeObject(this) });
+			RaiseEvent(new StudentCreatedEvent { StudentId = Id, FirstName = FirstName, LastName = LastName });
 		}
 	}
 }
