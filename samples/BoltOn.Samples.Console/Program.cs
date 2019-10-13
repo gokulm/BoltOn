@@ -37,11 +37,6 @@ namespace BoltOn.Samples.Console
 						hostConfigurator.Password("guest");
 					});
 
-					//cfg.ReceiveEndpoint(host, "CreateStudent_Queue", endpoint =>
-					//{
-						//endpoint.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CreateStudentRequest>>());
-					//});
-
 					cfg.ReceiveEndpoint("StudentCreatedEvent_queue", ep =>
 					{
 						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<StudentCreatedEvent>>());

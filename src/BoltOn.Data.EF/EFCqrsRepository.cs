@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Cqrs;
 using BoltOn.Utilities;
@@ -20,13 +18,6 @@ namespace BoltOn.Data.EF
 		{
 			_eventBag = eventBag;
 			_boltOnClock = boltOnClock;
-		}
-
-		public override async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default)
-		{
-			var stringId = Guid.Parse(id.ToString());
-			return (await base.FindByAsync(f => f.Id == stringId, cancellationToken,
-				i => i.EventsToBeProcessed, i => i.ProcessedEvents)).FirstOrDefault();
 		}
 
 		protected override void SaveChanges(TEntity entity)

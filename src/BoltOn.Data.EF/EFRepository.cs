@@ -16,7 +16,7 @@ namespace BoltOn.Data.EF
 		private readonly TDbContext _dbContext;
 		private readonly DbSet<TEntity> _dbSets;
 
-		protected EFRepository(IDbContextFactory dbContextFactory)
+		public EFRepository(IDbContextFactory dbContextFactory)
 		{
 			_dbContext = dbContextFactory.Get<TDbContext>();
 			_dbSets = _dbContext.Set<TEntity>();
