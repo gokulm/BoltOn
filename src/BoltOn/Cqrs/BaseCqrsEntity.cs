@@ -20,7 +20,7 @@ namespace BoltOn.Cqrs
 		protected bool RaiseEvent<TEvent>(TEvent @event) 
 			where TEvent : CqrsEvent
 		{
-			if (EventsToBeProcessed.FirstOrDefault(c => c.Id == @event.Id) != null)
+			if (EventsToBeProcessed.Any(c => c.Id == @event.Id))
 				return false;
 
 			if (@event.Id == Guid.Empty)
@@ -38,7 +38,7 @@ namespace BoltOn.Cqrs
 		protected bool ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action) 
 			where TEvent : CqrsEvent
 		{
-			if (ProcessedEvents.FirstOrDefault(c => c.Id == @event.Id) != null)
+			if (ProcessedEvents.Any(c => c.Id == @event.Id))
 				return false;
 
 			action(@event);

@@ -15,6 +15,8 @@ namespace BoltOn.Samples.Application.Handlers
 		public string FirstName { get; set; }
 
 		public string LastName { get; set; }
+
+		public string StudentType { get; set; }
 	}
 
 	public class StudentCreatedEventHandler : IRequestAsyncHandler<StudentCreatedEvent>

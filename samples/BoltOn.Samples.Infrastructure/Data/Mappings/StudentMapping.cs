@@ -20,4 +20,18 @@ namespace BoltOn.Samples.Infrastructure.Data.Mappings
 				.ValueGeneratedNever();
 		}
 	}
+
+	public class StudentTypeMapping : IEntityTypeConfiguration<StudentType>
+	{
+		public void Configure(EntityTypeBuilder<StudentType> builder)
+		{
+			builder
+				.ToTable("StudentType")
+				.HasKey(k => k.Id);
+			builder
+				.Property(p => p.Id)
+				.HasColumnName("StudentTypeId")
+				.ValueGeneratedNever();
+		}
+	}
 }

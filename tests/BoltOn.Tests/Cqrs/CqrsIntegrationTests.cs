@@ -252,11 +252,6 @@ namespace BoltOn.Tests.Cqrs
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger4.Object);
 
-			var logger5 = new Mock<IBoltOnLogger<ProcessedEventPurger>>();
-			logger5.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			serviceCollection.AddTransient((s) => logger5.Object);
-
 			var cqrsInterceptorLogger = new Mock<IBoltOnLogger<CqrsInterceptor>>();
 			cqrsInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));

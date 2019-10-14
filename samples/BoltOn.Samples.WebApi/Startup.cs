@@ -79,26 +79,7 @@ namespace BoltOn.Samples.WebApi
 			//});
 
 			container.AddTransient<IRepository<Student>, EFCqrsRepository<Student, SchoolDbContext>>();
-		}
-	}
-
-	public class PostRegistrationTask : IPostRegistrationTask
-	{
-		private readonly IServiceProvider _serviceProvider;
-
-		public PostRegistrationTask(IServiceProvider serviceProvider)
-		{
-			_serviceProvider = serviceProvider;
-		}
-
-		public void Run(PostRegistrationTaskContext context)
-		{
-			using (var scope = _serviceProvider.CreateScope())
-			{
-				var testDbContext = scope.ServiceProvider.GetService<SchoolDbContext>();
-				testDbContext.Database.EnsureDeleted();
-				testDbContext.Database.EnsureCreated();
-			}
+			container.AddTransient<IRepository<StudentType>, EFRepository<StudentType, SchoolDbContext>>();
 		}
 	}
 }

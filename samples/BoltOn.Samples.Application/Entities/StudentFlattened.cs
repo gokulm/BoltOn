@@ -7,8 +7,9 @@ namespace BoltOn.Samples.Application.Entities
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+		public string StudentType { get; set; }
 
-        private StudentFlattened()
+		private StudentFlattened()
         {
         }
 
@@ -19,6 +20,7 @@ namespace BoltOn.Samples.Application.Entities
                 Id = e.StudentId;
                 FirstName = e.FirstName;
                 LastName = e.LastName;
+				StudentType = e.StudentType;
             });
         }
     }
