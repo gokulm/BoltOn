@@ -30,7 +30,9 @@ namespace BoltOn.Cqrs
 				@event.SourceId = Id;
 
 			@event.SourceTypeName = GetType().AssemblyQualifiedName;
-
+			// events with CreatedData == null are filtered in the repository. this is used 
+			// to differentiate events that were added in the current request and the existing events
+			@event.CreatedDate = null;
 			EventsToBeProcessed.Add(@event);
 			return true;
 		}
@@ -42,7 +44,10 @@ namespace BoltOn.Cqrs
 				return false;
 
 			action(@event);
-
+			@event.DestinationTypeName = GetType().AssemblyQualifiedName;
+			// events with ProcessedDate == null are filtered in the repository. this is used 
+			// to differentiate events that were added in the current request and the existing events
+			@event.ProcessedDate = null;
 			ProcessedEvents.Add(@event);
 			return true;
 		}

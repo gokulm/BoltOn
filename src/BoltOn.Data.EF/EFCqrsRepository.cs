@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Cqrs;
 using BoltOn.Utilities;
@@ -34,24 +35,20 @@ namespace BoltOn.Data.EF
 
 		private void PublishEvents(TEntity entity)
 		{
-			if (entity is ICqrsEntity)
+			var eventsToBeProcessed = entity.EventsToBeProcessed.ToList()
+				.Where(w => !w.CreatedDate.HasValue);
+			foreach (var @event in eventsToBeProcessed)
 			{
-				var cqrsEntity = entity as ICqrsEntity;
-				foreach (var @event in cqrsEntity.EventsToBeProcessed)
-				{
-					SetCreatedDate(@event);
-					_eventBag.Events.Add(@event);
-				}
-
-				foreach (var @event in cqrsEntity.ProcessedEvents)
-					SetCreatedDate(@event);
-			}
-		}
-
-		private void SetCreatedDate(ICqrsEvent @event)
-		{
-			if (!@event.CreatedDate.HasValue)
 				@event.CreatedDate = _boltOnClock.Now;
+				_eventBag.EventsToBeProcessed.Add(@event);
+			}
+
+			var processedEvents = entity.ProcessedEvents.ToList()
+				.Where(w => !w.ProcessedDate.HasValue);
+			foreach (var @event in processedEvents)
+			{
+				@event.ProcessedDate = _boltOnClock.Now;
+			}
 		}
 	}
 }

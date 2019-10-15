@@ -95,7 +95,7 @@ namespace BoltOn.Tests.Cqrs
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(TestCqrsReadEntity)} updated. Input1: test input Input2Property1: prop1 Input2Propert2: 10"));
 			var eventBag = serviceProvider.GetService<EventBag>();
-			Assert.True(eventBag.Events.Count == 0);
+			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
 		}
 
 		[Fact]
@@ -186,7 +186,7 @@ namespace BoltOn.Tests.Cqrs
 			Assert.NotNull(entity);
 			Assert.True(entity.EventsToBeProcessed.Count == 1);
 			var eventBag = serviceProvider.GetService<EventBag>();
-			Assert.True(eventBag.Events.Count == 0);
+			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
 		}
 
 		[Fact]

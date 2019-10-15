@@ -71,7 +71,6 @@ namespace BoltOn.Bootstrapping
 		private static void RegisterInterceptors(RegistrationTaskContext context)
 		{
 			context.AddInterceptor<StopwatchInterceptor>();
-			context.AddInterceptor<UnitOfWorkInterceptor>();
 
 			if (Bootstrapper.Instance.Options.IsCqrsEnabled)
 			{
@@ -82,6 +81,8 @@ namespace BoltOn.Bootstrapping
 			{
 				context.Container.AddTransient<IEventDispatcher, DefaultEventDispatcher>();
 			}
+
+			context.AddInterceptor<UnitOfWorkInterceptor>();
 		}
 
 		private static void RegisterHandlers(RegistrationTaskContext context)
