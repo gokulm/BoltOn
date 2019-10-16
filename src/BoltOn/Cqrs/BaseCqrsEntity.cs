@@ -17,7 +17,7 @@ namespace BoltOn.Cqrs
 
 		public HashSet<CqrsEvent> ProcessedEvents { get; set; } = new HashSet<CqrsEvent>();
 
-		protected bool RaiseEvent<TEvent>(TEvent @event) 
+		protected bool RaiseEvent<TEvent>(TEvent @event)
 			where TEvent : CqrsEvent
 		{
 			if (EventsToBeProcessed.Any(c => c.Id == @event.Id))
@@ -26,9 +26,7 @@ namespace BoltOn.Cqrs
 			if (@event.Id == Guid.Empty)
 				@event.Id = Guid.NewGuid();
 
-			if (@event.SourceId == Guid.Empty)
-				@event.SourceId = Id;
-
+			@event.SourceId = Id;
 			@event.SourceTypeName = GetType().AssemblyQualifiedName;
 			// events with CreatedData == null are filtered in the repository. this is used 
 			// to differentiate events that were added in the current request and the existing events
@@ -37,7 +35,7 @@ namespace BoltOn.Cqrs
 			return true;
 		}
 
-		protected bool ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action) 
+		protected bool ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action)
 			where TEvent : CqrsEvent
 		{
 			if (ProcessedEvents.Any(c => c.Id == @event.Id))
