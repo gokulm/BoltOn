@@ -7,14 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Data.EF
 {
-	public class EFCqrsRepository<TEntity, TDbContext> : EFRepository<TEntity, TDbContext>, IRepository<TEntity>
+	public class CqrsRepository<TEntity, TDbContext> : Repository<TEntity, TDbContext>, IRepository<TEntity>
 		where TEntity : BaseCqrsEntity
 		where TDbContext : DbContext
 	{
 		private readonly EventBag _eventBag;
 		private readonly IBoltOnClock _boltOnClock;
 
-		public EFCqrsRepository(IDbContextFactory dbContextFactory, EventBag eventBag,
+		public CqrsRepository(IDbContextFactory dbContextFactory, EventBag eventBag,
 			IBoltOnClock boltOnClock) : base(dbContextFactory)
 		{
 			_eventBag = eventBag;

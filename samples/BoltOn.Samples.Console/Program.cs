@@ -49,7 +49,7 @@ namespace BoltOn.Samples.Console
 				options.UseSqlServer("Data Source=127.0.0.1;initial catalog=Testing;persist security info=True;User ID=sa;Password=Password1;");
 			});
 
-			serviceCollection.AddTransient<IRepository<StudentFlattened>, EFCqrsRepository<StudentFlattened, SchoolDbContext>>();
+			serviceCollection.AddTransient<IRepository<StudentFlattened>, CqrsRepository<StudentFlattened, SchoolDbContext>>();
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();

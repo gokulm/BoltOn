@@ -78,8 +78,8 @@ namespace BoltOn.Samples.WebApi
 			//    options.DatabaseName = "";
 			//});
 
-			container.AddTransient<IRepository<Student>, EFCqrsRepository<Student, SchoolDbContext>>();
-			container.AddTransient<IRepository<StudentType>, EFRepository<StudentType, SchoolDbContext>>();
+			container.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolDbContext>>();
+			container.AddTransient<IRepository<StudentType>, Repository<StudentType, SchoolDbContext>>();
 		}
 	}
 }
