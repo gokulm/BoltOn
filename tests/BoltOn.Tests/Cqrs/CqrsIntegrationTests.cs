@@ -38,10 +38,9 @@ namespace BoltOn.Tests.Cqrs
 			{
 				b.BoltOnAssemblies(GetType().Assembly);
 				b.BoltOnEFModule();
-				b.EnableCqrs();
+				b.BoltOnCqrsModule();
 				b.BoltOnMassTransitBusModule();
 			});
-
 
 			serviceCollection.AddMassTransit(x =>
 			{
@@ -117,7 +116,7 @@ namespace BoltOn.Tests.Cqrs
 			{
 				b.BoltOnAssemblies(GetType().Assembly);
 				b.BoltOnEFModule();
-				b.EnableCqrs();
+				b.BoltOnCqrsModule();
 				b.BoltOnMassTransitBusModule();
 			});
 
@@ -163,7 +162,7 @@ namespace BoltOn.Tests.Cqrs
 			{
 				b.BoltOnAssemblies(GetType().Assembly);
 				b.BoltOnEFModule();
-				b.EnableCqrs();
+				b.BoltOnCqrsModule();
 				b.BoltOnMassTransitBusModule();
 			});
 
@@ -213,7 +212,7 @@ namespace BoltOn.Tests.Cqrs
 			{
 				b.BoltOnAssemblies(GetType().Assembly);
 				b.BoltOnEFModule();
-				b.EnableCqrs();
+				b.BoltOnCqrsModule();
 				b.BoltOnMassTransitBusModule();
 			});
 

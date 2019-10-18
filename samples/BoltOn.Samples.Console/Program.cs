@@ -23,7 +23,7 @@ namespace BoltOn.Samples.Console
 			{
 				o.BoltOnAssemblies(typeof(GetAllStudentsRequest).Assembly);
 				o.BoltOnMassTransitBusModule();
-				o.EnableCqrs();
+				o.BoltOnCqrsModule();
 				o.BoltOnEFModule();
 			});
 

@@ -36,7 +36,7 @@ namespace BoltOn.Samples.WebApi
 				options.BoltOnEFModule();
 				options.BoltOnCosmosDbModule();
 				options.BoltOnMassTransitBusModule();
-				options.EnableCqrs();
+				options.BoltOnCqrsModule();
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(StudentRepository).Assembly);
 			});
 		}

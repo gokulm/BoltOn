@@ -14,7 +14,7 @@ namespace BoltOn.Bootstrapping
 			AssembliesToBeIncluded.AddRange(assemblies);
 		}
 
-		public void EnableCqrs()
+		public void BoltOnCqrsModule()
 		{
 			IsCqrsEnabled = true;
 		}
