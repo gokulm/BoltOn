@@ -12,7 +12,7 @@ In order to use Entity Framework implementation of the repository, you need to d
 2. Call `BoltOnEFModule()` in your startup's BoltOn() method.
 3. Create an entity by inheriting `BaseEntity<TIdType>`. The inheritance is not mandatory though.
 4. Create a DbContext by inheriting [`BaseDbContext<TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseDbContext.cs). You could inherit EF's DbContext directy if you're not interested in any of the benefits that BaseDbContext offers.
-5. Inherit [`BaseEFRepository<TEntity, TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseEFRepository.cs).
+5. Inherit [`Repository<TEntity, TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs).
 6. Add all the database columns to entity properties mapping inside a mapping class by implementing `IEntityTypeConfiguration<TEntity>` interface.
 <br>
 The mapping classes will be automatically added to your DbContext if you inherit `BaseDbContext<TDbContext>` and if they are in the same assembly where the DbContext resides. 
@@ -56,13 +56,14 @@ Example:
 	{
 	}
 
-	public class StudentRepository : BaseEFRepository<Student, SchoolDbContext>, IStudentRepository
+	public class StudentRepository : Repository<Student, SchoolDbContext>, IStudentRepository
 	{
 		public StudentRepository(IDbContextFactory dbContextFactory) : base(dbContextFactory)
 		{
 		}
 	}
 
+**Note:** Create your own repository like StudentRepository only if you want to override the Repository class' methods or if you want to add methods, else you could just register `IRepository<Student>` to `Repository<Student>`
 
 DbContextFactory
 ----------------

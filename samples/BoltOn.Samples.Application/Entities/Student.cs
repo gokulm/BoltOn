@@ -29,5 +29,20 @@ namespace BoltOn.Samples.Application.Entities
 				StudentType = studentType
 			});
 		}
+
+		public void Update(UpdateStudentRequest request, string studentType)
+		{
+			FirstName = request.FirstName;
+			LastName = request.LastName;
+			StudentTypeId = request.StudentTypeId;
+
+			RaiseEvent(new StudentUpdatedEvent
+			{
+				StudentId = Id,
+				FirstName = FirstName,
+				LastName = LastName,
+				StudentType = studentType
+			});
+		}
 	}
 }

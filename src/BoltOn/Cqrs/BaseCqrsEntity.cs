@@ -5,13 +5,7 @@ using BoltOn.Data;
 
 namespace BoltOn.Cqrs
 {
-	public interface ICqrsEntity
-	{
-		HashSet<CqrsEvent> EventsToBeProcessed { get; set; }
-		HashSet<CqrsEvent> ProcessedEvents { get; set; }
-	}
-
-	public abstract class BaseCqrsEntity : BaseEntity<Guid>, ICqrsEntity
+	public abstract class BaseCqrsEntity : BaseEntity<Guid>
 	{
 		public HashSet<CqrsEvent> EventsToBeProcessed { get; set; } = new HashSet<CqrsEvent>();
 

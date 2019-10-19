@@ -23,5 +23,16 @@ namespace BoltOn.Samples.Application.Entities
 				StudentType = e.StudentType;
             });
         }
-    }
+
+		public void Update(StudentUpdatedEvent @event)
+		{
+			ProcessEvent(@event, e =>
+			{
+				Id = e.StudentId;
+				FirstName = e.FirstName;
+				LastName = e.LastName;
+				StudentType = e.StudentType;
+			});
+		}
+	}
 }

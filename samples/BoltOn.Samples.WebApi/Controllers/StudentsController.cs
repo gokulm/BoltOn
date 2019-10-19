@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BoltOn.Mediator.Pipeline;
@@ -8,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BoltOn.Samples.WebApi.Controllers
 {
-	[Route("api/[controller]")]
 	public class StudentsController : Controller
 	{
 		private readonly IMediator _mediator;
@@ -18,7 +18,7 @@ namespace BoltOn.Samples.WebApi.Controllers
 			this._mediator = mediator;
 		}
 
-		[HttpGet]
+		[HttpGet, Route("[controller]")]
 		public async Task<IEnumerable<StudentDto>> Get()
 		{
 			var students = await _mediator.ProcessAsync(new GetAllStudentsRequest());
@@ -32,11 +32,17 @@ namespace BoltOn.Samples.WebApi.Controllers
             return await _mediator.ProcessAsync(request);
         }
 
-		[HttpPost]
-		public async Task<string> Post(CreateStudentRequest request)
+		[HttpPost, Route("[controller]")]
+		public async Task<Guid> Post(CreateStudentRequest request)
+		{
+			return await _mediator.ProcessAsync(request);
+		}
+
+		[HttpPut, Route("[controller]")]
+		public async Task<string> Put(UpdateStudentRequest request)
 		{
 			await _mediator.ProcessAsync(request);
-			return "Added";
+			return "Updated";
 		}
 	}
 }
