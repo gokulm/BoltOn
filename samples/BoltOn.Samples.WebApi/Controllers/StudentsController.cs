@@ -24,13 +24,6 @@ namespace BoltOn.Samples.WebApi.Controllers
 			var students = await _mediator.ProcessAsync(new GetAllStudentsRequest());
 			return students;
 		}
-		
-        [Route("{studentId}/grades")]
-        [HttpGet]
-        public async Task<IEnumerable<Grade>> GetGrades([FromRoute] GetAllGradesRequest request)
-        {
-            return await _mediator.ProcessAsync(request);
-        }
 
 		[HttpPost, Route("[controller]")]
 		public async Task<Guid> Post(CreateStudentRequest request)
@@ -43,6 +36,13 @@ namespace BoltOn.Samples.WebApi.Controllers
 		{
 			await _mediator.ProcessAsync(request);
 			return "Updated";
+		}
+
+		[Route("{studentId}/grades")]
+		[HttpGet]
+		public async Task<IEnumerable<Grade>> GetGrades([FromRoute] GetAllGradesRequest request)
+		{
+			return await _mediator.ProcessAsync(request);
 		}
 	}
 }

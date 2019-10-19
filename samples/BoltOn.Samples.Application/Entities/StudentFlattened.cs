@@ -5,9 +5,9 @@ namespace BoltOn.Samples.Application.Entities
 {
 	public class StudentFlattened : BaseCqrsEntity
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-		public string StudentType { get; set; }
+        public string FirstName { get; private set; }
+        public string LastName { get; private set; }
+		public string StudentType { get; private set; }
 
 		private StudentFlattened()
         {
