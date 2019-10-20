@@ -7,5 +7,6 @@ nav:
     - CQRS: cqrs.md
     - Utilities: utilities.md
     - Optional: optional.md
+    - Samples: samples.md
 theme: readthedocs
 
