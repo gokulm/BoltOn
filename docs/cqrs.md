@@ -26,9 +26,9 @@ Like this:
 * Create your request and handlers, and then use the `Mediator` to process your request. Please refer to [Mediator](../mediator) documentation to create handlers.
 * Repositories should inherit `CqrsRepository` present in the Data package. In the case of EF, it's [this class](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/CqrsRepository.cs).
 
-Samples
--------
-The best way to understand the implementation is by looking into [BoltOn.Samples.WebApi](https://github.com/gokulm/BoltOn/tree/master/samples/BoltOn.Samples.WebApi) project's StudentsController and by going thru GET, POST and PUT student endpoints, corresponding requests and their handlers. 
+Implementation Sample
+---------------------
+The best way to understand the implementation is by looking into [BoltOn.Samples.WebApi](https://github.com/gokulm/BoltOn/tree/master/samples/BoltOn.Samples.WebApi) project's `StudentsController` and by going thru GET, POST and PUT student endpoints, corresponding requests and their handlers. 
 
 Though separate databases could be used for commands and queries i.e., writes and reads respectively, in this sample we have used only one database (which could change when repositories for other databases are implemented) but different tables. 
 
@@ -40,36 +40,97 @@ Though separate databases could be used for commands and queries i.e., writes an
 * `StudentCreatedEvent` event is created by inheriting `CqrsEvent`.  Other properties that are required to create StudentFlattened entity are added. As StudentFlattened is denormalized, only StudentType is added to it and not the StudentTypeId.
 * `StudentCreatedEvent` event is triggered in the ctor by calling the base class' `RaiseEvent` method. The RaiseEvent method takes care of populating other properties like Id, SourceId, SourceTypeName and CreatedDate. 
 
-**Note:** Id property will be initialized only if you don't initialize it, whereas all the other properties listed above will be overridden by the framework. The triggered event gets marked for processing by setting the CreatedDate property to null, and it gets added to EventsToBeProcessed property only if it's not already present. 
+**Note:** Id property will be initialized only if we don't initialize it, whereas all the other properties listed above will be overridden by the framework. The triggered event gets marked for processing by setting the CreatedDate property to null, and it gets added to EventsToBeProcessed property only if it's not already present. 
 
-Here are the internal ctors of Student and StudentFlattened entities:
+Here is the internal ctor of Student entity:
 
-    internal Student(CreateStudentRequest request, string studentType)
-    {
-        Id = Guid.NewGuid();
-        FirstName = request.FirstName;
-        LastName = request.LastName;
-        StudentTypeId = request.StudentTypeId;
+    public class Student : BaseCqrsEntity
+	{
+		public string FirstName { get; private set; }
+		public string LastName { get; private set; }
+		public int StudentTypeId { get; private set; }
 
-        RaiseEvent(new StudentCreatedEvent
-        {
-            StudentId = Id,
-            FirstName = FirstName,
-            LastName = LastName,
-            StudentType = studentType
-        });
-    }
+		private Student()
+		{
+		}
 
-    internal StudentFlattened(StudentCreatedEvent @event)
-    {
-        ProcessEvent(@event, e =>
-        {
-            Id = e.StudentId;
-            FirstName = e.FirstName;
-            LastName = e.LastName;
-            StudentType = e.StudentType;
-        });
-    }
+		internal Student(CreateStudentRequest request, string studentType)
+		{
+			Id = Guid.NewGuid();
+			FirstName = request.FirstName;
+			LastName = request.LastName;
+			StudentTypeId = request.StudentTypeId;
 
-* `IRepository<Student>` injected in the `CreateStudentHandler` is registered to use `CqrsRepository<Student>`. Please look into the RegistrationTask class in the BoltOn.Samples.WebApi project.
+			RaiseEvent(new StudentCreatedEvent
+			{
+				StudentId = Id,
+				FirstName = FirstName,
+				LastName = LastName,
+				StudentType = studentType
+			});
+		}
+	}
+
+* `IRepository<Student>` injected in the `CreateStudentHandler` is registered to use `CqrsRepository<Student>`. Please look into the RegistrationTask class in the BoltOn.Samples.WebApi project for all the other registrations.
 * When `AddAsync` of the repository is called in the handler, the repository adds the entity and on while saving changes using the `SaveChanges` method, the events marked for processing are added to a request scoped object called `EventBag`, right after the CreatedDate property is initialized.
+
+**Note:** 
+
+* If CQRS is enabled in the Startup's BoltOn method, [`CqrsInterceptor`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/CqrsInterceptor.cs) is added to the `Mediator` pipeline. 
+* The intercepor calls `EventDispatcher` to dispatch events that need to be processed, which inturn publishes events using `IBus`. 
+* Even if the dispatcher or the bus fails, the events to be processed will be persisted along with the entity, as the `CqrsIntercepor` is after the `UnitOfWorkIntercepor`, which takes care of committing the transaction. 
+* The events that get persisted with the entity but not dispatched will be processed the next time the entity is updated. 
+* If there are more than one event to be processed and if one or more fails, it will still dispatch the other events. 
+* A MassTransit consumer is registered to handle `StudentCreatedEvent` in the BoltOn.Samples.Console project's RegistrationTask class, and the consumer inturn calls `StudentCreatedEventHandler` 
+
+Like this:
+
+    container.AddMassTransit(x =>
+    {
+        x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
+        {
+            var host = cfg.Host(new Uri("rabbitmq://localhost:5672"), hostConfigurator =>
+            {
+                hostConfigurator.Username("guest");
+                hostConfigurator.Password("guest");
+            });
+
+            cfg.ReceiveEndpoint("StudentCreatedEvent_queue", ep =>
+            {
+                ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<StudentCreatedEvent>>());
+            });
+        }));
+    });
+
+* StudentFlattened's internal ctor is called from `StudentCreatedHandler`, which gets invoked by `Mediator` from `BoltOnMassTransitConsumer<StudentCreatedEvent>`
+* `StudentCreatedEvent` event is processed in the ctor by calling the base class' `ProcessEvent` method. The action delegate passed as a parameter to the method is invoked only if the event is not already processed. After invoking the action delegate, the DestinationTypeName property is populated and the event is added to the ProcessedEvents collection. 
+* The ProcessedEvents get persisted along with the entity and thus the collection prevents events getting re-processed. 
+
+Here is the internal ctor of StudentFlattened entity:
+
+    public class StudentFlattened : BaseCqrsEntity
+    {
+        public string FirstName { get; private set; }
+        public string LastName { get; private set; }
+		public string StudentType { get; private set; }
+
+		private StudentFlattened()
+        {
+        }
+
+        internal StudentFlattened(StudentCreatedEvent @event)
+        {
+            ProcessEvent(@event, e =>
+            {
+                Id = e.StudentId;
+                FirstName = e.FirstName;
+                LastName = e.LastName;
+				StudentType = e.StudentType;
+            });
+        }
+	}
+
+* `IRepository<StudentFlattened>` injected in the `StudentCreatedEventHandler` is registered to use `CqrsRepository<StudentFlattened>`. 
+* When `AddAsync` of the repository is called in the handler, the repository adds the entity and on while saving changes using the `SaveChanges` method, the processed events' ProcessedDate is populated and persisted.
+
+CQRS is implemented even in Student update functionality, so follow the PUT in StudentsController, and UpdateStudentHandler and StudentUpdatedEventHandler handlers.
