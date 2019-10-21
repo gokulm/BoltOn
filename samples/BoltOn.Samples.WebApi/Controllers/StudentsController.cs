@@ -1,46 +1,40 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BoltOn.Bus;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Samples.Application.DTOs;
 using BoltOn.Samples.Application.Handlers;
-using BoltOn.Samples.Application.Messages;
-using BoltOn.Samples.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BoltOn.Samples.WebApi.Controllers
 {
-	[Route("api/[controller]")]
 	public class StudentsController : Controller
 	{
 		private readonly IMediator _mediator;
-		private readonly IBus _bus;
 
-		public StudentsController(IMediator mediator, IBus bus)
+		public StudentsController(IMediator mediator)
 		{
-			this._mediator = mediator;
-			this._bus = bus;
+			_mediator = mediator;
 		}
 
-		[HttpGet]
+		[HttpGet, Route("[controller]")]
 		public async Task<IEnumerable<StudentDto>> Get()
 		{
 			var students = await _mediator.ProcessAsync(new GetAllStudentsRequest());
 			return students;
 		}
-		
-        [Route("{studentId}/Grades")]
-        [HttpGet]
-        public async Task<IEnumerable<Grade>> GetGrades([FromRoute] GetAllGradesRequest request)
-        {
-            return await _mediator.ProcessAsync(request);
-        }
 
-		[HttpPost]
-		public async Task<StudentDto> Post(CreateStudent student)
+		[HttpPost, Route("[controller]")]
+		public async Task<Guid> Post(CreateStudentRequest request)
 		{
-			await _bus.PublishAsync(student);
-			return new StudentDto { FirstName = student.FirstName, LastName = student.FirstName };
+			return await _mediator.ProcessAsync(request);
+		}
+
+		[HttpPut, Route("[controller]")]
+		public async Task<string> Put(UpdateStudentRequest request)
+		{
+			await _mediator.ProcessAsync(request);
+			return "Updated";
 		}
 	}
 }

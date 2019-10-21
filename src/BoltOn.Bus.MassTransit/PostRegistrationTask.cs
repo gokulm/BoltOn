@@ -2,7 +2,6 @@
 using BoltOn.Bootstrapping;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace BoltOn.Bus.MassTransit
 {

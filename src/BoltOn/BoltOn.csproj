@@ -36,12 +36,12 @@
         <Folder Include="Mediator\Pipeline\" />
         <Folder Include="Data\" />
         <Folder Include="Bus\" />
+        <Folder Include="Cqrs\" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
-        <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
     </ItemGroup>
     <ItemGroup>
         <Compile Remove="Mediator\Pipeline\MediatorResponse.cs" />
@@ -49,5 +49,8 @@
         <Compile Remove="Mediator\Pipeline\StandardResponses.cs" />
         <Compile Remove="Mediator\MediatorRegistrationTask.cs" />
         <Compile Remove="Mediator\Extensions.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="BoltOn.nuspec" />
     </ItemGroup>
 </Project>

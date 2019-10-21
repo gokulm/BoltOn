@@ -1,7 +1,7 @@
 ﻿using BoltOn.Data;
 using Newtonsoft.Json;
 
-namespace BoltOn.Samples.Domain.Entities
+namespace BoltOn.Samples.Application.Entities
 {
     public class Grade : BaseEntity<string>
     {

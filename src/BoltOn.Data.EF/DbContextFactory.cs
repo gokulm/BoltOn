@@ -24,6 +24,7 @@ namespace BoltOn.Data.EF
 		{
 		    if(!(_serviceProvider.GetService(typeof(TDbContext)) is TDbContext dbContext))
                 throw new Exception("DbContext is null");
+
 			if(_changeTrackerContext.IsQueryRequest)
 			{
 				dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;

@@ -15,7 +15,6 @@ namespace BoltOn.UoW
 	{
 		private readonly IBoltOnLogger<UnitOfWorkManager> _logger;
 		private readonly IUnitOfWorkFactory _unitOfWorkFactory;
-		private bool _isUoWInstantiated;
 
 		internal UnitOfWorkManager(IBoltOnLogger<UnitOfWorkManager> logger, IUnitOfWorkFactory unitOfWorkFactory)
 		{
@@ -27,15 +26,10 @@ namespace BoltOn.UoW
 		{
 			if (unitOfWorkOptions == null)
 				unitOfWorkOptions = new UnitOfWorkOptions();
-
-			if (_isUoWInstantiated)
-				unitOfWorkOptions.TransactionScopeOption = System.Transactions.TransactionScopeOption.RequiresNew;
-
 			_logger.Debug($"About to start UoW. IsolationLevel: {unitOfWorkOptions.IsolationLevel} " +
 						  $"TransactionTimeOut: {unitOfWorkOptions.TransactionTimeout}" +
 						  $"TransactionScopeOption: {unitOfWorkOptions.TransactionScopeOption}");
 			var unitOfWork = _unitOfWorkFactory.Create(unitOfWorkOptions);
-			_isUoWInstantiated = true;
 			return unitOfWork;
 		}
 

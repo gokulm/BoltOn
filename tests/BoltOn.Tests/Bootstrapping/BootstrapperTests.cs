@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BoltOn.Bootstrapping;
 using BoltOn.Other;
 using BoltOn.Tests.Common;
@@ -84,14 +85,19 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact, TestPriority(11)]
-		public void BoltOn_BoltOnCalledMoreThanOnce_ThrowsException()
+		public void BoltOn_BoltOnCalledMoreThanOnce_RegistrationTasksGetCalledOnce()
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn();
 
-			// act and assert
-			Assert.Throws<Exception>(() => serviceCollection.BoltOn());
+			// act
+			serviceCollection.BoltOn();
+
+			// assert
+			var registrationTaskCount = BootstrapperRegistrationTasksHelper.Tasks
+									.Count(w => w == $"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
+			Assert.True(registrationTaskCount == 1);
 		}
 
 		[Fact, TestPriority(12)]
@@ -111,7 +117,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact, TestPriority(13)]
-		public void BoltOn_BoltOnAndUseBoltOn_ExecutesAllRegistrationTasksInOrder()
+		public void BoltOn_BoltOnAndTightenBolts_ExecutesAllRegistrationTasksInOrder()
 		{
 			// arrange
 			BootstrapperRegistrationTasksHelper.Tasks.Clear();
@@ -132,7 +138,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact, TestPriority(14)]
-		public void BoltOn_BoltOnAndUseBoltOnWithExcludedFromRegistration_ReturnsNull()
+		public void BoltOn_BoltOnAndTightenBoltsWithExcludedFromRegistration_ReturnsNull()
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
@@ -146,6 +152,27 @@ namespace BoltOn.Tests.Bootstrapping
 
 			// assert
 			Assert.Null(test);
+		}
+
+		[Fact, TestPriority(11)]
+		public void BoltOn_TightenBoltsCalledMoreThanOnce_RegistrationAndPostRegistrationTasksGetCalledOnce()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+
+			// act
+			serviceProvider.TightenBolts();
+			serviceProvider.TightenBolts();
+
+			// assert
+			var registrationTaskCount = BootstrapperRegistrationTasksHelper.Tasks
+									.Count(w => w == $"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
+			var postRegistrationTaskCount = BootstrapperRegistrationTasksHelper.Tasks
+									.Count(w => w == $"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
+			Assert.True(registrationTaskCount == 1);
+			Assert.True(postRegistrationTaskCount == 1);
 		}
 
 		public void Dispose()

@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using BoltOn.Cqrs;
+using BoltOn.Data;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
@@ -51,6 +53,7 @@ namespace BoltOn.Bootstrapping
 			});
 			serviceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
 			serviceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
+			serviceCollection.AddScoped<EventBag>();
 		}
 
 		public void RegisterMediator(RegistrationTaskContext context)
@@ -68,6 +71,17 @@ namespace BoltOn.Bootstrapping
 		private static void RegisterInterceptors(RegistrationTaskContext context)
 		{
 			context.AddInterceptor<StopwatchInterceptor>();
+
+			if (Bootstrapper.Instance.Options.IsCqrsEnabled)
+			{
+				context.AddInterceptor<CqrsInterceptor>();
+				context.Container.AddTransient<IEventDispatcher, EventDispatcher>();
+			}
+			else
+			{
+				context.Container.AddTransient<IEventDispatcher, DefaultEventDispatcher>();
+			}
+
 			context.AddInterceptor<UnitOfWorkInterceptor>();
 		}
 
