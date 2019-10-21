@@ -13,8 +13,7 @@ namespace BoltOn.Bootstrapping
 		private Assembly _callingAssembly;
 		private IServiceCollection _serviceCollection;
 		private IServiceProvider _serviceProvider;
-		private BoltOnOptions _options;
-		private bool _isBolted, _isAppCleaned;
+		private bool _isBolted, _isAppCleaned, _isTightened;
 		private RegistrationTaskContext _registrationTaskContext;
 
 		private Bootstrapper()
@@ -23,7 +22,7 @@ namespace BoltOn.Bootstrapping
 			_isBolted = false;
 			_serviceCollection = null;
 			_serviceProvider = null;
-			_options = null;
+			Options = null;
 		}
 
 		internal static Bootstrapper Instance => _instance.Value;
@@ -32,7 +31,8 @@ namespace BoltOn.Bootstrapping
 		{
 			get
 			{
-				Check.Requires(_serviceCollection != null, "ServiceCollection not initialized");
+				if (_serviceCollection == null)
+					throw new Exception("ServiceCollection not initialized");
 				return _serviceCollection;
 			}
 			set => _serviceCollection = value;
@@ -42,30 +42,43 @@ namespace BoltOn.Bootstrapping
 		{
 			get
 			{
-				Check.Requires(_serviceProvider != null, "ServiceProvider not initialized");
+				if (_serviceProvider == null)
+					throw new Exception("ServiceProvider not initialized");
 				return _serviceProvider;
 			}
+		}
+
+		internal BoltOnOptions Options
+		{
+			get;
+			private set;
 		}
 
 		internal IReadOnlyList<Assembly> Assemblies { get; private set; }
 
 		internal void BoltOn(IServiceCollection serviceCollection, BoltOnOptions options, Assembly callingAssembly = null)
 		{
-			Check.Requires(!_isBolted, "Components are already bolted");
-			_isBolted = true;
+			if (_isBolted)
+				return;
+
 			_serviceCollection = serviceCollection;
-			_options = options;
+			Options = options;
 			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
 			LoadAssemblies();
 			RunRegistrationTasks();
+			_isBolted = true;
 		}
 
 		internal void RunPostRegistrationTasks(IServiceProvider serviceProvider)
 		{
+			if (_isTightened)
+				return;
+
 			_serviceProvider = serviceProvider;
 			var context = new PostRegistrationTaskContext(this);
 			var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IPostRegistrationTask>>();
 			postRegistrationTasks.ToList().ForEach(t => t.Run(context));
+			_isTightened = true;
 		}
 
 		private void LoadAssemblies()
@@ -73,7 +86,7 @@ namespace BoltOn.Bootstrapping
 			var assemblies = new List<Assembly> { Assembly.GetExecutingAssembly(), _callingAssembly };
 			var sortedAssemblies = new HashSet<Assembly>();
 			assemblies = assemblies.Distinct().ToList();
-			assemblies.AddRange(_options.AssembliesToBeIncluded);
+			assemblies.AddRange(Options.AssembliesToBeIncluded);
 
 			// load assemblies in the order of dependency
 			var index = 0;
@@ -147,10 +160,10 @@ namespace BoltOn.Bootstrapping
 		{
 			var cleanupTaskType = typeof(ICleanupTask);
 			var cleanupTaskTypes = (from a in Assemblies
-										 from t in a.GetTypes()
-										 where cleanupTaskType.IsAssignableFrom(t)
-										 && t.IsClass
-										 select t).ToList();
+									from t in a.GetTypes()
+									where cleanupTaskType.IsAssignableFrom(t)
+									&& t.IsClass
+									select t).ToList();
 			cleanupTaskTypes.ForEach(r => _serviceCollection.AddTransient(cleanupTaskType, r));
 		}
 
@@ -175,8 +188,10 @@ namespace BoltOn.Bootstrapping
 				_registrationTaskContext = null;
 				Assemblies = null;
 				_callingAssembly = null;
+				Options = null;
 				_isBolted = false;
 				_isAppCleaned = false;
+				_isTightened = false;
 			}
 		}
 

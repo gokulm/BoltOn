@@ -3,11 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Samples.Application.Abstractions.Data;
-using BoltOn.Samples.Domain.Entities;
+using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-    public class GetAllGradesRequest : IQuery<IEnumerable<Grade>>
+	public class GetAllGradesRequest : IQuery<IEnumerable<Grade>>
     {
         public int StudentId { get; set; }
     }

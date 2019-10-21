@@ -1,5 +1,5 @@
 using BoltOn.Data;
-using BoltOn.Samples.Domain.Entities;
+using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Abstractions.Data
 {

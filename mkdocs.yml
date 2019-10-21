@@ -4,7 +4,9 @@ nav:
     - Mediator: mediator.md
     - Data: data.md
     - Bus: bus.md
+    - CQRS: cqrs.md
     - Utilities: utilities.md
     - Optional: optional.md
+    - Samples: samples.md
 theme: readthedocs
 

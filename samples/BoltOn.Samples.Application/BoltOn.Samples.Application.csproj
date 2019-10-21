@@ -5,17 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Class1.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Handlers\" />
     <Folder Include="Abstractions\" />
     <Folder Include="Abstractions\Data\" />
     <Folder Include="DTOs\" />
-    <Folder Include="Messages\" />
+    <Folder Include="Entities\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
-    <ProjectReference Include="..\BoltOn.Samples.Domain\BoltOn.Samples.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 </Project>
