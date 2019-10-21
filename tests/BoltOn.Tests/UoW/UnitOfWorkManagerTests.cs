@@ -116,7 +116,7 @@ namespace BoltOn.Tests.UoW
 		}
 
 		[Fact]
-		public void Get_WithDefaultsTwiceButSecoundOneRequiresNew_StartsTransactionWithDefaultsAndANewOne()
+		public void Get_WithDefaultsTwiceButSecondOneRequiresNew_StartsTransactionWithDefaultsAndANewOne()
 		{
 			// arrange
 			var uowManagerLogger = new Mock<IBoltOnLogger<UnitOfWorkManager>>();
