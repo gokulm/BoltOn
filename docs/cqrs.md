@@ -35,7 +35,7 @@ Though separate databases could be used for commands and queries i.e., writes an
 * Two entities `Student` and `StudentFlattened` are created by inheriting `BaseCqrsEntity`. 
 * Student entity is saved in Student table with foreign-key constraint to StudentType table. Commands (aka writes) go to this table.
 * StudentFlattened entity is saved in StudentFlattened table, which is denormalized without any foreign-key constraints. Queries (aka reads) go to this table.
-* Private and internal constructors are added to both the entities. The private constructor is to support EF and the internal constructor is to allow instantiation of the entities with appropriate request objects as parameters.
+* Private and internal constructors are added to both the entities. The private constructor is to support EF and the internal constructor is to allow instantiation of the entity with appropriate request object as parameter.
 * Student's internal ctor is called from `CreateStudentHandler`, which gets invoked by `Mediator` from StudentController's POST call.
 * `StudentCreatedEvent` event is created by inheriting `CqrsEvent`.  Other properties that are required to create StudentFlattened entity are added. As StudentFlattened is denormalized, only StudentType is added to it and not the StudentTypeId.
 * `StudentCreatedEvent` event is triggered in the ctor by calling the base class' `RaiseEvent` method. The RaiseEvent method takes care of populating other properties like Id, SourceId, SourceTypeName and CreatedDate. 
@@ -133,4 +133,4 @@ Here is the internal ctor of StudentFlattened entity:
 * `IRepository<StudentFlattened>` injected in the `StudentCreatedEventHandler` is registered to use `CqrsRepository<StudentFlattened>`. 
 * When `AddAsync` of the repository is called in the handler, the repository adds the entity and on while saving changes using the `SaveChanges` method, the processed events' ProcessedDate is populated and persisted.
 
-CQRS is implemented even in Student update functionality, so follow the PUT in StudentsController, and UpdateStudentHandler and StudentUpdatedEventHandler handlers.
+CQRS is implemented even for Student update functionality, so follow the PUT in StudentsController, and UpdateStudentHandler and StudentUpdatedEventHandler handlers.
