@@ -85,12 +85,22 @@
           
             <li class="toctree-l1">
 		
+    <a class="" href="../cqrs/">CQRS</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
     <a class="" href="../utilities/">Utilities</a>
 	    </li>
           
             <li class="toctree-l1">
 		
     <a class="" href="../optional/">Optional</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../samples/">Samples</a>
 	    </li>
           
         </ul>
@@ -135,7 +145,7 @@
 <li>Call <code>BoltOnEFModule()</code> in your startup's BoltOn() method.</li>
 <li>Create an entity by inheriting <code>BaseEntity&lt;TIdType&gt;</code>. The inheritance is not mandatory though.</li>
 <li>Create a DbContext by inheriting <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseDbContext.cs"><code>BaseDbContext&lt;TDbContext&gt;</code></a>. You could inherit EF's DbContext directy if you're not interested in any of the benefits that BaseDbContext offers.</li>
-<li>Inherit <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseEFRepository.cs"><code>BaseEFRepository&lt;TEntity, TDbContext&gt;</code></a>.</li>
+<li>Inherit <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs"><code>Repository&lt;TEntity, TDbContext&gt;</code></a>.</li>
 <li>Add all the database columns to entity properties mapping inside a mapping class by implementing <code>IEntityTypeConfiguration&lt;TEntity&gt;</code> interface.
 <br>
 The mapping classes will be automatically added to your DbContext if you inherit <code>BaseDbContext&lt;TDbContext&gt;</code> and if they are in the same assembly where the DbContext resides. </li>
@@ -178,13 +188,14 @@ public interface IStudentRepository : IRepository&lt;Student&gt;
 {
 }
 
-public class StudentRepository : BaseEFRepository&lt;Student, SchoolDbContext&gt;, IStudentRepository
+public class StudentRepository : Repository&lt;Student, SchoolDbContext&gt;, IStudentRepository
 {
     public StudentRepository(IDbContextFactory dbContextFactory) : base(dbContextFactory)
     {
     }
 }
 </code></pre>
+<p><strong>Note:</strong> Create your own repository like StudentRepository only if you want to override the Repository class' methods or if you want to add methods, else you could just register <code>IRepository&lt;Student&gt;</code> to <code>Repository&lt;Student&gt;</code></p>
 <h2 id="dbcontextfactory">DbContextFactory</h2>
 <p>This factory uses IServiceProvider to resolve DbContexts, and if the request implements <code>IQuery&lt;&gt;</code>, it sets the DbContexts' <code>ChangeTracker.QueryTrackingBehavior</code> to <code>QueryTrackingBehavior.NoTracking</code> and <code>ChangeTracker.AutoDetectChangesEnabled</code> to false with the help of <code>MediatorContextInterceptor</code>. </p>
 <p><strong>Note:</strong> You could disable this behavior by removing the interceptor from the pipeline using <code>RemoveInterceptor&lt;TInterceptor&gt;</code> extension method.</p>

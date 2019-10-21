@@ -8,7 +8,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Utilities - BoltOn</title>
+  <title>Samples - BoltOn</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -17,8 +17,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Utilities";
-    var mkdocs_page_input_path = "utilities.md";
+    var mkdocs_page_name = "Samples";
+    var mkdocs_page_input_path = "samples.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -73,21 +73,9 @@
     <a class="" href="../cqrs/">CQRS</a>
 	    </li>
           
-            <li class="toctree-l1 current">
+            <li class="toctree-l1">
 		
-    <a class="current" href="./">Utilities</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l2"><a href="#iboltonclockboltonclock">IBoltOnClock/BoltOnClock</a></li>
-    
-
-    <li class="toctree-l2"><a href="#boltonappcleaner">BoltOnAppCleaner</a></li>
-    
-
-    <li class="toctree-l2"><a href="#boltonservicelocator">BoltOnServiceLocator</a></li>
-    
-
-    </ul>
+    <a class="" href="../utilities/">Utilities</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -95,9 +83,18 @@
     <a class="" href="../optional/">Optional</a>
 	    </li>
           
-            <li class="toctree-l1">
+            <li class="toctree-l1 current">
 		
-    <a class="" href="../samples/">Samples</a>
+    <a class="current" href="./">Samples</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#sql-server">SQL Server</a></li>
+    
+
+    <li class="toctree-l2"><a href="#rabbitmq">RabbitMq</a></li>
+    
+
+    </ul>
 	    </li>
           
         </ul>
@@ -122,7 +119,7 @@
     
       
     
-    <li>Utilities</li>
+    <li>Samples</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -132,20 +129,34 @@
           <div role="main">
             <div class="section">
               
-                <h2 id="iboltonclockboltonclock">IBoltOnClock/BoltOnClock</h2>
-<p>There are instances where you have to use static properties DateTime.Now or DateTimeOffset.UtcNow, which makes hard to unit test, in those instances you could inject <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Utilities/BoltOnClock.cs"><code>IBoltOnClock</code></a></p>
-<h2 id="boltonappcleaner">BoltOnAppCleaner</h2>
-<p>It scans all the <code>ICleanupTask</code> in the assembly collection formed by BoltOn() method in the Startup and executes them in the reverse order of assembly dependencies. If your module needs any cleanup work like purging data, stopping bus, disposing objects etc., implement <code>ICleanupTask</code> and it will be invoked automatically when internal classes get disposed. In case if you want all the cleanup tasks to be invoked on demand, use the static method <code>Clean()</code> in this class. However, make sure that it gets called only once in your application.</p>
-<p>In a WebAPI, you could call this method using IApplicationLifetime:</p>
-<pre><code>public void Configure(IApplicationBuilder app, IApplicationLifetime appLifetime)
+                <p>In order to run the Samples projects, SQL server and RabbitMq should be configured. </p>
+<h2 id="sql-server">SQL Server</h2>
+<p>You could run SQL in Docker using this command:</p>
+<p><code>docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Password1' -p 1433:1433 -d microsoft/mssql-server-linux:latest</code></p>
+<p>Please modify the port if SQL is already installed. After launching SQL server, connect to the SQL Server and create a database using this command - <code>Create Database BoltOnSamples</code></p>
+<p>Configure the DbContext in the RegistrationTask like this:</p>
+<pre><code>container.AddDbContext&lt;SchoolDbContext&gt;(options =&gt;
 {
-    app.UseMvc();
-    app.ApplicationServices.TightenBolts();
-    appLifetime.ApplicationStopping.Register(() =&gt; BoltOnAppCleaner.Clean());
-}
+    options.UseSqlServer("Data Source=127.0.0.1;initial catalog=BoltOnSamples;persist security info=True;User ID=sa;Password=Password1;");
+});
 </code></pre>
-<h2 id="boltonservicelocator">BoltOnServiceLocator</h2>
-<p>Service Locator is an <a href="https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/">Anti-Pattern</a>, so try to avoid using it. In case if you want to use it, you could use the Current property in the class which is of type <code>IServiceProvider</code>.</p>
+<h2 id="rabbitmq">RabbitMq</h2>
+<p>You could run RabbitMq in Docker using this command:</p>
+<p><code>docker run -d --name bolton-rabbitmq -p 15672:15672 -p 5672:5672 rabbitmq:3-management</code></p>
+<p>If RabbitMq is running, you should be able to monitor from http://localhost:15672 (guest/guest is the default password)</p>
+<p>Configure the RabbitMq in the RegistrationTask like this:</p>
+<pre><code>container.AddMassTransit(x =&gt;
+{
+    x.AddBus(provider =&gt; MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =&gt;
+    {
+        var host = cfg.Host(new Uri("rabbitmq://localhost:5672"), hostConfigurator =&gt;
+        {
+            hostConfigurator.Username("guest");
+            hostConfigurator.Password("guest");
+        });
+    }));
+});
+</code></pre>
               
             </div>
           </div>
@@ -153,10 +164,8 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../optional/" class="btn btn-neutral float-right" title="Optional">Next <span class="icon icon-circle-arrow-right"></span></a>
       
-      
-        <a href="../cqrs/" class="btn btn-neutral" title="CQRS"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../optional/" class="btn btn-neutral" title="Optional"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -182,10 +191,8 @@
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../cqrs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../optional/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
-      
-        <span style="margin-left: 15px"><a href="../optional/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

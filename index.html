@@ -88,12 +88,22 @@
           
             <li class="toctree-l1">
 		
+    <a class="" href="cqrs/">CQRS</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
     <a class="" href="utilities/">Utilities</a>
 	    </li>
           
             <li class="toctree-l1">
 		
     <a class="" href="optional/">Optional</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="samples/">Samples</a>
 	    </li>
           
         </ul>
@@ -209,7 +219,7 @@ Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other 
 </code></pre>
 <h2 id="cleanup">Cleanup</h2>
 <p>BoltOn internally uses a class called <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Bootstrapping/Bootstrapper.cs">Bootstrapper</a> to invoke all the registration and post registration tasks, and when it gets disposed, it calls cleanup tasks in all the modules. It's basically done by scanning all the <code>ICleanupTask</code> in the assembly collection formed by BoltOn() and executing them.</p>
-<p>The cleanup tasks can be invoked on demand using <a href="../utilities/#boltonappcleaner">BoltOnAppCleaner</a>.</p>
+<p>The cleanup tasks can be invoked on demand using <a href="utilities/#boltonappcleaner">BoltOnAppCleaner</a>.</p>
               
             </div>
           </div>
@@ -258,5 +268,5 @@ Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other 
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-09-06 12:30:34
+Build Date UTC : 2019-10-21 10:42:40
 -->
