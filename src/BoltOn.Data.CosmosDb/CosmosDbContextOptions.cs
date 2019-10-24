@@ -1,6 +1,7 @@
 ﻿namespace BoltOn.Data.CosmosDb
 {
-    public class CosmosDbContextOptions
+
+	public class CosmosDbContextOptions
     {
         public string Uri { get; set; }
         public string AuthorizationKey { get; set; }

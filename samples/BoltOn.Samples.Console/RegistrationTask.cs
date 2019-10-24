@@ -9,6 +9,7 @@ using BoltOn.Data.EF;
 using BoltOn.Samples.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using BoltOn.Bootstrapping;
+using BoltOn.Data.CosmosDb;
 
 namespace BoltOn.Samples.Console
 {
@@ -45,7 +46,13 @@ namespace BoltOn.Samples.Console
                 options.UseSqlServer("Data Source=127.0.0.1;initial catalog=BoltOnSamples;persist security info=True;User ID=sa;Password=Password1;");
             });
 
+			//container.AddCosmosDb<SchoolCosmosDbOptions>(o =>
+			//{
+			//	o.
+			//});
+
             container.AddTransient<IRepository<StudentFlattened>, CqrsRepository<StudentFlattened, SchoolDbContext>>();
-        }
+			//container.AddTransient<IRepository<StudentFlattened>, StudentFlattenedRepository<StudentFlattened, SchoolCosmosDbOptions>>();
+		}
     }
 }

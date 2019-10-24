@@ -10,16 +10,16 @@ using Nito.AsyncEx;
 
 namespace BoltOn.Data.CosmosDb
 {
-    public abstract class BaseCosmosDbRepository<TEntity, TCosmosDbContext> : IRepository<TEntity>
+    public abstract class BaseRepository<TEntity, TCosmosDbOptions> : IRepository<TEntity>
         where TEntity : class
-        where TCosmosDbContext : BaseCosmosDbContext<TCosmosDbContext>
+        where TCosmosDbOptions : BaseCosmosDbOptions
     {
 		protected string DatabaseName { get; private set; }
 		protected string CollectionName { get; private set; }
 		protected DocumentClient DocumentClient { get; private set; }
 		protected Uri DocumentCollectionUri { get; private set; }
 
-		protected BaseCosmosDbRepository(CosmosDbContextOptions<TCosmosDbContext> options, string collectionName = null)
+		protected BaseRepository(TCosmosDbOptions options, string collectionName = null)
         {
             DatabaseName = options.DatabaseName;
             CollectionName = collectionName ?? typeof(TEntity).Name.Pluralize();
