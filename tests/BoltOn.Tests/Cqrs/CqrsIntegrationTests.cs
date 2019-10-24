@@ -16,7 +16,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using BoltOn.Data;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace BoltOn.Tests.Cqrs
 {
@@ -465,7 +464,8 @@ namespace BoltOn.Tests.Cqrs
 				_logger.Debug($"{nameof(TestCqrsReadEntity)} updated. " +
 					$"Input1: {testCqrsReadEntity.Input1} Input2Property1: {testCqrsReadEntity.Input2Property1} " +
 					$"Input2Propert2: {testCqrsReadEntity.Input2Property2}");
-				await _repository.UpdateAsync(testCqrsReadEntity);
+				// this is to avoid test warning, as TestCqrsUpdateEvent gets added in two different entities
+				//await _repository.UpdateAsync(testCqrsReadEntity);
 			}
 		}
 
@@ -501,54 +501,6 @@ namespace BoltOn.Tests.Cqrs
 				.HasMany(p => p.EventsToBeProcessed);
 			builder
 				.HasMany(p => p.ProcessedEvents);
-		}
-	}
-
-	public class TestCqrsRegistrationTask : IRegistrationTask
-	{
-		public void Run(RegistrationTaskContext context)
-		{
-			context.Container.AddDbContext<CqrsDbContext>(options =>
-			{
-				options.UseInMemoryDatabase("InMemoryDbCqrsDbContext");
-				options.ConfigureWarnings(x => x.Ignore(RelationalEventId.AmbientTransactionWarning));
-			});
-
-			context.Container.AddTransient<IRepository<TestCqrsWriteEntity>, CqrsRepository<TestCqrsWriteEntity, CqrsDbContext>>();
-			context.Container.AddTransient<IRepository<TestCqrsReadEntity>, CqrsRepository<TestCqrsReadEntity, CqrsDbContext>>();
-		}
-	}
-
-	public class TestCqrsPostRegistrationTask : IPostRegistrationTask
-	{
-		private readonly IServiceProvider _serviceProvider;
-
-		public TestCqrsPostRegistrationTask(IServiceProvider serviceProvider)
-		{
-			_serviceProvider = serviceProvider;
-		}
-
-		public void Run(PostRegistrationTaskContext context)
-		{
-			var testDbContext = _serviceProvider.GetService<CqrsDbContext>();
-			testDbContext.Database.EnsureDeleted();
-			testDbContext.Database.EnsureCreated();
-
-			testDbContext.Set<TestCqrsWriteEntity>().Add(new TestCqrsWriteEntity
-			{
-				Id = CqrsConstants.EntityId,
-				Input = "value to be replaced"
-			});
-			testDbContext.Set<TestCqrsReadEntity>().Add(new TestCqrsReadEntity
-			{
-				Id = CqrsConstants.EntityId,
-				Input1 = "value to be replaced",
-				ProcessedEvents = new HashSet<CqrsEvent>
-				{
-					new CqrsEvent { Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId) }
-				}
-			});
-			testDbContext.SaveChanges();
 		}
 	}
 

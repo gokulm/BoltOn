@@ -25,12 +25,6 @@ namespace BoltOn.Tests.Other
 		{
 			if (MediatorTestHelper.IsSqlServer)
 			{
-				//context.Container.AddDbContext<SchoolDbContext>(options =>
-				//{
-				//	options.UseSqlite("Data Source=TestDatabase.db");
-				//	options.ConfigureWarnings(x => x.Ignore(RelationalEventId.AmbientTransactionWarning));
-				//});
-
 				context.Container.AddDbContext<SchoolDbContext>(options =>
 				{
 					options.UseSqlServer("Data Source=127.0.0.1;initial catalog=Testing;persist security info=True;User ID=sa;Password=$Password1;");
