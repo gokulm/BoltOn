@@ -1,13 +1,26 @@
-﻿using BoltOn.Cqrs;
+﻿using System;
+using BoltOn.Cqrs;
 using BoltOn.Samples.Application.Handlers;
+using Newtonsoft.Json;
 
 namespace BoltOn.Samples.Application.Entities
 {
 	public class StudentFlattened : BaseCqrsEntity
     {
-        public string FirstName { get; private set; }
-        public string LastName { get; private set; }
+		[JsonProperty("id")]
+		public override Guid Id { get; set; }
+
+		[JsonProperty("firstName")]
+		public string FirstName { get; private set; }
+
+		[JsonProperty("lastName")]
+		public string LastName { get; private set; }
+
+		[JsonProperty("studentType")]
 		public string StudentType { get; private set; }
+
+		[JsonProperty("studentTypeId")]
+		public int StudentTypeId { get; private set; }
 
 		private StudentFlattened()
         {
@@ -21,6 +34,7 @@ namespace BoltOn.Samples.Application.Entities
                 FirstName = e.FirstName;
                 LastName = e.LastName;
 				StudentType = e.StudentType;
+				StudentTypeId = e.StudentTypeId;
             });
         }
 
@@ -32,6 +46,7 @@ namespace BoltOn.Samples.Application.Entities
 				FirstName = e.FirstName;
 				LastName = e.LastName;
 				StudentType = e.StudentType;
+				StudentTypeId = e.StudentTypeId;
 			});
 		}
 	}

@@ -2,9 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Cqrs;
-using BoltOn.Data;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Samples.Application.Entities;
+using BoltOn.Samples.Application.Abstractions.Data;
 
 namespace BoltOn.Samples.Application.Handlers
 {
@@ -17,20 +16,22 @@ namespace BoltOn.Samples.Application.Handlers
 		public string LastName { get; set; }
 
 		public string StudentType { get; set; }
+
+		public int StudentTypeId { get; set; }
 	}
 
 	public class StudentUpdatedEventHandler : IRequestAsyncHandler<StudentUpdatedEvent>
     {
-        private readonly IRepository<StudentFlattened> _repository;
+        private readonly IStudentFlattenedRepository _repository;
 
-        public StudentUpdatedEventHandler(IRepository<StudentFlattened> repository)
+        public StudentUpdatedEventHandler(IStudentFlattenedRepository repository)
         {
             _repository = repository;
         }
 
         public async Task HandleAsync(StudentUpdatedEvent request, CancellationToken cancellationToken)
         {
-            var student = await _repository.GetByIdAsync(request.StudentId, cancellationToken);
+            var student = await _repository.GetAsync(request.StudentId, request.StudentTypeId, cancellationToken);
 			student.Update(request);
             await _repository.UpdateAsync(student, cancellationToken);
         }

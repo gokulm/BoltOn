@@ -22,11 +22,11 @@ namespace BoltOn.Samples.Application.Handlers
 	public class UpdateStudentHandler : IRequestAsyncHandler<UpdateStudentRequest>
 	{
 		private readonly IRepository<Student> _studentRepository;
-		private readonly IBoltOnLogger<CreateStudentHandler> _logger;
+		private readonly IBoltOnLogger<UpdateStudentHandler> _logger;
 		private readonly IRepository<StudentType> _studentTypeRepository;
 
 		public UpdateStudentHandler(IRepository<Student> studentRepository,
-			IBoltOnLogger<CreateStudentHandler> logger,
+			IBoltOnLogger<UpdateStudentHandler> logger,
 			IRepository<StudentType> studentTypeRepository)
 		{
 			_studentRepository = studentRepository;
