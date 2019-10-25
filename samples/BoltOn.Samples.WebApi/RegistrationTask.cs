@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using BoltOn.Data.EF;
 using Microsoft.EntityFrameworkCore;
 using BoltOn.Samples.Infrastructure.Data;
 using MassTransit;
@@ -40,10 +39,11 @@ namespace BoltOn.Samples.WebApi
                 options.DatabaseName = "School";
             });
 
-            container.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolDbContext>>();
-            container.AddTransient<IRepository<StudentType>, Data.EF.Repository<StudentType, SchoolDbContext>>();
-			container.AddTransient<IRepository<StudentFlattened>, Data.CosmosDb.Repository<StudentFlattened, SchoolCosmosDbOptions>>();
-			//container.AddTransient<IRepository<StudentFlattened>, CqrsRepository<StudentFlattened, SchoolDbContext>>();
-        }
+			container.AddTransient<IRepository<Student>, Data.EF.Repository<Student, SchoolDbContext>>();
+			//container.AddTransient<IRepository<Student>, Data.CosmosDb.Repository<Student, SchoolCosmosDbOptions>>();
+			container.AddTransient<IRepository<StudentType>, Data.EF.Repository<StudentType, SchoolDbContext>>();
+			//container.AddTransient<IRepository<StudentFlattened>, Data.CosmosDb.Repository<StudentFlattened, SchoolCosmosDbOptions>>();
+			container.AddTransient<IRepository<StudentFlattened>, Data.EF.Repository<StudentFlattened, SchoolDbContext>>();
+		}
     }
 }

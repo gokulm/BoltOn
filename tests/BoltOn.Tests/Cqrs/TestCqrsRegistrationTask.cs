@@ -17,8 +17,8 @@ namespace BoltOn.Tests.Cqrs
                 options.ConfigureWarnings(x => x.Ignore(RelationalEventId.AmbientTransactionWarning));
             });
 
-            context.Container.AddTransient<IRepository<TestCqrsWriteEntity>, CqrsRepository<TestCqrsWriteEntity, CqrsDbContext>>();
-            context.Container.AddTransient<IRepository<TestCqrsReadEntity>, CqrsRepository<TestCqrsReadEntity, CqrsDbContext>>();
+            context.Container.AddTransient<IRepository<TestCqrsWriteEntity>, Repository<TestCqrsWriteEntity, CqrsDbContext>>();
+            context.Container.AddTransient<IRepository<TestCqrsReadEntity>, Repository<TestCqrsReadEntity, CqrsDbContext>>();
         }
     }
 }

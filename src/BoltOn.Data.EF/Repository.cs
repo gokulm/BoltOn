@@ -5,6 +5,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using BoltOn.Cqrs;
+using BoltOn.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Data.EF
@@ -15,11 +17,16 @@ namespace BoltOn.Data.EF
 	{
 		private readonly TDbContext _dbContext;
 		private readonly DbSet<TEntity> _dbSets;
+		private readonly EventBag _eventBag;
+		private readonly IBoltOnClock _boltOnClock;
 
-		public Repository(IDbContextFactory dbContextFactory)
+		public Repository(IDbContextFactory dbContextFactory, EventBag eventBag,
+			IBoltOnClock boltOnClock)
 		{
 			_dbContext = dbContextFactory.Get<TDbContext>();
 			_dbSets = _dbContext.Set<TEntity>();
+			_eventBag = eventBag;
+			_boltOnClock = boltOnClock;
 		}
 
 		public virtual IEnumerable<TEntity> GetAll()
@@ -97,12 +104,35 @@ namespace BoltOn.Data.EF
 
 		protected virtual void SaveChanges(TEntity entity)
 		{
+			PublishEvents(entity);
 			_dbContext.SaveChanges();
 		}
 
 		protected virtual async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
+			PublishEvents(entity);
 			await _dbContext.SaveChangesAsync(cancellationToken);
+		}
+
+		private void PublishEvents(TEntity entity)
+		{
+			if (entity is BaseCqrsEntity baseCqrsEntity)
+			{
+				var eventsToBeProcessed = baseCqrsEntity.EventsToBeProcessed.ToList()
+					.Where(w => !w.CreatedDate.HasValue);
+				foreach (var @event in eventsToBeProcessed)
+				{
+					@event.CreatedDate = _boltOnClock.Now;
+					_eventBag.EventsToBeProcessed.Add(@event);
+				}
+
+				var processedEvents = baseCqrsEntity.ProcessedEvents.ToList()
+					.Where(w => !w.ProcessedDate.HasValue);
+				foreach (var @event in processedEvents)
+				{
+					@event.ProcessedDate = _boltOnClock.Now;
+				}
+			}
 		}
 	}
 }

@@ -33,5 +33,6 @@
     </ItemGroup>
     <ItemGroup>
       <Compile Remove="BaseEFCqrsRepository.cs" />
+      <Compile Remove="CqrsRepository.cs" />
     </ItemGroup>
 </Project>

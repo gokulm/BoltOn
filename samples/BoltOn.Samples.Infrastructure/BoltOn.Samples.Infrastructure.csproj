@@ -11,9 +11,6 @@
         <NoStdLib>true</NoStdLib>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Remove="Class1.cs" />
-    </ItemGroup>
-    <ItemGroup>
         <Folder Include="Data\" />
         <Folder Include="Data\Mappings\" />
         <Folder Include="Data\Repositories\" />
