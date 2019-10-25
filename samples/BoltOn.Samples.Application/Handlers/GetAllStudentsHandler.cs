@@ -2,9 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BoltOn.Data;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Samples.Application.Abstractions.Data;
 using BoltOn.Samples.Application.DTOs;
+using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers
 {
@@ -14,9 +15,9 @@ namespace BoltOn.Samples.Application.Handlers
 
     public class GetAllStudentsHandler : IRequestAsyncHandler<GetAllStudentsRequest, IEnumerable<StudentDto>>
     {
-        private readonly IStudentFlattenedRepository _studentRepository;
+        private readonly IRepository<StudentFlattened> _studentRepository;
 
-        public GetAllStudentsHandler(IStudentFlattenedRepository studentRepository)
+        public GetAllStudentsHandler(IRepository<StudentFlattened> studentRepository)
         {
             _studentRepository = studentRepository;
         }

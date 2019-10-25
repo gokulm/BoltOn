@@ -4,25 +4,34 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using BoltOn.Cqrs;
+using BoltOn.Utilities;
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using Nito.AsyncEx;
 
 namespace BoltOn.Data.CosmosDb
 {
-    public abstract class BaseRepository<TEntity, TCosmosDbOptions> : IRepository<TEntity>
+    public class Repository<TEntity, TCosmosDbOptions> : IRepository<TEntity>
         where TEntity : class
         where TCosmosDbOptions : BaseCosmosDbOptions
     {
+		private readonly EventBag _eventBag;
+		private readonly IBoltOnClock _boltOnClock;
+
 		protected string DatabaseName { get; private set; }
 		protected string CollectionName { get; private set; }
 		protected DocumentClient DocumentClient { get; private set; }
 		protected Uri DocumentCollectionUri { get; private set; }
 
-		protected BaseRepository(TCosmosDbOptions options, string collectionName = null)
+		public Repository(TCosmosDbOptions options, EventBag eventBag,
+			IBoltOnClock boltOnClock, string collectionName = null)
         {
             DatabaseName = options.DatabaseName;
-            CollectionName = collectionName ?? typeof(TEntity).Name.Pluralize();
+			_eventBag = eventBag;
+			_boltOnClock = boltOnClock;
+			CollectionName = collectionName ?? typeof(TEntity).Name.Pluralize();
             DocumentClient = new DocumentClient(new Uri(options.Uri), options.AuthorizationKey);
 			DocumentCollectionUri = UriFactory.CreateDocumentCollectionUri(DatabaseName, CollectionName);
 		}
@@ -35,6 +44,7 @@ namespace BoltOn.Data.CosmosDb
 
         public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
+			PublishEvents(entity);
             await DocumentClient.CreateDocumentAsync(DocumentCollectionUri, entity, cancellationToken: cancellationToken);
             return entity;
         }
@@ -82,10 +92,25 @@ namespace BoltOn.Data.CosmosDb
             return document.Document;
         }
 
-        public virtual async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity> GetByIdAsync(object id, object options = null, CancellationToken cancellationToken = default)
         {
-            var document = await DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()), cancellationToken: cancellationToken);
-            return document.Document;
+			try
+			{
+				if (options is RequestOptions requestOptions)
+				{
+					return await DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()),
+						requestOptions, cancellationToken);
+				}
+				return await DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()), cancellationToken: cancellationToken);
+			}
+			catch (DocumentClientException e)
+			{
+				if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+				{
+					return null;
+				}
+				throw;
+			}
         }
 
         public virtual void Update(TEntity entity)
@@ -94,8 +119,9 @@ namespace BoltOn.Data.CosmosDb
         }
 
         public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
-        {
-            await DocumentClient.UpsertDocumentAsync(DocumentCollectionUri, entity, cancellationToken: cancellationToken);
+		{
+			PublishEvents(entity);
+			await DocumentClient.UpsertDocumentAsync(DocumentCollectionUri, entity, cancellationToken: cancellationToken);
         }
 
         protected Uri GetDocumentUri(string id)
@@ -112,5 +138,26 @@ namespace BoltOn.Data.CosmosDb
             }
             return results;
         }
-    }
+
+		private void PublishEvents(TEntity entity)
+		{
+			if (entity is BaseCqrsEntity baseCqrsEntity)
+			{
+				var eventsToBeProcessed = baseCqrsEntity.EventsToBeProcessed.ToList()
+					.Where(w => !w.CreatedDate.HasValue);
+				foreach (var @event in eventsToBeProcessed)
+				{
+					@event.CreatedDate = _boltOnClock.Now;
+					_eventBag.EventsToBeProcessed.Add(@event);
+				}
+
+				var processedEvents = baseCqrsEntity.ProcessedEvents.ToList()
+					.Where(w => !w.ProcessedDate.HasValue);
+				foreach (var @event in processedEvents)
+				{
+					@event.ProcessedDate = _boltOnClock.Now;
+				}
+			}
+		}
+	}
 }

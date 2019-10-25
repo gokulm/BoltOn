@@ -90,7 +90,7 @@ namespace BoltOn.Data.EF
 			return _dbSets.Find(id);
 		}
 
-		public virtual async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default)
+		public virtual async Task<TEntity> GetByIdAsync(object id, object options = null, CancellationToken cancellationToken = default)
 		{
 			return await _dbSets.FindAsync(id);
 		}

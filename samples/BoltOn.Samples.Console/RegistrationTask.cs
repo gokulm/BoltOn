@@ -5,17 +5,14 @@ using MassTransit;
 using System;
 using BoltOn.Data;
 using BoltOn.Samples.Application.Entities;
-using BoltOn.Data.EF;
 using BoltOn.Samples.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using BoltOn.Bootstrapping;
 using BoltOn.Data.CosmosDb;
-using BoltOn.Samples.Infrastructure.Data.Repositories;
-using BoltOn.Samples.Application.Abstractions.Data;
 
 namespace BoltOn.Samples.Console
 {
-    public class RegistrationTask : IRegistrationTask
+	public class RegistrationTask : IRegistrationTask
     {
         public void Run(RegistrationTaskContext context)
         {
@@ -56,7 +53,7 @@ namespace BoltOn.Samples.Console
 			});
 
 			//container.AddTransient<IRepository<StudentFlattened>, CqrsRepository<StudentFlattened, SchoolDbContext>>();
-			container.AddTransient<IStudentFlattenedRepository, StudentFlattenedRepository>();
+			container.AddTransient<IRepository<StudentFlattened>, Data.CosmosDb.Repository<StudentFlattened, SchoolCosmosDbOptions>>();
 		}
     }
 }

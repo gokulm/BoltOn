@@ -8,12 +8,10 @@ using BoltOn.Data;
 using BoltOn.Samples.Application.Entities;
 using BoltOn.Bootstrapping;
 using BoltOn.Data.CosmosDb;
-using BoltOn.Samples.Infrastructure.Data.Repositories;
-using BoltOn.Samples.Application.Abstractions.Data;
 
 namespace BoltOn.Samples.WebApi
 {
-    public class RegistrationTask : IRegistrationTask
+	public class RegistrationTask : IRegistrationTask
     {
         void IRegistrationTask.Run(RegistrationTaskContext context)
         {
@@ -43,8 +41,8 @@ namespace BoltOn.Samples.WebApi
             });
 
             container.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolDbContext>>();
-            container.AddTransient<IRepository<StudentType>, Repository<StudentType, SchoolDbContext>>();
-			container.AddTransient<IStudentFlattenedRepository, StudentFlattenedRepository>();
+            container.AddTransient<IRepository<StudentType>, Data.EF.Repository<StudentType, SchoolDbContext>>();
+			container.AddTransient<IRepository<StudentFlattened>, Data.CosmosDb.Repository<StudentFlattened, SchoolCosmosDbOptions>>();
 			//container.AddTransient<IRepository<StudentFlattened>, CqrsRepository<StudentFlattened, SchoolDbContext>>();
         }
     }
