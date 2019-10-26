@@ -44,7 +44,4 @@
         <ProjectReference Include="..\..\src\BoltOn.Overrides\BoltOn.Overrides.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Bus.MassTransit\BoltOn.Bus.MassTransit.csproj" />
     </ItemGroup>
-    <ItemGroup>
-      <None Remove=".DS_Store" />
-    </ItemGroup>
 </Project>

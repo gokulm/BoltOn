@@ -31,8 +31,4 @@
     <ItemGroup>
         <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
     </ItemGroup>
-    <ItemGroup>
-      <Compile Remove="BaseEFCqrsRepository.cs" />
-      <Compile Remove="CqrsRepository.cs" />
-    </ItemGroup>
 </Project>
