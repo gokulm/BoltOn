@@ -116,8 +116,23 @@ namespace BoltOn.Data.CosmosDb
 
         public virtual TEntity GetById(object id, object options = null)
         {
-            var document = AsyncContext.Run(() => DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString())));
-            return document.Document;
+			try
+			{
+				if (options is RequestOptions requestOptions)
+				{
+					return AsyncContext.Run(() => DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()),
+						requestOptions));
+				}
+				return AsyncContext.Run(() => DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString())));
+			}
+			catch (DocumentClientException e)
+			{
+				if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+				{
+					return null;
+				}
+				throw;
+			}
         }
 
         public virtual async Task<TEntity> GetByIdAsync(object id, object options = null, CancellationToken cancellationToken = default)

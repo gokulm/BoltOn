@@ -12,7 +12,7 @@ namespace BoltOn.Samples.WebApi
 {
 	public class RegistrationTask : IRegistrationTask
     {
-        void IRegistrationTask.Run(RegistrationTaskContext context)
+        public void Run(RegistrationTaskContext context)
         {
             var container = context.Container;
             container.AddMassTransit(x =>
