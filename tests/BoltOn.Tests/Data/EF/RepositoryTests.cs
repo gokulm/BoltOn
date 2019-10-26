@@ -115,7 +115,7 @@ namespace BoltOn.Tests.Data.EF
             // arrange
 
             // act
-            var result = _sut.FindBy(f => f.Id == 2, f => f.Addresses).FirstOrDefault();
+            var result = _sut.FindBy(f => f.Id == 2, null, f => f.Addresses).FirstOrDefault();
 
             // assert
             Assert.NotNull(result);
@@ -129,7 +129,7 @@ namespace BoltOn.Tests.Data.EF
             // arrange
 
             // act
-            var result = (await _sut.FindByAsync(f => f.Id == 2, default(CancellationToken), f => f.Addresses)).FirstOrDefault();
+            var result = (await _sut.FindByAsync(f => f.Id == 2, null, default(CancellationToken), f => f.Addresses)).FirstOrDefault();
 
             // assert
             Assert.NotNull(result);

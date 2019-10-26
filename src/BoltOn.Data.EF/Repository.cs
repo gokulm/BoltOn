@@ -29,17 +29,17 @@ namespace BoltOn.Data.EF
 			_boltOnClock = boltOnClock;
 		}
 
-		public virtual IEnumerable<TEntity> GetAll()
+		public virtual IEnumerable<TEntity> GetAll(object options = null)
 		{
 			return _dbSets.Select(s => s).ToList();
 		}
 
-		public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
+		public virtual async Task<IEnumerable<TEntity>> GetAllAsync(object options = null, CancellationToken cancellationToken = default)
 		{
 			return await _dbSets.ToListAsync(cancellationToken);
 		}
 
-		public virtual IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate,
+		public virtual IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate, object options = null,
 			params Expression<Func<TEntity, object>>[] includes)
 		{
 			var query = _dbSets.Where(predicate);
@@ -53,6 +53,7 @@ namespace BoltOn.Data.EF
 		}
 
 		public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
+			object options = null,
 			CancellationToken cancellationToken = default,
 			params Expression<Func<TEntity, object>>[] includes)
 		{
@@ -66,33 +67,33 @@ namespace BoltOn.Data.EF
 			return await query.ToListAsync(cancellationToken);
 		}
 
-		public virtual TEntity Add(TEntity entity)
+		public virtual TEntity Add(TEntity entity, object options = null)
 		{
 			_dbSets.Add(entity);
 			SaveChanges(entity);
 			return entity;
 		}
 
-		public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+		public virtual async Task<TEntity> AddAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
 		{
 			_dbSets.Add(entity);
 			await SaveChangesAsync(entity, cancellationToken);
 			return entity;
 		}
 
-		public virtual void Update(TEntity entity)
+		public virtual void Update(TEntity entity, object options = null)
 		{
 			_dbSets.Update(entity);
 			SaveChanges(entity);
 		}
 
-		public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+		public virtual async Task UpdateAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
 		{
 			_dbSets.Update(entity);
 			await SaveChangesAsync(entity, cancellationToken);
 		}
 
-		public virtual TEntity GetById(object id)
+		public virtual TEntity GetById(object id, object options = null)
 		{
 			return _dbSets.Find(id);
 		}
