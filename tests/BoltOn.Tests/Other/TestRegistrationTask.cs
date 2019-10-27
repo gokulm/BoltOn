@@ -27,7 +27,7 @@ namespace BoltOn.Tests.Other
 			{
 				context.Container.AddDbContext<SchoolDbContext>(options =>
 				{
-					options.UseSqlServer("Data Source=127.0.0.1;initial catalog=Testing;persist security info=True;User ID=sa;Password=$Password1;");
+					options.UseSqlServer("Data Source=127.0.0.1;initial catalog=Testing;persist security info=True;User ID=sa;Password=Password1;");
 				});
 			}
 			else

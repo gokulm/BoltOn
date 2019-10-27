@@ -59,8 +59,7 @@ namespace BoltOn.Data.CosmosDb
             return entity;
         }
 
-        public virtual IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate, object options = null,
-            params Expression<Func<TEntity, object>>[] includes)
+        public virtual IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate, object options = null)
         {
             IOrderedQueryable<TEntity> orderedQueryable;
             if (options is FeedOptions feedOptions)
@@ -77,7 +76,7 @@ namespace BoltOn.Data.CosmosDb
 
         public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
             object options = null,
-            CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
+            CancellationToken cancellationToken = default)
         {
             IOrderedQueryable<TEntity> orderedQueryable;
             if (options is FeedOptions feedOptions)

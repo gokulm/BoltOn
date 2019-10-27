@@ -39,14 +39,13 @@ namespace BoltOn.Data.EF
 			return await _dbSets.ToListAsync(cancellationToken);
 		}
 
-		public virtual IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate, object options = null,
-			params Expression<Func<TEntity, object>>[] includes)
+		public virtual IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate, object options = null)
 		{
 			var query = _dbSets.Where(predicate);
-			if (includes.Any())
+			if (options is IEnumerable<Expression<Func<TEntity, object>>> includes && includes.Any())
 			{
 				query = includes.Aggregate(query,
-					(current, include) => current.Include(include));
+				(current, include) => current.Include(include));
 			}
 
 			return query.ToList();
@@ -54,14 +53,13 @@ namespace BoltOn.Data.EF
 
 		public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
 			object options = null,
-			CancellationToken cancellationToken = default,
-			params Expression<Func<TEntity, object>>[] includes)
+			CancellationToken cancellationToken = default)
 		{
 			var query = _dbSets.Where(predicate);
-			if (includes != null)
+			if (options is IEnumerable<Expression<Func<TEntity, object>>> includes && includes.Any())
 			{
 				query = includes.Aggregate(query,
-					(current, include) => current.Include(include));
+				(current, include) => current.Include(include));
 			}
 
 			return await query.ToListAsync(cancellationToken);

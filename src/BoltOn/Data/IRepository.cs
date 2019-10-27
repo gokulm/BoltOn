@@ -11,11 +11,9 @@ namespace BoltOn.Data
 		Task<TEntity> GetByIdAsync(object id, object options = null, CancellationToken cancellationToken = default);
 		IEnumerable<TEntity> GetAll(object options = null);
 		Task<IEnumerable<TEntity>> GetAllAsync(object options = null, CancellationToken cancellationToken = default);
-		IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate, object options = null,
-			params Expression<Func<TEntity, object>>[] includes);
+		IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate, object options = null);
 		Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate, object options = null,
-			CancellationToken cancellationToken = default,
-			params Expression<Func<TEntity, object>>[] includes);
+			CancellationToken cancellationToken = default);
 		TEntity Add(TEntity entity, object options = null);
 		Task<TEntity> AddAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default);
 		void Update(TEntity entity, object options = null);
