@@ -173,9 +173,30 @@ namespace BoltOn.Data.CosmosDb
                 await DocumentClient.UpsertDocumentAsync(DocumentCollectionUri, entity, requestOptions, cancellationToken: cancellationToken);
             else
                 await DocumentClient.UpsertDocumentAsync(DocumentCollectionUri, entity, cancellationToken: cancellationToken);
-        }
+		}
 
-        protected Uri GetDocumentUri(string id)
+		public void Delete(TEntity entity, object options = null)
+		{
+			AsyncContext.Run(() =>
+			{
+				dynamic entityWithId = entity;
+				if (options is RequestOptions requestOptions)
+					DocumentClient.DeleteDocumentAsync(GetDocumentUri(entityWithId.Id), requestOptions);
+				else
+					DocumentClient.DeleteDocumentAsync(GetDocumentUri(entityWithId.Id));
+			});
+		}
+
+		public async Task DeleteAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
+		{
+			dynamic entityWithId = entity;
+			if (options is RequestOptions requestOptions)
+				await DocumentClient.DeleteDocumentAsync(GetDocumentUri(entityWithId.Id), requestOptions);
+			else
+				await DocumentClient.DeleteDocumentAsync(GetDocumentUri(entityWithId.Id));
+		}
+
+		protected Uri GetDocumentUri(string id)
         {
             return UriFactory.CreateDocumentUri(DatabaseName, CollectionName, id);
         }
@@ -210,5 +231,5 @@ namespace BoltOn.Data.CosmosDb
                 }
             }
         }
-    }
+	}
 }
