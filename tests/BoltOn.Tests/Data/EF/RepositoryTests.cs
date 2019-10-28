@@ -8,6 +8,7 @@ using System.Linq;
 using BoltOn.Tests.Other;
 using System.Linq.Expressions;
 using System.Collections.Generic;
+using BoltOn.Data;
 
 namespace BoltOn.Tests.Data.EF
 {
@@ -16,7 +17,7 @@ namespace BoltOn.Tests.Data.EF
 	[Collection("IntegrationTests")]
 	public class RepositoryTests : IDisposable
 	{
-		private readonly IStudentRepository _sut;
+		private readonly IRepository<Student> _sut;
 
 		public RepositoryTests()
 		{
@@ -32,7 +33,7 @@ namespace BoltOn.Tests.Data.EF
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			MediatorTestHelper.IsSeedData = true;
-			_sut = serviceProvider.GetService<IStudentRepository>();
+			_sut = serviceProvider.GetService<IRepository<Student>>();
 		}
 
 		[Fact, Trait("Category", "Integration")]
