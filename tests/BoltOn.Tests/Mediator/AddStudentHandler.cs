@@ -2,8 +2,9 @@
 using System.Threading.Tasks;
 using BoltOn.Data;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.Tests.Other;
 
-namespace BoltOn.Tests.Other
+namespace BoltOn.Tests.Mediator
 {
 	public class AddStudentRequest : ICommand<Student>
 	{

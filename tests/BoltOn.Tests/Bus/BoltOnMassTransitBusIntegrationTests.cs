@@ -10,6 +10,7 @@ using BoltOn.Tests.Other;
 using System.Linq;
 using BoltOn.Bootstrapping;
 using MassTransit;
+using BoltOn.Tests.Mediator;
 
 namespace BoltOn.Tests.Bus
 {

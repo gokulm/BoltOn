@@ -22,7 +22,7 @@ namespace BoltOn.Tests.Data.EF
 		public RepositoryTests()
 		{
 			// this flag can be set to true for [few] tests. Running all the tests with this set to true might slow down.
-			MediatorTestHelper.IsSqlServer = false;
+			IntegrationTestHelper.IsSqlServer = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection
 				.BoltOn(options =>
@@ -32,7 +32,7 @@ namespace BoltOn.Tests.Data.EF
 				});
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			MediatorTestHelper.IsSeedData = true;
+			IntegrationTestHelper.IsSeedData = true;
 			_sut = serviceProvider.GetService<IRepository<Student>>();
 		}
 

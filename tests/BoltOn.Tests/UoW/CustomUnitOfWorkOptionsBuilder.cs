@@ -5,13 +5,13 @@ using BoltOn.Mediator.Pipeline;
 using BoltOn.Overrides.Mediator;
 using BoltOn.UoW;
 
-namespace BoltOn.Tests.Other
+namespace BoltOn.Tests.UoW
 {
-	public class CustomUnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
+	public class TestCustomUnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
     {
-        private readonly IBoltOnLogger<CustomUnitOfWorkOptionsBuilder> _logger;
+        private readonly IBoltOnLogger<TestCustomUnitOfWorkOptionsBuilder> _logger;
 
-        public CustomUnitOfWorkOptionsBuilder(IBoltOnLogger<CustomUnitOfWorkOptionsBuilder> logger)
+        public TestCustomUnitOfWorkOptionsBuilder(IBoltOnLogger<TestCustomUnitOfWorkOptionsBuilder> logger)
         {
             _logger = logger;
         }

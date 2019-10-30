@@ -1,14 +1,15 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using BoltOn.Bootstrapping;
+using BoltOn.Tests.Other;
 
-namespace BoltOn.Tests.Other
+namespace BoltOn.Tests.Data.EF
 {
-	public class TestPostRegistrationTask : IPostRegistrationTask
+	public class EFPostRegistrationTask : IPostRegistrationTask
     {
         public void Run(PostRegistrationTaskContext context)
         {
-			if (MediatorTestHelper.IsSeedData)
+			if (IntegrationTestHelper.IsSeedData)
 			{
 				var serviceProvider = context.ServiceProvider;
 				var testDbContext = serviceProvider.GetService<SchoolDbContext>();
