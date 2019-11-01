@@ -23,6 +23,7 @@ namespace BoltOn.Tests.Data.EF
 		{
 			// this flag can be set to true for [few] tests. Running all the tests with this set to true might slow down.
 			IntegrationTestHelper.IsSqlServer = false;
+			IntegrationTestHelper.IsSeedData = true;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection
 				.BoltOn(options =>
@@ -32,7 +33,6 @@ namespace BoltOn.Tests.Data.EF
 				});
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			IntegrationTestHelper.IsSeedData = true;
 			_sut = serviceProvider.GetService<IRepository<Student>>();
 		}
 
@@ -83,7 +83,7 @@ namespace BoltOn.Tests.Data.EF
 			var result = _sut.GetAll().ToList();
 
 			// assert
-			Assert.Equal(2, result.Count);
+			Assert.Equal(4, result.Count);
 		}
 
 		[Fact, Trait("Category", "Integration")]
@@ -95,7 +95,7 @@ namespace BoltOn.Tests.Data.EF
 			var result = await _sut.GetAllAsync();
 
 			// assert
-			Assert.Equal(2, result.Count());
+			Assert.Equal(4, result.Count());
 		}
 
 		[Fact, Trait("Category", "Integration")]
@@ -221,6 +221,37 @@ namespace BoltOn.Tests.Data.EF
 			// assert
 			Assert.NotNull(queryResult);
 			Assert.Equal("c", queryResult.FirstName);
+		}
+
+		[Fact, Trait("Category", "Integration")]
+		public async Task DeleteAsync_DeleteAfterFetching_DeletesTheEntity()
+		{
+			// arrange
+			var student = _sut.GetById(10);
+
+			// act
+			await _sut.DeleteAsync(student);
+			var queryResult = _sut.GetById(10);
+
+			// assert
+			Assert.Null(queryResult);
+		}
+
+		[Fact, Trait("Category", "Integration")]
+		public async Task DeleteAsync_DeleteById_DeletesTheEntity()
+		{
+			if (!IntegrationTestHelper.IsSqlServer)
+				return;
+
+			// arrange
+			var student = new Student { Id = 11 };
+
+			// act
+			await _sut.DeleteAsync(student);
+			var queryResult = _sut.GetById(11);
+
+			// assert
+			Assert.Null(queryResult);
 		}
 
 		public void Dispose()

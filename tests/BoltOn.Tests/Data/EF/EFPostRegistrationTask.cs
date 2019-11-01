@@ -6,33 +6,49 @@ using BoltOn.Tests.Other;
 namespace BoltOn.Tests.Data.EF
 {
 	public class EFPostRegistrationTask : IPostRegistrationTask
-    {
-        public void Run(PostRegistrationTaskContext context)
-        {
+	{
+		public void Run(PostRegistrationTaskContext context)
+		{
 			if (IntegrationTestHelper.IsSeedData)
 			{
 				var serviceProvider = context.ServiceProvider;
-				var testDbContext = serviceProvider.GetService<SchoolDbContext>();
-				testDbContext.Database.EnsureDeleted();
-				testDbContext.Database.EnsureCreated();
+				using (var scope = serviceProvider.CreateScope())
+				{
+					var testDbContext = scope.ServiceProvider.GetService<SchoolDbContext>();
+					testDbContext.Database.EnsureDeleted();
+					testDbContext.Database.EnsureCreated();
 
-				testDbContext.Set<Student>().Add(new Student
-				{
-					Id = 1,
-					FirstName = "a",
-					LastName = "b"
-				});
-				var student = new Student
-				{
-					Id = 2,
-					FirstName = "x",
-					LastName = "y"
-				};
-				var address = new Address { Id = Guid.NewGuid(), Street = "Computer Science", Student = student };
-				testDbContext.Set<Student>().Add(student);
-				testDbContext.Set<Address>().Add(address);
-				testDbContext.SaveChanges();
+					testDbContext.Set<Student>().Add(new Student
+					{
+						Id = 1,
+						FirstName = "a",
+						LastName = "b"
+					});
+					var student = new Student
+					{
+						Id = 2,
+						FirstName = "x",
+						LastName = "y"
+					};
+					testDbContext.Set<Student>().Add(new Student
+					{
+						Id = 10,
+						FirstName = "record to be deleted",
+						LastName = "b"
+					});
+					testDbContext.Set<Student>().Add(new Student
+					{
+						Id = 11,
+						FirstName = "record to be deleted",
+						LastName = "b"
+					});
+					var address = new Address { Id = Guid.NewGuid(), Street = "Computer Science", Student = student };
+					testDbContext.Set<Student>().Add(student);
+					testDbContext.Set<Address>().Add(address);
+					testDbContext.SaveChanges();
+					testDbContext.Dispose();
+				}
 			}
-        }
-    }
+		}
+	}
 }

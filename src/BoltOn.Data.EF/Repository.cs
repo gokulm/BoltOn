@@ -18,8 +18,8 @@ namespace BoltOn.Data.EF
 		private readonly EventBag _eventBag;
 		private readonly IBoltOnClock _boltOnClock;
 
-		protected TDbContext DbContext { get; set; }
-		public DbSet<TEntity> DbSets { get; set; }
+		private TDbContext DbContext { get; set; }
+		protected DbSet<TEntity> DbSets { get; private set; }
 
 		public Repository(IDbContextFactory dbContextFactory, EventBag eventBag,
 			IBoltOnClock boltOnClock)
@@ -116,13 +116,13 @@ namespace BoltOn.Data.EF
 			await SaveChangesAsync(entity, cancellationToken);
 		}
 
-		private void SaveChanges(TEntity entity)
+		protected void SaveChanges(TEntity entity)
 		{
 			PublishEvents(entity);
 			DbContext.SaveChanges();
 		}
 
-		private async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
+		protected async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
 			PublishEvents(entity);
 			await DbContext.SaveChangesAsync(cancellationToken);
