@@ -37,11 +37,13 @@
         <Folder Include="Bus\" />
         <Folder Include="Utilities\" />
         <Folder Include="Cqrs\" />
+        <Folder Include="Data\CosmosDb\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Overrides\BoltOn.Overrides.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Bus.MassTransit\BoltOn.Bus.MassTransit.csproj" />
+        <ProjectReference Include="..\..\src\BoltOn.Data.CosmosDb\BoltOn.Data.CosmosDb.csproj" />
     </ItemGroup>
 </Project>

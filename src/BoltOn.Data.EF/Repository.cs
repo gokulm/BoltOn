@@ -102,13 +102,6 @@ namespace BoltOn.Data.EF
 			return await DbSets.FindAsync(id);
 		}
 
-		public virtual void Delete(TEntity entity, object options = null)
-		{
-			DbSets.Attach(entity);
-			DbSets.Remove(entity);
-			SaveChanges(entity);
-		}
-
 		public virtual async Task DeleteAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
 		{
 			DbSets.Attach(entity);

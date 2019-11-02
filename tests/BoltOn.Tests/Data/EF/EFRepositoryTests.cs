@@ -15,11 +15,11 @@ namespace BoltOn.Tests.Data.EF
 	// Collection is used to prevent running tests in parallel i.e., tests in the same collection
 	// will not be executed in parallel
 	[Collection("IntegrationTests")]
-	public class RepositoryTests : IDisposable
+	public class EFRepositoryTests : IDisposable
 	{
 		private readonly IRepository<Student> _sut;
 
-		public RepositoryTests()
+		public EFRepositoryTests()
 		{
 			// this flag can be set to true for [few] tests. Running all the tests with this set to true might slow down.
 			IntegrationTestHelper.IsSqlServer = false;
@@ -216,9 +216,9 @@ namespace BoltOn.Tests.Data.EF
 			// act
 			student.FirstName = "c";
 			await _sut.UpdateAsync(student);
-			var queryResult = _sut.GetById(2);
 
 			// assert
+			var queryResult = _sut.GetById(2);
 			Assert.NotNull(queryResult);
 			Assert.Equal("c", queryResult.FirstName);
 		}
@@ -231,9 +231,9 @@ namespace BoltOn.Tests.Data.EF
 
 			// act
 			await _sut.DeleteAsync(student);
-			var queryResult = _sut.GetById(10);
 
 			// assert
+			var queryResult = _sut.GetById(10);
 			Assert.Null(queryResult);
 		}
 

@@ -1,4 +1,6 @@
 ﻿using BoltOn.Bootstrapping;
+using BoltOn.Data;
+using BoltOn.Data.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +12,7 @@ namespace BoltOn.Tests.Other
 		public void Run(RegistrationTaskContext context)
 		{
 			RegisterDataFakes(context);
+			context.Container.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
 		}
 
 		private static void RegisterDataFakes(RegistrationTaskContext context)

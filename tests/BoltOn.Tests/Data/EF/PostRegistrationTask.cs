@@ -5,7 +5,7 @@ using BoltOn.Tests.Other;
 
 namespace BoltOn.Tests.Data.EF
 {
-	public class EFPostRegistrationTask : IPostRegistrationTask
+	public class PostRegistrationTask : IPostRegistrationTask
 	{
 		public void Run(PostRegistrationTaskContext context)
 		{

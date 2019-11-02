@@ -18,7 +18,6 @@ namespace BoltOn.Data
 		Task<TEntity> AddAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default);
 		void Update(TEntity entity, object options = null);
 		Task UpdateAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default);
-		void Delete(TEntity entity, object options = null);
 		Task DeleteAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default);
 	}
 }

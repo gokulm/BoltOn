@@ -73,7 +73,6 @@ namespace BoltOn.Tests.Other
 				context.RemoveInterceptor<StopwatchInterceptor>();
 
 			context.AddInterceptor<TestInterceptor>();
-			context.Container.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
 
 			//var changeTrackerInterceptor = new Mock<IBoltOnLogger<CustomChangeTrackerInterceptor>>();
 			//changeTrackerInterceptor.Setup(s => s.Debug(It.IsAny<string>()))
