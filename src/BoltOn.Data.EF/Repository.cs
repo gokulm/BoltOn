@@ -121,7 +121,7 @@ namespace BoltOn.Data.EF
 			await DbContext.SaveChangesAsync(cancellationToken);
 		}
 
-		private void PublishEvents(TEntity entity)
+		protected void PublishEvents(TEntity entity)
 		{
 			if (entity is BaseCqrsEntity baseCqrsEntity)
 			{
