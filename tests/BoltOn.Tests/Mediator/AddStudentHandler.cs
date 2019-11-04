@@ -1,8 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using BoltOn.Data;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.Tests.Other;
 
-namespace BoltOn.Tests.Other
+namespace BoltOn.Tests.Mediator
 {
 	public class AddStudentRequest : ICommand<Student>
 	{
@@ -13,9 +15,9 @@ namespace BoltOn.Tests.Other
 
 	public class AddStudentHandler : IRequestAsyncHandler<AddStudentRequest, Student>
     {
-        private readonly IStudentRepository _studentRepository;
+        private readonly IRepository<Student> _studentRepository;
 
-        public AddStudentHandler(IStudentRepository studentRepository)
+        public AddStudentHandler(IRepository<Student> studentRepository)
         {
             _studentRepository = studentRepository;
         }

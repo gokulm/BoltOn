@@ -4,7 +4,7 @@ using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Overrides.Mediator;
 
-namespace BoltOn.Tests.Other
+namespace BoltOn.Tests.Mediator
 {
 	public class TestRequest : IRequest<bool>, IEnableStopwatchInterceptor
 	{

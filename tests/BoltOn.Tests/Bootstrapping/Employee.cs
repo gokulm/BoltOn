@@ -1,6 +1,6 @@
 ﻿using BoltOn.Logging;
 
-namespace BoltOn.Tests.Other
+namespace BoltOn.Tests.Bootstrapping
 {
     public class Employee
     {

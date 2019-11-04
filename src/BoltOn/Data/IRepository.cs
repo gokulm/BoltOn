@@ -7,18 +7,17 @@ namespace BoltOn.Data
 {
 	public interface IRepository<TEntity> where TEntity : class
 	{
-		TEntity GetById(object id);
-		Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default);
-		IEnumerable<TEntity> GetAll();
-		Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
-		IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate,
-			params Expression<Func<TEntity, object>>[] includes);
-		Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
-			CancellationToken cancellationToken = default,
-			params Expression<Func<TEntity, object>>[] includes);
-		TEntity Add(TEntity entity);
-		Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default);
-		void Update(TEntity entity);
-		Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
+		TEntity GetById(object id, object options = null);
+		Task<TEntity> GetByIdAsync(object id, object options = null, CancellationToken cancellationToken = default);
+		IEnumerable<TEntity> GetAll(object options = null);
+		Task<IEnumerable<TEntity>> GetAllAsync(object options = null, CancellationToken cancellationToken = default);
+		IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate, object options = null);
+		Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate, object options = null,
+			CancellationToken cancellationToken = default);
+		TEntity Add(TEntity entity, object options = null);
+		Task<TEntity> AddAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default);
+		void Update(TEntity entity, object options = null);
+		Task UpdateAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default);
+		Task DeleteAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default);
 	}
 }
