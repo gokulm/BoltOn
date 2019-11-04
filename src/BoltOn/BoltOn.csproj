@@ -50,7 +50,4 @@
         <Compile Remove="Mediator\MediatorRegistrationTask.cs" />
         <Compile Remove="Mediator\Extensions.cs" />
     </ItemGroup>
-    <ItemGroup>
-      <None Remove="BoltOn.nuspec" />
-    </ItemGroup>
 </Project>

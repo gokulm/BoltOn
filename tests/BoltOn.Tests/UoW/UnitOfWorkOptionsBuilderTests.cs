@@ -1,4 +1,5 @@
 using BoltOn.Logging;
+using BoltOn.Tests.Mediator;
 using BoltOn.Tests.Other;
 using BoltOn.UoW;
 using Moq;
@@ -47,9 +48,9 @@ namespace BoltOn.Tests.UoW
 		{
 			// arrange
 			var loggerFactory = new Mock<IBoltOnLoggerFactory>();
-			var logger = new Mock<IBoltOnLogger<CustomUnitOfWorkOptionsBuilder>>();
-			loggerFactory.Setup(u => u.Create<CustomUnitOfWorkOptionsBuilder>()).Returns(logger.Object);
-			var sut = new CustomUnitOfWorkOptionsBuilder(logger.Object);
+			var logger = new Mock<IBoltOnLogger<TestCustomUnitOfWorkOptionsBuilder>>();
+			loggerFactory.Setup(u => u.Create<TestCustomUnitOfWorkOptionsBuilder>()).Returns(logger.Object);
+			var sut = new TestCustomUnitOfWorkOptionsBuilder(logger.Object);
 
 			// act
 			var result = sut.Build(new TestStaleQuery());

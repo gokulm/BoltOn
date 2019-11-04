@@ -5,10 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using BoltOn.Data.EF;
 using BoltOn.Samples.Application.Handlers;
-using BoltOn.Samples.Infrastructure.Data.Repositories;
 using BoltOn.Data.CosmosDb;
 using BoltOn.Bus.MassTransit;
 using BoltOn.Utilities;
+using BoltOn.Samples.Infrastructure.Data;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -30,7 +30,7 @@ namespace BoltOn.Samples.WebApi
 				options.BoltOnCosmosDbModule();
 				options.BoltOnMassTransitBusModule();
 				options.BoltOnCqrsModule();
-				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(StudentRepository).Assembly);
+				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolDbContext).Assembly);
 			});
 		}
 

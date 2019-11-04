@@ -4,7 +4,7 @@ using BoltOn.Mediator.Pipeline;
 using BoltOn.Logging;
 using System;
 
-namespace BoltOn.Tests.Other
+namespace BoltOn.Tests.Bus
 {
 	public class CreateTestStudent : IRequest
 	{

@@ -5,7 +5,7 @@ using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 
-namespace BoltOn.Tests.Other
+namespace BoltOn.Tests.Mediator
 {
 	public class TestInterceptor : IInterceptor
 	{
