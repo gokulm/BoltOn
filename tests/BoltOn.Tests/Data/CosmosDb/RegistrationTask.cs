@@ -14,9 +14,10 @@ namespace BoltOn.Tests.Data.CosmosDb
             {
                 context.Container.AddCosmosDb<TestSchoolCosmosDbOptions>(options =>
                 {
-                    options.Uri = "https://bolton2.documents.azure.com:443/";
-                    options.AuthorizationKey = "CJNc3RPjK3ACzRBtjOg56rJ774Y3ncyvJKCl5X2pfpMVe5wLPkr2v80pN5wWjhmZXYA0blOEsIDT4MmQifjtrg==";
-                    options.DatabaseName = "School";
+                    //fill the cosmosdb details and make sure you have collection and database exists as well inorder to run the cosmosdb integration tests .
+                    options.Uri = "";
+                    options.AuthorizationKey = "";
+                    options.DatabaseName = "";
                 });
 
                 context.Container.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, TestSchoolCosmosDbOptions>>();
