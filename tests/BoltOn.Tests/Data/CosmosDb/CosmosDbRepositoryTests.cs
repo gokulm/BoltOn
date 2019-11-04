@@ -38,7 +38,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 				return;
 
 			// arrange
-			var id = Guid.Parse("56bbd30b-be53-4ec4-9e6b-8c2f4b6f8c71");
+			var id = Guid.Parse("e2e1c2d0-9a7c-4659-b9e3-6760e740c26c");
 			var student = new StudentFlattened { Id = id };
 
 			// act

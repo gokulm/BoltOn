@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using BoltOn.Data;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Tests.Other;
 
@@ -12,9 +11,9 @@ namespace BoltOn.Tests.Mediator
 
 	public class GetStudentHandler : IRequestHandler<GetStudentRequest, Student>
     {
-        readonly IRepository<Student> _studentRepository;
+        readonly IStudentRepository _studentRepository;
 
-        public GetStudentHandler(IRepository<Student> studentRepository)
+        public GetStudentHandler(IStudentRepository studentRepository)
         {
             _studentRepository = studentRepository;
         }

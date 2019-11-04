@@ -12,16 +12,15 @@ namespace BoltOn.Tests.Data.CosmosDb
         {
             if (IntegrationTestHelper.IsCosmosDbServer)
             {
-                context.Container.AddCosmosDb<TestSchoolCosmosDbOptions>(options =>
+                context.Container.AddCosmosDb<SchoolCosmosDbOptions>(options =>
                 {
-                    options.Uri = "https://bolton2.documents.azure.com:443/";
-                    options.AuthorizationKey = "CJNc3RPjK3ACzRBtjOg56rJ774Y3ncyvJKCl5X2pfpMVe5wLPkr2v80pN5wWjhmZXYA0blOEsIDT4MmQifjtrg==";
+                    options.Uri = "";
+                    options.AuthorizationKey = "";
                     options.DatabaseName = "School";
                 });
 
-                context.Container.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, TestSchoolCosmosDbOptions>>();
+                context.Container.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, SchoolCosmosDbOptions>>();
             }
-
         }
     }
 }

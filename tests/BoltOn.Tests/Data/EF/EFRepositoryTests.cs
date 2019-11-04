@@ -114,7 +114,7 @@ namespace BoltOn.Tests.Data.EF
 		[Fact, Trait("Category", "Integration")]
 		public void FindByWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
 		{
-			// arrangevar
+			// arrange
 			var includes = new List<Expression<Func<Student, object>>>
 			{
 				s => s.Addresses

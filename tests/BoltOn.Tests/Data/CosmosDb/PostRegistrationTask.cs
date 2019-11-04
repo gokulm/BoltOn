@@ -17,7 +17,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			}
 		}
 	}
-
+		
 	public class StudentFlattened : BaseCqrsEntity
 	{
 		[JsonProperty("id")]
@@ -36,7 +36,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 		public int StudentTypeId { get; private set; }
 	}
 
-	public class TestSchoolCosmosDbOptions : BaseCosmosDbOptions
+	public class SchoolCosmosDbOptions : BaseCosmosDbOptions
 	{
 	}
 }
