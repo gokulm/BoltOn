@@ -1,13 +1,14 @@
 ﻿using BoltOn.Bootstrapping;
 using BoltOn.Data;
 using BoltOn.Data.EF;
+using BoltOn.Tests.Other;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BoltOn.Tests.Other
+namespace BoltOn.Tests.Data.EF
 {
-    public class TestRegistrationTask : IRegistrationTask
+    public class RegistrationTask : IRegistrationTask
     {
         public void Run(RegistrationTaskContext context)
         {

@@ -13,7 +13,7 @@ using Xunit;
 namespace BoltOn.Tests.Data.CosmosDb
 {
     [Collection("IntegrationTests")]
-    public class CosmosDbRepositoryTests
+    public class CosmosDbRepositoryTests : IDisposable
     {
         private readonly IRepository<StudentFlattened> _sut;
 
@@ -75,7 +75,7 @@ namespace BoltOn.Tests.Data.CosmosDb
             var result = await _sut.GetAllAsync();
 
             // assert
-            Assert.Equal(1, result.Count());
+            Assert.Single(result);
         }
 
         [Fact, Trait("Category", "Integration")]
@@ -126,7 +126,7 @@ namespace BoltOn.Tests.Data.CosmosDb
             var studentFlattened = new StudentFlattened { Id = id, StudentTypeId = 2, FirstName = "meghan", LastName = "doe" };
 
             // act
-            var addEntity = await _sut.AddAsync(studentFlattened);
+            var addedEntity = await _sut.AddAsync(studentFlattened);
 
             // assert
             var result = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(2) });
