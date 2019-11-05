@@ -63,7 +63,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 
             // assert
             Assert.NotNull(result);
-            Assert.Equal("John".ToLower(), result.FirstName.ToLower());
+            Assert.Equal("john", result.FirstName);
         }
 
         [Fact, Trait("Category", "Integration")]
@@ -115,7 +115,7 @@ namespace BoltOn.Tests.Data.CosmosDb
             // assert
             var result = (await _sut.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "john")).FirstOrDefault();
             Assert.NotNull(result);
-            Assert.Equal("smith jr".ToLower(), result.LastName.ToLower());
+            Assert.Equal("smith jr", result.LastName);
         }
 
         [Fact, Trait("Category", "Integration")]
@@ -131,7 +131,7 @@ namespace BoltOn.Tests.Data.CosmosDb
             // assert
             var result = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(2) });
             Assert.NotNull(result);
-            Assert.Equal("meghan".ToLower(), result.FirstName.ToLower());
+            Assert.Equal("meghan", result.FirstName);
             await _sut.DeleteAsync(studentFlattened, new RequestOptions { PartitionKey = new PartitionKey(2) });
         }
 
