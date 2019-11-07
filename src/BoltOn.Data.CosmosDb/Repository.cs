@@ -9,11 +9,10 @@ using BoltOn.Utilities;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
-using Nito.AsyncEx;
 
 namespace BoltOn.Data.CosmosDb
 {
-    public class Repository<TEntity, TCosmosDbOptions> : IRepository<TEntity>
+	public class Repository<TEntity, TCosmosDbOptions> : IRepository<TEntity>
         where TEntity : class
         where TCosmosDbOptions : BaseCosmosDbOptions
     {
@@ -36,19 +35,6 @@ namespace BoltOn.Data.CosmosDb
             DocumentCollectionUri = UriFactory.CreateDocumentCollectionUri(DatabaseName, CollectionName);
         }
 
-        public virtual TEntity Add(TEntity entity, object options = null)
-        {
-            AsyncContext.Run(() =>
-            {
-                if (options is RequestOptions requestOptions)
-                    DocumentClient.CreateDocumentAsync(DocumentCollectionUri, entity, requestOptions);
-                else
-                    DocumentClient.CreateDocumentAsync(DocumentCollectionUri, entity);
-            }
-            );
-            return entity;
-        }
-
         public virtual async Task<TEntity> AddAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
         {
             PublishEvents(entity);
@@ -57,21 +43,6 @@ namespace BoltOn.Data.CosmosDb
             else
                 await DocumentClient.CreateDocumentAsync(DocumentCollectionUri, entity, cancellationToken: cancellationToken);
             return entity;
-        }
-
-        public virtual IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate, object options = null)
-        {
-            IOrderedQueryable<TEntity> orderedQueryable;
-            if (options is FeedOptions feedOptions)
-                orderedQueryable = DocumentClient.CreateDocumentQuery<TEntity>(DocumentCollectionUri, feedOptions);
-            else
-                orderedQueryable = DocumentClient.CreateDocumentQuery<TEntity>(DocumentCollectionUri);
-
-            var query = orderedQueryable
-                .Where(predicate)
-                .AsDocumentQuery();
-
-            return AsyncContext.Run(() => GetResultsFromDocumentQuery(query));
         }
 
         public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
@@ -91,17 +62,6 @@ namespace BoltOn.Data.CosmosDb
             return await GetResultsFromDocumentQuery(query, cancellationToken);
         }
 
-        public virtual IEnumerable<TEntity> GetAll(object options = null)
-        {
-            IOrderedQueryable<TEntity> orderedQueryable;
-            if (options is FeedOptions feedOptions)
-                orderedQueryable = DocumentClient.CreateDocumentQuery<TEntity>(DocumentCollectionUri, feedOptions);
-            else
-                orderedQueryable = DocumentClient.CreateDocumentQuery<TEntity>(DocumentCollectionUri);
-
-            return AsyncContext.Run(() => GetResultsFromDocumentQuery(orderedQueryable.AsDocumentQuery()));
-        }
-
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync(object options = null, CancellationToken cancellationToken = default)
         {
             IOrderedQueryable<TEntity> orderedQueryable;
@@ -111,27 +71,6 @@ namespace BoltOn.Data.CosmosDb
                 orderedQueryable = DocumentClient.CreateDocumentQuery<TEntity>(DocumentCollectionUri);
 
             return await GetResultsFromDocumentQuery(orderedQueryable.AsDocumentQuery(), cancellationToken);
-        }
-
-        public virtual TEntity GetById(object id, object options = null)
-        {
-			try
-			{
-				if (options is RequestOptions requestOptions)
-				{
-					return AsyncContext.Run(() => DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()),
-						requestOptions));
-				}
-				return AsyncContext.Run(() => DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString())));
-			}
-			catch (DocumentClientException e)
-			{
-				if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
-				{
-					return null;
-				}
-				throw;
-			}
         }
 
         public virtual async Task<TEntity> GetByIdAsync(object id, object options = null, CancellationToken cancellationToken = default)
@@ -153,17 +92,6 @@ namespace BoltOn.Data.CosmosDb
                 }
                 throw;
             }
-        }
-
-        public virtual void Update(TEntity entity, object options = null)
-        {
-            AsyncContext.Run(() =>
-            {
-                if (options is RequestOptions requestOptions)
-                    DocumentClient.UpsertDocumentAsync(DocumentCollectionUri, entity, requestOptions);
-                else
-                    DocumentClient.UpsertDocumentAsync(DocumentCollectionUri, entity);
-            });
         }
 
         public virtual async Task UpdateAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)

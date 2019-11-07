@@ -38,14 +38,14 @@ namespace BoltOn.Tests.Data.CosmosDb
 				return;
 
 			// arrange
-			var id = Guid.Parse("56bbd30b-be53-4ec4-9e6b-8c2f4b6f8c71");
+			var id = Guid.Parse("e2e1c2d0-9a7c-4659-b9e3-6760e740c26c");
 			var student = new StudentFlattened { Id = id };
 
 			// act
 			await _sut.DeleteAsync(student, new RequestOptions { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(2) });
 
 			// assert
-			var queryResult = _sut.GetById(id, new RequestOptions { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(2) });
+			var queryResult = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(2) });
 			Assert.Null(queryResult);
 		}
 	}

@@ -192,7 +192,7 @@ namespace BoltOn.Tests.Cqrs
 										$"{nameof(TestCqrsUpdatedEventHandler)} invoked"));
 			cqrsInterceptorLogger.Verify(v => v.Error(failedBusException), Times.Exactly(2));
 			var repository = serviceProvider.GetService<IRepository<TestCqrsWriteEntity>>();
-			var entity = repository.GetById(CqrsConstants.EntityId);
+			var entity = await repository.GetByIdAsync(CqrsConstants.EntityId);
 			Assert.NotNull(entity);
 			Assert.True(entity.EventsToBeProcessed.Count == 2);
 			var eventBag = serviceProvider.GetService<EventBag>();
@@ -245,7 +245,7 @@ namespace BoltOn.Tests.Cqrs
 											 $"SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
 			cqrsInterceptorLogger.Verify(v => v.Error(failedBusException), Times.Once);
 			var repository = serviceProvider.GetService<IRepository<TestCqrsWriteEntity>>();
-			var entity = repository.GetById(CqrsConstants.EntityId);
+			var entity = await repository.GetByIdAsync(CqrsConstants.EntityId);
 			Assert.NotNull(entity);
 			Assert.True(entity.EventsToBeProcessed.Count == 2);
 			var eventBag = serviceProvider.GetService<EventBag>();

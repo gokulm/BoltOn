@@ -27,9 +27,9 @@ namespace BoltOn.Tests.Cqrs
         public void Handle(TestCqrsRequest request)
         {
             _logger.Debug($"{nameof(TestCqrsHandler)} invoked");
-            var testCqrsWriteEntity = _repository.GetById(CqrsConstants.EntityId);
+            var testCqrsWriteEntity = _repository.GetByIdAsync(CqrsConstants.EntityId).GetAwaiter().GetResult();
             testCqrsWriteEntity.ChangeInput(request);
-            _repository.Update(testCqrsWriteEntity);
+            _repository.UpdateAsync(testCqrsWriteEntity).GetAwaiter().GetResult();
         }
 
         public async Task HandleAsync(TestCqrsRequest request, CancellationToken cancellationToken)
