@@ -37,12 +37,12 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public void GetById_WhenRecordExists_ReturnsRecord()
+		public async Task GetById_WhenRecordExists_ReturnsRecord()
 		{
 			// arrange
 
 			// act
-			var result = _sut.GetById(1);
+			var result = await _sut.GetByIdAsync(1);
 
 			// assert
 			Assert.NotNull(result);
@@ -50,12 +50,12 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public void GetById_WhenRecordDoesNotExist_ReturnsNull()
+		public async Task GetById_WhenRecordDoesNotExist_ReturnsNull()
 		{
 			// arrange
 
 			// act
-			var result = _sut.GetById(3);
+			var result = await _sut.GetByIdAsync(3);
 
 			// assert
 			Assert.Null(result);
@@ -75,12 +75,12 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public void GetAll_WhenRecordsExist_ReturnsAllTheRecords()
+		public async Task GetAll_WhenRecordsExist_ReturnsAllTheRecords()
 		{
 			// arrange
 
 			// act
-			var result = _sut.GetAll().ToList();
+			var result = (await _sut.GetAllAsync()).ToList();
 
 			// assert
 			Assert.Equal(4, result.Count);
@@ -99,12 +99,12 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public void FindByWithoutIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheFindByCriteria()
+		public async Task FindByWithoutIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheFindByCriteria()
 		{
 			// arrange
 
 			// act
-			var result = _sut.FindBy(f => f.Id == 2).FirstOrDefault();
+			var result = (await _sut.FindByAsync(f => f.Id == 2)).FirstOrDefault();
 
 			// assert
 			Assert.NotNull(result);
@@ -112,7 +112,7 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public void FindByWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
+		public async Task FindByWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
 		{
 			// arrange
 			var includes = new List<Expression<Func<Student, object>>>
@@ -121,7 +121,7 @@ namespace BoltOn.Tests.Data.EF
 			};
 
 			// act
-			var result = _sut.FindBy(f => f.Id == 2, includes).FirstOrDefault();
+			var result = (await _sut.FindByAsync(f => f.Id == 2, includes)).FirstOrDefault();
 
 			// assert
 			Assert.NotNull(result);
@@ -148,7 +148,7 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public void Add_AddANewEntity_ReturnsAddedEntity()
+		public async Task Add_AddANewEntity_ReturnsAddedEntity()
 		{
 			// arrange
 			const int newStudentId = 5;
@@ -160,8 +160,8 @@ namespace BoltOn.Tests.Data.EF
 			};
 
 			// act
-			var result = _sut.Add(student);
-			var queryResult = _sut.GetById(newStudentId);
+			var result = await _sut.AddAsync(student);
+			var queryResult = await _sut.GetByIdAsync(newStudentId);
 
 			// assert
 			Assert.NotNull(queryResult);
@@ -183,7 +183,7 @@ namespace BoltOn.Tests.Data.EF
 
 			// act
 			var result = await _sut.AddAsync(student);
-			var queryResult = _sut.GetById(newStudentId);
+			var queryResult = await _sut.GetByIdAsync(newStudentId);
 
 			// assert
 			Assert.NotNull(queryResult);
@@ -192,15 +192,15 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public void Update_UpdateAnExistingEntity_UpdatesTheEntity()
+		public async Task Update_UpdateAnExistingEntity_UpdatesTheEntity()
 		{
 			// arrange
-			var student = _sut.GetById(2);
+			var student = await _sut.GetByIdAsync(2);
 
 			// act
 			student.FirstName = "c";
-			_sut.Update(student);
-			var queryResult = _sut.GetById(2);
+			await _sut.UpdateAsync(student);
+			var queryResult = await _sut.GetByIdAsync(2);
 
 			// assert
 			Assert.NotNull(queryResult);
@@ -211,14 +211,14 @@ namespace BoltOn.Tests.Data.EF
 		public async Task UpdateAsync_UpdateAnExistingEntity_UpdatesTheEntity()
 		{
 			// arrange
-			var student = _sut.GetById(2);
+			var student = await _sut.GetByIdAsync(2);
 
 			// act
 			student.FirstName = "c";
 			await _sut.UpdateAsync(student);
 
 			// assert
-			var queryResult = _sut.GetById(2);
+			var queryResult = await _sut.GetByIdAsync(2);
 			Assert.NotNull(queryResult);
 			Assert.Equal("c", queryResult.FirstName);
 		}
@@ -227,13 +227,13 @@ namespace BoltOn.Tests.Data.EF
 		public async Task DeleteAsync_DeleteAfterFetching_DeletesTheEntity()
 		{
 			// arrange
-			var student = _sut.GetById(10);
+			var student = await _sut.GetByIdAsync(10);
 
 			// act
 			await _sut.DeleteAsync(student);
 
 			// assert
-			var queryResult = _sut.GetById(10);
+			var queryResult = await _sut.GetByIdAsync(10);
 			Assert.Null(queryResult);
 		}
 
@@ -248,7 +248,7 @@ namespace BoltOn.Tests.Data.EF
 
 			// act
 			await _sut.DeleteAsync(student);
-			var queryResult = _sut.GetById(11);
+			var queryResult = await _sut.GetByIdAsync(11);
 
 			// assert
 			Assert.Null(queryResult);

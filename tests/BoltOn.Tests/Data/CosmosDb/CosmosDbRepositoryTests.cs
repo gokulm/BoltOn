@@ -45,7 +45,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			await _sut.DeleteAsync(student, new RequestOptions { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(2) });
 
 			// assert
-			var queryResult = _sut.GetById(id, new RequestOptions { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(2) });
+			var queryResult = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(2) });
 			Assert.Null(queryResult);
 		}
 	}

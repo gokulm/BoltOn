@@ -20,7 +20,7 @@ namespace BoltOn.Tests.Mediator
 
         public virtual Student Handle(GetStudentRequest request)
         {
-            var student = _studentRepository.FindBy(f => f.Id == request.StudentId).FirstOrDefault();
+            var student = _studentRepository.FindByAsync(f => f.Id == request.StudentId).GetAwaiter().GetResult().FirstOrDefault();
             return student;
         }
     }
