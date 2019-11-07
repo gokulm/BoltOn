@@ -41,14 +41,15 @@ namespace BoltOn.Tests.Data.CosmosDb
                 return;
 
             // arrange
-            var id = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
-            var student = new StudentFlattened { Id = id };
+            var id = Guid.NewGuid();
+            var studentFlattened = new StudentFlattened { Id = id, StudentTypeId = 1, FirstName = "james", LastName = "jones" };
+            await _sut.AddAsync(studentFlattened);
 
             // act
-            await _sut.DeleteAsync(student, new RequestOptions { PartitionKey = new PartitionKey(1) });
+            await _sut.DeleteAsync(studentFlattened, new RequestOptions { PartitionKey = new PartitionKey(1) });
 
             // assert
-            var queryResult = _sut.GetById(id, new RequestOptions { PartitionKey = new PartitionKey(1) });
+            var queryResult = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(1) });
             Assert.Null(queryResult);
         }
 
@@ -75,7 +76,7 @@ namespace BoltOn.Tests.Data.CosmosDb
             var result = await _sut.GetAllAsync();
 
             // assert
-            Assert.Single(result);
+            Assert.True(result.Count() >1);
         }
 
         [Fact, Trait("Category", "Integration")]
@@ -132,11 +133,14 @@ namespace BoltOn.Tests.Data.CosmosDb
             var result = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(2) });
             Assert.NotNull(result);
             Assert.Equal("meghan", result.FirstName);
-            await _sut.DeleteAsync(studentFlattened, new RequestOptions { PartitionKey = new PartitionKey(2) });
         }
 
         public void Dispose()
         {
+            var id = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
+            var student = new StudentFlattened { Id = id };
+            _sut.DeleteAsync(student, new RequestOptions { PartitionKey = new PartitionKey(1) }).Wait();
+
             Bootstrapper
                 .Instance
                 .Dispose();

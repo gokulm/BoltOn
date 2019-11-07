@@ -9,7 +9,6 @@ using BoltOn.Utilities;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
-using Nito.AsyncEx;
 
 namespace BoltOn.Data.CosmosDb
 {
@@ -38,15 +37,7 @@ namespace BoltOn.Data.CosmosDb
 
         public virtual TEntity Add(TEntity entity, object options = null)
         {
-            AsyncContext.Run(() =>
-            {
-                if (options is RequestOptions requestOptions)
-                    DocumentClient.CreateDocumentAsync(DocumentCollectionUri, entity, requestOptions);
-                else
-                    DocumentClient.CreateDocumentAsync(DocumentCollectionUri, entity);
-            }
-            );
-            return entity;
+            throw new NotSupportedException();
         }
 
         public virtual async Task<TEntity> AddAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
@@ -61,17 +52,7 @@ namespace BoltOn.Data.CosmosDb
 
         public virtual IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate, object options = null)
         {
-            IOrderedQueryable<TEntity> orderedQueryable;
-            if (options is FeedOptions feedOptions)
-                orderedQueryable = DocumentClient.CreateDocumentQuery<TEntity>(DocumentCollectionUri, feedOptions);
-            else
-                orderedQueryable = DocumentClient.CreateDocumentQuery<TEntity>(DocumentCollectionUri);
-
-            var query = orderedQueryable
-                .Where(predicate)
-                .AsDocumentQuery();
-
-            return AsyncContext.Run(() => GetResultsFromDocumentQuery(query));
+            throw new NotSupportedException();
         }
 
         public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
@@ -93,13 +74,7 @@ namespace BoltOn.Data.CosmosDb
 
         public virtual IEnumerable<TEntity> GetAll(object options = null)
         {
-            IOrderedQueryable<TEntity> orderedQueryable;
-            if (options is FeedOptions feedOptions)
-                orderedQueryable = DocumentClient.CreateDocumentQuery<TEntity>(DocumentCollectionUri, feedOptions);
-            else
-                orderedQueryable = DocumentClient.CreateDocumentQuery<TEntity>(DocumentCollectionUri);
-
-            return AsyncContext.Run(() => GetResultsFromDocumentQuery(orderedQueryable.AsDocumentQuery()));
+            throw new NotSupportedException();
         }
 
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync(object options = null, CancellationToken cancellationToken = default)
@@ -115,23 +90,7 @@ namespace BoltOn.Data.CosmosDb
 
         public virtual TEntity GetById(object id, object options = null)
         {
-			try
-			{
-				if (options is RequestOptions requestOptions)
-				{
-					return AsyncContext.Run(() => DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()),
-						requestOptions));
-				}
-				return AsyncContext.Run(() => DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString())));
-			}
-			catch (DocumentClientException e)
-			{
-				if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
-				{
-					return null;
-				}
-				throw;
-			}
+            throw new NotSupportedException();
         }
 
         public virtual async Task<TEntity> GetByIdAsync(object id, object options = null, CancellationToken cancellationToken = default)
@@ -157,13 +116,7 @@ namespace BoltOn.Data.CosmosDb
 
         public virtual void Update(TEntity entity, object options = null)
         {
-            AsyncContext.Run(() =>
-            {
-                if (options is RequestOptions requestOptions)
-                    DocumentClient.UpsertDocumentAsync(DocumentCollectionUri, entity, requestOptions);
-                else
-                    DocumentClient.UpsertDocumentAsync(DocumentCollectionUri, entity);
-            });
+            throw new NotSupportedException();
         }
 
         public virtual async Task UpdateAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)

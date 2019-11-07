@@ -23,7 +23,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 
                     var repository = scope.ServiceProvider.GetService<IRepository<StudentFlattened>>();
 
-                    repository.Add(studentFlattened);
+                    repository.AddAsync(studentFlattened).Wait();
                 }
 
             }
