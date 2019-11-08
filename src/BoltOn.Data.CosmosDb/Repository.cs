@@ -12,7 +12,7 @@ using Microsoft.Azure.Documents.Linq;
 
 namespace BoltOn.Data.CosmosDb
 {
-    public class Repository<TEntity, TCosmosDbOptions> : IRepository<TEntity>
+	public class Repository<TEntity, TCosmosDbOptions> : IRepository<TEntity>
         where TEntity : class
         where TCosmosDbOptions : BaseCosmosDbOptions
     {
@@ -35,11 +35,6 @@ namespace BoltOn.Data.CosmosDb
             DocumentCollectionUri = UriFactory.CreateDocumentCollectionUri(DatabaseName, CollectionName);
         }
 
-        public virtual TEntity Add(TEntity entity, object options = null)
-        {
-            throw new NotSupportedException();
-        }
-
         public virtual async Task<TEntity> AddAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
         {
             PublishEvents(entity);
@@ -48,11 +43,6 @@ namespace BoltOn.Data.CosmosDb
             else
                 await DocumentClient.CreateDocumentAsync(DocumentCollectionUri, entity, cancellationToken: cancellationToken);
             return entity;
-        }
-
-        public virtual IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate, object options = null)
-        {
-            throw new NotSupportedException();
         }
 
         public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
@@ -72,11 +62,6 @@ namespace BoltOn.Data.CosmosDb
             return await GetResultsFromDocumentQuery(query, cancellationToken);
         }
 
-        public virtual IEnumerable<TEntity> GetAll(object options = null)
-        {
-            throw new NotSupportedException();
-        }
-
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync(object options = null, CancellationToken cancellationToken = default)
         {
             IOrderedQueryable<TEntity> orderedQueryable;
@@ -86,11 +71,6 @@ namespace BoltOn.Data.CosmosDb
                 orderedQueryable = DocumentClient.CreateDocumentQuery<TEntity>(DocumentCollectionUri);
 
             return await GetResultsFromDocumentQuery(orderedQueryable.AsDocumentQuery(), cancellationToken);
-        }
-
-        public virtual TEntity GetById(object id, object options = null)
-        {
-            throw new NotSupportedException();
         }
 
         public virtual async Task<TEntity> GetByIdAsync(object id, object options = null, CancellationToken cancellationToken = default)
@@ -112,11 +92,6 @@ namespace BoltOn.Data.CosmosDb
                 }
                 throw;
             }
-        }
-
-        public virtual void Update(TEntity entity, object options = null)
-        {
-            throw new NotSupportedException();
         }
 
         public virtual async Task UpdateAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)

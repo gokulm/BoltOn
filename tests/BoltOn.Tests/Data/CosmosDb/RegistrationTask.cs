@@ -28,9 +28,12 @@ namespace BoltOn.Tests.Data.CosmosDb
                     options.AuthorizationKey = cosmosDbOptions.AuthorizationKey;
                     options.DatabaseName = cosmosDbOptions.DatabaseName;
                 });
+
+
                 using(var client = new DocumentClient(new Uri(cosmosDbOptions.Uri), cosmosDbOptions.AuthorizationKey))
                 { 
                     client.CreateDatabaseIfNotExistsAsync(new Database { Id = cosmosDbOptions.DatabaseName }).Wait();
+
 
                     DocumentCollection documentCollection = new DocumentCollection{ Id = nameof(StudentFlattened).Pluralize() };
                     documentCollection.PartitionKey.Paths.Add("/studentTypeId");
@@ -39,7 +42,6 @@ namespace BoltOn.Tests.Data.CosmosDb
                 }
                 context.Container.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, TestSchoolCosmosDbOptions>>();
             }
-
         }
     }
 }

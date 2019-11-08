@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using BoltOn.Data;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Tests.Other;
 
@@ -12,16 +11,16 @@ namespace BoltOn.Tests.Mediator
 
 	public class GetStudentHandler : IRequestHandler<GetStudentRequest, Student>
     {
-        readonly IRepository<Student> _studentRepository;
+        readonly IStudentRepository _studentRepository;
 
-        public GetStudentHandler(IRepository<Student> studentRepository)
+        public GetStudentHandler(IStudentRepository studentRepository)
         {
             _studentRepository = studentRepository;
         }
 
         public virtual Student Handle(GetStudentRequest request)
         {
-            var student = _studentRepository.FindBy(f => f.Id == request.StudentId).FirstOrDefault();
+            var student = _studentRepository.FindByAsync(f => f.Id == request.StudentId).GetAwaiter().GetResult().FirstOrDefault();
             return student;
         }
     }

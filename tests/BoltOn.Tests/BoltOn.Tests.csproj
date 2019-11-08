@@ -25,6 +25,7 @@
         <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="5.5.4" />
         <PackageReference Include="MassTransit.RabbitMQ" Version="5.5.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
+        <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.5.1" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Bootstrapping\" />
