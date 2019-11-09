@@ -138,18 +138,30 @@
                 <h2 id="entity">Entity</h2>
 <p>You could create an entity by inheriting <code>BaseEntity&lt;TIdType&gt;</code> where TIdType is the type of the Id property.</p>
 <h2 id="entity-framework-repository">Entity Framework Repository</h2>
-<p>The core BoltOn package has only the <code>IRepository</code> interface, which could be used in your domain layer if you're into Domain Driven Design. </p>
+<p>The core BoltOn package has only the <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs"><code>IRepository</code></a> interface, which could be used in your domain layer if you're into Domain Driven Design. </p>
 <p>In order to use Entity Framework implementation of the repository, you need to do the following:</p>
-<ol>
+<ul>
 <li>Install <strong>BoltOn.Data.EF</strong> NuGet package.</li>
 <li>Call <code>BoltOnEFModule()</code> in your startup's BoltOn() method.</li>
 <li>Create an entity by inheriting <code>BaseEntity&lt;TIdType&gt;</code>. The inheritance is not mandatory though.</li>
 <li>Create a DbContext by inheriting <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseDbContext.cs"><code>BaseDbContext&lt;TDbContext&gt;</code></a>. You could inherit EF's DbContext directy if you're not interested in any of the benefits that BaseDbContext offers.</li>
-<li>Inherit <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs"><code>Repository&lt;TEntity, TDbContext&gt;</code></a>.</li>
+<li>Inherit <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs"><code>Repository&lt;TEntity, TDbContext&gt;</code></a> to create a repository for your entity.</li>
+<li>All the repository methods accept an optional parameter options, in FindBy methods, if other navigation properties need to be fetched, a collection of expressions can be passed.</li>
+</ul>
+<p>Example:</p>
+<pre><code>var includes = new List&lt;Expression&lt;Func&lt;Student, object&gt;&gt;&gt;
+{
+    s =&gt; s.Addresses
+};
+
+// act
+var result = repository.FindBy(f =&gt; f.Id == 2, includes).FirstOrDefault();
+</code></pre>
+<ul>
 <li>Add all the database columns to entity properties mapping inside a mapping class by implementing <code>IEntityTypeConfiguration&lt;TEntity&gt;</code> interface.
 <br>
 The mapping classes will be automatically added to your DbContext if you inherit <code>BaseDbContext&lt;TDbContext&gt;</code> and if they are in the same assembly where the DbContext resides. </li>
-</ol>
+</ul>
 <p>Example:</p>
 <pre><code>// DbContext
 public class SchoolDbContext : BaseDbContext&lt;SchoolDbContext&gt;
@@ -190,79 +202,72 @@ public interface IStudentRepository : IRepository&lt;Student&gt;
 
 public class StudentRepository : Repository&lt;Student, SchoolDbContext&gt;, IStudentRepository
 {
-    public StudentRepository(IDbContextFactory dbContextFactory) : base(dbContextFactory)
+    public StudentRepository(IDbContextFactory dbContextFactory, EventBag eventBag, IBoltOnClock boltOnClock)
+        : base(dbContextFactory, eventBag, boltOnClock)
     {
     }
 }
 </code></pre>
-<p><strong>Note:</strong> Create your own repository like StudentRepository only if you want to override the Repository class' methods or if you want to add methods, else you could just register <code>IRepository&lt;Student&gt;</code> to <code>Repository&lt;Student&gt;</code></p>
+<p><strong>Note:</strong> Create your own repository like StudentRepository only if you want to override the Repository class' methods or if you want to add methods, else just register <code>IRepository&lt;Student&gt;</code> to <code>Repository&lt;Student, SchoolDbContext&gt;</code></p>
 <h2 id="dbcontextfactory">DbContextFactory</h2>
 <p>This factory uses IServiceProvider to resolve DbContexts, and if the request implements <code>IQuery&lt;&gt;</code>, it sets the DbContexts' <code>ChangeTracker.QueryTrackingBehavior</code> to <code>QueryTrackingBehavior.NoTracking</code> and <code>ChangeTracker.AutoDetectChangesEnabled</code> to false with the help of <code>MediatorContextInterceptor</code>. </p>
 <p><strong>Note:</strong> You could disable this behavior by removing the interceptor from the pipeline using <code>RemoveInterceptor&lt;TInterceptor&gt;</code> extension method.</p>
 <h2 id="cosmosdb">CosmosDb</h2>
-<p><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.CosmosDb/BaseCosmosDbRepository.cs"><code>BaseCosmosDbRepository&lt;TEntity, TCosmosDbContext&gt;</code></a> implements <code>IRepository&lt;TEntity&gt;</code>, so any Entity Framework SQL repository can be used against CosmosDb. </p>
 <p>In order to use CosmosDb, you need do the following:</p>
-<ol>
+<ul>
 <li>Install <strong>BoltOn.Data.CosmosDb</strong> NuGet package.</li>
 <li>Call <code>BoltOnCosmosDbModule()</code> in your startup's BoltOn() method.</li>
-<li>Use AddCosmosDbContext extension method to initialize options like URI, AuthorizationKey and Database Name.</li>
 <li>Create an entity by inheriting <code>BaseEntity&lt;TIdType&gt;</code>. The inheritance is not mandatory though.</li>
-<li>Create a DbContext by inheriting <code>BaseCosmosDbContext&lt;TDbContext&gt;</code>. </li>
-<li>Inherit <code>BaseCosmosDbRepository&lt;TEntity, TCosmosDbContext&gt;</code>.</li>
-</ol>
+<li>Create an options class by inheriting <code>BaseCosmosDbOptions</code> class. </li>
+<li>Use AddCosmosDb extension method to initialize options like URI, AuthorizationKey and Database Name.</li>
+<li>Inherit <code>Repository&lt;TEntity, TCosmosDbOptions&gt;</code> to create a repository for your entity.</li>
+<li>All the repository methods accept an optional parameter options. For some of the methods, RequestOptions can be passed and for some FeedOptions can be passed as the options object, take a look at the <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.CosmosDb/Repository.cs"><code>Repository&lt;TEntity, TCosmosOptions&gt;</code></a> to see the implementation.</li>
+</ul>
 <p>Example:</p>
 <pre><code>services.BoltOn(options =&gt;
 {
     options.BoltOnCosmosDbModule();
 });
 
-services.AddCosmosDbContext&lt;CollegeDbContext&gt;(options =&gt;
+services.AddCosmosDb&lt;SchoolCosmosDbOptions&gt;(options =&gt;
 {
     options.Uri = "&lt;&lt;SPECIFY URI&gt;&gt;";
     options.AuthorizationKey = "&lt;&lt;SPECIFY AUTHORIZATION KEY&gt;&gt;";
     options.DatabaseName = "&lt;&lt;DATABASE NAME&gt;&gt;";
 });
 
-// DbContext
-public class CollegeDbContext : BaseCosmosDbContext&lt;CollegeDbContext&gt;
+public class SchoolCosmosDbOptions : BaseCosmosDbOptions
 {
-    public CollegeDbContext(CosmosDbContextOptions&lt;CollegeDbContext&gt; options) : base(options)
-    {
-    }
 }
 
 // Entity
-public class Grade : BaseEntity&lt;string&gt;
+public class Student : BaseEntity&lt;string&gt;
 {
     [JsonProperty("id")]
     public override string Id { get; set; }
     [JsonProperty("studentId")]
     public int StudentId { get; set; }
-    public string CourseName { get; set; }
-    public int Year { get; set; }
-    public string Score { get; set; }
+    public string FirstName { get; set; }
 }
 
 // Repository
-public interface IGradeRepository : IRepository&lt;Grade&gt;
+public interface IStudentRepository : IRepository&lt;Student&gt;
 {
-    Task&lt;Grade&gt; GetByIdAsync&lt;TId&gt;(TId id, object partitionKey);
 }
 
-public class GradeRepository : BaseCosmosDbRepository&lt;Grade, CollegeDbContext&gt;, IGradeRepository
+public class StudentRepository : Repository&lt;Student, SchoolCosmosDbOptions&gt;, IStudentRepository
 {
-    public GradeRepository(CollegeDbContext collegeDbContext) : base(collegeDbContext)
+    public StudentRepository(SchoolCosmosDbOptions options, EventBag eventBag, IBoltOnClock boltOnClock)
+        : base(options, eventBag, boltOnClock)
     {
-    }
-
-    public virtual async Task&lt;Grade&gt; GetByIdAsync&lt;TId&gt;(TId id, object partitionKey)
-    {
-        var document = await DocumentClient.ReadDocumentAsync&lt;Grade&gt;(GetDocumentUri(id.ToString()), new RequestOptions { PartitionKey = new PartitionKey(partitionKey) });
-        return document.Document;
     }
 }
 </code></pre>
-<p><strong>Note:</strong> While using any property in CosmosDb query, make sure property name matches exactly as it is in stored in the document collection.</p>
+<p><strong>Note:</strong> </p>
+<ul>
+<li>Create your own repository like StudentRepository only if you want to override the Repository class' methods or if you want to add methods, else just register <code>IRepository&lt;Student&gt;</code> to <code>Repository&lt;Student, SchoolCosmosDbOptions&gt;</code></li>
+<li>While using any property in CosmosDb query, make sure property name matches exactly as it is in stored in the document collection.</li>
+</ul>
               
             </div>
           </div>
