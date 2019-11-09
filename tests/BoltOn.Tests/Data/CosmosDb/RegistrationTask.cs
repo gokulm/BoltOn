@@ -28,7 +28,6 @@ namespace BoltOn.Tests.Data.CosmosDb
 					options.DatabaseName = cosmosDbOptions.DatabaseName;
 				});
 
-
 				using (var client = new DocumentClient(new Uri(cosmosDbOptions.Uri), cosmosDbOptions.AuthorizationKey))
 				{
 					client.CreateDatabaseIfNotExistsAsync(new Database { Id = cosmosDbOptions.DatabaseName }).GetAwaiter().GetResult();
@@ -39,6 +38,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 						documentCollection).GetAwaiter().GetResult();
 				}
 			}
+
 			context.Container.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, TestSchoolCosmosDbOptions>>();
 		}
 	}
