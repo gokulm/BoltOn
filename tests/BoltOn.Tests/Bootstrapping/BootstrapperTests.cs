@@ -21,7 +21,7 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.Throws<Exception>(() => Bootstrapper.Instance.Container);
 		}
 
-		[Fact, TestPriority(2)]
+		[Fact, TestPriority(2)] 
 		public void Container_CallContainerAfterInitializingContainer_ReturnsContainer()
 		{
 			// arrange

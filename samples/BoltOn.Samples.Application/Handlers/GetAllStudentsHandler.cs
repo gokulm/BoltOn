@@ -23,7 +23,7 @@ namespace BoltOn.Samples.Application.Handlers
         }
         
 		public async Task<IEnumerable<StudentDto>> HandleAsync(GetAllStudentsRequest request, 
-			CancellationToken cancellationToken = default(CancellationToken))
+			CancellationToken cancellationToken = default)
 		{
 			var students = (await _studentRepository.GetAllAsync()).ToList();
 			var studentDtos = from s in students

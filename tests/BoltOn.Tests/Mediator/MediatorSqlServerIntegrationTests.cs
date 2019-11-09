@@ -21,8 +21,8 @@ namespace BoltOn.Tests.Mediator
 				return;
 
 			// arrange
-			MediatorTestHelper.IsSeedData = true;
-			MediatorTestHelper.IsSqlServer = true;
+			IntegrationTestHelper.IsSeedData = true;
+			IntegrationTestHelper.IsSqlServer = true;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection
 				.BoltOn(options =>
@@ -53,8 +53,8 @@ namespace BoltOn.Tests.Mediator
 				return;
 
 			// arrange
-			MediatorTestHelper.IsSqlServer = true;
-			MediatorTestHelper.IsSeedData = false;
+			IntegrationTestHelper.IsSqlServer = true;
+			IntegrationTestHelper.IsSeedData = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection
 				.BoltOn(options =>

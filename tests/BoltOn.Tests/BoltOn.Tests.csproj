@@ -13,7 +13,6 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
         <PackageReference Include="xunit" Version="2.4.1" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
         <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
@@ -22,10 +21,11 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.0" />
         <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="5.5.4" />
         <PackageReference Include="MassTransit.RabbitMQ" Version="5.5.2" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
+        <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.5.1" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Bootstrapping\" />
@@ -38,11 +38,13 @@
         <Folder Include="Bus\" />
         <Folder Include="Utilities\" />
         <Folder Include="Cqrs\" />
+        <Folder Include="Data\CosmosDb\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Overrides\BoltOn.Overrides.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Bus.MassTransit\BoltOn.Bus.MassTransit.csproj" />
+        <ProjectReference Include="..\..\src\BoltOn.Data.CosmosDb\BoltOn.Data.CosmosDb.csproj" />
     </ItemGroup>
 </Project>
