@@ -26,7 +26,8 @@ namespace BoltOn.Samples.Application.Entities
 				StudentId = Id,
 				FirstName = FirstName,
 				LastName = LastName,
-				StudentType = studentType
+				StudentType = studentType,
+				StudentTypeId = StudentTypeId
 			});
 		}
 
@@ -41,7 +42,8 @@ namespace BoltOn.Samples.Application.Entities
 				StudentId = Id,
 				FirstName = FirstName,
 				LastName = LastName,
-				StudentType = studentType
+				StudentType = studentType,
+				StudentTypeId = StudentTypeId
 			});
 		}
 	}
