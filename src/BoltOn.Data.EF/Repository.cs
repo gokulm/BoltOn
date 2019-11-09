@@ -69,7 +69,8 @@ namespace BoltOn.Data.EF
 
 		public virtual async Task DeleteAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
 		{
-			DbSets.Attach(entity);
+			if (DbContext.Entry(entity).State == EntityState.Detached)
+				DbSets.Attach(entity);
 			DbSets.Remove(entity);
 			await SaveChangesAsync(entity, cancellationToken);
 		}

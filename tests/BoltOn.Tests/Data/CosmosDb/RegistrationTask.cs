@@ -40,7 +40,6 @@ namespace BoltOn.Tests.Data.CosmosDb
 				}
 			}
 			context.Container.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, TestSchoolCosmosDbOptions>>();
-			context.Container.AddSingleton<TestSchoolCosmosDbOptions>();
 		}
 	}
 }
