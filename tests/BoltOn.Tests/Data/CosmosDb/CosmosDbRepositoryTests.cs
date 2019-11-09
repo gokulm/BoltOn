@@ -12,138 +12,157 @@ using Xunit;
 
 namespace BoltOn.Tests.Data.CosmosDb
 {
-    [Collection("IntegrationTests")]
-    public class CosmosDbRepositoryTests : IDisposable
-    {
-        private readonly IRepository<StudentFlattened> _sut;
+	[Collection("IntegrationTests")]
+	public class CosmosDbRepositoryTests : IDisposable
+	{
+		private readonly IRepository<StudentFlattened> _sut;
 
-        public CosmosDbRepositoryTests()
-        {
-            // this flag can be set to true for [few] tests. Running all the tests with this set to true might slow down.
-            IntegrationTestHelper.IsCosmosDbServer = true;
-            IntegrationTestHelper.IsSeedCosmosDbData = true;
-            var serviceCollection = new ServiceCollection();
-            serviceCollection
-                .BoltOn(options =>
-                {
-                    options
-                        .BoltOnCosmosDbModule();
-                });
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            serviceProvider.TightenBolts();
-            _sut = serviceProvider.GetService<IRepository<StudentFlattened>>();
-        }
+		public CosmosDbRepositoryTests()
+		{
+			// this flag can be set to true for [few] tests. Running all the tests with this set to true might slow down.
+			IntegrationTestHelper.IsCosmosDbServer = false;
+			IntegrationTestHelper.IsSeedCosmosDbData = true;
 
-        [Fact, Trait("Category", "Integration")]
-        public async Task DeleteAsync_DeleteById_DeletesTheEntity()
-        {
-            if (!IntegrationTestHelper.IsCosmosDbServer)
-                return;
+			var serviceCollection = new ServiceCollection();
+			serviceCollection
+				.BoltOn(options =>
+				{
+					options
+						.BoltOnCosmosDbModule();
+				});
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
 
-            // arrange
-            var id = Guid.NewGuid();
-            var studentFlattened = new StudentFlattened { Id = id, StudentTypeId = 1, FirstName = "james", LastName = "jones" };
-            await _sut.AddAsync(studentFlattened);
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
 
-            // act
-            await _sut.DeleteAsync(studentFlattened, new RequestOptions { PartitionKey = new PartitionKey(1) });
+			_sut = serviceProvider.GetService<IRepository<StudentFlattened>>();
+		}
 
-            // assert
-            var queryResult = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(1) });
-            Assert.Null(queryResult);
-        }
+		[Fact, Trait("Category", "Integration")]
+		public async Task DeleteAsync_DeleteById_DeletesTheEntity()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+			var id = Guid.NewGuid();
+			var studentFlattened = new StudentFlattened { Id = id, StudentTypeId = 1, FirstName = "james", LastName = "jones" };
+			await _sut.AddAsync(studentFlattened);
 
-        [Fact, Trait("Category", "Integration")]
-        public async Task GetByIdAsync_WhenRecordExists_ReturnsRecord()
-        {
-            // arrange
-            var id = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
+			// act
+			await _sut.DeleteAsync(studentFlattened, new RequestOptions { PartitionKey = new PartitionKey(1) });
 
-            // act
-            var result = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(1) });
+			// assert
+			var queryResult = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(1) });
+			Assert.Null(queryResult);
+		}
 
-            // assert
-            Assert.NotNull(result);
-            Assert.Equal("john", result.FirstName);
-        }
+		[Fact, Trait("Category", "Integration")]
+		public async Task GetByIdAsync_WhenRecordExists_ReturnsRecord()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+			var id = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
 
-        [Fact, Trait("Category", "Integration")]
-        public async Task GetAllAsync_WhenRecordsExist_ReturnsAllTheRecords()
-        {
-            // arrange
+			// act
+			var result = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(1) });
 
-            // act
-            var result = await _sut.GetAllAsync();
+			// assert
+			Assert.NotNull(result);
+			Assert.Equal("john", result.FirstName);
+		}
 
-            // assert
-            Assert.True(result.Count() >1);
-        }
+		[Fact, Trait("Category", "Integration")]
+		public async Task GetAllAsync_WhenRecordsExist_ReturnsAllTheRecords()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
 
-        [Fact, Trait("Category", "Integration")]
-        public async Task FindByAsync_WhenRecordDoesNotExist_ReturnsNull()
-        {
-            // arrange
+			// act
+			var result = await _sut.GetAllAsync();
 
-            // act
-            var result = (await _sut.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "johnny")).FirstOrDefault();
+			// assert
+			Assert.True(result.Count() > 1);
+		}
 
-            // assert
-            Assert.Null(result);
-        }
+		[Fact, Trait("Category", "Integration")]
+		public async Task FindByAsync_WhenRecordDoesNotExist_ReturnsNull()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
 
-        [Fact, Trait("Category", "Integration")]
-        public async Task FindByAsync_WhenRecordExist_ReturnsRecord()
-        {
-            // arrange
+			// act
+			var result = (await _sut.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "johnny")).FirstOrDefault();
 
-            // act
-            var result = (await _sut.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "john")).FirstOrDefault();
+			// assert
+			Assert.Null(result);
+		}
 
-            // assert
-            Assert.NotNull(result);
-        }
+		[Fact, Trait("Category", "Integration")]
+		public async Task FindByAsync_WhenRecordExist_ReturnsRecord()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
 
-        [Fact, Trait("Category", "Integration")]
-        public async Task UpdateAsync_UpdateAnExistingEntity_UpdatesTheEntity()
-        {
-            // arrange
-            var id = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
-            var student = new StudentFlattened { Id = id, LastName = "smith jr", FirstName = "john", StudentTypeId = 1 };
+			// act
+			var result = (await _sut.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "john")).FirstOrDefault();
 
-            // act
-            await _sut.UpdateAsync(student, new RequestOptions { PartitionKey = new PartitionKey(1) });
+			// assert
+			Assert.NotNull(result);
+		}
 
-            // assert
-            var result = (await _sut.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "john")).FirstOrDefault();
-            Assert.NotNull(result);
-            Assert.Equal("smith jr", result.LastName);
-        }
+		[Fact, Trait("Category", "Integration")]
+		public async Task UpdateAsync_UpdateAnExistingEntity_UpdatesTheEntity()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+			var id = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
+			var student = new StudentFlattened { Id = id, LastName = "smith jr", FirstName = "john", StudentTypeId = 1 };
 
-        [Fact, Trait("Category", "Integration")]
-        public async Task AddAsync_AddANewEntity_ReturnsAddedEntity()
-        {
-            // arrange
-            var id = Guid.NewGuid();
-            var studentFlattened = new StudentFlattened { Id = id, StudentTypeId = 2, FirstName = "meghan", LastName = "doe" };
+			// act
+			await _sut.UpdateAsync(student, new RequestOptions { PartitionKey = new PartitionKey(1) });
 
-            // act
-            var addedEntity = await _sut.AddAsync(studentFlattened);
+			// assert
+			var result = (await _sut.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "john")).FirstOrDefault();
+			Assert.NotNull(result);
+			Assert.Equal("smith jr", result.LastName);
+		}
 
-            // assert
-            var result = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(2) });
-            Assert.NotNull(result);
-            Assert.Equal("meghan", result.FirstName);
-        }
+		[Fact, Trait("Category", "Integration")]
+		public async Task AddAsync_AddANewEntity_ReturnsAddedEntity()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+			var id = Guid.NewGuid();
+			var studentFlattened = new StudentFlattened { Id = id, StudentTypeId = 2, FirstName = "meghan", LastName = "doe" };
 
-        public void Dispose()
-        {
-            var id = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
-            var student = new StudentFlattened { Id = id };
-            _sut.DeleteAsync(student, new RequestOptions { PartitionKey = new PartitionKey(1) }).Wait();
+			// act
+			var addedEntity = await _sut.AddAsync(studentFlattened);
 
-            Bootstrapper
-                .Instance
-                .Dispose();
-        }
-    }
+			// assert
+			var result = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(2) });
+			Assert.NotNull(result);
+			Assert.Equal("meghan", result.FirstName);
+		}
+
+		public void Dispose()
+		{
+			if (IntegrationTestHelper.IsCosmosDbServer)
+			{
+				var id = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
+				var student = new StudentFlattened { Id = id };
+				_sut.DeleteAsync(student, new RequestOptions { PartitionKey = new PartitionKey(1) }).GetAwaiter().GetResult();
+			}
+
+			Bootstrapper
+				.Instance
+				.Dispose();
+		}
+	}
 }
