@@ -25,8 +25,18 @@ namespace BoltOn.Tests.Data.CosmosDb
 						StudentType = "Grad"
 					};
 
+					var recordToBeDeleted = new StudentFlattened
+					{
+						Id = Guid.Parse("ff96d626-3911-4c78-b337-00d7ecd2eadd"),
+						StudentTypeId = 1,
+						FirstName = "record to be deleted",
+						LastName = "smith",
+						StudentType = "Grad"
+					};
+
 					var repository = scope.ServiceProvider.GetService<IRepository<StudentFlattened>>();
 					repository.AddAsync(studentFlattened).GetAwaiter().GetResult();
+					repository.AddAsync(recordToBeDeleted).GetAwaiter().GetResult();
 				}
 			}
 		}

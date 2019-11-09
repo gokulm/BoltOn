@@ -39,15 +39,14 @@ namespace BoltOn.Tests.Data.CosmosDb
 			_sut = serviceProvider.GetService<IRepository<StudentFlattened>>();
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public async Task DeleteAsync_DeleteById_DeletesTheEntity()
 		{
 			// arrange
 			if (!IntegrationTestHelper.IsCosmosDbServer)
 				return;
-			var id = Guid.NewGuid();
-			var studentFlattened = new StudentFlattened { Id = id, StudentTypeId = 1, FirstName = "james", LastName = "jones" };
-			await _sut.AddAsync(studentFlattened);
+			var id = Guid.Parse("ff96d626-3911-4c78-b337-00d7ecd2eadd");
+			var studentFlattened = new StudentFlattened { Id = id };
 
 			// act
 			await _sut.DeleteAsync(studentFlattened, new RequestOptions { PartitionKey = new PartitionKey(1) });
@@ -57,7 +56,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			Assert.Null(queryResult);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public async Task GetByIdAsync_WhenRecordExists_ReturnsRecord()
 		{
 			// arrange
@@ -73,7 +72,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			Assert.Equal("john", result.FirstName);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public async Task GetAllAsync_WhenRecordsExist_ReturnsAllTheRecords()
 		{
 			// arrange
@@ -87,7 +86,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			Assert.True(result.Count() > 1);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public async Task FindByAsync_WhenRecordDoesNotExist_ReturnsNull()
 		{
 			// arrange
@@ -101,7 +100,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			Assert.Null(result);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public async Task FindByAsync_WhenRecordExist_ReturnsRecord()
 		{
 			// arrange
@@ -115,7 +114,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			Assert.NotNull(result);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public async Task UpdateAsync_UpdateAnExistingEntity_UpdatesTheEntity()
 		{
 			// arrange
@@ -133,7 +132,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			Assert.Equal("smith jr", result.LastName);
 		}
 
-		[Fact, Trait("Category", "Integration")]
+		[Fact]
 		public async Task AddAsync_AddANewEntity_ReturnsAddedEntity()
 		{
 			// arrange
@@ -143,7 +142,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			var studentFlattened = new StudentFlattened { Id = id, StudentTypeId = 2, FirstName = "meghan", LastName = "doe" };
 
 			// act
-			var addedEntity = await _sut.AddAsync(studentFlattened);
+			_ = await _sut.AddAsync(studentFlattened);
 
 			// assert
 			var result = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(2) });
