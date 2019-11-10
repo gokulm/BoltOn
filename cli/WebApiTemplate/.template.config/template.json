@@ -1,0 +1,12 @@
+{
+	"author": "BoltOn",
+	"classifications": [ "Web/WebAPI" ],
+	"name": "BoltOn WebAPI",
+	"identity": "boweb",
+	"shortName": "boweb",
+	"tags": {
+		"language": "C#"
+	},
+	"sourceName": "BoltOn.WebApi",
+	"preferNameDirectory": "true"
+}
