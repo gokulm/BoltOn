@@ -5,7 +5,7 @@
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <LangVersion>latest</LangVersion>
         <AssemblyName>BoltOn.Data.CosmosDb</AssemblyName>
-        <PackageVersion>0.1.0</PackageVersion>
+        <PackageVersion>0.2.0</PackageVersion>
         <Authors>Gokulnath Murugesan, Sai Sabarish Kankanvar</Authors>
         <Owners>Gokulnath Murugesan</Owners>
         <PackageProjectUrl>https://github.com/gokulm/BoltOn</PackageProjectUrl>
