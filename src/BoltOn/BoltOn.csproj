@@ -9,7 +9,7 @@
         <SynchReleaseVersion>false</SynchReleaseVersion>
         <PackageId>BoltOn</PackageId>
         <Description>BoltOn is an open source framework to build any .NET application with proper separation of concerns.</Description>
-        <PackageVersion>0.6.0</PackageVersion>
+        <PackageVersion>0.6.1</PackageVersion>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <PackageTags>C#, .NET Core</PackageTags>
     </PropertyGroup>
