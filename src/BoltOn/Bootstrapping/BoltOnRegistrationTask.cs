@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using BoltOn.Cqrs;
-using BoltOn.Data;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
@@ -45,7 +44,6 @@ namespace BoltOn.Bootstrapping
 		private void RegisterOtherTypes(RegistrationTaskContext context)
 		{
 			var serviceCollection = context.Container;
-			serviceCollection.AddScoped<IUnitOfWorkManager, UnitOfWorkManager>();
 			serviceCollection.AddScoped<IUnitOfWorkManager>(s =>
 			{
 				return new UnitOfWorkManager(s.GetRequiredService<IBoltOnLogger<UnitOfWorkManager>>(), 
