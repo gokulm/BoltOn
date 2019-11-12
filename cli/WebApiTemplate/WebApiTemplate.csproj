@@ -14,6 +14,6 @@
     <Folder Include=".template.config\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="BoltOn" Version="0.6.0" />
+    <PackageReference Include="BoltOn" Version="0.6.1" />
   </ItemGroup>
 </Project>
