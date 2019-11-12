@@ -7,11 +7,12 @@
         <Title>BoltOn Templates</Title>
         <Authors>Gokulnath Murugesan</Authors>
         <Description>Templates to use when creating an application using BoltOn Application Framework</Description>
-        <PackageTags>dotnet-new;templates;</PackageTags>
+        <PackageTags>dotnet-new;templates;C#</PackageTags>
         <TargetFramework>netstandard2.0</TargetFramework>
         <IncludeContentInPack>true</IncludeContentInPack>
         <IncludeBuildOutput>false</IncludeBuildOutput>
         <ContentTargetFolders>content</ContentTargetFolders>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     </PropertyGroup>
     <ItemGroup>
         <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**" />
@@ -19,5 +20,8 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="templates\" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Include="AssemblyInfo.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
     </ItemGroup>
 </Project>
