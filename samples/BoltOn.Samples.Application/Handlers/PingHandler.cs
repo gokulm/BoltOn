@@ -1,4 +1,6 @@
-﻿using BoltOn.Mediator.Pipeline;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using BoltOn.Mediator.Pipeline;
 
 namespace BoltOn.Samples.Application.Handlers
 {
@@ -11,11 +13,11 @@ namespace BoltOn.Samples.Application.Handlers
 		public string Data { get; set; }
 	}
 
-	public class PingHandler : IRequestHandler<PingRequest, PongResponse>
+	public class PingHandler : IRequestAsyncHandler<PingRequest, PongResponse>
 	{
-		public PongResponse Handle(PingRequest request)
+		public async Task<PongResponse> HandleAsync(PingRequest request, CancellationToken cancellationToken)
 		{
-			return new PongResponse { Data = "ping pong" };
+			return await Task.FromResult(new PongResponse { Data = "ping pong" });
 		}
 	}
 }

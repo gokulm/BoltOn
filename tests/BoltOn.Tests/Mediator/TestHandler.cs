@@ -32,38 +32,14 @@ namespace BoltOn.Tests.Mediator
 	{
 	}
 
-	public class TestHandler : IRequestHandler<TestRequest, bool>,
-		IRequestHandler<TestCommand, bool>,
-		IRequestHandler<TestQuery, bool>,
+	public class TestHandler : 
 		IRequestAsyncHandler<TestQuery, bool>,
-		IRequestHandler<TestStaleQuery, bool>,
 		IRequestAsyncHandler<TestRequest, bool>,
 		IRequestAsyncHandler<TestCommand, bool>,
-		IRequestHandler<TestOneWayRequest>,
 		IRequestAsyncHandler<TestOneWayRequest>,
-		IRequestHandler<TestOneWayCommand>,
-		IRequestAsyncHandler<TestOneWayCommand>
+		IRequestAsyncHandler<TestOneWayCommand>,
+		IRequestAsyncHandler<TestStaleQuery, bool>
 	{
-		public virtual bool Handle(TestRequest request)
-		{
-			return true;
-		}
-
-		public virtual bool Handle(TestCommand request)
-		{
-			return true;
-		}
-
-		public virtual bool Handle(TestQuery request)
-		{
-			return true;
-		}
-
-		public virtual bool Handle(TestStaleQuery request)
-		{
-			return true;
-		}
-
 		public virtual async Task<bool> HandleAsync(TestQuery request, CancellationToken cancellationToken)
 		{
 			return await Task.FromResult(true);
@@ -79,11 +55,6 @@ namespace BoltOn.Tests.Mediator
 			return await Task.FromResult(true);
 		}
 
-		public void Handle(TestOneWayRequest request)
-		{
-			request.Value = 1;
-		}
-
 		public Task HandleAsync(TestOneWayRequest request, CancellationToken cancellationToken)
 		{
 			request.Value = 1;
@@ -96,9 +67,9 @@ namespace BoltOn.Tests.Mediator
 			return Task.CompletedTask;
 		}
 
-		public void Handle(TestOneWayCommand request)
+		public virtual async Task<bool> HandleAsync(TestStaleQuery request, CancellationToken cancellationToken)
 		{
-			request.Value = 1;
+			return await Task.FromResult(true);
 		}
 	}
 }

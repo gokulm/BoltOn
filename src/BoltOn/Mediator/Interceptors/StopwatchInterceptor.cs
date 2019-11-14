@@ -23,16 +23,6 @@ namespace BoltOn.Mediator.Interceptors
 			_boltOnClock = boltOnClock;
 		}
 
-		public override TResponse Execute<TRequest, TResponse>(IRequest<TResponse> request,
-																				   Func<IRequest<TResponse>, TResponse> next)
-		{
-			var stopwatch = new Stopwatch();
-			_logger.Debug($"StopwatchInterceptor started at {_boltOnClock.Now}");
-			var response = next(request);
-			_logger.Debug($"StopwatchInterceptor ended at {_boltOnClock.Now}. Time elapsed: {stopwatch.ElapsedMilliseconds}");
-			return response;
-		}
-
 		public override void Dispose()
 		{
 		}

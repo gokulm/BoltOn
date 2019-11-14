@@ -11,8 +11,7 @@ namespace BoltOn.Tests.Cqrs
 		public string Input { get; set; }
 	}
 
-	public class TestCqrsHandler : IRequestAsyncHandler<TestCqrsRequest>,
-        IRequestHandler<TestCqrsRequest>
+	public class TestCqrsHandler : IRequestAsyncHandler<TestCqrsRequest>
     {
         private readonly IBoltOnLogger<TestCqrsHandler> _logger;
         private readonly IRepository<TestCqrsWriteEntity> _repository;
@@ -22,14 +21,6 @@ namespace BoltOn.Tests.Cqrs
         {
             _logger = logger;
             _repository = repository;
-        }
-
-        public void Handle(TestCqrsRequest request)
-        {
-            _logger.Debug($"{nameof(TestCqrsHandler)} invoked");
-            var testCqrsWriteEntity = _repository.GetByIdAsync(CqrsConstants.EntityId).GetAwaiter().GetResult();
-            testCqrsWriteEntity.ChangeInput(request);
-            _repository.UpdateAsync(testCqrsWriteEntity).GetAwaiter().GetResult();
         }
 
         public async Task HandleAsync(TestCqrsRequest request, CancellationToken cancellationToken)

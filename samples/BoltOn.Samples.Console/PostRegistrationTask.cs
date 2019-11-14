@@ -15,7 +15,7 @@ namespace BoltOn.Samples.Console
 
         public void Run(PostRegistrationTaskContext context)
         {
-            var response = _mediator.Process(new PingRequest());
+            var response = _mediator.ProcessAsync(new PingRequest()).GetAwaiter().GetResult();
             System.Console.WriteLine(response.Data);
         }
     }

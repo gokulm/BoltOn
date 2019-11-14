@@ -47,7 +47,7 @@ namespace BoltOn.Tests.Mediator
 
 		[Fact]
 		[TestPriority(2)]
-		public void Process_MediatorWithQueryRequestInSqlServer_GetsRecord()
+		public async Task Process_MediatorWithQueryRequestInSqlServer_GetsRecord()
 		{
 			if (!IntegrationTestHelper.IsSqlRunning)
 				return;
@@ -68,7 +68,7 @@ namespace BoltOn.Tests.Mediator
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = sut.Process(new GetStudentRequest { StudentId = 1 });
+			var result = await sut.ProcessAsync(new GetStudentRequest { StudentId = 1 });
 
 			// assert 
 			Assert.NotNull(result);
