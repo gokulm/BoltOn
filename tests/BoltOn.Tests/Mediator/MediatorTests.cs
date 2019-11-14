@@ -27,7 +27,7 @@ namespace BoltOn.Tests.Mediator
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestRequest, bool>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
 						  .Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>());
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
@@ -49,7 +49,7 @@ namespace BoltOn.Tests.Mediator
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
 			var logger = new Mock<IBoltOnLogger<TestInterceptor>>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestRequest, bool>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
 						  .Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor> { new TestInterceptor(logger.Object) });
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
@@ -77,7 +77,7 @@ namespace BoltOn.Tests.Mediator
 			var boltOnClock = new Mock<IBoltOnClock>();
 			var currentDateTime = DateTime.Now;
 			boltOnClock.Setup(s => s.Now).Returns(currentDateTime);
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestRequest, bool>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
 				.Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor> { new TestRequestSpecificInterceptor(logger.Object),
 				new StopwatchInterceptor(logger2.Object, boltOnClock.Object) });
@@ -103,7 +103,7 @@ namespace BoltOn.Tests.Mediator
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
 			var logger = new Mock<IBoltOnLogger<UnitOfWorkInterceptor>>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestCommand, bool>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
 			var uowManager = autoMocker.GetMock<IUnitOfWorkManager>();
 			var uow = new Mock<IUnitOfWork>();
@@ -139,7 +139,7 @@ namespace BoltOn.Tests.Mediator
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
 			var logger = new Mock<IBoltOnLogger<UnitOfWorkInterceptor>>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestCommand, bool>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
 			var uowManager = autoMocker.GetMock<IUnitOfWorkManager>();
 			var uow = new Mock<IUnitOfWork>();
@@ -172,7 +172,7 @@ namespace BoltOn.Tests.Mediator
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
 			var logger = new Mock<IBoltOnLogger<UnitOfWorkInterceptor>>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestCommand, bool>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
 			var uowManager = autoMocker.GetMock<IUnitOfWorkManager>();
 			var uow = new Mock<IUnitOfWork>();
@@ -207,7 +207,7 @@ namespace BoltOn.Tests.Mediator
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestRequest, bool>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
 						   .Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>());
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
@@ -230,7 +230,7 @@ namespace BoltOn.Tests.Mediator
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestRequest, bool>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
 						   .Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>());
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
@@ -251,7 +251,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestRequest, bool>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
 						  .Returns(null);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>());
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
@@ -274,7 +274,7 @@ namespace BoltOn.Tests.Mediator
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
 			var logger = new Mock<IBoltOnLogger<ChangeTrackerInterceptor>>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestQuery, bool>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestQuery, bool>)))
 				.Returns(testHandler.Object);
 			var request = new TestQuery();
 			var changeTrackerContext = new ChangeTrackerContext();
@@ -303,7 +303,7 @@ namespace BoltOn.Tests.Mediator
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
 			var logger = new Mock<IBoltOnLogger<CustomChangeTrackerInterceptor>>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestStaleQuery, bool>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestStaleQuery, bool>)))
 				.Returns(testHandler.Object);
 			var request = new TestStaleQuery();
 			var changeTrackerContext = new ChangeTrackerContext();
@@ -332,7 +332,7 @@ namespace BoltOn.Tests.Mediator
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
 			var logger = new Mock<IBoltOnLogger<ChangeTrackerInterceptor>>();
-			serviceProvider.Setup(s => s.GetService(typeof(IRequestAsyncHandler<TestCommand, bool>)))
+			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
 			var request = new TestCommand();
 			var changeTrackerContext = new ChangeTrackerContext();

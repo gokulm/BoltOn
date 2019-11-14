@@ -11,7 +11,7 @@ namespace BoltOn.Tests.Cqrs
 		public string Input { get; set; }
 	}
 
-	public class TestCqrsHandler : IRequestAsyncHandler<TestCqrsRequest>
+	public class TestCqrsHandler : IHandler<TestCqrsRequest>
     {
         private readonly IBoltOnLogger<TestCqrsHandler> _logger;
         private readonly IRepository<TestCqrsWriteEntity> _repository;

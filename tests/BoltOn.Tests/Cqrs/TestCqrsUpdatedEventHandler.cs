@@ -21,8 +21,8 @@ namespace BoltOn.Tests.Cqrs
 		public TestInput Input2 { get; set; }
 	}
 
-	public class TestCqrsUpdatedEventHandler : IRequestAsyncHandler<TestCqrsUpdatedEvent>,
-        IRequestAsyncHandler<TestCqrsUpdated2Event>
+	public class TestCqrsUpdatedEventHandler : IHandler<TestCqrsUpdatedEvent>,
+        IHandler<TestCqrsUpdated2Event>
     {
         private readonly IBoltOnLogger<TestCqrsUpdatedEventHandler> _logger;
         private readonly IRepository<TestCqrsReadEntity> _repository;

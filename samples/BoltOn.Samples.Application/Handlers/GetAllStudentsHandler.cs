@@ -13,7 +13,7 @@ namespace BoltOn.Samples.Application.Handlers
     {
     }
 
-    public class GetAllStudentsHandler : IRequestAsyncHandler<GetAllStudentsRequest, IEnumerable<StudentDto>>
+    public class GetAllStudentsHandler : IHandler<GetAllStudentsRequest, IEnumerable<StudentDto>>
     {
         private readonly IRepository<StudentFlattened> _studentRepository;
 

@@ -33,12 +33,12 @@ namespace BoltOn.Tests.Mediator
 	}
 
 	public class TestHandler : 
-		IRequestAsyncHandler<TestQuery, bool>,
-		IRequestAsyncHandler<TestRequest, bool>,
-		IRequestAsyncHandler<TestCommand, bool>,
-		IRequestAsyncHandler<TestOneWayRequest>,
-		IRequestAsyncHandler<TestOneWayCommand>,
-		IRequestAsyncHandler<TestStaleQuery, bool>
+		IHandler<TestQuery, bool>,
+		IHandler<TestRequest, bool>,
+		IHandler<TestCommand, bool>,
+		IHandler<TestOneWayRequest>,
+		IHandler<TestOneWayCommand>,
+		IHandler<TestStaleQuery, bool>
 	{
 		public virtual async Task<bool> HandleAsync(TestQuery request, CancellationToken cancellationToken)
 		{

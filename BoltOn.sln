@@ -28,6 +28,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Data.CosmosDb", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Bus.MassTransit", "src\BoltOn.Bus.MassTransit\BoltOn.Bus.MassTransit.csproj", "{21DD4150-15A7-4417-9538-51F0B07FD31A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A8A7AE59-033D-44E5-8805-CD308A0D0C65}"
+	ProjectSection(SolutionItems) = preProject
+		docs\mediator.md = docs\mediator.md
+		docs\utilities.md = docs\utilities.md
+		docs\samples.md = docs\samples.md
+		docs\optional.md = docs\optional.md
+		docs\index.md = docs\index.md
+		docs\data.md = docs\data.md
+		docs\cqrs.md = docs\cqrs.md
+		docs\bus.md = docs\bus.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

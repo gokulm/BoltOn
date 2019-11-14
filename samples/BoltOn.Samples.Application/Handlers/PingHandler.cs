@@ -13,7 +13,7 @@ namespace BoltOn.Samples.Application.Handlers
 		public string Data { get; set; }
 	}
 
-	public class PingHandler : IRequestAsyncHandler<PingRequest, PongResponse>
+	public class PingHandler : IHandler<PingRequest, PongResponse>
 	{
 		public async Task<PongResponse> HandleAsync(PingRequest request, CancellationToken cancellationToken)
 		{

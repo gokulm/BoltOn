@@ -60,8 +60,8 @@ namespace BoltOn.Bootstrapping
 			container.AddTransient<IMediator, Mediator.Pipeline.Mediator>();
 			container.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
 			RegisterInterceptors(context);
-			RegisterAsyncHandlers(context);
-			RegisterOneWayAsyncHandlers(context);
+			RegisterHandlers(context);
+			RegisterOneWayHandlers(context);
 		}
 
 		private static void RegisterInterceptors(RegistrationTaskContext context)
@@ -81,27 +81,27 @@ namespace BoltOn.Bootstrapping
 			context.AddInterceptor<UnitOfWorkInterceptor>();
 		}
 
-		private static void RegisterAsyncHandlers(RegistrationTaskContext context)
+		private static void RegisterHandlers(RegistrationTaskContext context)
 		{
-			var requestHandlerInterfaceType = typeof(IRequestAsyncHandler<,>);
+			var handlerInterfaceType = typeof(IHandler<,>);
 			var handlers = (from a in context.Assemblies.ToList()
 							from t in a.GetTypes()
 							from i in t.GetInterfaces()
 							where i.IsGenericType &&
-								requestHandlerInterfaceType.IsAssignableFrom(i.GetGenericTypeDefinition())
+								handlerInterfaceType.IsAssignableFrom(i.GetGenericTypeDefinition())
 							select new { Interface = i, Implementation = t }).ToList();
 			foreach (var handler in handlers)
 				context.Container.AddTransient(handler.Interface, handler.Implementation);
 		}
 
-		private static void RegisterOneWayAsyncHandlers(RegistrationTaskContext context)
+		private static void RegisterOneWayHandlers(RegistrationTaskContext context)
 		{
-			var requestHandlerInterfaceType = typeof(IRequestAsyncHandler<>);
+			var handlerInterfaceType = typeof(IHandler<>);
 			var handlers = (from a in context.Assemblies.ToList()
 							from t in a.GetTypes()
 							from i in t.GetInterfaces()
 							where i.IsGenericType &&
-								requestHandlerInterfaceType.IsAssignableFrom(i.GetGenericTypeDefinition())
+								handlerInterfaceType.IsAssignableFrom(i.GetGenericTypeDefinition())
 							select new { Interface = i, Implementation = t }).ToList();
 			foreach (var handler in handlers)
 				context.Container.AddTransient(handler.Interface, handler.Implementation);
