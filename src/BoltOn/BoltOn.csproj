@@ -49,5 +49,6 @@
         <Compile Remove="Mediator\Pipeline\StandardResponses.cs" />
         <Compile Remove="Mediator\MediatorRegistrationTask.cs" />
         <Compile Remove="Mediator\Extensions.cs" />
+        <Compile Remove="Mediator\Pipeline\IRequestHandler.cs" />
     </ItemGroup>
 </Project>

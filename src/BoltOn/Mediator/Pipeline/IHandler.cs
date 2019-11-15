@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 
 namespace BoltOn.Mediator.Pipeline
 {
-    public interface IRequestAsyncHandler<in TRequest, TResponse>
+    public interface IHandler<in TRequest, TResponse>
         where TRequest : IRequest<TResponse>
     {
         Task<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken);
 	}
 
-	public interface IRequestAsyncHandler<in TRequest>
+	public interface IHandler<in TRequest>
 		where TRequest : IRequest
 	{
 		Task HandleAsync(TRequest request, CancellationToken cancellationToken);

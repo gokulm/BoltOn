@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Samples.Application.Handlers;
 using Microsoft.AspNetCore.Mvc;
@@ -18,9 +19,9 @@ namespace BoltOn.Samples.WebApi.Controllers
 
 		// GET api/values
 		[HttpGet]
-		public ActionResult<IEnumerable<string>> Get()
+		public async Task<ActionResult<IEnumerable<string>>> Get()
 		{
-			var response = _mediator.Process(new PingRequest());
+			var response = await _mediator.ProcessAsync(new PingRequest());
 			return new string[] { response.Data };
 		}
 

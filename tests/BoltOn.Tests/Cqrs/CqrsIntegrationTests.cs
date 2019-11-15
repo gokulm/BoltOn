@@ -104,52 +104,6 @@ namespace BoltOn.Tests.Cqrs
 		}
 
 		[Fact]
-		public void MediatorProcessAsync_WithCqrsAndNonAsync_ThrowsException()
-		{
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(b =>
-			{
-				b.BoltOnAssemblies(GetType().Assembly);
-				b.BoltOnEFModule();
-				b.BoltOnCqrsModule();
-				b.BoltOnMassTransitBusModule();
-			});
-
-			serviceCollection.AddMassTransit(x =>
-			{
-				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
-				{
-					cfg.ReceiveEndpoint("TestCqrsUpdatedEvent_queue", ep =>
-					{
-						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<TestCqrsUpdatedEvent>>());
-					});
-
-					cfg.ReceiveEndpoint("TestCqrsUpdated2Event_queue", ep =>
-					{
-						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<TestCqrsUpdated2Event>>());
-					});
-				}));
-			});
-
-			var logger = new Mock<IBoltOnLogger<TestCqrsHandler>>();
-			logger.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			serviceCollection.AddTransient((s) => logger.Object);
-
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-			var mediator = serviceProvider.GetService<IMediator>();
-
-			// act 
-			var ex = Record.Exception(() => mediator.Process(new TestCqrsRequest { Input = "test" }));
-
-			// assert
-			Assert.NotNull(ex);
-			Assert.Equal("CQRS not supported for non-async calls", ex.Message);
-			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"{nameof(TestCqrsHandler)} invoked"));
-		}
-
-		[Fact]
 		public async Task MediatorProcessAsync_WithCqrsAndFailedBus_EventsDoNotGetProcessed()
 		{
 			var serviceCollection = new ServiceCollection();

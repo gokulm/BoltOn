@@ -23,7 +23,7 @@ namespace BoltOn.Samples.Application.Handlers
 		public int StudentTypeId { get; set; }
 	}
 
-	public class StudentUpdatedEventHandler : IRequestAsyncHandler<StudentUpdatedEvent>
+	public class StudentUpdatedEventHandler : IHandler<StudentUpdatedEvent>
     {
         private readonly IRepository<StudentFlattened> _repository;
 

@@ -12,7 +12,7 @@ namespace BoltOn.Tests.Bus
 		public Guid CorrelationId { get; set; } = Guid.NewGuid();
 	}
 
-	public class CreateTestStudentHandler : IRequestAsyncHandler<CreateTestStudent>
+	public class CreateTestStudentHandler : IHandler<CreateTestStudent>
     {
         private readonly IBoltOnLogger<CreateTestStudentHandler> _logger;
 
