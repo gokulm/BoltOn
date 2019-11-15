@@ -13,7 +13,7 @@ namespace BoltOn.Tests.Mediator
 		public string LastName { get; set; }
 	}
 
-	public class AddStudentHandler : IRequestAsyncHandler<AddStudentRequest, Student>
+	public class AddStudentHandler : IHandler<AddStudentRequest, Student>
     {
         private readonly IRepository<Student> _studentRepository;
 

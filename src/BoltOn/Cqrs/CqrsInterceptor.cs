@@ -22,18 +22,6 @@ namespace BoltOn.Cqrs
 			_eventDispatcher = eventDispatcher;
 		}
 
-		public TResponse Run<TRequest, TResponse>(IRequest<TResponse> request,
-			Func<IRequest<TResponse>, TResponse> next) where TRequest : IRequest<TResponse>
-		{
-			var response = next(request);
-			if (_eventBag.EventsToBeProcessed.Any())
-			{
-				throw new NotSupportedException("CQRS not supported for non-async calls");
-			}
-
-			return response;
-		}
-
 		public async Task<TResponse> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken,
 			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
