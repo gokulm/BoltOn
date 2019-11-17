@@ -7,6 +7,6 @@ using System.Reflection;
 
 [assembly: AssemblyCompany("BoltOn")]
 [assembly: AssemblyProduct("BoltOn")]
-[assembly: AssemblyVersion("0.6.1.0")]
-[assembly: AssemblyFileVersion("0.6.1.0")]
-[assembly: AssemblyInformationalVersion("0.6.1")]
+[assembly: AssemblyVersion("0.7.0.0")]
+[assembly: AssemblyFileVersion("0.7.0.0")]
+[assembly: AssemblyInformationalVersion("0.7.0")]
