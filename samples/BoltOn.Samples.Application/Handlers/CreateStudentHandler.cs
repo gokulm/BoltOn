@@ -17,7 +17,7 @@ namespace BoltOn.Samples.Application.Handlers
 		public int StudentTypeId { get; set; }
 	}
 
-	public class CreateStudentHandler : IRequestAsyncHandler<CreateStudentRequest, Guid>
+	public class CreateStudentHandler : IHandler<CreateStudentRequest, Guid>
 	{
 		private readonly IRepository<Student> _studentRepository;
 		private readonly IBoltOnLogger<CreateStudentHandler> _logger;

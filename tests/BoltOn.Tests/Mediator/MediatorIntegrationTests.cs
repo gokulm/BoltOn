@@ -27,7 +27,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
+		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
@@ -39,7 +39,7 @@ namespace BoltOn.Tests.Mediator
 			var mediator = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = mediator.Process(new TestRequest());
+			var result = await mediator.ProcessAsync(new TestRequest());
 
 			// assert 
 			Assert.True(result);
@@ -52,7 +52,7 @@ namespace BoltOn.Tests.Mediator
 
 
 		[Fact]
-		public void Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayRequest()
+		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayRequest()
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
@@ -65,7 +65,7 @@ namespace BoltOn.Tests.Mediator
 			var request = new TestOneWayRequest();
 
 			// act
-			mediator.Process(request);
+			await mediator.ProcessAsync(request);
 
 			// assert 
 			Assert.Equal(1, request.Value);
@@ -77,7 +77,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayCommand()
+		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayCommand()
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
@@ -90,7 +90,7 @@ namespace BoltOn.Tests.Mediator
 			var request = new TestOneWayCommand();
 
 			// act
-			mediator.Process(request);
+			await mediator.ProcessAsync(request);
 
 			// assert 
 			Assert.Equal(1, request.Value);
@@ -154,7 +154,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_BootstrapWithTestInterceptors_InvokesDefaultAndTestInterceptorInOrderAndReturnsSuccessfulResult()
+		public async Task Process_BootstrapWithTestInterceptors_InvokesDefaultAndTestInterceptorInOrderAndReturnsSuccessfulResult()
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
@@ -166,7 +166,7 @@ namespace BoltOn.Tests.Mediator
 			var mediator = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = mediator.Process(new TestRequest());
+			var result = await mediator.ProcessAsync(new TestRequest());
 
 			// assert 
 			Assert.True(result);
@@ -212,7 +212,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_BootstrapWithTestInterceptorsAndRemoveAll_InvokesOnlyTestInterceptorAndReturnsSuccessfulResult()
+		public async Task Process_BootstrapWithTestInterceptorsAndRemoveAll_InvokesOnlyTestInterceptorAndReturnsSuccessfulResult()
 		{
 			// arrange
 			MediatorTestHelper.IsClearInterceptors = true;
@@ -224,7 +224,7 @@ namespace BoltOn.Tests.Mediator
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = sut.Process(new TestRequest());
+			var result = await sut.ProcessAsync(new TestRequest());
 
 			// assert 
 			Assert.True(result);
@@ -236,7 +236,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_BootstrapWithRemoveInterceptor_DoesNotInvokeRemovedInterceptorAndReturnsSuccessfulResult()
+		public async Task Process_BootstrapWithRemoveInterceptor_DoesNotInvokeRemovedInterceptorAndReturnsSuccessfulResult()
 		{
 			// arrange
 			MediatorTestHelper.IsRemoveStopwatchInterceptor = true;
@@ -248,7 +248,7 @@ namespace BoltOn.Tests.Mediator
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = sut.Process(new TestRequest());
+			var result = await sut.ProcessAsync(new TestRequest());
 
 			// assert 
 			Assert.True(result);
@@ -260,7 +260,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_MediatorWithQueryRequest_StartsTransactionsWithDefaultQueryIsolationLevel()
+		public async Task Process_MediatorWithQueryRequest_StartsTransactionsWithDefaultQueryIsolationLevel()
 		{
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
@@ -272,7 +272,7 @@ namespace BoltOn.Tests.Mediator
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = sut.Process(new TestQuery());
+			var result = await sut.ProcessAsync(new TestQuery());
 
 			// assert 
 			Assert.True(result);
@@ -280,7 +280,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_MediatorWithQueryUncommittedRequest_ExecutesCustomChangeTrackerInterceptor()
+		public async Task Process_MediatorWithQueryUncommittedRequest_ExecutesCustomChangeTrackerInterceptor()
 		{
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
@@ -292,7 +292,7 @@ namespace BoltOn.Tests.Mediator
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = sut.Process(new TestStaleQuery());
+			var result = await sut.ProcessAsync(new TestStaleQuery());
 
 			// assert 
 			Assert.True(result);
@@ -300,7 +300,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_MediatorWithQueryRequest_StartsTransactionsWithCustomizedQueryIsolationLevel()
+		public async Task Process_MediatorWithQueryRequest_StartsTransactionsWithCustomizedQueryIsolationLevel()
 		{
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
@@ -311,7 +311,7 @@ namespace BoltOn.Tests.Mediator
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = sut.Process(new TestQuery());
+			var result = await sut.ProcessAsync(new TestQuery());
 
 			// assert 
 			Assert.True(result);
@@ -362,7 +362,7 @@ namespace BoltOn.Tests.Mediator
 
 
 		[Fact]
-		public void Process_MediatorWithQueryRequest_ExecutesChangeTrackerContextInterceptorAndDisablesTracking()
+		public async Task Process_MediatorWithQueryRequest_ExecutesChangeTrackerContextInterceptorAndDisablesTracking()
 		{
 			// arrange
 			IntegrationTestHelper.IsSeedData = true;
@@ -373,7 +373,7 @@ namespace BoltOn.Tests.Mediator
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = sut.Process(new GetStudentRequest { StudentId = 2 });
+			var result = await sut.ProcessAsync(new GetStudentRequest { StudentId = 2 });
 			var dbContext = serviceProvider.GetService<IDbContextFactory>().Get<SchoolDbContext>();
 			var isAutoDetectChangesEnabled = dbContext.ChangeTracker.AutoDetectChangesEnabled;
 			var queryTrackingBehavior = dbContext.ChangeTracker.QueryTrackingBehavior;
@@ -387,7 +387,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public void Process_MediatorWithCommandRequest_ExecutesChangeTrackerContextInterceptorAndEnablesTrackAll()
+		public async Task Process_MediatorWithCommandRequest_ExecutesChangeTrackerContextInterceptorAndEnablesTrackAll()
 		{
 			// arrange
 			IntegrationTestHelper.IsSeedData = false;
@@ -398,7 +398,7 @@ namespace BoltOn.Tests.Mediator
 			var sut = serviceProvider.GetService<IMediator>();
 
 			// act
-			var result = sut.Process(new TestCommand());
+			var result = await sut.ProcessAsync(new TestCommand());
 			var dbContext = serviceProvider.GetService<IDbContextFactory>().Get<SchoolDbContext>();
 			var isAutoDetectChangesEnabled = dbContext.ChangeTracker.AutoDetectChangesEnabled;
 			var queryTrackingBehavior = dbContext.ChangeTracker.QueryTrackingBehavior;

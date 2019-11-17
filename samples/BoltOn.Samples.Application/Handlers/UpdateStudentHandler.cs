@@ -21,7 +21,7 @@ namespace BoltOn.Samples.Application.Handlers
 		public int StudentTypeId { get; set; }
 	}
 
-	public class UpdateStudentHandler : IRequestAsyncHandler<UpdateStudentRequest>
+	public class UpdateStudentHandler : IHandler<UpdateStudentRequest>
 	{
 		private readonly IRepository<Student> _studentRepository;
 		private readonly IBoltOnLogger<UpdateStudentHandler> _logger;

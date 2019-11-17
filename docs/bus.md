@@ -65,6 +65,6 @@ and then call `BoltOnConsumer<CreateStudent>(provider, host)`
 **Note:**
 
 * As MassTransit had abstracted out the transport like RabbitMq, Azure Service Bus etc., and all the other things very well BoltOn just adds a minor add-on `BoltOnMassTransitConsumer<TMessage>` to it, which injects `IMediator` for processing the message of type `TMessage`.
-* As the consumer injects `IMediator` and uses it for processing the messages, all the messages should implement any of the interfaces mentioned [here](../mediator/#request-response-and-requesthandler). 
+* As the consumer injects `IMediator` and uses it for processing the messages, all the messages should implement any of the interfaces mentioned [here](../mediator/#request-response-and-handler). 
 Please refer to [Mediator](../mediator) documentation to know how to add handlers and its internals.
 * Starting and stopping bus gets taken care by [PostRegistrationTask](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Bus.MassTransit/PostRegistrationTask.cs) and [CleanupTask](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Bus.MassTransit/CleanupTask.cs) respectively. 
