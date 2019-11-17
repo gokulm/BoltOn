@@ -58,7 +58,7 @@
     <a class="current" href="./">Mediator</a>
     <ul class="subnav">
             
-    <li class="toctree-l2"><a href="#request-response-and-requesthandler">Request, Response and RequestHandler</a></li>
+    <li class="toctree-l2"><a href="#request-response-and-handler">Request, Response and Handler</a></li>
     
 
     <li class="toctree-l2"><a href="#interceptors">Interceptors</a></li>
@@ -134,7 +134,7 @@
               
                 <p>Mediator is the backbone of BoltOn. It follows the <a href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html">Request/Response</a> and <a href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/CommandMessage.html">Command Message</a> patterns. </p>
 <p>The main source of inspiration for the Mediator was <a href="https://github.com/davybrion/Agatha">Agatha</a>, and various other projects like <a href="https://github.com/BrighterCommand/Brighter">Brighter</a> and <a href="https://github.com/jbogard/MediatR">MediatR</a>.</p>
-<h2 id="request-response-and-requesthandler">Request, Response and RequestHandler</h2>
+<h2 id="request-response-and-handler">Request, Response and Handler</h2>
 <p>In order to use the Mediator, you need to create a request by implementing any of these interfaces:</p>
 <ul>
 <li><code>IRequest</code>
@@ -153,9 +153,9 @@
 <p>The <strong>response</strong> can be any value or reference type.</p>
 <p>After declaring the request and the response, you need to create a handler by implementiong any of these interfaces:</p>
 <ul>
-<li><code>IRequestHandler&lt;in TRequest&gt;</code> or <code>IRequestAsyncHandler&lt;in TRequest&gt;</code>
+<li><code>IHandler&lt;in TRequest&gt;</code>
 <br> For handlers that do not return any response.</li>
-<li><code>IRequestHandler&lt;in TRequest, TResponse&gt;</code> or <code>IRequestAsyncHandler&lt;in TRequest, TResponse&gt;</code>
+<li><code>IHandler&lt;in TRequest, TResponse&gt;</code>
 <br> For handlers that have responses.</li>
 </ul>
 <p>Example:</p>
@@ -163,7 +163,7 @@
 {
 }
 
-public class GetAllStudentsHandler : IRequestAsyncHandler&lt;GetAllStudentsRequest, IEnumerable&lt;StudentDto&gt;&gt;
+public class GetAllStudentsHandler : IHandler&lt;GetAllStudentsRequest, IEnumerable&lt;StudentDto&gt;&gt;
 {
     public async Task&lt;IEnumerable&lt;StudentDto&gt;&gt; HandleAsync(GetAllStudentsRequest request, CancellationToken cancellationToken)
     {
