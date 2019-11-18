@@ -1,18 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include=".template.config\template.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include=".template.config\" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BoltOn" Version="0.7.0" />
   </ItemGroup>
