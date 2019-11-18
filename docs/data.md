@@ -94,7 +94,7 @@ In order to use CosmosDb, you need do the following:
 * Create an options class by inheriting `BaseCosmosDbOptions` class. 
 * Use AddCosmosDb extension method to initialize options like URI, AuthorizationKey and Database Name.
 * Inherit `Repository<TEntity, TCosmosDbOptions>` to create a repository for your entity.
-* All the repository methods accept an optional parameter options. For some of the methods, RequestOptions can be passed and for some FeedOptions can be passed as the options object, take a look at the [`Repository<TEntity, TCosmosOptions>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.CosmosDb/Repository.cs) to see the implementation.
+* All the repository methods accept an optional parameter options. For some of the methods, RequestOptions can be passed and for some FeedOptions can be passed as the options object, take a look at the [`Repository<TEntity, TCosmosDbOptions>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.CosmosDb/Repository.cs) to see the implementation.
 
 Example:
 

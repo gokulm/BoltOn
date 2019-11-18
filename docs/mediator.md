@@ -92,7 +92,7 @@ Unit of Work
 ------------
 
 * If you use Mediator and implement any of the interfaces like IQuery or ICommand, which in turn implements `IEnableUnitOfWorkInterceptor`, you need not worry about starting or committing unit of work, it will be done automatically using `UnitOfWorkInterceptor`. 
-* If you're not using Mediator and if you want to start a unit of work, you could call Get method in `IUnitOfWorkManager` by passing `UnitOfWorkOptions` based on your needs. It will start a new transaction with `System.Transactions.TransactionScopeOption.RequiresNew` if there is one already started. The default transaction isolation level is `IsolationLevel.Serializable`
+* If you're not using Mediator and if you want to start a unit of work, you could call Get method in `IUnitOfWorkManager` by passing `UnitOfWorkOptions` based on your needs. It will start a new transaction with `System.Transactions.TransactionScopeOption.RequiresNew`. The default transaction isolation level is `IsolationLevel.Serializable`
 
 **Note:** Though it's possible to start a unit of work manually, please try to do avoid it, especially when there is already one, as having more than one unit of work isn't a proper way to build applications. This will be useful only when you want to query a database with an isolation level different from the one started by `UnitOfWorkInterceptor`.
 

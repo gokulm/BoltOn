@@ -7,7 +7,7 @@
 	"tags": {
 		"language": "C#"
 	},
-	"sourceName": "RequestHandlerTemplate",
+	"sourceName": "HandlerTemplate",
 	"sources": [
 		{
 			"modifiers": [
