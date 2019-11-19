@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Mediator.Pipeline;
 
-namespace RequestHandlerTemplate
+namespace Handlers
 {
 	#if(ResponseType == "")
     public class HandlerTemplateRequest : IRequest
@@ -16,7 +16,7 @@ namespace RequestHandlerTemplate
 	#if(ResponseType == "")
     public class HandlerTemplateHandler : IHandler<HandlerTemplateRequest>
 	#else
-    public class RequestHandlerTemplateHandler : IHandler<HandlerTemplateRequest, ResponseType>
+    public class HandlerTemplateHandler : IHandler<HandlerTemplateRequest, ResponseType>
 	#endif
 	{
 		#if(ResponseType == "")

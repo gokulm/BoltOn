@@ -8,5 +8,6 @@ nav:
     - Utilities: utilities.md
     - Optional: optional.md
     - Samples: samples.md
+    - CLI: cli.md
 theme: readthedocs
 
