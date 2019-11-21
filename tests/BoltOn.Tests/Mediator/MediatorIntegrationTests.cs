@@ -6,7 +6,6 @@ using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Overrides.Mediator;
-using BoltOn.Overrides.UoW;
 using BoltOn.Tests.Other;
 using BoltOn.Tests.UoW;
 using BoltOn.UoW;
