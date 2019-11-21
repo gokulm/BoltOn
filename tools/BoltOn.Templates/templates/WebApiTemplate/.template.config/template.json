@@ -1,0 +1,21 @@
+{
+	"author": "BoltOn",
+	"classifications": [ "Web/WebAPI" ],
+	"name": "BoltOn WebAPI",
+	"identity": "bowebapi",
+	"shortName": "bowebapi",
+	"tags": {
+		"language": "C#"
+	},
+	"sourceName": "WebApiTemplate",
+	"preferNameDirectory": "true",
+	"sources": [
+		{
+			"modifiers": [
+				{
+					"exclude": [ ".template.config" ]
+				}
+			]
+		}
+	]
+}

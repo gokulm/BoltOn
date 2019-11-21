@@ -30,14 +30,6 @@ You could create your custom interceptor for change tracking something like this
 			_changeTrackerContext = changeTrackerContext;
 		}
 
-		public TResponse Run<TRequest, TResponse>(IRequest<TResponse> request, 
-			Func<IRequest<TResponse>, TResponse> next) where TRequest : IRequest<TResponse>
-		{
-			_changeTrackerContext.IsQueryRequest = request is IQuery<TResponse> || request is IQueryUncommitted<TResponse>;
-			var response = next(request);
-			return response;
-		}
-
 		public async Task<TResponse> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
 			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{

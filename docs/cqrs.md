@@ -24,7 +24,7 @@ Like this:
 * Events get triggered from `RaiseEvent<TEvent>(TEvent @event)` method in the `BaseCqrsEntity` and they get processed in `ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action)`.
 * Events must inherit `CqrsEvent`, which implements `ICqrsEvent`, and which inturn implements Mediator's `IRequest`, and thus the events can be handled using `Mediator`.
 * Create your request and handlers, and then use the `Mediator` to process your request. Please refer to [Mediator](../mediator) documentation to create handlers.
-* Repositories should inherit `CqrsRepository` present in the Data package. In the case of EF, it's [this class](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/CqrsRepository.cs).
+* Register `IRepository<TEntity>` to EF Repository, it's [this class](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs).
 
 Implementation Sample
 ---------------------
@@ -71,7 +71,7 @@ Here is the internal ctor of Student entity:
 		}
 	}
 
-* `IRepository<Student>` injected in the `CreateStudentHandler` is registered to use `CqrsRepository<Student>`. Please look into the RegistrationTask class in the BoltOn.Samples.WebApi project for all the other registrations.
+* `IRepository<Student>` injected in the `CreateStudentHandler` is registered to use `Repository<Student>`. Please look into the RegistrationTask class in the BoltOn.Samples.WebApi project for all the other registrations.
 * When `AddAsync` of the repository is called in the handler, the repository adds the entity and on while saving changes using the `SaveChanges` method, the events marked for processing are added to a request scoped object called `EventBag`, right after the CreatedDate property is initialized.
 
 **Note:** 
@@ -130,7 +130,7 @@ Here is the internal ctor of StudentFlattened entity:
         }
 	}
 
-* `IRepository<StudentFlattened>` injected in the `StudentCreatedEventHandler` is registered to use `CqrsRepository<StudentFlattened>`. 
+* `IRepository<StudentFlattened>` injected in the `StudentCreatedEventHandler` is registered to use `Repository<StudentFlattened>`. 
 * When `AddAsync` of the repository is called in the handler, the repository adds the entity and on while saving changes using the `SaveChanges` method, the processed events' ProcessedDate is populated and persisted.
 
 CQRS is implemented even for Student update functionality, so follow the PUT in StudentsController, and UpdateStudentHandler and StudentUpdatedEventHandler handlers.
