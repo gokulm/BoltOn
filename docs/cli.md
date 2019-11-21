@@ -6,7 +6,7 @@ To create a .NET Core WebAPI project with BoltOn package bolted:
 
     dotnet new bowebapi -n <project_name>
 
-**-n:** Specify project name. If not specified, the folder name will be used as the project name
+**-n:** Specify the project name. If not specified, the folder name will be used as the project name
 
 Handler
 -------
@@ -14,7 +14,7 @@ To create a [Mediator](../mediator) handler without response:
 
     dotnet new bohandler -n <request_name>
 
-**-n:** Specify request name without Request suffix. If not specified, the folder name will be used as the handler name
+**-n:** Specify the request name without Request suffix. If not specified, the folder name will be used as the handler name
 
 eg.,
 
@@ -41,15 +41,15 @@ Handler (with response)
 -----------------------
 To create a [Mediator](../mediator) handler with response:
 
-    dotnet new bohanlder -n <request_name> -R <response_type>
+    dotnet new bohanlder -n <request_name> -r <response_type>
 
-**-n:** Specify request name without Request suffix. If not specified, the folder name will be used as the handler name
+**-n:** Specify the request name without Request suffix. If not specified, the folder name will be used as the handler name
 
-**-R:** Specifiy the type of the response like int, Guid etc. If it's a class type, specify the class name, but you have to  create the class
+**-r OR --response:** Specifiy the type of the response like int, Guid etc. If it's a class type, specify the class name, but you have to  create the class
 
 eg.,
 
-    dotnet new bohandler -n GetStudentCount -R int 
+    dotnet new bohandler -n GetStudentCount -r int 
 
 The request and the handler will be added in **GetStudentsCountHandler.cs** file inside Handlers folder (Handlers folder will be created if it doesn't exist).
 
