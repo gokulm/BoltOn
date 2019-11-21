@@ -2,7 +2,7 @@ Mediator is the backbone of BoltOn. It follows the [Request/Response](https://ww
 
 The main source of inspiration for the Mediator was [Agatha](https://github.com/davybrion/Agatha), and various other projects like [Brighter](https://github.com/BrighterCommand/Brighter) and [MediatR](https://github.com/jbogard/MediatR).
 
-Request, Response and RequestHandler
+Request, Response and Handler
 ------------------------------------
 In order to use the Mediator, you need to create a request by implementing any of these interfaces:
 
@@ -24,9 +24,9 @@ The **response** can be any value or reference type.
 
 After declaring the request and the response, you need to create a handler by implementiong any of these interfaces:
 
-* `IRequestHandler<in TRequest>` or `IRequestAsyncHandler<in TRequest>`
+* `IHandler<in TRequest>`
 <br> For handlers that do not return any response.
-* `IRequestHandler<in TRequest, TResponse>` or `IRequestAsyncHandler<in TRequest, TResponse>`
+* `IHandler<in TRequest, TResponse>`
 <br> For handlers that have responses.
 
 Example:
@@ -35,7 +35,7 @@ Example:
 	{
 	}
 
-	public class GetAllStudentsHandler : IRequestAsyncHandler<GetAllStudentsRequest, IEnumerable<StudentDto>>
+	public class GetAllStudentsHandler : IHandler<GetAllStudentsRequest, IEnumerable<StudentDto>>
 	{
 		public async Task<IEnumerable<StudentDto>> HandleAsync(GetAllStudentsRequest request, CancellationToken cancellationToken)
 		{

@@ -175,6 +175,23 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.True(postRegistrationTaskCount == 1);
 		}
 
+		[Fact, TestPriority(12)]
+		public void BoltOn_TightenBolts_PostRegistrationWithDependencyGetCalledOnce()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+
+			// act
+			serviceProvider.TightenBolts();
+
+			// assert
+			var postRegistrationTaskCount = BootstrapperRegistrationTasksHelper.Tasks
+									.Count(w => w == "Executed test service");
+			Assert.True(postRegistrationTaskCount == 1);
+		}
+
 		public void Dispose()
 		{
 			Bootstrapper
@@ -230,6 +247,22 @@ namespace BoltOn.Tests.Bootstrapping
 		public void Run(PostRegistrationTaskContext context)
 		{
 			BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
+		}
+	}
+
+	public class TestBootstrapperPostRegistrationTaskWithDependency : IPostRegistrationTask
+	{
+		private readonly ITestService _testService;
+
+		public TestBootstrapperPostRegistrationTaskWithDependency(ITestService testService)
+		{
+			_testService = testService;
+		}
+
+		public void Run(PostRegistrationTaskContext context)
+		{
+			BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
+			BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {_testService.GetName()} service");
 		}
 	}
 

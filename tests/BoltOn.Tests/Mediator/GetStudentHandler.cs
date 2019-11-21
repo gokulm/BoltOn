@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Tests.Other;
 
@@ -9,7 +11,7 @@ namespace BoltOn.Tests.Mediator
 		public int StudentId { get; set; }
 	}
 
-	public class GetStudentHandler : IRequestHandler<GetStudentRequest, Student>
+	public class GetStudentHandler : IHandler<GetStudentRequest, Student>
     {
         readonly IStudentRepository _studentRepository;
 
@@ -18,10 +20,10 @@ namespace BoltOn.Tests.Mediator
             _studentRepository = studentRepository;
         }
 
-        public virtual Student Handle(GetStudentRequest request)
-        {
-            var student = _studentRepository.FindByAsync(f => f.Id == request.StudentId).GetAwaiter().GetResult().FirstOrDefault();
-            return student;
-        }
-    }
+		public async Task<Student> HandleAsync(GetStudentRequest request, CancellationToken cancellationToken)
+		{
+			var student = (await _studentRepository.FindByAsync(f => f.Id == request.StudentId)).FirstOrDefault();
+			return student;
+		}
+	}
 }

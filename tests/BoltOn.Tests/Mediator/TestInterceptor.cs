@@ -16,16 +16,6 @@ namespace BoltOn.Tests.Mediator
 			_logger = logger;
 		}
 
-		public TResponse Run<TRequest, TResponse>(IRequest<TResponse> request,
-																	 Func<IRequest<TResponse>, TResponse> next)
-		   where TRequest : IRequest<TResponse>
-		{
-			_logger.Debug("TestInterceptor Started");
-			var response = next.Invoke(request);
-			_logger.Debug("TestInterceptor Ended");
-			return response;
-		}
-
 		public void Dispose()
 		{
 		}
