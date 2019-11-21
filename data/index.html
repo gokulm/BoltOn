@@ -103,6 +103,11 @@
     <a class="" href="../samples/">Samples</a>
 	    </li>
           
+            <li class="toctree-l1">
+		
+    <a class="" href="../cli/">CLI</a>
+	    </li>
+          
         </ul>
       </div>
       &nbsp;
@@ -221,7 +226,7 @@ public class StudentRepository : Repository&lt;Student, SchoolDbContext&gt;, ISt
 <li>Create an options class by inheriting <code>BaseCosmosDbOptions</code> class. </li>
 <li>Use AddCosmosDb extension method to initialize options like URI, AuthorizationKey and Database Name.</li>
 <li>Inherit <code>Repository&lt;TEntity, TCosmosDbOptions&gt;</code> to create a repository for your entity.</li>
-<li>All the repository methods accept an optional parameter options. For some of the methods, RequestOptions can be passed and for some FeedOptions can be passed as the options object, take a look at the <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.CosmosDb/Repository.cs"><code>Repository&lt;TEntity, TCosmosOptions&gt;</code></a> to see the implementation.</li>
+<li>All the repository methods accept an optional parameter options. For some of the methods, RequestOptions can be passed and for some FeedOptions can be passed as the options object, take a look at the <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.CosmosDb/Repository.cs"><code>Repository&lt;TEntity, TCosmosDbOptions&gt;</code></a> to see the implementation.</li>
 </ul>
 <p>Example:</p>
 <pre><code>services.BoltOn(options =&gt;

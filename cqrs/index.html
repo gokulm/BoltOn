@@ -94,6 +94,11 @@
     <a class="" href="../samples/">Samples</a>
 	    </li>
           
+            <li class="toctree-l1">
+		
+    <a class="" href="../cli/">CLI</a>
+	    </li>
+          
         </ul>
       </div>
       &nbsp;
@@ -151,7 +156,7 @@ serviceCollection.BoltOn(b =&gt;
 <li>Events get triggered from <code>RaiseEvent&lt;TEvent&gt;(TEvent @event)</code> method in the <code>BaseCqrsEntity</code> and they get processed in <code>ProcessEvent&lt;TEvent&gt;(TEvent @event, Action&lt;TEvent&gt; action)</code>.</li>
 <li>Events must inherit <code>CqrsEvent</code>, which implements <code>ICqrsEvent</code>, and which inturn implements Mediator's <code>IRequest</code>, and thus the events can be handled using <code>Mediator</code>.</li>
 <li>Create your request and handlers, and then use the <code>Mediator</code> to process your request. Please refer to <a href="../mediator">Mediator</a> documentation to create handlers.</li>
-<li>Repositories should inherit <code>CqrsRepository</code> present in the Data package. In the case of EF, it's <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/CqrsRepository.cs">this class</a>.</li>
+<li>Register <code>IRepository&lt;TEntity&gt;</code> to EF Repository, it's <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs">this class</a>.</li>
 </ul>
 <h2 id="implementation-sample">Implementation Sample</h2>
 <p>The best way to understand the implementation is by looking into <a href="https://github.com/gokulm/BoltOn/tree/master/samples/BoltOn.Samples.WebApi">BoltOn.Samples.WebApi</a> project's <code>StudentsController</code> and by going thru GET, POST and PUT student endpoints, corresponding requests and their handlers. </p>
@@ -195,7 +200,7 @@ serviceCollection.BoltOn(b =&gt;
 }
 </code></pre>
 <ul>
-<li><code>IRepository&lt;Student&gt;</code> injected in the <code>CreateStudentHandler</code> is registered to use <code>CqrsRepository&lt;Student&gt;</code>. Please look into the RegistrationTask class in the BoltOn.Samples.WebApi project for all the other registrations.</li>
+<li><code>IRepository&lt;Student&gt;</code> injected in the <code>CreateStudentHandler</code> is registered to use <code>Repository&lt;Student&gt;</code>. Please look into the RegistrationTask class in the BoltOn.Samples.WebApi project for all the other registrations.</li>
 <li>When <code>AddAsync</code> of the repository is called in the handler, the repository adds the entity and on while saving changes using the <code>SaveChanges</code> method, the events marked for processing are added to a request scoped object called <code>EventBag</code>, right after the CreatedDate property is initialized.</li>
 </ul>
 <p><strong>Note:</strong> </p>
@@ -254,7 +259,7 @@ serviceCollection.BoltOn(b =&gt;
 }
 </code></pre>
 <ul>
-<li><code>IRepository&lt;StudentFlattened&gt;</code> injected in the <code>StudentCreatedEventHandler</code> is registered to use <code>CqrsRepository&lt;StudentFlattened&gt;</code>. </li>
+<li><code>IRepository&lt;StudentFlattened&gt;</code> injected in the <code>StudentCreatedEventHandler</code> is registered to use <code>Repository&lt;StudentFlattened&gt;</code>. </li>
 <li>When <code>AddAsync</code> of the repository is called in the handler, the repository adds the entity and on while saving changes using the <code>SaveChanges</code> method, the processed events' ProcessedDate is populated and persisted.</li>
 </ul>
 <p>CQRS is implemented even for Student update functionality, so follow the PUT in StudentsController, and UpdateStudentHandler and StudentUpdatedEventHandler handlers.</p>

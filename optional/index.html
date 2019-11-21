@@ -103,6 +103,11 @@
     <a class="" href="../samples/">Samples</a>
 	    </li>
           
+            <li class="toctree-l1">
+		
+    <a class="" href="../cli/">CLI</a>
+	    </li>
+          
         </ul>
       </div>
       &nbsp;
@@ -157,14 +162,6 @@ serviceCollection.AddTransient&lt;IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOpt
     public CustomChangeTrackerInterceptor(ChangeTrackerContext changeTrackerContext)
     {
         _changeTrackerContext = changeTrackerContext;
-    }
-
-    public TResponse Run&lt;TRequest, TResponse&gt;(IRequest&lt;TResponse&gt; request, 
-        Func&lt;IRequest&lt;TResponse&gt;, TResponse&gt; next) where TRequest : IRequest&lt;TResponse&gt;
-    {
-        _changeTrackerContext.IsQueryRequest = request is IQuery&lt;TResponse&gt; || request is IQueryUncommitted&lt;TResponse&gt;;
-        var response = next(request);
-        return response;
     }
 
     public async Task&lt;TResponse&gt; RunAsync&lt;TRequest, TResponse&gt;(IRequest&lt;TResponse&gt; request, CancellationToken cancellationToken, 
