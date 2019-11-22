@@ -1,4 +1,6 @@
-In order to create project templates and other BoltOn components from CLI, install **BoltOn.Templates** NuGet Package.
+In order to create project templates and other BoltOn components from CLI, execute:
+
+    dotnet new -i BoltOn.Templates
 
 WebAPI
 ------
