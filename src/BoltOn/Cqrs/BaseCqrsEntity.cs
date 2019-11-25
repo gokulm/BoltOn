@@ -7,8 +7,9 @@ namespace BoltOn.Cqrs
 {
 	public abstract class BaseCqrsEntity : BaseEntity<Guid>
 	{
-		private HashSet<ICqrsEvent> _eventsToBeProcessed = new HashSet<ICqrsEvent>();
-		private HashSet<ICqrsEvent> _processedEvents = new HashSet<ICqrsEvent>();
+		private HashSet<ICqrsEvent> _eventsToBeProcessed { get; set; } = new HashSet<ICqrsEvent>();
+
+		private HashSet<ICqrsEvent> _processedEvents { get; set; } = new HashSet<ICqrsEvent>();
 
 		public virtual IEnumerable<ICqrsEvent> EventsToBeProcessed
 		{

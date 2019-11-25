@@ -13,7 +13,7 @@ namespace BoltOn.Data.EF
 		{
 			var settings = new JsonSerializerSettings
 			{
-				TypeNameHandling = TypeNameHandling.Auto
+				TypeNameHandling = TypeNameHandling.All
 			};
 			builder
 				.Property(p => p.EventsToBeProcessed)
