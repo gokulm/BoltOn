@@ -4,7 +4,6 @@ using BoltOn.Data.EF;
 using Microsoft.EntityFrameworkCore;
 using BoltOn.Data;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace BoltOn.Tests.Cqrs
 {
