@@ -19,6 +19,7 @@
         <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\BoltOn\BoltOn.csproj" />

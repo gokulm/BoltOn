@@ -148,7 +148,7 @@ namespace BoltOn.Tests.Cqrs
 			var repository = serviceProvider.GetService<IRepository<TestCqrsWriteEntity>>();
 			var entity = await repository.GetByIdAsync(CqrsConstants.EntityId);
 			Assert.NotNull(entity);
-			Assert.True(entity.EventsToBeProcessed.Count == 2);
+			Assert.True(entity.EventsToBeProcessed.ToList().Count == 2);
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
 		}
@@ -201,7 +201,7 @@ namespace BoltOn.Tests.Cqrs
 			var repository = serviceProvider.GetService<IRepository<TestCqrsWriteEntity>>();
 			var entity = await repository.GetByIdAsync(CqrsConstants.EntityId);
 			Assert.NotNull(entity);
-			Assert.True(entity.EventsToBeProcessed.Count == 2);
+			Assert.True(entity.EventsToBeProcessed.ToList().Count == 2);
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
 		}

@@ -9,6 +9,7 @@ using BoltOn.Utilities;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
+using Newtonsoft.Json;
 
 namespace BoltOn.Data.CosmosDb
 {
@@ -31,7 +32,11 @@ namespace BoltOn.Data.CosmosDb
             _eventBag = eventBag;
             _boltOnClock = boltOnClock;
             CollectionName = collectionName ?? typeof(TEntity).Name.Pluralize();
-            DocumentClient = new DocumentClient(new Uri(options.Uri), options.AuthorizationKey);
+            DocumentClient = new DocumentClient(new Uri(options.Uri), options.AuthorizationKey,
+				new JsonSerializerSettings
+				{
+					TypeNameHandling = TypeNameHandling.Auto
+				});
             DocumentCollectionUri = UriFactory.CreateDocumentCollectionUri(DatabaseName, CollectionName);
         }
 
