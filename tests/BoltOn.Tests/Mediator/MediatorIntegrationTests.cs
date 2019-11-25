@@ -18,13 +18,6 @@ namespace BoltOn.Tests.Mediator
 	[Collection("IntegrationTests")]
 	public class MediatorIntegrationTests : IDisposable
 	{
-		public MediatorIntegrationTests()
-		{
-			Bootstrapper
-				.Instance
-				.Dispose();
-		}
-
 		[Fact]
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
