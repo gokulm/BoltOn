@@ -7,14 +7,14 @@ namespace BoltOn.Cqrs
 {
 	public abstract class BaseCqrsEntity : BaseEntity<Guid>
 	{
-		private HashSet<ICqrsEvent> _eventsToBeProcessed { get; set; } = new HashSet<ICqrsEvent>();
+		private HashSet<ICqrsEvent> _eventsToBeProcessed = new HashSet<ICqrsEvent>();
 
-		private HashSet<ICqrsEvent> _processedEvents { get; set; } = new HashSet<ICqrsEvent>();
+		private HashSet<ICqrsEvent> _processedEvents = new HashSet<ICqrsEvent>();
 
 		public virtual IEnumerable<ICqrsEvent> EventsToBeProcessed
 		{
 			get => _eventsToBeProcessed;
-			protected set => _eventsToBeProcessed = value == null
+			internal set => _eventsToBeProcessed = value == null
 				? new HashSet<ICqrsEvent>()
 				: new HashSet<ICqrsEvent>(value);
 		}
@@ -22,7 +22,7 @@ namespace BoltOn.Cqrs
 		public virtual IEnumerable<ICqrsEvent> ProcessedEvents
 		{
 			get => _processedEvents;
-			protected set => _processedEvents = value == null
+			internal set => _processedEvents = value == null
 				? new HashSet<ICqrsEvent>()
 				: new HashSet<ICqrsEvent>(value);
 		}
