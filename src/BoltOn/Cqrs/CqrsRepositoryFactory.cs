@@ -1,8 +1,8 @@
 ﻿using System;
-using BoltOn.Cqrs;
+using BoltOn.Data;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BoltOn.Data
+namespace BoltOn.Cqrs
 {
 	public interface ICqrsRepositoryFactory
 	{

@@ -45,15 +45,15 @@ namespace BoltOn.Samples.Console
                 options.UseSqlServer("Data Source=127.0.0.1;initial catalog=BoltOnSamples;persist security info=True;User ID=sa;Password=Password1;");
             });
 
-			//container.AddCosmosDb<SchoolCosmosDbOptions>(options =>
-			//{
-			//	options.Uri = "https://bolton2.documents.azure.com:443/";
-			//	options.AuthorizationKey = "CJNc3RPjK3ACzRBtjOg56rJ774Y3ncyvJKCl5X2pfpMVe5wLPkr2v80pN5wWjhmZXYA0blOEsIDT4MmQifjtrg==";
-			//	options.DatabaseName = "School";
-			//});
+			container.AddCosmosDb<SchoolCosmosDbOptions>(options =>
+			{
+				options.Uri = "https://bolton.documents.azure.com:443/";
+				options.AuthorizationKey = "XZZAFWzdJoqG5IoJGUHIFGoYMP4rCof5o60wbMSIyzEZBwID4POEmCDRLUNscPh2K9VcV0Ccm7aGsLnvccGj7A==";
+				options.DatabaseName = "School";
+			});
 
-			container.AddTransient<IRepository<StudentFlattened>, Data.EF.Repository<StudentFlattened, SchoolDbContext>>();
-			//container.AddTransient<IRepository<StudentFlattened>, Data.CosmosDb.Repository<StudentFlattened, SchoolCosmosDbOptions>>();
+			//container.AddTransient<IRepository<StudentFlattened>, Data.EF.Repository<StudentFlattened, SchoolDbContext>>();
+			container.AddTransient<IRepository<StudentFlattened>, Data.CosmosDb.Repository<StudentFlattened, SchoolCosmosDbOptions>>();
 		}
     }
 }

@@ -26,6 +26,14 @@ namespace BoltOn.Cqrs
 			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
 			var response = await next(request, cancellationToken);
+			await DispatchEventsToBeProcessed(cancellationToken);
+			await DispatchProcessedEvents(cancellationToken);
+
+			return response;
+		}
+
+		private async Task DispatchEventsToBeProcessed(CancellationToken cancellationToken)
+		{
 			foreach (var @event in _eventBag.EventsToBeProcessed.ToList())
 			{
 				try
@@ -33,7 +41,7 @@ namespace BoltOn.Cqrs
 					_logger.Debug($"Publishing event. Id: {@event.Id} SourceType: {@event.SourceTypeName}");
 					await _eventDispatcher.DispatchAsync(@event, cancellationToken);
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 					_logger.Error($"Dispatching failed. Id: {@event.Id}");
 					_logger.Error(ex);
@@ -43,8 +51,37 @@ namespace BoltOn.Cqrs
 					_eventBag.EventsToBeProcessed.Remove(@event);
 				}
 			}
+		}
 
-			return response;
+		private async Task DispatchProcessedEvents(CancellationToken cancellationToken)
+		{
+			foreach (var @event in _eventBag.ProcessedEvents.ToList())
+			{
+				try
+				{
+					_logger.Debug($"Publishing processed event. Id: {@event.Id} " +
+						$"SourceType: {@event.SourceTypeName}. DestinationType: {@event.DestinationTypeName}");
+					var cqrsEventProcessedEvent = new CqrsEventProcessedEvent
+					{
+						Id = @event.Id,
+						SourceId = @event.SourceId,
+						SourceTypeName = @event.SourceTypeName,
+						DestinationTypeName = @event.DestinationTypeName,
+						CreatedDate = @event.CreatedDate,
+						ProcessedDate = @event.ProcessedDate
+					};
+					await _eventDispatcher.DispatchAsync(cqrsEventProcessedEvent, cancellationToken);
+				}
+				catch (Exception ex)
+				{
+					_logger.Error($"Dispatching failed. Id: {@event.Id}");
+					_logger.Error(ex);
+				}
+				finally
+				{
+					_eventBag.ProcessedEvents.Remove(@event);
+				}
+			}
 		}
 
 		public void Dispose()
