@@ -18,13 +18,6 @@ namespace BoltOn.Tests.Cqrs
 	[Collection("IntegrationTests")]
 	public class CqrsIntegrationTests : IDisposable
 	{
-		public CqrsIntegrationTests()
-		{
-			Bootstrapper
-				.Instance
-				.Dispose();
-		}
-
 		[Fact]
 		public async Task MediatorProcessAsync_WithCqrs_ReturnsResult()
 		{
@@ -99,6 +92,55 @@ namespace BoltOn.Tests.Cqrs
 											 $"SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(TestCqrsReadEntity)} updated. Input1: test input Input2Property1: prop1 Input2Propert2: 10"));
+			var eventBag = serviceProvider.GetService<EventBag>();
+			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
+		}
+
+		[Fact]
+		public async Task MediatorProcessAsync_WithCqrs_RemovesEventsToBeProcessed()
+		{
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn(b =>
+			{
+				b.BoltOnAssemblies(GetType().Assembly);
+				b.BoltOnEFModule();
+				b.BoltOnCqrsModule();
+				b.BoltOnMassTransitBusModule();
+			});
+
+			serviceCollection.AddMassTransit(x =>
+			{
+				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
+				{
+					cfg.ReceiveEndpoint("TestCqrsCreatedEvent_queue", ep =>
+					{
+						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<TestCqrsCreatedEvent>>());
+					});
+
+					cfg.ReceiveEndpoint("CqrsEventProcessedEvent_queue", ep =>
+					{
+						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CqrsEventProcessedEvent>>());
+					});
+				}));
+			});
+
+			var logger = new Mock<IBoltOnLogger<TestCqrsCreatedEventHandler>>();
+			logger.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddTransient((s) => logger.Object);
+
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var mediator = serviceProvider.GetService<IMediator>();
+
+			// act
+			await mediator.ProcessAsync(new CreateTestCqrsRequest { Input = "test input" });
+
+			// assert
+			await Task.Delay(1000);
+			//Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+			//							$"{nameof(TestCqrsHandler)} invoked"));
+
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
 		}

@@ -4,13 +4,27 @@ namespace BoltOn.Tests.Cqrs
 {
     public class TestCqrsReadEntity : BaseCqrsEntity
     {
-        public virtual string Input1 { get; internal set; }
+		public string Input { get; set; }
+
+		public virtual string Input1 { get; internal set; }
 
         public virtual string Input2Property1 { get; internal set; }
 
         public virtual int Input2Property2 { get; internal set; }
 
-        public bool UpdateInput(TestCqrsUpdatedEvent @event)
+		public TestCqrsReadEntity()
+		{
+		}
+
+		public TestCqrsReadEntity(TestCqrsCreatedEvent @event)
+		{
+			ProcessEvent(@event, e =>
+			{
+				e.Input = @event.Input;
+			});
+		}
+
+		public bool UpdateInput(TestCqrsUpdatedEvent @event)
         {
             return ProcessEvent(@event, e =>
             {

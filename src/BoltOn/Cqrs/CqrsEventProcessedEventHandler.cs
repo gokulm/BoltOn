@@ -30,9 +30,14 @@ namespace BoltOn.Cqrs
 
 		public async Task HandleAsync(CqrsEventProcessedEvent request, CancellationToken cancellationToken)
 		{
-			var method = _cqrsRepositoryFactory.GetType().GetMethod("GetRepository");
+			await RemoveEventToBeProcessed(request, cancellationToken);
+		}
+
+		private async Task RemoveEventToBeProcessed(CqrsEventProcessedEvent request, CancellationToken cancellationToken)
+		{
+			var getRepositoryMethod = _cqrsRepositoryFactory.GetType().GetMethod("GetRepository");
 			var sourceEntityType = Type.GetType(request.SourceTypeName);
-			var generic = method.MakeGenericMethod(sourceEntityType);
+			var generic = getRepositoryMethod.MakeGenericMethod(sourceEntityType);
 			dynamic repository = generic.Invoke(_cqrsRepositoryFactory, null);
 			_logger.Debug("Built repository");
 			using (var uow = _unitOfWorkManager.Get(u => u.TransactionScopeOption = TransactionScopeOption.RequiresNew))

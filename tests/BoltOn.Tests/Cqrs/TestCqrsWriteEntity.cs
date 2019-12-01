@@ -1,10 +1,25 @@
-﻿using BoltOn.Cqrs;
+﻿using System;
+using BoltOn.Cqrs;
 
 namespace BoltOn.Tests.Cqrs
 {
     public class TestCqrsWriteEntity : BaseCqrsEntity
     {
         public string Input { get; internal set; }
+
+		public TestCqrsWriteEntity()
+		{
+		}
+
+		public TestCqrsWriteEntity(string input)
+		{
+			Input = input;
+			Id = Guid.NewGuid();
+			RaiseEvent(new TestCqrsCreatedEvent
+			{
+				Input = input
+			}); 
+		}
 
         public void ChangeInput(TestCqrsRequest request)
         {
