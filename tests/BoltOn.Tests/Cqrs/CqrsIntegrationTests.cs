@@ -36,7 +36,7 @@ namespace BoltOn.Tests.Cqrs
 				{
 					cfg.ReceiveEndpoint("TestCqrsUpdatedEvent_queue", ep =>
 					{
-						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<TestCqrsUpdatedEvent>>());
+						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<StudentUpdatedEvent>>());
 					});
 
 					cfg.ReceiveEndpoint("TestCqrsUpdated2Event_queue", ep =>
@@ -46,12 +46,12 @@ namespace BoltOn.Tests.Cqrs
 				}));
 			});
 
-			var logger = new Mock<IBoltOnLogger<TestCqrsHandler>>();
+			var logger = new Mock<IBoltOnLogger<UpdateStudentHandler>>();
 			logger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger.Object);
 
-			var logger2 = new Mock<IBoltOnLogger<TestCqrsUpdatedEventHandler>>();
+			var logger2 = new Mock<IBoltOnLogger<StudentUpdatedEventHandler>>();
 			logger2.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger2.Object);
@@ -71,27 +71,27 @@ namespace BoltOn.Tests.Cqrs
 			var mediator = serviceProvider.GetService<IMediator>();
 
 			// act
-			await mediator.ProcessAsync(new TestCqrsRequest { Input = "test input" });
+			await mediator.ProcessAsync(new UpdateStudentRequest { Input = "test input" });
 
 			// assert
 			// as assert not working after async method, added sleep
 			await Task.Delay(1000);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(TestCqrsHandler)} invoked"));
+										$"{nameof(UpdateStudentHandler)} invoked"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(TestCqrsUpdatedEventHandler)} invoked"));
+										$"{nameof(StudentUpdatedEventHandler)} invoked"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(TestCqrsUpdatedEventHandler)} invoked for {nameof(TestCqrsUpdated2Event)}"));
+										$"{nameof(StudentUpdatedEventHandler)} invoked for {nameof(TestCqrsUpdated2Event)}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"Publishing event. Id: {CqrsConstants.EventId} SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
+										$"Publishing event. Id: {CqrsConstants.EventId} SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.EventId} " +
-											$"SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
+											$"SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										 $"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.Event2Id} " +
-											 $"SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
+											 $"SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(TestCqrsReadEntity)} updated. Input1: test input Input2Property1: prop1 Input2Propert2: 10"));
+										$"{nameof(StudentFlattened)} updated. Input1: test input Input2Property1: prop1 Input2Propert2: 10"));
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
 		}
@@ -114,7 +114,7 @@ namespace BoltOn.Tests.Cqrs
 				{
 					cfg.ReceiveEndpoint("TestCqrsCreatedEvent_queue", ep =>
 					{
-						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<TestCqrsCreatedEvent>>());
+						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<StudentCreatedEvent>>());
 					});
 
 					cfg.ReceiveEndpoint("CqrsEventProcessedEvent_queue", ep =>
@@ -124,7 +124,7 @@ namespace BoltOn.Tests.Cqrs
 				}));
 			});
 
-			var logger = new Mock<IBoltOnLogger<TestCqrsCreatedEventHandler>>();
+			var logger = new Mock<IBoltOnLogger<StudentCreatedEventHandler>>();
 			logger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger.Object);
@@ -134,15 +134,16 @@ namespace BoltOn.Tests.Cqrs
 			var mediator = serviceProvider.GetService<IMediator>();
 
 			// act
-			await mediator.ProcessAsync(new CreateTestCqrsRequest { Input = "test input" });
+			await mediator.ProcessAsync(new AddStudentRequest { Name = "test input" });
 
 			// assert
 			await Task.Delay(1000);
-			//Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-			//							$"{nameof(TestCqrsHandler)} invoked"));
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"{nameof(StudentCreatedEventHandler)} invoked"));
 
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
+			Assert.True(eventBag.ProcessedEvents.Count == 0);
 		}
 
 		[Fact]
@@ -170,24 +171,24 @@ namespace BoltOn.Tests.Cqrs
 			var mediator = serviceProvider.GetService<IMediator>();
 
 			// act
-			await mediator.ProcessAsync(new TestCqrsRequest { Input = "test" });
+			await mediator.ProcessAsync(new UpdateStudentRequest { Input = "test" });
 
 			// assert
 			// as assert not working after async method, added sleep
 			await Task.Delay(1000);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(TestCqrsHandler)} invoked"));
+										$"{nameof(UpdateStudentHandler)} invoked"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"Publishing event. Id: {CqrsConstants.EventId} SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
+										$"Publishing event. Id: {CqrsConstants.EventId} SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.EventId} " +
-											$"SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
+											$"SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Dispatching failed. Id: {CqrsConstants.EventId}"));
 			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(TestCqrsUpdatedEventHandler)} invoked"));
+										$"{nameof(StudentUpdatedEventHandler)} invoked"));
 			cqrsInterceptorLogger.Verify(v => v.Error(failedBusException), Times.Exactly(2));
-			var repository = serviceProvider.GetService<IRepository<TestCqrsWriteEntity>>();
+			var repository = serviceProvider.GetService<IRepository<Student>>();
 			var entity = await repository.GetByIdAsync(CqrsConstants.EntityId);
 			Assert.NotNull(entity);
 			Assert.True(entity.EventsToBeProcessed.ToList().Count == 2);
@@ -220,27 +221,27 @@ namespace BoltOn.Tests.Cqrs
 			var mediator = serviceProvider.GetService<IMediator>();
 
 			// act
-			await mediator.ProcessAsync(new TestCqrsRequest { Input = "test" });
+			await mediator.ProcessAsync(new UpdateStudentRequest { Input = "test" });
 
 			// assert
 			// as assert not working after async method, added sleep
 			await Task.Delay(1000);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(TestCqrsHandler)} invoked"));
+										$"{nameof(UpdateStudentHandler)} invoked"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"Publishing event. Id: {CqrsConstants.EventId} SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
+										$"Publishing event. Id: {CqrsConstants.EventId} SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.EventId} " +
-											$"SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
+											$"SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Dispatching failed. Id: {CqrsConstants.EventId}"));
 			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Dispatching failed. Id: {CqrsConstants.Event2Id}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										 $"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.Event2Id} " +
-											 $"SourceType: {typeof(TestCqrsWriteEntity).AssemblyQualifiedName}"));
+											 $"SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			cqrsInterceptorLogger.Verify(v => v.Error(failedBusException), Times.Once);
-			var repository = serviceProvider.GetService<IRepository<TestCqrsWriteEntity>>();
+			var repository = serviceProvider.GetService<IRepository<Student>>();
 			var entity = await repository.GetByIdAsync(CqrsConstants.EntityId);
 			Assert.NotNull(entity);
 			Assert.True(entity.EventsToBeProcessed.ToList().Count == 2);
@@ -258,7 +259,7 @@ namespace BoltOn.Tests.Cqrs
 				b.BoltOnEFModule();
 			});
 
-			var logger2 = new Mock<IBoltOnLogger<TestCqrsUpdatedEventHandler>>();
+			var logger2 = new Mock<IBoltOnLogger<StudentUpdatedEventHandler>>();
 			logger2.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger2.Object);
@@ -268,7 +269,7 @@ namespace BoltOn.Tests.Cqrs
 			var mediator = serviceProvider.GetService<IMediator>();
 
 			// act
-			await mediator.ProcessAsync(new TestCqrsUpdatedEvent
+			await mediator.ProcessAsync(new StudentUpdatedEvent
 			{
 				Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId),
 				SourceId = CqrsConstants.EntityId
@@ -278,9 +279,9 @@ namespace BoltOn.Tests.Cqrs
 			// as assert not working after async method, added sleep
 			await Task.Delay(1000);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(TestCqrsUpdatedEventHandler)} invoked"));
+										$"{nameof(StudentUpdatedEventHandler)} invoked"));
 			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(TestCqrsReadEntity)} updated. Input1: test Input2Property1: prop1 Input2Propert2: 10"));
+										$"{nameof(StudentFlattened)} updated. Input1: test Input2Property1: prop1 Input2Propert2: 10"));
 		}
 
 		private static Mock<IBoltOnLogger<CqrsInterceptor>> MockForFailedBus(ServiceCollection serviceCollection)
@@ -291,7 +292,7 @@ namespace BoltOn.Tests.Cqrs
 				{
 					cfg.ReceiveEndpoint("TestCqrsUpdatedEvent_queue", ep =>
 					{
-						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<TestCqrsUpdatedEvent>>());
+						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<StudentUpdatedEvent>>());
 					});
 
 					cfg.ReceiveEndpoint("TestCqrsUpdated2Event_queue", ep =>
@@ -301,12 +302,12 @@ namespace BoltOn.Tests.Cqrs
 				}));
 			});
 
-			var logger = new Mock<IBoltOnLogger<TestCqrsHandler>>();
+			var logger = new Mock<IBoltOnLogger<UpdateStudentHandler>>();
 			logger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger.Object);
 
-			var logger2 = new Mock<IBoltOnLogger<TestCqrsUpdatedEventHandler>>();
+			var logger2 = new Mock<IBoltOnLogger<StudentUpdatedEventHandler>>();
 			logger2.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger2.Object);

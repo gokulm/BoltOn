@@ -11,8 +11,8 @@ namespace BoltOn.Tests.Cqrs
 
         protected override void ApplyConfigurations(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new TestCqrsWriteEntityMapping());
-            modelBuilder.ApplyConfiguration(new TestCqrsReadEntityMapping());
+            modelBuilder.ApplyConfiguration(new StudentMapping());
+            modelBuilder.ApplyConfiguration(new StudentFlattenedMapping());
         }
     }
 }

@@ -6,11 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Tests.Cqrs
 {
-    public class TestCqrsPostRegistrationTask : IPostRegistrationTask
+    public class CqrsPostRegistrationTask : IPostRegistrationTask
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public TestCqrsPostRegistrationTask(IServiceProvider serviceProvider)
+        public CqrsPostRegistrationTask(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
@@ -21,15 +21,15 @@ namespace BoltOn.Tests.Cqrs
             testDbContext.Database.EnsureDeleted();
             testDbContext.Database.EnsureCreated();
 
-            testDbContext.Set<TestCqrsWriteEntity>().Add(new TestCqrsWriteEntity
+            testDbContext.Set<Student>().Add(new Student
             {
                 Id = CqrsConstants.EntityId,
-                Input = "value to be replaced"
+                Name = "value to be replaced"
             });
-            testDbContext.Set<TestCqrsReadEntity>().Add(new TestCqrsReadEntity
-            {
+            testDbContext.Set<StudentFlattened>().Add(new StudentFlattened
+			{
                 Id = CqrsConstants.EntityId,
-                Input1 = "value to be replaced",
+                FirstName = "value to be replaced",
                 ProcessedEvents = new HashSet<CqrsEvent>
                 {
                     new CqrsEvent { Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId) }

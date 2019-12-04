@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Tests.Cqrs
 {
-    public class TestCqrsWriteEntityMapping : BaseCqrsEntityMapping<TestCqrsWriteEntity>
+    public class StudentMapping : BaseCqrsEntityMapping<Student>
     {
-        public override void Configure(EntityTypeBuilder<TestCqrsWriteEntity> builder)
+        public override void Configure(EntityTypeBuilder<Student> builder)
         {
             base.Configure(builder);
             builder
-                .ToTable("TestCqrsWriteEntity")
+                .ToTable("Student")
                 .HasKey(k => k.Id);
         }
     }

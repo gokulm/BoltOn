@@ -3,31 +3,31 @@ using BoltOn.Cqrs;
 
 namespace BoltOn.Tests.Cqrs
 {
-    public class TestCqrsWriteEntity : BaseCqrsEntity
+    public class Student : BaseCqrsEntity
     {
-        public string Input { get; internal set; }
+        public string Name { get; internal set; }
 
-		public TestCqrsWriteEntity()
+		public Student()
 		{
 		}
 
-		public TestCqrsWriteEntity(string input)
+		public Student(string name)
 		{
-			Input = input;
+			Name = name;
 			Id = Guid.NewGuid();
-			RaiseEvent(new TestCqrsCreatedEvent
+			RaiseEvent(new StudentCreatedEvent
 			{
-				Input = input
+				Input = name
 			}); 
 		}
 
-        public void ChangeInput(TestCqrsRequest request)
+        public void Modify(UpdateStudentRequest request)
         {
-            Input = request.Input;
-            RaiseEvent(new TestCqrsUpdatedEvent
+            Name = request.Input;
+            RaiseEvent(new StudentUpdatedEvent
             {
                 Id = CqrsConstants.EventId,
-                Input1 = request.Input,
+                Name = request.Input,
                 Input2 = new TestInput { Property1 = "prop1", Property2 = 10 }
             });
 

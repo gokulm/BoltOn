@@ -2,21 +2,21 @@
 
 namespace BoltOn.Tests.Cqrs
 {
-    public class TestCqrsReadEntity : BaseCqrsEntity
+    public class StudentFlattened : BaseCqrsEntity
     {
-		public string Input { get; set; }
+		public string FirstName { get; set; }
 
-		public virtual string Input1 { get; internal set; }
+		public virtual string LastName { get; internal set; }
 
         public virtual string Input2Property1 { get; internal set; }
 
         public virtual int Input2Property2 { get; internal set; }
 
-		public TestCqrsReadEntity()
+		public StudentFlattened()
 		{
 		}
 
-		public TestCqrsReadEntity(TestCqrsCreatedEvent @event)
+		public StudentFlattened(StudentCreatedEvent @event)
 		{
 			ProcessEvent(@event, e =>
 			{
@@ -24,11 +24,12 @@ namespace BoltOn.Tests.Cqrs
 			});
 		}
 
-		public bool UpdateInput(TestCqrsUpdatedEvent @event)
+		public bool UpdateInput(StudentUpdatedEvent @event)
         {
             return ProcessEvent(@event, e =>
-            {
-                Input1 = e.Input1;
+			{
+				FirstName = e.Name;
+				LastName = e.Name;
                 Input2Property1 = e.Input2.Property1;
                 Input2Property2 = e.Input2.Property2;
             });
