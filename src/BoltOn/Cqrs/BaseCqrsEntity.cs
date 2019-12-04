@@ -52,6 +52,7 @@ namespace BoltOn.Cqrs
 				return false;
 
 			action(@event);
+			@event.DestinationId = Id;
 			@event.DestinationTypeName = GetType().AssemblyQualifiedName;
 			// events with ProcessedDate == null are filtered in the repository. this is used 
 			// to differentiate events that were added in the current request and the existing events
