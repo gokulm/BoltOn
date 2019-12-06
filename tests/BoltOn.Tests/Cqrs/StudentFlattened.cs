@@ -20,7 +20,9 @@ namespace BoltOn.Tests.Cqrs
 		{
 			ProcessEvent(@event, e =>
 			{
-				e.Input = @event.Input;
+				Id = @event.SourceId;
+				FirstName = @event.Input;
+				LastName = @event.Input;
 			});
 		}
 

@@ -17,16 +17,16 @@ namespace BoltOn.Tests.Cqrs
 
         public void Run(PostRegistrationTaskContext context)
         {
-            var testDbContext = _serviceProvider.GetService<CqrsDbContext>();
-            testDbContext.Database.EnsureDeleted();
-            testDbContext.Database.EnsureCreated();
+            var cqrsDbContext = _serviceProvider.GetService<CqrsDbContext>();
+            cqrsDbContext.Database.EnsureDeleted();
+            cqrsDbContext.Database.EnsureCreated();
 
-            testDbContext.Set<Student>().Add(new Student
+            cqrsDbContext.Set<Student>().Add(new Student
             {
                 Id = CqrsConstants.EntityId,
                 Name = "value to be replaced"
             });
-            testDbContext.Set<StudentFlattened>().Add(new StudentFlattened
+            cqrsDbContext.Set<StudentFlattened>().Add(new StudentFlattened
 			{
                 Id = CqrsConstants.EntityId,
                 FirstName = "value to be replaced",
@@ -35,7 +35,7 @@ namespace BoltOn.Tests.Cqrs
                     new CqrsEvent { Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId) }
                 }
             });
-            testDbContext.SaveChanges();
+            cqrsDbContext.SaveChanges();
         }
     }
 }

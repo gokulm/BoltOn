@@ -112,12 +112,12 @@ namespace BoltOn.Tests.Cqrs
 			{
 				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
 				{
-					cfg.ReceiveEndpoint("TestCqrsCreatedEvent_queue", ep =>
+					cfg.ReceiveEndpoint($"{nameof(StudentCreatedEvent)}_queue", ep =>
 					{
 						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<StudentCreatedEvent>>());
 					});
 
-					cfg.ReceiveEndpoint("CqrsEventProcessedEvent_queue", ep =>
+					cfg.ReceiveEndpoint($"{nameof(CqrsEventProcessedEvent)}_queue", ep =>
 					{
 						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CqrsEventProcessedEvent>>());
 					});
@@ -129,21 +129,37 @@ namespace BoltOn.Tests.Cqrs
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger.Object);
 
+			var logger2 = new Mock<IBoltOnLogger<CqrsEventProcessedEventHandler>>();
+			logger2.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddTransient((s) => logger2.Object);
+
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var mediator = serviceProvider.GetService<IMediator>();
+			var studentId = Guid.NewGuid();
 
 			// act
-			await mediator.ProcessAsync(new AddStudentRequest { Name = "test input" });
+			await mediator.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input" });
 
 			// assert
 			await Task.Delay(1000);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(StudentCreatedEventHandler)} invoked"));
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"{nameof(CqrsEventProcessedEventHandler)} invoked"));
 
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
 			Assert.True(eventBag.ProcessedEvents.Count == 0);
+
+			var cqrsDbContext = serviceProvider.GetService<CqrsDbContext>();
+			var student = cqrsDbContext.Set<Student>().Find(studentId);
+			Assert.True(student.EventsToBeProcessed.Count() == 0);
+			Assert.True(student.ProcessedEvents.Count() == 0);
+			var studentFlattened = cqrsDbContext.Set<StudentFlattened>().Find(studentId);
+			Assert.True(studentFlattened.EventsToBeProcessed.Count() == 0);
+			Assert.True(studentFlattened.ProcessedEvents.Count() == 0);
 		}
 
 		[Fact]

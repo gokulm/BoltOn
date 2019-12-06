@@ -30,28 +30,31 @@ namespace BoltOn.Cqrs
 
 		public async Task HandleAsync(CqrsEventProcessedEvent request, CancellationToken cancellationToken)
 		{
+			_logger.Debug($"{nameof(CqrsEventProcessedEventHandler)} invoked");
 			await RemoveEventToBeProcessed(request, cancellationToken);
 		}
 
 		private async Task RemoveEventToBeProcessed(CqrsEventProcessedEvent request, CancellationToken cancellationToken)
 		{
 			var getRepositoryMethod = _cqrsRepositoryFactory.GetType().GetMethod("GetRepository");
+			_logger.Debug($"Getting source entity repository. SourceTypeName: {request.SourceTypeName}");
 			var sourceEntityType = Type.GetType(request.SourceTypeName);
-			var generic = getRepositoryMethod.MakeGenericMethod(sourceEntityType);
-			dynamic repository = generic.Invoke(_cqrsRepositoryFactory, null);
-			_logger.Debug("Built repository");
+			var genericMethodForSourceEntity = getRepositoryMethod.MakeGenericMethod(sourceEntityType);
+			dynamic repository = genericMethodForSourceEntity.Invoke(_cqrsRepositoryFactory, null);
+			_logger.Debug($"Built {nameof(CqrsRepositoryFactory)}");
 			using (var uow = _unitOfWorkManager.Get(u => u.TransactionScopeOption = TransactionScopeOption.RequiresNew))
 			{
+				_logger.Debug($"Fetched source entity by Id. Id: {request.SourceId}");
 				var cqrsEntity = await repository.GetByIdAsync(request.SourceId, cancellationToken);
 				var baseCqrsEntity = cqrsEntity as BaseCqrsEntity;
 				_logger.Debug($"Fetched BaseCqrsEntity. Id: {request.SourceId}");
 				var @event = baseCqrsEntity?.EventsToBeProcessed.FirstOrDefault(f => f.Id == request.Id);
 				if (@event != null)
 				{
-					_logger.Debug("Removing event...");
+					_logger.Debug($"Removing event. Id: {@event.Id}");
 					baseCqrsEntity.RemoveEventsToBeProcessed(@event);
 					await repository.UpdateAsync(cqrsEntity, cancellationToken);
-					_logger.Debug($"Removed event. Id: {@event.Id}");
+					_logger.Debug($"Removed event");
 				}
 				uow.Commit();
 			}

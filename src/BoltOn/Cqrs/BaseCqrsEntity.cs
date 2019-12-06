@@ -28,7 +28,7 @@ namespace BoltOn.Cqrs
 		}
 
 		protected bool RaiseEvent<TEvent>(TEvent @event)
-			where TEvent : CqrsEvent
+			where TEvent : ICqrsEvent
 		{
 			if (EventsToBeProcessed.Any(c => c.Id == @event.Id))
 				return false;
@@ -46,7 +46,7 @@ namespace BoltOn.Cqrs
 		}
 
 		protected bool ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action)
-			where TEvent : CqrsEvent
+			where TEvent : ICqrsEvent
 		{
 			if (ProcessedEvents.Any(c => c.Id == @event.Id))
 				return false;

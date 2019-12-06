@@ -3,11 +3,13 @@ using System.Threading.Tasks;
 using BoltOn.Logging;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Data;
+using System;
 
 namespace BoltOn.Tests.Cqrs
 {
 	public class AddStudentRequest : IRequest
 	{
+		public Guid Id { get; set; }
 		public string Name { get; set; }
 	}
 
@@ -26,8 +28,8 @@ namespace BoltOn.Tests.Cqrs
         public async Task HandleAsync(AddStudentRequest request, CancellationToken cancellationToken)
         {
             _logger.Debug($"{nameof(AddStudentHandler)} invoked");
-            var testCqrsWriteEntity = new Student(request.Name);
-            await _repository.AddAsync(testCqrsWriteEntity, cancellationToken);
+            var student = new Student(request.Name, request.Id);
+            await _repository.AddAsync(student, cancellationToken);
         }
     }
 }
