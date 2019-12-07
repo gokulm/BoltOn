@@ -4,7 +4,7 @@ namespace BoltOn.Tests.Cqrs
 {
     public class StudentFlattened : BaseCqrsEntity
     {
-		public string FirstName { get; set; }
+		public virtual string FirstName { get; internal set; }
 
 		public virtual string LastName { get; internal set; }
 

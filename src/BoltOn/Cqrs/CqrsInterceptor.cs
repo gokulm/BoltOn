@@ -65,6 +65,7 @@ namespace BoltOn.Cqrs
 					{
 						Id = @event.Id,
 						SourceId = @event.SourceId,
+						DestinationId = @event.DestinationId,
 						SourceTypeName = @event.SourceTypeName,
 						DestinationTypeName = @event.DestinationTypeName,
 						CreatedDate = @event.CreatedDate,

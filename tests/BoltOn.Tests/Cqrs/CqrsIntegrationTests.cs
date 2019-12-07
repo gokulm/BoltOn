@@ -97,7 +97,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 
 		[Fact]
-		public async Task MediatorProcessAsync_WithCqrs_RemovesEventsToBeProcessed()
+		public async Task MediatorProcessAsync_WithCqrs_RemovesEventsToBeProcessedAndProcessedEvents()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
