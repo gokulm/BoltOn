@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using BoltOn.Mediator.Interceptors;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -141,7 +142,10 @@ namespace BoltOn.Bootstrapping
 		{
 			foreach (var interceptorImplementation in _registrationTaskContext.InterceptorTypes)
 			{
-				_serviceCollection.AddInterceptor(interceptorImplementation);
+				var serviceDescriptor = _serviceCollection.FirstOrDefault(descriptor =>
+							descriptor.ServiceType == interceptorImplementation);
+				if (serviceDescriptor == null)
+					_serviceCollection.AddTransient(typeof(IInterceptor), interceptorImplementation);
 			}
 		}
 

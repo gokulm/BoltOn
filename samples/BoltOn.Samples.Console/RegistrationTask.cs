@@ -9,6 +9,7 @@ using BoltOn.Samples.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using BoltOn.Bootstrapping;
 using BoltOn.Data.CosmosDb;
+using BoltOn.Cqrs;
 
 namespace BoltOn.Samples.Console
 {
@@ -37,7 +38,12 @@ namespace BoltOn.Samples.Console
                     {
                         ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<StudentUpdatedEvent>>());
                     });
-                }));
+
+					cfg.ReceiveEndpoint($"{nameof(CqrsEventProcessedEvent)}_queue", ep =>
+					{
+						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CqrsEventProcessedEvent>>());
+					});
+				}));
             });
 
             container.AddDbContext<SchoolDbContext>(options =>
@@ -52,6 +58,7 @@ namespace BoltOn.Samples.Console
 				options.DatabaseName = "School";
 			});
 
+			container.AddTransient<IRepository<Student>, Data.EF.Repository<Student, SchoolDbContext>>();
 			container.AddTransient<IRepository<StudentFlattened>, Data.EF.Repository<StudentFlattened, SchoolDbContext>>();
 			//container.AddTransient<IRepository<StudentFlattened>, Data.CosmosDb.Repository<StudentFlattened, SchoolCosmosDbOptions>>();
 		}
