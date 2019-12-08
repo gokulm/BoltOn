@@ -19,5 +19,15 @@ namespace BoltOn
 		{
 			Bootstrapper.Instance.RunPostRegistrationTasks(serviceProvider);
 		}
+
+		public static BoltOnOptions BoltOnCqrsModule(this BoltOnOptions boltOnOptions, Action<BoltOnCqrsOptions> action = null)
+		{
+			var options = new BoltOnCqrsOptions();
+			action?.Invoke(options);
+			options.IsEnabled = true;
+			boltOnOptions.CqrsOptions = options;
+
+			return boltOnOptions;
+		}
 	}
 }

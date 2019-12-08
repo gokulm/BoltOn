@@ -68,7 +68,7 @@ namespace BoltOn.Bootstrapping
 		{
 			context.AddInterceptor<StopwatchInterceptor>();
 
-			if (Bootstrapper.Instance.Options.IsCqrsEnabled)
+			if (Bootstrapper.Instance.Options.CqrsOptions.IsEnabled)
 			{
 				context.AddInterceptor<CqrsInterceptor>();
 				context.Container.AddTransient<IEventDispatcher, EventDispatcher>();

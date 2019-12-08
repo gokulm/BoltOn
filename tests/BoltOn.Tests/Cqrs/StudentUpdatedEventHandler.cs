@@ -37,16 +37,16 @@ namespace BoltOn.Tests.Cqrs
         public async Task HandleAsync(StudentUpdatedEvent request, CancellationToken cancellationToken)
         {
             _logger.Debug($"{nameof(StudentUpdatedEventHandler)} invoked");
-            var testCqrsReadEntity = await _repository.GetByIdAsync(request.SourceId);
-            var isSuccessful = testCqrsReadEntity.UpdateInput(request);
+            var studentFlattened = await _repository.GetByIdAsync(request.SourceId);
+            var isSuccessful = studentFlattened.UpdateInput(request);
             if (isSuccessful)
             {
                 _logger.Debug($"{nameof(StudentFlattened)} updated. " +
-                    $"Input1: {testCqrsReadEntity.FirstName} Input2Property1: {testCqrsReadEntity.Input2Property1} " +
-                    $"Input2Propert2: {testCqrsReadEntity.Input2Property2}");
-                // this is to avoid test warning, as TestCqrsUpdateEvent gets added in two different entities
-                //await _repository.UpdateAsync(testCqrsReadEntity);
-            }
+                    $"Input1: {studentFlattened.FirstName} Input2Property1: {studentFlattened.Input2Property1} " +
+                    $"Input2Propert2: {studentFlattened.Input2Property2}");
+				// comment the below line to avoid test warning, as TestCqrsUpdateEvent gets added in two different entities
+				await _repository.UpdateAsync(studentFlattened);
+			}
         }
 
         public async Task HandleAsync(TestCqrsUpdated2Event request, CancellationToken cancellationToken)

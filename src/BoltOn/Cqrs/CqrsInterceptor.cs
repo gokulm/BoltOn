@@ -27,7 +27,8 @@ namespace BoltOn.Cqrs
 		{
 			var response = await next(request, cancellationToken);
 			await DispatchEventsToBeProcessed(cancellationToken);
-			await DispatchProcessedEvents(cancellationToken);
+			if (Bootstrapping.Bootstrapper.Instance.Options.CqrsOptions.ClearEventsEnabled)
+				await DispatchProcessedEvents(cancellationToken);
 
 			return response;
 		}
