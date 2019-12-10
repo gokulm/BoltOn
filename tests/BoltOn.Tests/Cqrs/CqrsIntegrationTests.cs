@@ -272,17 +272,17 @@ namespace BoltOn.Tests.Cqrs
 										$"Dispatching failed. Id: {CqrsConstants.EventId}"));
 			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(StudentUpdatedEventHandler)} invoked"));
-			cqrsInterceptorLogger.Verify(v => v.Error(failedBusException), Times.Exactly(2));
+			cqrsInterceptorLogger.Verify(v => v.Error(failedBusException), Times.Once);
 			var repository = serviceProvider.GetService<IRepository<Student>>();
 			var entity = await repository.GetByIdAsync(CqrsConstants.EntityId);
 			Assert.NotNull(entity);
 			Assert.True(entity.EventsToBeProcessed.ToList().Count == 2);
 			var eventBag = serviceProvider.GetService<EventBag>();
-			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
+			Assert.True(eventBag.EventsToBeProcessed.Count == 2);
 		}
 
 		[Fact]
-		public async Task MediatorProcessAsync_WithCqrsAndFailedBusForOneEventOutOf2_SuccessfullyPublishedEventGetProcessed()
+		public async Task MediatorProcessAsync_WithCqrsAndFailedBusFor1stEventOutOf2_BothEventsDoNotGetProcessed()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -321,6 +321,57 @@ namespace BoltOn.Tests.Cqrs
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Dispatching failed. Id: {CqrsConstants.EventId}"));
 			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										 $"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.Event2Id} " +
+											 $"SourceType: {typeof(Student).AssemblyQualifiedName}"));
+			cqrsInterceptorLogger.Verify(v => v.Error(failedBusException), Times.Once);
+			var repository = serviceProvider.GetService<IRepository<Student>>();
+			var entity = await repository.GetByIdAsync(CqrsConstants.EntityId);
+			Assert.NotNull(entity);
+			Assert.True(entity.EventsToBeProcessed.ToList().Count == 2);
+			var eventBag = serviceProvider.GetService<EventBag>();
+			Assert.True(eventBag.EventsToBeProcessed.Count == 2);
+		}
+
+		[Fact]
+		public async Task MediatorProcessAsync_WithCqrsAndFailedBusFor2ndEventOutOf2Events_FirstEventGetProcessed()
+		{
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn(b =>
+			{
+				b.BoltOnAssemblies(GetType().Assembly);
+				b.BoltOnEFModule();
+				b.BoltOnCqrsModule();
+				b.BoltOnMassTransitBusModule();
+			});
+
+			var cqrsInterceptorLogger = MockForFailedBus(serviceCollection);
+
+			var bus = new Mock<BoltOn.Bus.IBus>();
+			var failedBusException = new Exception("failed bus");
+			bus.Setup(d => d.PublishAsync(It.Is<ICqrsEvent>(t => t.Id == CqrsConstants.Event2Id), default))
+				.Throws(failedBusException);
+			serviceCollection.AddSingleton(bus.Object);
+
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var mediator = serviceProvider.GetService<IMediator>();
+
+			// act
+			await mediator.ProcessAsync(new UpdateStudentRequest { Input = "test" });
+
+			// assert
+			// as assert not working after async method, added sleep
+			await Task.Delay(1000);
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"{nameof(UpdateStudentHandler)} invoked"));
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"Publishing event. Id: {CqrsConstants.EventId} SourceType: {typeof(Student).AssemblyQualifiedName}"));
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.EventId} " +
+											$"SourceType: {typeof(Student).AssemblyQualifiedName}"));
+			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"Dispatching failed. Id: {CqrsConstants.EventId}"));
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Dispatching failed. Id: {CqrsConstants.Event2Id}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										 $"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.Event2Id} " +
@@ -331,7 +382,7 @@ namespace BoltOn.Tests.Cqrs
 			Assert.NotNull(entity);
 			Assert.True(entity.EventsToBeProcessed.ToList().Count == 2);
 			var eventBag = serviceProvider.GetService<EventBag>();
-			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
+			Assert.True(eventBag.EventsToBeProcessed.Count == 1);
 		}
 
 		[Fact]

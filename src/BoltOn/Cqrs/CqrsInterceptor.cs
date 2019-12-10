@@ -35,31 +35,32 @@ namespace BoltOn.Cqrs
 
 		private async Task DispatchEventsToBeProcessed(CancellationToken cancellationToken)
 		{
-			foreach (var @event in _eventBag.EventsToBeProcessed.ToList())
+			Guid eventId;
+			try
 			{
-				try
+				foreach (var @event in _eventBag.EventsToBeProcessed.ToList())
 				{
+					eventId = @event.Id;
 					_logger.Debug($"Publishing event. Id: {@event.Id} SourceType: {@event.SourceTypeName}");
 					await _eventDispatcher.DispatchAsync(@event, cancellationToken);
-				}
-				catch (Exception ex)
-				{
-					_logger.Error($"Dispatching failed. Id: {@event.Id}");
-					_logger.Error(ex);
-				}
-				finally
-				{
 					_eventBag.EventsToBeProcessed.Remove(@event);
 				}
+			}
+			catch (Exception ex)
+			{
+				_logger.Error($"Dispatching failed. Id: {eventId}");
+				_logger.Error(ex);
 			}
 		}
 
 		private async Task DispatchProcessedEvents(CancellationToken cancellationToken)
 		{
-			foreach (var @event in _eventBag.ProcessedEvents.ToList())
+			Guid eventId;
+			try
 			{
-				try
+				foreach (var @event in _eventBag.ProcessedEvents.ToList())
 				{
+					eventId = @event.Id;
 					_logger.Debug($"Publishing processed event. Id: {@event.Id} " +
 						$"SourceType: {@event.SourceTypeName}. DestinationType: {@event.DestinationTypeName}");
 					var cqrsEventProcessedEvent = new CqrsEventProcessedEvent
@@ -73,16 +74,13 @@ namespace BoltOn.Cqrs
 						ProcessedDate = @event.ProcessedDate
 					};
 					await _eventDispatcher.DispatchAsync(cqrsEventProcessedEvent, cancellationToken);
-				}
-				catch (Exception ex)
-				{
-					_logger.Error($"Dispatching failed. Id: {@event.Id}");
-					_logger.Error(ex);
-				}
-				finally
-				{
 					_eventBag.ProcessedEvents.Remove(@event);
 				}
+			}
+			catch (Exception ex)
+			{
+				_logger.Error($"Dispatching failed. Id: {eventId}");
+				_logger.Error(ex);
 			}
 		}
 
