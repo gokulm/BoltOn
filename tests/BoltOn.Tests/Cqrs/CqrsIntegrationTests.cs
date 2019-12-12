@@ -18,8 +18,6 @@ namespace BoltOn.Tests.Cqrs
 	[Collection("IntegrationTests")]
 	public class CqrsIntegrationTests : IDisposable
 	{
-		// error occurs in the consumer in the 2nd event
-
 		[Fact]
 		public async Task MediatorProcessAsync_WithCqrs_ReturnsResult()
 		{
@@ -300,78 +298,7 @@ namespace BoltOn.Tests.Cqrs
 			Assert.True(studentFlattened.EventsToBeProcessed.Count() == 0);
 			Assert.True(studentFlattened.ProcessedEvents.Count() > 0);
 		}
-
-		[Fact]
-		public async Task MediatorProcessAsync_WithCqrsAndClearEventsEnabledAndFailedBusFor2ndEventOutOf2_FirstEventGetsRemoved()
-		{
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(b =>
-			{
-				b.BoltOnAssemblies(GetType().Assembly);
-				b.BoltOnEFModule();
-				b.BoltOnCqrsModule(o => o.ClearEventsEnabled = true);
-				b.BoltOnMassTransitBusModule();
-			});
-
-			serviceCollection.AddMassTransit(x =>
-			{
-				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
-				{
-					cfg.ReceiveEndpoint($"{nameof(StudentCreatedEvent)}_queue", ep =>
-					{
-						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<StudentCreatedEvent>>());
-					});
-
-					cfg.ReceiveEndpoint($"{nameof(CqrsEventProcessedEvent)}_queue", ep =>
-					{
-						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CqrsEventProcessedEvent>>());
-					});
-				}));
-			});
-
-			var logger = new Mock<IBoltOnLogger<StudentCreatedEventHandler>>();
-			logger.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			serviceCollection.AddTransient((s) => logger.Object);
-
-			var logger2 = new Mock<IBoltOnLogger<CqrsEventProcessedEventHandler>>();
-			logger2.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			serviceCollection.AddTransient((s) => logger2.Object);
-
-			var eventDispatcher = new Mock<IEventDispatcher>();
-			eventDispatcher.Setup(d => d.DispatchAsync(It.Is<CqrsEventProcessedEvent>(t => t.Id == CqrsConstants.Event3Id), default))
-				.Throws(new Exception());
-			serviceCollection.AddSingleton(eventDispatcher.Object);
-
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-			var mediator = serviceProvider.GetService<IMediator>();
-			var studentId = Guid.NewGuid();
-
-			// act
-			await mediator.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input", RaiseAnotherCreateEvent = true });
-
-			// assert
-			await Task.Delay(1000);
-			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(StudentCreatedEventHandler)} invoked"));
-			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(CqrsEventProcessedEventHandler)} invoked"));
-
-			var eventBag = serviceProvider.GetService<EventBag>();
-			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
-			Assert.True(eventBag.ProcessedEvents.Count == 0);
-
-			var cqrsDbContext = serviceProvider.GetService<CqrsDbContext>();
-			var student = cqrsDbContext.Set<Student>().Find(studentId);
-			Assert.True(student.EventsToBeProcessed.Count() == 0);
-			Assert.True(student.ProcessedEvents.Count() == 0);
-			var studentFlattened = cqrsDbContext.Set<StudentFlattened>().Find(studentId);
-			Assert.True(studentFlattened.EventsToBeProcessed.Count() == 0);
-			Assert.True(studentFlattened.ProcessedEvents.Count() == 0);
-		}
-
+		
 		[Fact]
 		public async Task MediatorProcessAsync_WithCqrsAndFailedBus_EventsDoNotGetProcessed()
 		{

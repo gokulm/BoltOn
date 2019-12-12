@@ -37,7 +37,6 @@
         <Folder Include="Other\" />
         <Folder Include="Bus\" />
         <Folder Include="Utilities\" />
-        <Folder Include="Cqrs\" />
         <Folder Include="Data\CosmosDb\" />
     </ItemGroup>
     <ItemGroup>

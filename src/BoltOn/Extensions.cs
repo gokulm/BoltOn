@@ -20,14 +20,13 @@ namespace BoltOn
 			Bootstrapper.Instance.RunPostRegistrationTasks(serviceProvider);
 		}
 
-		public static BoltOnOptions BoltOnCqrsModule(this BoltOnOptions boltOnOptions, Action<BoltOnCqrsOptions> action = null)
-		{
-			var options = new BoltOnCqrsOptions();
+		public static BoltOnOptions BoltOnCqrsModule(this BoltOnOptions boltOnOptions, Action<CqrsOptions> action = null)
+        {
+            boltOnOptions.IsCqrsEnabled = true;
+			var options = new CqrsOptions();
 			action?.Invoke(options);
-			options.IsEnabled = true;
-			boltOnOptions.CqrsOptions = options;
-
-			return boltOnOptions;
+            Bootstrapper.Instance.OtherOptions.Add(options);
+            return boltOnOptions;
 		}
 	}
 }

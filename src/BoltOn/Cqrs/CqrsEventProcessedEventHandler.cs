@@ -33,11 +33,11 @@ namespace BoltOn.Cqrs
 			_logger.Debug($"{nameof(CqrsEventProcessedEventHandler)} invoked");
 			var getRepositoryMethod = _cqrsRepositoryFactory.GetType().GetMethod("GetRepository");
 
-			await RemoveEventsToBeProcessed(request, getRepositoryMethod, cancellationToken);
-			await RemoveProcessedEvents(request, getRepositoryMethod, cancellationToken);
+			await RemoveEventToBeProcessed(request, getRepositoryMethod, cancellationToken);
+			await RemoveProcessedEvent(request, getRepositoryMethod, cancellationToken);
 		}
 
-		private async Task RemoveEventsToBeProcessed(CqrsEventProcessedEvent request, System.Reflection.MethodInfo getRepositoryMethod, CancellationToken cancellationToken)
+		private async Task RemoveEventToBeProcessed(CqrsEventProcessedEvent request, System.Reflection.MethodInfo getRepositoryMethod, CancellationToken cancellationToken)
 		{
 			_logger.Debug($"Getting source entity repository. SourceTypeName: {request.SourceTypeName}");
 			var sourceEntityType = Type.GetType(request.SourceTypeName);
@@ -62,7 +62,7 @@ namespace BoltOn.Cqrs
 			}
 		}
 
-		private async Task RemoveProcessedEvents(CqrsEventProcessedEvent request, System.Reflection.MethodInfo getRepositoryMethod, CancellationToken cancellationToken)
+		private async Task RemoveProcessedEvent(CqrsEventProcessedEvent request, System.Reflection.MethodInfo getRepositoryMethod, CancellationToken cancellationToken)
 		{
 			_logger.Debug($"Getting destination entity repository. DestinationTypeName: {request.DestinationTypeName}");
 			var destinationEntityType = Type.GetType(request.DestinationTypeName);

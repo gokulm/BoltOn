@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BoltOn.Bootstrapping;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
@@ -13,21 +14,23 @@ namespace BoltOn.Cqrs
 		private readonly EventBag _eventBag;
 		private readonly IBoltOnLogger<CqrsInterceptor> _logger;
 		private readonly IEventDispatcher _eventDispatcher;
+        private readonly CqrsOptions _cqrsOptions;
 
-		public CqrsInterceptor(EventBag eventBag, IBoltOnLogger<CqrsInterceptor> logger,
-			IEventDispatcher eventDispatcher)
+        public CqrsInterceptor(EventBag eventBag, IBoltOnLogger<CqrsInterceptor> logger,
+			IEventDispatcher eventDispatcher, CqrsOptions cqrsOptions)
 		{
 			_eventBag = eventBag;
 			_logger = logger;
 			_eventDispatcher = eventDispatcher;
-		}
+            _cqrsOptions = cqrsOptions;
+        }
 
-		public async Task<TResponse> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken,
-			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
+		public async Task<TResponse> RunAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken,
+			Func<TRequest, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
 			var response = await next(request, cancellationToken);
 			await DispatchEventsToBeProcessed(cancellationToken);
-			if (Bootstrapping.Bootstrapper.Instance.Options.CqrsOptions.ClearEventsEnabled)
+			if (_cqrsOptions.ClearEventsEnabled)
 				await DispatchProcessedEvents(cancellationToken);
 
 			return response;

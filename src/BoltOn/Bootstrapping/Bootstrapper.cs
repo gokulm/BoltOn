@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -16,6 +17,7 @@ namespace BoltOn.Bootstrapping
 		private IServiceProvider _serviceProvider;
 		private bool _isBolted, _isAppCleaned, _isTightened;
 		private RegistrationTaskContext _registrationTaskContext;
+        private List<object> _options = new List<object>();
 
 		private Bootstrapper()
 		{
@@ -55,7 +57,9 @@ namespace BoltOn.Bootstrapping
 			private set;
 		}
 
-		internal IReadOnlyList<Assembly> Assemblies { get; private set; }
+        internal List<object> OtherOptions { get; } = new List<object>();
+
+        internal IReadOnlyList<Assembly> Assemblies { get; private set; }
 
 		internal void BoltOn(IServiceCollection serviceCollection, BoltOnOptions options, Assembly callingAssembly = null)
 		{
