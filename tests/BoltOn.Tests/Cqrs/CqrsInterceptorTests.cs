@@ -38,12 +38,12 @@ namespace BoltOn.Tests.Cqrs
             var cqrsOptions = autoMocker.GetMock<CqrsOptions>();
             cqrsOptions.Setup(s => s.ClearEventsEnabled).Returns(true);
 
-            Func<TestInterceptorRequest, CancellationToken, Task<string>> nextDelegate =
-                (r, c) => new TestInterceptorRequestHandler().HandleAsync(r, c);
+            Func<IRequest<string>, CancellationToken, Task<string>> nextDelegate =
+                (r, c) => new Mock<IHandler<IRequest<string>, string>>().Object.HandleAsync(r, c);
             var sut = autoMocker.CreateInstance<CqrsInterceptor>();
 
             // act
-            await sut.RunAsync(new TestInterceptorRequest(), default, nextDelegate);
+            await sut.RunAsync(new Mock<IRequest<string>>().Object, default, nextDelegate);
 
             // assert
 
