@@ -41,6 +41,7 @@ namespace BoltOn.Cqrs
 			Guid eventId;
 			try
 			{
+				_logger.Debug("About to dispatch EventsToBeProcessed...");
 				foreach (var @event in _eventBag.EventsToBeProcessed.ToList())
 				{
 					eventId = @event.Id;
@@ -61,6 +62,7 @@ namespace BoltOn.Cqrs
 			Guid eventId;
 			try
 			{
+				_logger.Debug("About to dispatch ProcessedEvents...");
 				foreach (var @event in _eventBag.ProcessedEvents.ToList())
 				{
 					eventId = @event.Id;

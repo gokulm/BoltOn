@@ -78,10 +78,6 @@ namespace BoltOn.Bootstrapping
 				context.AddInterceptor<CqrsInterceptor>();
 				context.Container.AddTransient<IEventDispatcher, EventDispatcher>();
 			}
-			else
-            {
-				context.Container.AddTransient<IEventDispatcher, DefaultEventDispatcher>();
-			}
 
 			context.AddInterceptor<UnitOfWorkInterceptor>();
 		}
