@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using BoltOn.Data;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace BoltOn.Tests.Cqrs
+namespace BoltOn.Tests.Cqrs.Fakes
 {
     public class CqrsRegistrationTask : IRegistrationTask
     {

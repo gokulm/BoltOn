@@ -12,6 +12,7 @@ using BoltOn.Mediator.Pipeline;
 using BoltOn.Cqrs;
 using BoltOn.Data.EF;
 using BoltOn.Data;
+using BoltOn.Tests.Cqrs.Fakes;
 
 namespace BoltOn.Tests.Cqrs
 {

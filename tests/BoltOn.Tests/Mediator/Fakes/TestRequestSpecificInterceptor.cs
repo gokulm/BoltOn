@@ -5,7 +5,7 @@ using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 
-namespace BoltOn.Tests.Mediator
+namespace BoltOn.Tests.Mediator.Fakes
 {
 	public interface IRequestSpecificInterceptor
 	{

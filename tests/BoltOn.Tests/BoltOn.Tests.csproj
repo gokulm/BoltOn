@@ -38,6 +38,8 @@
         <Folder Include="Bus\" />
         <Folder Include="Utilities\" />
         <Folder Include="Data\CosmosDb\" />
+        <Folder Include="Cqrs\Fakes\" />
+        <Folder Include="Mediator\Fakes\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />

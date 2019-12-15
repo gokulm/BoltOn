@@ -5,7 +5,7 @@ using BoltOn.Mediator.Pipeline;
 using BoltOn.Data;
 using BoltOn.Cqrs;
 
-namespace BoltOn.Tests.Cqrs
+namespace BoltOn.Tests.Cqrs.Fakes
 {
 	public class StudentUpdatedEvent : CqrsEvent
 	{

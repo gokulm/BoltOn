@@ -1,7 +1,7 @@
 ﻿using BoltOn.Data.EF;
 using Microsoft.EntityFrameworkCore;
 
-namespace BoltOn.Tests.Cqrs
+namespace BoltOn.Tests.Cqrs.Fakes
 {
     public class CqrsDbContext : BaseDbContext<CqrsDbContext>
     {

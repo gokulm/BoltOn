@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BoltOn.Tests.Cqrs
+namespace BoltOn.Tests.Cqrs.Fakes
 {
     public static class CqrsConstants
     {

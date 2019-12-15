@@ -1,7 +1,7 @@
 ﻿using System;
 using BoltOn.Cqrs;
 
-namespace BoltOn.Tests.Cqrs
+namespace BoltOn.Tests.Cqrs.Fakes
 {
 	public class Student : BaseCqrsEntity
 	{

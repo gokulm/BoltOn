@@ -4,7 +4,7 @@ using BoltOn.Cqrs;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BoltOn.Tests.Cqrs
+namespace BoltOn.Tests.Cqrs.Fakes
 {
     public class CqrsPostRegistrationTask : IPostRegistrationTask
     {

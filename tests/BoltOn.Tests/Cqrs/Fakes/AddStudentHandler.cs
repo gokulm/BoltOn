@@ -5,7 +5,7 @@ using BoltOn.Mediator.Pipeline;
 using BoltOn.Data;
 using System;
 
-namespace BoltOn.Tests.Cqrs
+namespace BoltOn.Tests.Cqrs.Fakes
 {
 	public class AddStudentRequest : IRequest
 	{

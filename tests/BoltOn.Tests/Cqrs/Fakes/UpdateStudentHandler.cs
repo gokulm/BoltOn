@@ -4,7 +4,7 @@ using BoltOn.Logging;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Data;
 
-namespace BoltOn.Tests.Cqrs
+namespace BoltOn.Tests.Cqrs.Fakes
 {
 	public class UpdateStudentRequest : IRequest
 	{

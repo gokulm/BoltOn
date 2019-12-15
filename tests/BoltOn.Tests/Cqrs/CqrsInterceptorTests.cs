@@ -7,6 +7,7 @@ using BoltOn.Bootstrapping;
 using BoltOn.Cqrs;
 using BoltOn.Logging;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.Tests.Cqrs.Fakes;
 using Moq;
 using Moq.AutoMock;
 using Xunit;
@@ -68,9 +69,8 @@ namespace BoltOn.Tests.Cqrs
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Dispatching failed. Id: {failedId}"));
 			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing processed event. Id: {failedId2} " +
 					$"SourceType: {typeof(Student).Name}. DestinationType: {typeof(Student).Name}"));
-
+			Assert.True(eventBag.Object.ProcessedEvents.Count == 2);
 		}
-
 
 		[Fact]
 		public async Task RunAsync_Failed2ndProcessedEventOutOf2Events_2ndEventDoesNotGetRemoved()
@@ -126,22 +126,58 @@ namespace BoltOn.Tests.Cqrs
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing processed event. Id: {failedId2} " +
 					$"SourceType: {typeof(Student).Name}. DestinationType: {typeof(Student).Name}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Dispatching failed. Id: {failedId2}"));
+			Assert.True(eventBag.Object.ProcessedEvents.Count == 1);
+		}
+
+		[Fact]
+		public async Task RunAsync_ClearEventsNotEnabled_EventsDoNotGetRemoved()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var failedId = Guid.NewGuid();
+			var failedId2 = Guid.NewGuid();
+			var eventBag = autoMocker.GetMock<EventBag>();
+			eventBag.Setup(s => s.ProcessedEvents)
+				.Returns(new List<ICqrsEvent>
+				{
+					new StudentCreatedEvent
+					{
+						Id = failedId,
+						SourceTypeName = typeof(Student).Name,
+						DestinationTypeName = typeof(Student).Name
+					},
+					new StudentUpdatedEvent
+					{
+						Id = failedId2,
+						SourceTypeName = typeof(Student).Name,
+						DestinationTypeName = typeof(Student).Name
+					},
+				});
+			var logger = autoMocker.GetMock<IBoltOnLogger<CqrsInterceptor>>();
+			logger.Setup(s => s.Debug(It.IsAny<string>()))
+				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+
+			var cqrsOptions = autoMocker.GetMock<CqrsOptions>();
+			cqrsOptions.Setup(s => s.ClearEventsEnabled).Returns(false);
+
+			Func<IRequest<string>, CancellationToken, Task<string>> nextDelegate =
+				(r, c) => new Mock<IHandler<IRequest<string>, string>>().Object.HandleAsync(r, c);
+			var sut = autoMocker.CreateInstance<CqrsInterceptor>();
+
+			// act
+			await sut.RunAsync(new Mock<IRequest<string>>().Object, default, nextDelegate);
+
+			// assert
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										"About to dispatch EventsToBeProcessed..."));
+			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										"About to dispatch ProcessedEvents..."));
+			Assert.True(eventBag.Object.ProcessedEvents.Count == 2);
 		}
 
 		public void Dispose()
 		{
-		}
-	}
-
-	public class TestInterceptorRequest : IRequest<string>
-	{
-	}
-
-	public class TestInterceptorRequestHandler : IHandler<TestInterceptorRequest, string>
-	{
-		public Task<string> HandleAsync(TestInterceptorRequest request, CancellationToken cancellationToken)
-		{
-			return Task.FromResult(string.Empty);
+			CqrsTestHelper.LoggerStatements.Clear();
 		}
 	}
 }

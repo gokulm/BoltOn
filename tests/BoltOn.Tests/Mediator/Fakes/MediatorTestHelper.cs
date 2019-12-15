@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BoltOn.Tests.Mediator
+namespace BoltOn.Tests.Mediator.Fakes
 {
 	public class MediatorTestHelper
     {
