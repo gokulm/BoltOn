@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-        <PackageVersion>0.4.0</PackageVersion>
+        <PackageVersion>0.4.1</PackageVersion>
         <Authors>Gokulnath Murugesan</Authors>
         <Owners>Gokulnath Murugesan</Owners>
         <PackageProjectUrl>https://github.com/gokulm/BoltOn</PackageProjectUrl>
