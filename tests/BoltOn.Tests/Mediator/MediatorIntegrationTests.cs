@@ -6,6 +6,7 @@ using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Overrides.Mediator;
+using BoltOn.Tests.Mediator.Fakes;
 using BoltOn.Tests.Other;
 using BoltOn.Tests.UoW;
 using BoltOn.UoW;
@@ -18,13 +19,6 @@ namespace BoltOn.Tests.Mediator
 	[Collection("IntegrationTests")]
 	public class MediatorIntegrationTests : IDisposable
 	{
-		public MediatorIntegrationTests()
-		{
-			Bootstrapper
-				.Instance
-				.Dispose();
-		}
-
 		[Fact]
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{

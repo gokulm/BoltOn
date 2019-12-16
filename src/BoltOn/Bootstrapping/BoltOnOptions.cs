@@ -7,16 +7,11 @@ namespace BoltOn.Bootstrapping
 	{
 		internal List<Assembly> AssembliesToBeIncluded { get; set; } = new List<Assembly>();
 
-		internal bool IsCqrsEnabled { get; private set; }
+        internal bool IsCqrsEnabled { get; set; }
 
-		public void BoltOnAssemblies(params Assembly[] assemblies)
+        public void BoltOnAssemblies(params Assembly[] assemblies)
 		{
 			AssembliesToBeIncluded.AddRange(assemblies);
-		}
-
-		public void BoltOnCqrsModule()
-		{
-			IsCqrsEnabled = true;
 		}
 	}
 }

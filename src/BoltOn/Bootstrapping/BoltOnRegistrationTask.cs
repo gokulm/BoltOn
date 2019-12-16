@@ -52,6 +52,11 @@ namespace BoltOn.Bootstrapping
 			serviceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
 			serviceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
 			serviceCollection.AddScoped<EventBag>();
+
+            foreach (var option in Bootstrapper.Instance.OtherOptions)
+            {
+                serviceCollection.AddSingleton(option.GetType(), option);
+            }
 		}
 
 		public void RegisterMediator(RegistrationTaskContext context)
@@ -72,10 +77,6 @@ namespace BoltOn.Bootstrapping
 			{
 				context.AddInterceptor<CqrsInterceptor>();
 				context.Container.AddTransient<IEventDispatcher, EventDispatcher>();
-			}
-			else
-			{
-				context.Container.AddTransient<IEventDispatcher, DefaultEventDispatcher>();
 			}
 
 			context.AddInterceptor<UnitOfWorkInterceptor>();

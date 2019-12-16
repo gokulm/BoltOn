@@ -1,19 +1,16 @@
 ﻿using System;
 using BoltOn.Bootstrapping;
-using BoltOn.Data;
 using BoltOn.Data.EF;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Overrides.Mediator;
-using BoltOn.Overrides.UoW;
-using BoltOn.Tests.Mediator;
 using BoltOn.Tests.UoW;
 using BoltOn.UoW;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
-namespace BoltOn.Tests.Other
+namespace BoltOn.Tests.Mediator.Fakes
 {
 	public class MediatorRegistrationTask : IRegistrationTask
 	{

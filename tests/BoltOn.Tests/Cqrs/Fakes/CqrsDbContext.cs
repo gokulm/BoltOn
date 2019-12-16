@@ -1,7 +1,7 @@
 ﻿using BoltOn.Data.EF;
 using Microsoft.EntityFrameworkCore;
 
-namespace BoltOn.Tests.Cqrs
+namespace BoltOn.Tests.Cqrs.Fakes
 {
     public class CqrsDbContext : BaseDbContext<CqrsDbContext>
     {
@@ -11,8 +11,8 @@ namespace BoltOn.Tests.Cqrs
 
         protected override void ApplyConfigurations(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new TestCqrsWriteEntityMapping());
-            modelBuilder.ApplyConfiguration(new TestCqrsReadEntityMapping());
+            modelBuilder.ApplyConfiguration(new StudentMapping());
+            modelBuilder.ApplyConfiguration(new StudentFlattenedMapping());
         }
     }
 }

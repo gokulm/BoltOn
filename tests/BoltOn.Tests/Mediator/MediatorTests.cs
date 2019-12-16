@@ -9,6 +9,7 @@ using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Overrides.Mediator;
+using BoltOn.Tests.Mediator.Fakes;
 using BoltOn.Tests.Other;
 using BoltOn.UoW;
 using BoltOn.Utilities;

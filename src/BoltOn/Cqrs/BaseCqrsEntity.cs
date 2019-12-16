@@ -7,14 +7,30 @@ namespace BoltOn.Cqrs
 {
 	public abstract class BaseCqrsEntity : BaseEntity<Guid>
 	{
-		public HashSet<CqrsEvent> EventsToBeProcessed { get; set; } = new HashSet<CqrsEvent>();
+		private HashSet<ICqrsEvent> _eventsToBeProcessed = new HashSet<ICqrsEvent>();
 
-		public HashSet<CqrsEvent> ProcessedEvents { get; set; } = new HashSet<CqrsEvent>();
+		private HashSet<ICqrsEvent> _processedEvents = new HashSet<ICqrsEvent>();
+
+		public virtual IEnumerable<ICqrsEvent> EventsToBeProcessed
+		{
+			get => _eventsToBeProcessed;
+			internal set => _eventsToBeProcessed = value == null
+				? new HashSet<ICqrsEvent>()
+				: new HashSet<ICqrsEvent>(value);
+		}
+
+		public virtual IEnumerable<ICqrsEvent> ProcessedEvents
+		{
+			get => _processedEvents;
+			internal set => _processedEvents = value == null
+				? new HashSet<ICqrsEvent>()
+				: new HashSet<ICqrsEvent>(value);
+		}
 
 		protected bool RaiseEvent<TEvent>(TEvent @event)
-			where TEvent : CqrsEvent
+			where TEvent : ICqrsEvent
 		{
-			if (EventsToBeProcessed.Any(c => c.Id == @event.Id))
+			if (_eventsToBeProcessed.Any(c => c.Id == @event.Id))
 				return false;
 
 			if (@event.Id == Guid.Empty)
@@ -25,23 +41,36 @@ namespace BoltOn.Cqrs
 			// events with CreatedDate == null are filtered in the repository. this is used 
 			// to differentiate events that were added in the current request and the existing events
 			@event.CreatedDate = null;
-			EventsToBeProcessed.Add(@event);
+			_eventsToBeProcessed.Add(@event);
 			return true;
 		}
 
 		protected bool ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action)
-			where TEvent : CqrsEvent
+			where TEvent : ICqrsEvent
 		{
-			if (ProcessedEvents.Any(c => c.Id == @event.Id))
+			if (_processedEvents.Any(c => c.Id == @event.Id))
 				return false;
 
 			action(@event);
+			@event.DestinationId = Id;
 			@event.DestinationTypeName = GetType().AssemblyQualifiedName;
 			// events with ProcessedDate == null are filtered in the repository. this is used 
 			// to differentiate events that were added in the current request and the existing events
 			@event.ProcessedDate = null;
-			ProcessedEvents.Add(@event);
+			_processedEvents.Add(@event);
 			return true;
+		}
+
+		internal void RemoveEventToBeProcessed<TEvent>(TEvent @event)
+			where TEvent : ICqrsEvent
+		{
+			_eventsToBeProcessed.Remove(@event);
+		}
+
+		internal void RemoveProcessedEvent<TEvent>(TEvent @event)
+			where TEvent : ICqrsEvent
+		{
+			_processedEvents.Remove(@event);
 		}
 	}
 }

@@ -27,8 +27,8 @@ namespace BoltOn.Mediator.Interceptors
 		{
 		}
 
-		public override async Task<TResponse> ExecuteAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken,
-			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next)
+		public override async Task<TResponse> ExecuteAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken,
+			Func<TRequest, CancellationToken, Task<TResponse>> next)
 		{
 			var stopwatch = new Stopwatch();
 			_logger.Debug($"StopwatchInterceptor started at {_boltOnClock.Now}");

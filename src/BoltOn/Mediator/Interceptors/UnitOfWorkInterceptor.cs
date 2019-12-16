@@ -27,12 +27,12 @@ namespace BoltOn.Mediator.Interceptors
 			_uowOptionsBuilder = uowOptionsBuilder;
 		}
 
-		public async override Task<TResponse> ExecuteAsync<TRequest, TResponse>(IRequest<TResponse> request, 
+		public override async Task<TResponse> ExecuteAsync<TRequest, TResponse>(TRequest request, 
 			CancellationToken cancellationToken,
-			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next)
+			Func<TRequest, CancellationToken, Task<TResponse>> next)
 		{
 			_logger.Debug($"UnitOfWorkInterceptor started");
-			var unitOfWorkOptions = _uowOptionsBuilder.Build(request);
+			var unitOfWorkOptions = _uowOptionsBuilder.Build(request as IRequest<TResponse>);
 			_logger.Debug($"About to start UoW with IsolationLevel: {unitOfWorkOptions.IsolationLevel.ToString()}");
 			TResponse response;
 			using (_unitOfWork = _unitOfWorkManager.Get(unitOfWorkOptions))

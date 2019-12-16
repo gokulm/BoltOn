@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using BoltOn.Mediator.Interceptors;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +17,7 @@ namespace BoltOn.Bootstrapping
 		private IServiceProvider _serviceProvider;
 		private bool _isBolted, _isAppCleaned, _isTightened;
 		private RegistrationTaskContext _registrationTaskContext;
+        private List<object> _options = new List<object>();
 
 		private Bootstrapper()
 		{
@@ -54,7 +57,9 @@ namespace BoltOn.Bootstrapping
 			private set;
 		}
 
-		internal IReadOnlyList<Assembly> Assemblies { get; private set; }
+        internal List<object> OtherOptions { get; } = new List<object>();
+
+        internal IReadOnlyList<Assembly> Assemblies { get; private set; }
 
 		internal void BoltOn(IServiceCollection serviceCollection, BoltOnOptions options, Assembly callingAssembly = null)
 		{
@@ -141,7 +146,10 @@ namespace BoltOn.Bootstrapping
 		{
 			foreach (var interceptorImplementation in _registrationTaskContext.InterceptorTypes)
 			{
-				_serviceCollection.AddInterceptor(interceptorImplementation);
+				var serviceDescriptor = _serviceCollection.FirstOrDefault(descriptor =>
+							descriptor.ServiceType == interceptorImplementation);
+				if (serviceDescriptor == null)
+					_serviceCollection.AddTransient(typeof(IInterceptor), interceptorImplementation);
 			}
 		}
 

@@ -11,6 +11,7 @@ using System.Linq;
 using BoltOn.Bootstrapping;
 using MassTransit;
 using BoltOn.Tests.Mediator;
+using BoltOn.Tests.Mediator.Fakes;
 
 namespace BoltOn.Tests.Bus
 {

@@ -5,7 +5,7 @@ using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 
-namespace BoltOn.Tests.Mediator
+namespace BoltOn.Tests.Mediator.Fakes
 {
 	public interface IRequestSpecificInterceptor
 	{
@@ -24,8 +24,8 @@ namespace BoltOn.Tests.Mediator
         {
         }
 
-        public override async Task<TResponse> ExecuteAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken,
-            Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next)
+        public override async Task<TResponse> ExecuteAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken,
+            Func<TRequest, CancellationToken, Task<TResponse>> next)
         {
             _logger.Debug("TestRequestSpecificInterceptor Started");
             var response = await next.Invoke(request, cancellationToken);

@@ -4,6 +4,7 @@ using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Tests.Common;
+using BoltOn.Tests.Mediator.Fakes;
 using BoltOn.Tests.Other;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
