@@ -4,7 +4,6 @@ using System.Linq;
 using BoltOn.Bootstrapping;
 using BoltOn.Other;
 using BoltOn.Tests.Common;
-using BoltOn.Tests.Other;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 

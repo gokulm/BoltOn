@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using BoltOn.Data;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace BoltOn.Tests.Cqrs
+namespace BoltOn.Tests.Cqrs.Fakes
 {
-    public class TestCqrsRegistrationTask : IRegistrationTask
+    public class CqrsRegistrationTask : IRegistrationTask
     {
         public void Run(RegistrationTaskContext context)
         {
@@ -17,8 +17,8 @@ namespace BoltOn.Tests.Cqrs
                 options.ConfigureWarnings(x => x.Ignore(RelationalEventId.AmbientTransactionWarning));
             });
 
-            context.Container.AddTransient<IRepository<TestCqrsWriteEntity>, Repository<TestCqrsWriteEntity, CqrsDbContext>>();
-            context.Container.AddTransient<IRepository<TestCqrsReadEntity>, Repository<TestCqrsReadEntity, CqrsDbContext>>();
+            context.Container.AddTransient<IRepository<Student>, Repository<Student, CqrsDbContext>>();
+            context.Container.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, CqrsDbContext>>();
         }
     }
 }

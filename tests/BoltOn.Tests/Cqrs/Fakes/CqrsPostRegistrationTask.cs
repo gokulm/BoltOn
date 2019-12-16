@@ -4,38 +4,38 @@ using BoltOn.Cqrs;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BoltOn.Tests.Cqrs
+namespace BoltOn.Tests.Cqrs.Fakes
 {
-    public class TestCqrsPostRegistrationTask : IPostRegistrationTask
+    public class CqrsPostRegistrationTask : IPostRegistrationTask
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public TestCqrsPostRegistrationTask(IServiceProvider serviceProvider)
+        public CqrsPostRegistrationTask(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
         public void Run(PostRegistrationTaskContext context)
         {
-            var testDbContext = _serviceProvider.GetService<CqrsDbContext>();
-            testDbContext.Database.EnsureDeleted();
-            testDbContext.Database.EnsureCreated();
+            var cqrsDbContext = _serviceProvider.GetService<CqrsDbContext>();
+            cqrsDbContext.Database.EnsureDeleted();
+            cqrsDbContext.Database.EnsureCreated();
 
-            testDbContext.Set<TestCqrsWriteEntity>().Add(new TestCqrsWriteEntity
+            cqrsDbContext.Set<Student>().Add(new Student
             {
                 Id = CqrsConstants.EntityId,
-                Input = "value to be replaced"
+                Name = "value to be replaced"
             });
-            testDbContext.Set<TestCqrsReadEntity>().Add(new TestCqrsReadEntity
-            {
+            cqrsDbContext.Set<StudentFlattened>().Add(new StudentFlattened
+			{
                 Id = CqrsConstants.EntityId,
-                Input1 = "value to be replaced",
+                FirstName = "value to be replaced",
                 ProcessedEvents = new HashSet<CqrsEvent>
                 {
                     new CqrsEvent { Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId) }
                 }
             });
-            testDbContext.SaveChanges();
+            cqrsDbContext.SaveChanges();
         }
     }
 }

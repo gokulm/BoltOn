@@ -98,6 +98,7 @@ namespace BoltOn.Data.EF
 				foreach (var @event in processedEvents)
 				{
 					@event.ProcessedDate = _boltOnClock.Now;
+					_eventBag.ProcessedEvents.Add(@event);
 				}
 			}
 		}

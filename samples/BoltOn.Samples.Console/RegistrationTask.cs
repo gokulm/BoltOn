@@ -9,6 +9,7 @@ using BoltOn.Samples.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using BoltOn.Bootstrapping;
 using BoltOn.Data.CosmosDb;
+using BoltOn.Cqrs;
 
 namespace BoltOn.Samples.Console
 {
@@ -37,7 +38,12 @@ namespace BoltOn.Samples.Console
                     {
                         ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<StudentUpdatedEvent>>());
                     });
-                }));
+
+					cfg.ReceiveEndpoint($"{nameof(CqrsEventProcessedEvent)}_queue", ep =>
+					{
+						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CqrsEventProcessedEvent>>());
+					});
+				}));
             });
 
             container.AddDbContext<SchoolDbContext>(options =>
@@ -47,11 +53,12 @@ namespace BoltOn.Samples.Console
 
 			container.AddCosmosDb<SchoolCosmosDbOptions>(options =>
 			{
-				options.Uri = "https://bolton2.documents.azure.com:443/";
-				options.AuthorizationKey = "CJNc3RPjK3ACzRBtjOg56rJ774Y3ncyvJKCl5X2pfpMVe5wLPkr2v80pN5wWjhmZXYA0blOEsIDT4MmQifjtrg==";
+				options.Uri = "https://bolton.documents.azure.com:443/";
+				options.AuthorizationKey = "XZZAFWzdJoqG5IoJGUHIFGoYMP4rCof5o60wbMSIyzEZBwID4POEmCDRLUNscPh2K9VcV0Ccm7aGsLnvccGj7A==";
 				options.DatabaseName = "School";
 			});
 
+			container.AddTransient<IRepository<Student>, Data.EF.Repository<Student, SchoolDbContext>>();
 			container.AddTransient<IRepository<StudentFlattened>, Data.EF.Repository<StudentFlattened, SchoolDbContext>>();
 			//container.AddTransient<IRepository<StudentFlattened>, Data.CosmosDb.Repository<StudentFlattened, SchoolCosmosDbOptions>>();
 		}

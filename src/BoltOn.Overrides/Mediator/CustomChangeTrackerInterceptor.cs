@@ -20,8 +20,8 @@ namespace BoltOn.Overrides.Mediator
 			_changeTrackerContext = changeTrackerContext;
 		}
 
-		public async Task<TResponse> RunAsync<TRequest, TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken, 
-			Func<IRequest<TResponse>, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
+		public async Task<TResponse> RunAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken, 
+			Func<TRequest, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
 			_logger.Debug($"Entering {nameof(CustomChangeTrackerInterceptor)}...");
 			_changeTrackerContext.IsQueryRequest = request is IQuery<TResponse> || request is IQueryUncommitted<TResponse>;

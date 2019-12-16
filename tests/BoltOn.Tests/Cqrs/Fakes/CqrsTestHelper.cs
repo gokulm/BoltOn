@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BoltOn.Tests.Cqrs
+namespace BoltOn.Tests.Cqrs.Fakes
 {
     public static class CqrsTestHelper
     {

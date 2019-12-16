@@ -8,9 +8,9 @@ namespace BoltOn.Cqrs
 	public interface IEventDispatcher
 	{
 		Task DispatchAsync(ICqrsEvent @event, CancellationToken cancellationToken = default);
-	}
+    }
 
-	public class EventDispatcher : IEventDispatcher
+    public class EventDispatcher : IEventDispatcher
 	{
 		private readonly IBoltOnLogger<EventDispatcher> _logger;
 		private readonly IBus _bus;

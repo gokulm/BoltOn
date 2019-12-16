@@ -27,7 +27,6 @@
     </PropertyGroup>
     <ItemGroup>
         <Folder Include="Logging\" />
-        <Folder Include="Bootstrapping\" />
         <Folder Include="Utilities\" />
         <Folder Include="UoW\" />
         <Folder Include="Other\" />

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Tests.Other;
 
-namespace BoltOn.Tests.Mediator
+namespace BoltOn.Tests.Mediator.Fakes
 {
 	public class GetStudentRequest : IQuery<Student>
 	{
