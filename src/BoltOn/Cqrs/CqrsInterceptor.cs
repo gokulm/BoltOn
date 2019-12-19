@@ -22,7 +22,7 @@ namespace BoltOn.Cqrs
 			IEventPurger eventPurger)
 		{
 			_eventBag = eventBag;
-			_logger = logger;
+			_logger = logger; 
 			_eventDispatcher = eventDispatcher;
 			_cqrsOptions = cqrsOptions;
 			_eventPurger = eventPurger;
