@@ -3,8 +3,7 @@ To understand more about the Command Query Responsibility Segregation (CQRS) pat
 In order to implement CQRS, you need to do the following:
 
 * Install **BoltOn.Data.EF** or **BoltOn.Data.CosmosDb** NuGet package depending on your read/write data store.
-* Install **BoltOn.Bus.MassTransit** NuGet package. 
-* Refer to [Data](../data) and [Bus](../bus) documentation to enable the corresponding modules.
+* Install **BoltOn.Bus.MassTransit** NuGet package. Refer to [Data](../data) and [Bus](../bus) documentation to enable the corresponding modules.
 * Enable CQRS by calling BoltOnCqrsModule() in BoltOn() method.
 
 Like this:
@@ -20,8 +19,7 @@ Like this:
 
 * Configure EF DbContext (if you're using SQL) and MassTransit Bus.
 * Create your domain entity class and inherit [`BaseCqrsEntity`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/BaseCqrsEntity.cs), which will force your entity's Id property to be of type Guid. 
-* Create EF mapping configuration class by inheriting [`BaseCqrsEntityMapping`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseCqrsEntityMapping.cs). This takes care of serializing/deserializing EventsToBeProcessed and ProcessedEvents collections. This is done using EF's [Value Conversions](https://docs.microsoft.com/en-us/ef/core/modeling/value-conversions).
-* Events get triggered from `RaiseEvent<TEvent>(TEvent @event)` method in the `BaseCqrsEntity` and they get processed in `ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action)`.
+* Create EF mapping configuration class by inheriting [`BaseCqrsEntityMapping`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseCqrsEntityMapping.cs). This takes care of serializing/deserializing EventsToBeProcessed and ProcessedEvents collections. This is done using EF's [Value Conversions](https://docs.microsoft.com/en-us/ef/core/modeling/value-conversions). Events get triggered from `RaiseEvent<TEvent>(TEvent @event)` method in the `BaseCqrsEntity` and they get processed in `ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action)`.
 * Create your events and inherit `CqrsEvent`, which implements `ICqrsEvent`, and which inturn implements Mediator's `IRequest`, and thus the events can be handled using `Mediator`.
 * Create your request and handlers, and then use the `Mediator` to process your request. Please refer to [Mediator](../mediator) documentation to create handlers.
 * Register `IRepository<TEntity>` to [EF Repository](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs) or [CosmosDb Repository](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.CosmosDb/Repository.cs).
@@ -30,7 +28,7 @@ How does it work?
 -----------------
 The best way to understand the implementation is by looking into [BoltOn.Samples.WebApi](https://github.com/gokulm/BoltOn/tree/master/samples/BoltOn.Samples.WebApi) project's `StudentsController` and by going thru GET, POST and PUT student endpoints, corresponding requests and their handlers. 
 
-Though separate databases could be used for commands and queries i.e., writes and reads respectively, in this sample we have used only one database but different tables Student and StudentFlattened. You can switch the read/write store to SQL or CosmosDb (or any other database that will be supported in the future) using `IRepository` registration.
+Though separate databases could be used for commands and queries i.e., writes and reads respectively, in this sample we have used only one database but different tables Student and StudentFlattened. You can **switch the read/write store to SQL or CosmosDb** (or any other database that will be supported in the future) by just changing the `IRepository` registration.
 
 * The events that get raised from your entities (that inherit BaseCqrsEntity) get added to EventsToBeProcessed collection. Two entities [`Student`](https://github.com/gokulm/BoltOn/blob/master/samples/BoltOn.Samples.Application/Entities/Student.cs) and [`StudentFlattened`](https://github.com/gokulm/BoltOn/blob/master/samples/BoltOn.Samples.Application/Entities/StudentFlattened.cs) inherit `BaseCqrsEntity`. Student entity is saved in Student table with foreign-key constraint to StudentType table. Commands (aka writes) go to this table. StudentFlattened entity is saved in StudentFlattened table, which is denormalized without any foreign-key constraints. Queries (aka reads) go to this table. Private and internal constructors are added to both the entities. The private constructor is to support EF and the internal constructor is to allow instantiation of the entity with appropriate request object as parameter.
 * Student's internal ctor is called from `CreateStudentHandler`, which gets invoked by `Mediator` from StudentController's POST call.
@@ -131,7 +129,7 @@ Here is the StudentFlattened entity:
 * If `IRepository<StudentFlattened>` is registered to inject CosmosDb `Repository` and appropriate CosmosDb configurations are added, data can be synced to CosmosDb.
 
 **Note:**
-
+<br />
 * To purge the events to be processed right after dispatching them, set CqrsOptions' **PurgeEventsToBeProcessed** property to true while bootstraping the app.
 
     Like this:
@@ -145,4 +143,5 @@ Here is the StudentFlattened entity:
             b.BoltOnCqrsModule(o => o.PurgeEventsToBeProcessed = true);
         });
 
+* In case if the RabbitMq is down, EventsToBeProcessed will get persisted along with the entity, but dispatching will fail, so it's better to write an utility to go over the write store and dispatch all the unprocessed events in the EventsToBeProcessed collection of every entity. Or, implement some sort of [outbox pattern](https://microservices.io/patterns/data/transactional-outbox.html). 
 * Over a period of time, **ProcessedEvents** collection could bloat the read entity, so it's better to write an utility to clear them periodically.
