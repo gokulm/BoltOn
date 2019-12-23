@@ -1,4 +1,40 @@
-To understand more about the Command Query Responsibility Segregation (CQRS) pattern and when to use it, please go over [this post](https://martinfowler.com/bliki/CQRS.html). Most of the CQRS implementations found on the internet mention only about separating the command and the query data stores, but don't mention anything about keeping those two data stores in sync, which is the challenging part, BoltOn's CQRS implementation covers it. The core implementation was majorly inspired by [these series of posts](https://jimmybogard.com/life-beyond-transactions-implementation-primer/).
+Command Query Responsibility Segregation (CQRS) pattern derives from the principle [Command Query Separation](https://martinfowler.com/bliki/CommandQuerySeparation.html), which states that:
+
+<blockquote>
+<p>[E]very method should either be a command that performs an
+action, or a query that returns data to the caller, but not both. In other
+words, Asking a question should not change the answer.</p>
+
+<p>– <cite><a href="https://en.wikipedia.org/wiki/Command%E2%80%93query_separation">Wikipedia</a></cite></p>
+</blockquote>
+
+Command Query Responsibility Separation, or CQRS, takes this principle one step further.
+
+<blockquote>
+<p>CQRS is simply the creation of two objects where there was previously only
+one. The separation occurs based upon whether the methods are a command or
+a query (the same definition that is used by Meyer in Command and Query
+Separation: a command is any method that mutates state and a query is any
+method that returns a value).</p>
+
+<p>– <cite>Greg Young</cite></p>
+</blockquote>
+
+To know more about the CQRS pattern and when to use it, please go over [this post](https://martinfowler.com/bliki/CQRS.html). 
+
+Implementation
+--------------
+Most of the CQRS implementations found on the internet mention only about separating the command and the query data stores, but do not mention anything about keeping those two data stores in sync, which is the most challenging part, but BoltOn's CQRS implementation covers it. 
+
+**Data store synchronization could be handled by the following ways:**
+
+
+1. Using a feature like database mirroring (if SQL server), if both the read and writes stores use the same database technology and schemas
+2. By persisting data in the write store and publishing an event to an enterprise bus; updating the read store could be handled by a subscriber to the event. But, this will be consistent only if persisting to the write store and publishing are part of a single transaction. As most of the buses do not support transactions, if write store persistence is successful and publishing to bus fails, the read store would be out of sync.
+3. By publishing event to an enterprise bus and then persisting data in the write store. But, this also relies on transaction, else write store could be out of sync.
+4. Event sourcing - there are many libraries supporting event sourcing with CQRS.
+
+BoltOn synchronizes data using pub/sub, but without using transactions, it's a slight variation of method 2 mentioned above. The implementation was majorly inspired by [these series of posts](https://jimmybogard.com/life-beyond-transactions-implementation-primer/). Business entity is persisted along with the events raised in the same data store, and then the persisted events get published to the bus. As events are persisted along with the entity, even if the publish fails, events could be republished later on, provided your business is fine with [eventual consistency](https://en.wikipedia.org/wiki/Eventual_consistency). 
 
 In order to implement CQRS, you need to do the following:
 
