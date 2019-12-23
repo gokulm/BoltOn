@@ -34,7 +34,7 @@ Most of the CQRS implementations found on the internet mention only about separa
 3. By publishing event to an enterprise bus and then persisting data in the write store. But, this also relies on transaction, else write store could be out of sync.
 4. Event sourcing - there are many libraries supporting event sourcing with CQRS.
 
-BoltOn synchronizes data using pub/sub, but without using transactions, it's a slight variation of method 2 mentioned above. The implementation was majorly inspired by [these series of posts](https://jimmybogard.com/life-beyond-transactions-implementation-primer/). Business entity is persisted along with the events raised in the same data store, and then the persisted events get published to the bus. As events are persisted along with the entity, even if the publish fails, events could be republished later on, provided your business is fine with [eventual consistency](https://en.wikipedia.org/wiki/Eventual_consistency). 
+BoltOn synchronizes data using pub/sub, but without using transactions, it's a slight variation of method 2 mentioned above. The implementation was majorly inspired by [these series of posts](https://jimmybogard.com/life-beyond-transactions-implementation-primer/). Business entity is persisted along with the events raised in the same data store **as part of a collection within the entity**, and then the persisted events get published to the bus. As events are persisted along with the entity, even if the publish fails, events could be republished later on, provided the business is fine with [eventual consistency](https://en.wikipedia.org/wiki/Eventual_consistency). 
 
 In order to implement CQRS, you need to do the following:
 
@@ -107,7 +107,7 @@ Here is the Student entity:
 * `IRepository<Student>` injected in the `CreateStudentHandler` is registered to use `Repository<Student>`. Please look into the RegistrationTask class in the BoltOn.Samples.WebApi project for all the other registrations.
 * When `AddAsync` of the repository is called in the handler, the repository adds the entity and on while saving changes, the events marked for processing are added to a request scoped object called `EventBag`.
 * If CQRS is enabled in the Startup's BoltOn method, [`CqrsInterceptor`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/CqrsInterceptor.cs) is added to the `Mediator` pipeline. 
-* The intercepor calls [EventDispatcher](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/EventDispatcher.cs) to dispatch events that need to be processed, which inturn publishes events using `IBus`. 
+* The intercepor calls [EventDispatcher](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/EventDispatcher.cs) to dispatch events that need to be processed, which inturn publishes events using `IBus`. You could write your own implementation of `IEventDispatcher` or `IBus` if the built-in classes do not satisfy your needs.
 * Even if the dispatcher or the bus fails, the events to be processed will be persisted along with the entity, as the `CqrsIntercepor` is after the `UnitOfWorkIntercepor`, which takes care of committing the transaction.
 * If there are more than one event to be processed and if one fails, all the subsequent events dispatching gets aborted, so that the order of the events could be maintained.
 * The MassTransit consumer registered to handle `StudentCreatedEvent` in the BoltOn.Samples.Console project's RegistrationTask class handles the event using `StudentCreatedEventHandler` 
@@ -165,8 +165,8 @@ Here is the StudentFlattened entity:
 * If `IRepository<StudentFlattened>` is registered to inject CosmosDb `Repository` and appropriate CosmosDb configurations are added, data can be synced to CosmosDb.
 
 **Note:**
-<br />
-* To purge the events to be processed right after dispatching them, set CqrsOptions' **PurgeEventsToBeProcessed** property to true while bootstraping the app.
+
+* To purge the events to be processed right after dispatching them, set CqrsOptions' **PurgeEventsToBeProcessed** property to true while bootstraping the app. 
 
     Like this:
 
@@ -178,6 +178,8 @@ Here is the StudentFlattened entity:
             b.BoltOnMassTransitBusModule();
             b.BoltOnCqrsModule(o => o.PurgeEventsToBeProcessed = true);
         });
+
+    It's handled using [`EventPurger`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/EventPurger.cs). You could write your own implementation of `IEventPurger` if the built-in purger do not satisfy your needs.
 
 * In case if the RabbitMq is down, EventsToBeProcessed will get persisted along with the entity, but dispatching will fail, so it's better to write an utility to go over the write store and dispatch all the unprocessed events in the EventsToBeProcessed collection of every entity. Or, implement some sort of [outbox pattern](https://microservices.io/patterns/data/transactional-outbox.html). 
 * Over a period of time, **ProcessedEvents** collection could bloat the read entity, so it's better to write an utility to clear them periodically.
