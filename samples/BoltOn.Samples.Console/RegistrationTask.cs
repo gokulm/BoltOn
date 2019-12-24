@@ -38,11 +38,6 @@ namespace BoltOn.Samples.Console
                     {
                         ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<StudentUpdatedEvent>>());
                     });
-
-					cfg.ReceiveEndpoint($"{nameof(CqrsEventProcessedEvent)}_queue", ep =>
-					{
-						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CqrsEventProcessedEvent>>());
-					});
 				}));
             });
 

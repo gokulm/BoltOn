@@ -46,7 +46,7 @@ To create a [Mediator](../mediator) handler with response:
     dotnet new bohanlder -n <request_name> -r <response_type>
 
 **-n:** Specify the request name without Request suffix. If not specified, the folder name will be used as the handler name
-
+<br />
 **-r OR --response:** Specifiy the type of the response like int, Guid etc. If it's a class type, specify the class name, but you have to  create the class
 
 eg.,
