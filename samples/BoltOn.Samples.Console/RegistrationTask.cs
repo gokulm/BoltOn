@@ -49,7 +49,7 @@ namespace BoltOn.Samples.Console
 			container.AddCosmosDb<SchoolCosmosDbOptions>(options =>
 			{
 				options.Uri = "https://bolton.documents.azure.com:443/";
-				options.AuthorizationKey = "XZZAFWzdJoqG5IoJGUHIFGoYMP4rCof5o60wbMSIyzEZBwID4POEmCDRLUNscPh2K9VcV0Ccm7aGsLnvccGj7A==";
+				options.AuthorizationKey = "==";
 				options.DatabaseName = "School";
 			});
 
