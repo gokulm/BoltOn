@@ -1,10 +1,14 @@
-BoltOn is an [open source](https://github.com/gokulm/BoltOn) framework to build any .NET application like Console, MVC, WebAPI, Windows Service etc., with proper separation of concerns.
+[**BoltOn**](https://github.com/gokulm/BoltOn) is an open source application framework which can be used to build any type of .NET applications like Console, MVC, WebAPI, Windows Service etc., with [modularity](https://en.wikipedia.org/wiki/Modular_programming) being the crux of it. Though it doesn't have all the components to call it as an enterprise application framework (EAF) currently, the plan is to make it an EAF eventually. The components are written in such a way that they're modular, thus they can be bolted on with other components and interchanged easily, and hence the name Bolt-On. 
 
 Installation
 ------------
-There are a [couple of packages](https://www.nuget.org/packages?q=BoltOn) for BoltOn available on NuGet. To install BoltOn in your .NET application, type the following command into the Package Manager Console window:
+There are a [couple of packages](https://www.nuget.org/packages?q=BoltOn) for BoltOn available on NuGet, out of which BoltOn package is the core. To install BoltOn in your .NET application, type the following command in the Package Manager Console window:
 
     PM> Install-Package BoltOn
+
+From CLI:
+
+    dotnet add package BoltOn
 
 Configuration
 -------------
@@ -23,7 +27,7 @@ After installing the package, call BoltOn() and TightenBolts() extension methods
 
             public void ConfigureServices(IServiceCollection services)
             {
-                services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                services.AddMvc();
                 services.BoltOn();
             }
 
@@ -35,7 +39,7 @@ After installing the package, call BoltOn() and TightenBolts() extension methods
         }
     }
 
-To use other BoltOn packages and/or add other assemblies, you can add them using options:
+To use other BoltOn packages and/or add other assemblies, add them using options:
 
     services.BoltOn(options =>
     {

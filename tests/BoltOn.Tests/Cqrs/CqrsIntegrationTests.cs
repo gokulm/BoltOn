@@ -99,7 +99,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 
 		[Fact]
-		public async Task MediatorProcessAsync_WithCqrsAndDefaultClearEventsDisabled_DoesNotRemoveEventsToBeProcessedAndProcessedEvents()
+		public async Task MediatorProcessAsync_WithCqrsAndPurgeEventsToBeProcessedDisabled_DoesNotRemoveEventsToBeProcessed()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -131,11 +131,6 @@ namespace BoltOn.Tests.Cqrs
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger.Object);
 
-			var logger2 = new Mock<IBoltOnLogger<CqrsEventProcessedEventHandler>>();
-			logger2.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			serviceCollection.AddTransient((s) => logger2.Object);
-
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var mediator = serviceProvider.GetService<IMediator>();
@@ -148,8 +143,6 @@ namespace BoltOn.Tests.Cqrs
 			await Task.Delay(1000);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(StudentCreatedEventHandler)} invoked"));
-			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(CqrsEventProcessedEventHandler)} invoked"));
 
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
@@ -165,14 +158,14 @@ namespace BoltOn.Tests.Cqrs
 		}
 
 		[Fact]
-		public async Task MediatorProcessAsync_WithCqrsAndClearEventsEnabled_RemovesEventsToBeProcessedAndProcessedEvents()
+		public async Task MediatorProcessAsync_WithCqrsAndPurgeEventsToBeProcessedEnabled_RemovesEventsToBeProcessed()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
 			{
 				b.BoltOnAssemblies(GetType().Assembly);
 				b.BoltOnEFModule();
-				b.BoltOnCqrsModule(o => o.ClearEventsEnabled = true);
+				b.BoltOnCqrsModule(o => o.PurgeEventsToBeProcessed = true);
 				b.BoltOnMassTransitBusModule();
 			});
 
@@ -184,11 +177,6 @@ namespace BoltOn.Tests.Cqrs
 					{
 						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<StudentCreatedEvent>>());
 					});
-
-					cfg.ReceiveEndpoint($"{nameof(CqrsEventProcessedEvent)}_queue", ep =>
-					{
-						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CqrsEventProcessedEvent>>());
-					});
 				}));
 			});
 
@@ -197,10 +185,10 @@ namespace BoltOn.Tests.Cqrs
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger.Object);
 
-			var logger2 = new Mock<IBoltOnLogger<CqrsEventProcessedEventHandler>>();
+			var logger2 = new Mock<IBoltOnLogger<IEventPurger>>();
 			logger2.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			serviceCollection.AddTransient((s) => logger2.Object);
+			serviceCollection.AddSingleton((s) => logger2.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
@@ -215,11 +203,16 @@ namespace BoltOn.Tests.Cqrs
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(StudentCreatedEventHandler)} invoked"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(CqrsEventProcessedEventHandler)} invoked"));
+										$"Getting entity repository. TypeName: {typeof(Student).AssemblyQualifiedName}"));
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"Fetching entity by Id. Id: {studentId}"));
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"Fetched entity. Id: {studentId}"));
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == "Removed event"));
 
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
-			Assert.True(eventBag.ProcessedEvents.Count == 0);
+			Assert.True(eventBag.ProcessedEvents.Count > 0);
 
 			var cqrsDbContext = serviceProvider.GetService<CqrsDbContext>();
 			var student = cqrsDbContext.Set<Student>().Find(studentId);
@@ -227,18 +220,18 @@ namespace BoltOn.Tests.Cqrs
 			Assert.True(student.ProcessedEvents.Count() == 0);
 			var studentFlattened = cqrsDbContext.Set<StudentFlattened>().Find(studentId);
 			Assert.True(studentFlattened.EventsToBeProcessed.Count() == 0);
-			Assert.True(studentFlattened.ProcessedEvents.Count() == 0);
+			Assert.True(studentFlattened.ProcessedEvents.Count() > 0);
 		}
 
 		[Fact]
-		public async Task MediatorProcessAsync_WithClearEventsEnabledAndFailedCqrsProcessedEventHandler_DoesNotRemoveEventsToBeProcessedAndProcessedEvents()
+		public async Task MediatorProcessAsync_WithPurgeEventsToBeProcessedEnabledAndFailedEventPurger_DoesNotRemoveEventsToBeProcessed()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
 			{
 				b.BoltOnAssemblies(GetType().Assembly);
 				b.BoltOnEFModule();
-				b.BoltOnCqrsModule(o => o.ClearEventsEnabled = true);
+				b.BoltOnCqrsModule(o => o.PurgeEventsToBeProcessed = true);
 				b.BoltOnMassTransitBusModule();
 			});
 
@@ -262,11 +255,6 @@ namespace BoltOn.Tests.Cqrs
 			logger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger.Object);
-
-			var logger2 = new Mock<IBoltOnLogger<CqrsEventProcessedEventHandler>>();
-			logger2.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			serviceCollection.AddTransient((s) => logger2.Object);
 
 			var cqrsRepositoryFactory = new Mock<ICqrsRepositoryFactory>();
 			cqrsRepositoryFactory.Setup(s => s.GetRepository<Student>()).Throws(new Exception());
@@ -284,12 +272,10 @@ namespace BoltOn.Tests.Cqrs
 			await Task.Delay(1000);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(StudentCreatedEventHandler)} invoked"));
-			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"{nameof(CqrsEventProcessedEventHandler)} invoked"));
 
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
-			Assert.True(eventBag.ProcessedEvents.Count == 0);
+			Assert.True(eventBag.ProcessedEvents.Count > 0);
 
 			var cqrsDbContext = serviceProvider.GetService<CqrsDbContext>();
 			var student = cqrsDbContext.Set<Student>().Find(studentId);
