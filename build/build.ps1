@@ -1,6 +1,6 @@
 function main
 {
-    dotnet build
+    dotnet build ../BoltOn.sln
 }
 
 main
