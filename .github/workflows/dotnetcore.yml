@@ -17,7 +17,7 @@ jobs:
       with:
         dotnet-version: 2.2.108
     - name: Run build.ps1
-      run: powershell -c './build/build.ps1'
+      run: pwsh -c './build/build.ps1'
     #- name: Build with dotnet
      # run: dotnet build --configuration Release
     #- name: Test with dotnet
