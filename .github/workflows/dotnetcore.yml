@@ -1,6 +1,9 @@
-name: .NET Core
+name: CI
 
-on: [push]
+on: 
+  push:
+    branches:
+      - build
 
 jobs:
   build:
@@ -13,7 +16,9 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 2.2.108
-    - name: Build with dotnet
-      run: dotnet build --configuration Release
-    - name: Test with dotnet
-      run: dotnet test --configuration Release
+    - name: Run build.ps1
+      run: powershell -c './build/build.ps1'
+    #- name: Build with dotnet
+     # run: dotnet build --configuration Release
+    #- name: Test with dotnet
+      #run: dotnet test --configuration Release
