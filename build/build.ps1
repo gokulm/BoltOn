@@ -11,10 +11,10 @@ function Main
     LogDebug "Branch: $_branchName"
     if ($_branchName)  {
         $global:_changedFiles = git diff "origin/$_branchName...HEAD" --no-commit-id --name-only
-        LogInfo "Files Changed:" $_changedFiles
+        LogInfo "Files Changed: $_changedFiles"
 
         $commits = git log -n 5
-        LogInfo "Files Changed:" $_changedFiles
+        LogInfo "Commits: $commits"
     }
 
     BuildAndTest
