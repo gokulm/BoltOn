@@ -6,17 +6,18 @@ $_boltOnModulePath = Join-Path $_scriptDirPath "bolton.psm1"
 
 function Main
 {
-    LogDebug $_branchName
     Import-Module $_boltOnModulePath -Force
+    LogDebug "Branch: $_branchName"
     BuildAndTest
 }
 
 function BuildAndTest
 {
-    LogDebug "About to build the solution..."
+    LogDebug "Building solution..."
     dotnet build --configuration Release
     LogInfo "Built"
-    # dotnet test --configuration Release
+    dotnet test --configuration Release
+    LogInfo "Executed Tests"
 }
 
 Main
