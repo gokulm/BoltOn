@@ -8,25 +8,29 @@ $_changedFiles = ''
 function Main
 {
     Import-Module $_boltOnModulePath -Force
-    LogDebug "Branch: $_branchName"
+    Log-Debug "Branch: $_branchName"
     if ($_branchName)  {
-        $global:_changedFiles = git diff "origin/$_branchName...HEAD" --no-commit-id --name-only
-        LogInfo "Files Changed: $_changedFiles"
-
-        $commits = git log -n 5
-        LogInfo "Commits: $commits"
+        $_changedFiles = git diff "origin/$_branchName...HEAD" --no-commit-id --name-only
+        Log-Info "Files Changed: $_changedFiles"
+    } 
+    
+    $commits = git log -n 5 --pretty=%B
+    foreach ($commit in $commits) {
+        Log-Info $commit
     }
 
-    BuildAndTest
+    # Update-AssemblyInfo './src/BoltOn/'
+    # Update-CsProjVersion './src/BoltOn/BoltOn.csproj' 1.0.0
+    # BuildAndTest
 }
 
 function BuildAndTest
 {
-    LogDebug "Building solution..."
+    Log-Debug "Building solution..."
     dotnet build --configuration Release
-    LogInfo "Built"
+    Log-Info "Built"
     dotnet test --configuration Release
-    LogInfo "Executed Tests"
+    Log-Info "Executed Tests"
 }
 
 Main
