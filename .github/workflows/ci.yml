@@ -16,5 +16,7 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.0.100
+    - name: Branch name
+      run: echo running on branch ${GITHUB_REF##*/}
     - name: Run build.ps1
       run: pwsh './build/build.ps1'
