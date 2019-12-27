@@ -23,60 +23,44 @@ function Get-NugetPackageLatestVersion()
     param(
         [parameter(Mandatory)]$packageName
     )
-    return Find-Package $packageName | select -ExpandProperty Version -first 1
+    return Find-Package $packageName | Select-Object -ExpandProperty Version -first 1
 }
 
-function Update-AssemblyInfo() 
+function Update-AssemblyVersion() 
 {
     param(
-        [parameter(Mandatory)]$path,
-        [switch]$Build,
-        [switch]$Minor
+        [parameter(Mandatory)]$assemblyInfoFilePath,
+        [parameter(Mandatory)]$version
     )
-    if (!$path) {
-        $path = get-location
+    if (!(Test-Path $assemblyInfoFilePath)) {
+        throw "File not found: $assemblyInfoFilePath"
     }
-    Get-ChildItem -path $path -filter "*AssemblyInfo.cs" -Recurse|ForEach-Object {
-        $c = Get-Content $_.FullName
-        $value = [System.text.RegularExpressions.Regex]::Match($c, "[\d]{1,2}\.[\d]{1}\.[\d]*(\.[\d]*)?").Value
-        $version = New-Object System.Version ($value)
-        $newBuild = $version.Build 
-        if ($Build){
-            $newBuild=$version.Build + 1
-        }
-        $newMinor = $version.Minor 
-        if ($Minor){
-            $newMinor=$version.Minor + 1
-            if (!$Build){
-                $newBuild=0
-            }
-        }
-        $newVersion = new-object System.Version ($version.Major, $newMinor, $newBuild, 0)
-        $parentDir=(Get-Item $_.DirectoryName).Parent.Name
-        "$parentDir new version is $newVersion "
-        $result = $c -creplace 'Version\("([^"]*)', "Version(""$newVersion"
-        Set-Content $_.FullName $result
-    }
+    $tempVersion = New-Object System.Version ($version)
+    $newVersion = new-object System.Version ($tempVersion.Major, $tempVersion.Minor, $tempVersion.Build, 0)
+    $content = Get-Content $assemblyInfoFilePath
+    $result = $content -creplace 'Version\("([^"]*)', "Version(""$newVersion"
+    Set-Content $assemblyInfoFilePath $result
+    Log-Info "Updated assembly version to $newVersion"
 }
 
-function Update-CsProjVersion()
+function Update-PackageVersion()
 {
     param(
-        [parameter(Mandatory)]$csprojPath,
-        [string]$newVersion
+        [parameter(Mandatory)]$csprojFilePath,
+        [string]$version
     )
 
-    if(!(Test-Path $csprojPath))
+    if(!(Test-Path $csprojFilePath))
     {
-        Log-Error "csproj file not found"
-        return
+        throw "File not found: $csprojFilePath"
     }
 
     $xml = New-Object XML
-    $xml.Load($csprojPath)
-    $xml.Project.PropertyGroup[0].PackageVersion = $newVersion
-    $xml.Save($csprojPath)
+    $xml.Load($csprojFilePath)
+    $xml.Project.PropertyGroup[0].PackageVersion = $version
+    $xml.Save($csprojFilePath)
+    Log-Info "Updated package version to $version"
 }
 
 export-modulemember -function Log-Error, Log-Warning, Log-Info, Log-Debug, Get-NugetPackageLatestVersion, `
-    Update-AssemblyInfo, Update-CsProjVersion
+    Update-AssemblyVersion, Update-PackageVersion
