@@ -1,7 +1,5 @@
 Param([string]$branchName, [string]$nugetApiKey)
 
-$_branchName = $branchName
-$_nugetApiKey = $nugetApiKey
 $_scriptDirPath = $PSScriptRoot
 $_boltOnModulePath = Join-Path $_scriptDirPath "bolton.psm1"
 $_changedFiles = ''
@@ -10,7 +8,7 @@ function Main
 {
     Import-Module $_boltOnModulePath -Force
     Log-Debug "Branch: $branchName"
-    Log-Debug "NuGet API Key: $_nugetApiKey"
+    Log-Debug "NuGet API Key: $nugetApiKey"
     if ($_branchName)  {
         $_changedFiles = git diff "origin/$_branchName...HEAD" --no-commit-id --name-only
         Log-Info "Files Changed: $_changedFiles"
@@ -21,7 +19,7 @@ function Main
         }
     } 
 
-    Update-AssemblyVersion './src/BoltOn/AssemblyInfo.cs' 0.8.3
+    Update-AssemblyVersion './src/BoltOn/AssemblyInfo.cs' $nugetApiKey
     Update-PackageVersion './src/BoltOn/BoltOn.csproj' 0.8.3
     BuildAndTest
 }
