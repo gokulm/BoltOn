@@ -19,4 +19,4 @@ jobs:
     - name: Branch name
       run: echo running on branch ${GITHUB_REF##*/}
     - name: Run build.ps1
-      run: pwsh './build/build.ps1' ${GITHUB_REF##*/} ${{ secrets.Version }}
+      run: pwsh './build/build.ps1' ${GITHUB_REF##*/} ${{ secrets.NuGetApiKey }}
