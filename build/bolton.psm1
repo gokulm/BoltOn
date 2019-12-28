@@ -1,21 +1,31 @@
-function Log-Error([string]$message)
+function Write-Error([string]$message)
 {
 	Write-Host "$message" -ForegroundColor Red
 }
 
-function Log-Warning([string]$message)
+function Write-Warning([string]$message)
 {
     Write-Host "$message" -ForegroundColor Yellow
 }
 
-function Log-Info([string]$message)
+function Write-Info([string]$message)
 {
-    Write-Host "*********** $message ***********" -ForegroundColor DarkGreen
+    Write-Host "$message" -ForegroundColor DarkGreen
 }
 
-function Log-Debug([string]$message)
+function Write-Debug([string]$message)
 {
     Write-Host "$message" -ForegroundColor DarkCyan
+}
+
+function Write-BeginFunction([string]$message)
+{
+	Write-Info "== BEGIN $message =="
+}
+
+function Write-EndFunction([string]$message)
+{
+	Write-Info "== END $message =="
 }
 
 function Get-NugetPackageLatestVersion()
@@ -32,6 +42,7 @@ function Update-AssemblyVersion()
         [parameter(Mandatory)]$assemblyInfoFilePath,
         [parameter(Mandatory)]$version
     )
+    Write-BeginFunction "$($MyInvocation.MyCommand.Name)"
     if (!(Test-Path $assemblyInfoFilePath)) {
         throw "File not found: $assemblyInfoFilePath"
     }
@@ -40,7 +51,8 @@ function Update-AssemblyVersion()
     $content = Get-Content $assemblyInfoFilePath
     $result = $content -creplace 'Version\("([^"]*)', "Version(""$newVersion"
     Set-Content $assemblyInfoFilePath $result
-    Log-Info "Updated assembly version to $newVersion"
+    Write-Debug "Updated assembly version to $newVersion"
+    Write-EndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
 function Update-PackageVersion()
@@ -50,6 +62,7 @@ function Update-PackageVersion()
         [string]$version
     )
 
+    Write-BeginFunction "$($MyInvocation.MyCommand.Name)"
     if(!(Test-Path $csprojFilePath))
     {
         throw "File not found: $csprojFilePath"
@@ -59,8 +72,9 @@ function Update-PackageVersion()
     $xml.Load($csprojFilePath)
     $xml.Project.PropertyGroup[0].PackageVersion = $version
     $xml.Save($csprojFilePath)
-    Log-Info "Updated package version to $version"
+    Write-Debug "Updated package version to $version"
+    Write-EndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
-export-modulemember -function Log-Error, Log-Warning, Log-Info, Log-Debug, Get-NugetPackageLatestVersion, `
-    Update-AssemblyVersion, Update-PackageVersion
+export-modulemember -function Write-Error, Write-Warning, Write-Debug, Get-NugetPackageLatestVersion, `
+    Update-AssemblyVersion, Update-PackageVersion, Write-BeginFunction, Write-EndFunction

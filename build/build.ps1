@@ -6,30 +6,53 @@ $_boltOnModulePath = Join-Path $_scriptDirPath "bolton.psm1"
 function Main
 {
     Import-Module $_boltOnModulePath -Force
-    Log-Debug "Branch: $branchName"
-    Log-Debug "NuGet API Key: $nugetApiKey"
+    Write-BeginFunction "$($MyInvocation.MyCommand.Name)"
+    Write-Debug "Branch: $branchName"
+    Write-Debug "NuGet API Key: $nugetApiKey"
     if ($branchName)  {
         $changedFiles = git diff "origin/$_branchName...HEAD" --no-commit-id --name-only
-        Log-Info "Files Changed: $changedFiles"
+        $changedFiles = git diff --no-commit-id --name-only
+        if($changedFiles.Length -gt 0)
+        {
+            $changedProjects = $changedFiles | Where-Object { $_.ToString().StartsWith("src/", 1) } | Select-Object `
+            @{
+                N='Project';
+                E= 
+                { 
+                    $temp = $_.ToString().Substring(4);
+                    $temp.Substring(0, $temp.IndexOf("/")) 
+                }
+            } -Unique
+
+            Write-Debug "All the changed projects:"
+            foreach ($changed in $changedProjects) {
+                Write-Debug $changed.Project
+            }
+        }
+
+        foreach ($changedFile in $changedFiles) {
+            Write-Debug $changedFile
+        }
 
         $commits = git log -n 3 --pretty=%B
         foreach ($commit in $commits) {
-            Log-Info $commit
+            Write-Debug $commit
         }
     } 
 
     Update-AssemblyVersion './src/BoltOn/AssemblyInfo.cs' 0.8.3
     Update-PackageVersion './src/BoltOn/BoltOn.csproj' 0.8.3
     BuildAndTest
+    Write-EndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
 function BuildAndTest
 {
-    Log-Debug "Building solution..."
+    Write-BeginFunction "$($MyInvocation.MyCommand.Name)"
     dotnet build --configuration Release
-    Log-Info "Built"
+    Write-Debug "Built"
     dotnet test --configuration Release
-    Log-Info "Executed Tests"
+    Write-EndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
 Main
