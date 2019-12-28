@@ -10,8 +10,8 @@ function Main
     Write-Debug "Branch: $branchName"
     Write-Debug "NuGet API Key: $nugetApiKey"
     if ($branchName)  {
-        $changedFiles = git diff "origin/$_branchName...HEAD" --no-commit-id --name-only
-        $changedFiles = git diff --no-commit-id --name-only
+        $changedFiles = git diff "origin/$branchName...HEAD" --no-commit-id --name-only
+        # $changedFiles = git diff --no-commit-id --name-only
         if($changedFiles.Length -gt 0)
         {
             $changedProjects = $changedFiles | Where-Object { $_.ToString().StartsWith("src/", 1) } | Select-Object `
