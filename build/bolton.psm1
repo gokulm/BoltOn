@@ -1,34 +1,34 @@
-function Write-Error([string]$message)
+function LogError([string]$message)
 {
 	Write-Host "$message" -ForegroundColor Red
 }
 
-function Write-Warning([string]$message)
+function LogWarning([string]$message)
 {
     Write-Host "$message" -ForegroundColor Yellow
 }
 
-function Write-Info([string]$message)
+function LogInfo([string]$message)
 {
     Write-Host "$message" -ForegroundColor DarkGreen
 }
 
-function Write-Debug([string]$message)
+function LogDebug([string]$message)
 {
     Write-Host "$message" -ForegroundColor DarkCyan
 }
 
-function Write-BeginFunction([string]$message)
+function LogBeginFunction([string]$message)
 {
-	Write-Info "== BEGIN $message =="
+	LogInfo "== BEGIN $message =="
 }
 
-function Write-EndFunction([string]$message)
+function LogEndFunction([string]$message)
 {
-	Write-Info "== END $message =="
+	LogInfo "== END $message =="
 }
 
-function Get-NugetPackageLatestVersion()
+function GetNugetPackageLatestVersion()
 { 
     param(
         [parameter(Mandatory)]$packageName
@@ -36,13 +36,13 @@ function Get-NugetPackageLatestVersion()
     return Find-Package $packageName | Select-Object -ExpandProperty Version -first 1
 }
 
-function Update-AssemblyVersion() 
+function UpdateAssemblyVersion() 
 {
     param(
         [parameter(Mandatory)]$assemblyInfoFilePath,
         [parameter(Mandatory)]$version
     )
-    Write-BeginFunction "$($MyInvocation.MyCommand.Name)"
+    LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     if (!(Test-Path $assemblyInfoFilePath)) {
         throw "File not found: $assemblyInfoFilePath"
     }
@@ -51,18 +51,18 @@ function Update-AssemblyVersion()
     $content = Get-Content $assemblyInfoFilePath
     $result = $content -creplace 'Version\("([^"]*)', "Version(""$newVersion"
     Set-Content $assemblyInfoFilePath $result
-    Write-Debug "Updated assembly version to $newVersion"
-    Write-EndFunction "$($MyInvocation.MyCommand.Name)"
+    LogDebug "Updated assembly version to $newVersion"
+    LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
-function Update-PackageVersion()
+function UpdatePackageVersion()
 {
     param(
         [parameter(Mandatory)]$csprojFilePath,
         [string]$version
     )
 
-    Write-BeginFunction "$($MyInvocation.MyCommand.Name)"
+    LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     if(!(Test-Path $csprojFilePath))
     {
         throw "File not found: $csprojFilePath"
@@ -72,9 +72,10 @@ function Update-PackageVersion()
     $xml.Load($csprojFilePath)
     $xml.Project.PropertyGroup[0].PackageVersion = $version
     $xml.Save($csprojFilePath)
-    Write-Debug "Updated package version to $version"
-    Write-EndFunction "$($MyInvocation.MyCommand.Name)"
+    LogDebug "Updated package version to $version"
+    LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
-export-modulemember -function Write-Error, Write-Warning, Write-Debug, Get-NugetPackageLatestVersion, `
-    Update-AssemblyVersion, Update-PackageVersion, Write-BeginFunction, Write-EndFunction
+export-modulemember -function LogError, LogWarning, LogDebug, GetNugetPackageLatestVersion, `
+    UpdateAssemblyVersion, UpdatePackageVersion, LogBeginFunction, LogEndFunction 
+    

@@ -6,7 +6,7 @@ on:
       - build
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -14,7 +14,5 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.0.100
-    - name: Run build.ps1
-      run: pwsh './build/build.ps1'
     - name: Run release.ps1
       run: pwsh './build/release.ps1' ${GITHUB_REF##*/} ${{ secrets.NuGetApiKey }}

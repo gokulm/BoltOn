@@ -6,12 +6,12 @@ $_boltOnModulePath = Join-Path $_scriptDirPath "bolton.psm1"
 function Main
 {
     Import-Module $_boltOnModulePath -Force
-    Write-BeginFunction "$($MyInvocation.MyCommand.Name)"
-    Write-Debug "Branch: $branchName"
-    Write-Debug "NuGet API Key: $nugetApiKey"
-    if ($branchName)  {
+    LogBeginFunction "$($MyInvocation.MyCommand.Name)"
+    LogDebug "Branch: $branchName"
+    LogDebug "NuGet API Key: $nugetApiKey"
+    if ($branchName)  
+    {
         $changedFiles = git diff "origin/$branchName...HEAD" --no-commit-id --name-only
-        # $changedFiles = git diff --no-commit-id --name-only
         if($changedFiles.Length -gt 0)
         {
             $changedProjects = $changedFiles | Where-Object { $_.ToString().StartsWith("src/", 1) } | Select-Object `
@@ -24,35 +24,35 @@ function Main
                 }
             } -Unique
 
-            Write-Debug "All the changed projects:"
+            LogDebug "All the changed projects:"
             foreach ($changed in $changedProjects) {
-                Write-Debug $changed.Project
+                LogDebug $changed.Project
             }
         }
 
         foreach ($changedFile in $changedFiles) {
-            Write-Debug $changedFile
+            LogDebug $changedFile
         }
 
         $commits = git log -n 3 --pretty=%B
         foreach ($commit in $commits) {
-            Write-Debug $commit
+            LogDebug $commit
         }
     } 
 
     Update-AssemblyVersion './src/BoltOn/AssemblyInfo.cs' 0.8.3
     Update-PackageVersion './src/BoltOn/BoltOn.csproj' 0.8.3
     BuildAndTest
-    Write-EndFunction "$($MyInvocation.MyCommand.Name)"
+    LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
 function BuildAndTest
 {
-    Write-BeginFunction "$($MyInvocation.MyCommand.Name)"
+    LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     dotnet build --configuration Release
-    Write-Debug "Built"
+    LogDebug "Built"
     dotnet test --configuration Release
-    Write-EndFunction "$($MyInvocation.MyCommand.Name)"
+    LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
 Main
