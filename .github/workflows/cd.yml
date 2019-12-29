@@ -1,4 +1,4 @@
-name: CI
+name: CD
 
 on: 
   push:
@@ -17,6 +17,7 @@ jobs:
     - name: Run build.ps1
       run: pwsh './build/build.ps1'
   release:
+    runs-on: ubuntu-latest
     needs: build
     steps:
     - name: Run release.ps1
