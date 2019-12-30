@@ -55,7 +55,7 @@ function UpdateAssemblyVersion()
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
-function UpdatePackageVersion()
+function UpdateVersion()
 {
     param(
         [parameter(Mandatory)]$csprojFilePath,
@@ -70,12 +70,28 @@ function UpdatePackageVersion()
 
     $xml = New-Object XML
     $xml.Load($csprojFilePath)
-    $xml.Project.PropertyGroup[0].PackageVersion = $version
+    $xml.Project.PropertyGroup[0].Version = $version
     $xml.Save($csprojFilePath)
-    LogDebug "Updated package version to $version"
+    LogDebug "Updated version to $version"
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
+function ParseCommitMessage {
+    param (
+        [parameter(Mandatory)]$commitMessage
+    )
+
+    $commitMessageLines = commit.Message.Split(
+                    new[] { "\r\n", "\r", "\n" },
+                    StringSplitOptions.None
+                );
+
+                foreach ($changed in $commitMessageLines) {
+                    LogDebug $changed
+                }
+    
+}
+
 export-modulemember -function LogError, LogWarning, LogDebug, GetNugetPackageLatestVersion, `
-    UpdateAssemblyVersion, UpdatePackageVersion, LogBeginFunction, LogEndFunction 
+    UpdateAssemblyVersion, UpdateVersion, LogBeginFunction, LogEndFunction, ParseCommitMessage
     

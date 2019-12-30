@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
@@ -9,8 +9,7 @@
         <SynchReleaseVersion>false</SynchReleaseVersion>
         <PackageId>BoltOn</PackageId>
         <Description>BoltOn is an open source framework to build any .NET application with proper separation of concerns.</Description>
-        <PackageVersion>0.8.1</PackageVersion>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <Version>0.8.1</Version>
         <PackageTags>C#, .NET Core</PackageTags>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
