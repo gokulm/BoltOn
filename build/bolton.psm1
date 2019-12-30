@@ -47,7 +47,7 @@ function UpdateAssemblyVersion()
         throw "File not found: $assemblyInfoFilePath"
     }
     $tempVersion = New-Object System.Version ($version)
-    $newVersion = new-object System.Version ($tempVersion.Major, $tempVersion.Minor, $tempVersion.Build, 0)
+    $newVersion = New-Object System.Version ($tempVersion.Major, $tempVersion.Minor, $tempVersion.Build, 0)
     $content = Get-Content $assemblyInfoFilePath
     $result = $content -creplace 'Version\("([^"]*)', "Version(""$newVersion"
     Set-Content $assemblyInfoFilePath $result
@@ -81,15 +81,20 @@ function ParseCommitMessage {
         [parameter(Mandatory)]$commitMessage
     )
 
-    $commitMessageLines = commit.Message.Split(
-                    new[] { "\r\n", "\r", "\n" },
-                    StringSplitOptions.None
-                );
+    $option = [System.StringSplitOptions]::RemoveEmptyEntries
+    $separator = "\r\n", "\r", "\n"
+    $commitMessageLines = $commitMessage.Split($separator, $option);
 
-                foreach ($changed in $commitMessageLines) {
-                    LogDebug $changed
-                }
-    
+    # foreach ($changed in $commitMessageLines) {
+    #     LogDebug $changed
+    # }
+
+    LogDebug $commitMessageLines[0]
+    $found = $commitMessageLines[0] -match "^(?<type>\\w*)(?:\\((?<scope>.*)\\))?: (?<subject>.*)$"
+    if ($found) {
+        $matched = $matches[1]
+        LogDebug "matched: $matched"
+    }
 }
 
 export-modulemember -function LogError, LogWarning, LogDebug, GetNugetPackageLatestVersion, `

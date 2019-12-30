@@ -24,25 +24,26 @@ function Main
                 }
             } -Unique
 
-            LogDebug "All the changed projects:"
-            foreach ($changed in $changedProjects) {
-                LogDebug $changed.Project
-            }
+            # LogDebug "All the changed projects:"
+            # foreach ($changed in $changedProjects) {
+            #     LogDebug $changed.Project
+            # }
         }
 
-        foreach ($changedFile in $changedFiles) {
-            LogDebug $changedFile
-        }
+        # foreach ($changedFile in $changedFiles) {
+        #     LogDebug $changedFile
+        # }
 
         $commits = git log -n 3 --pretty=%B
-        foreach ($commit in $commits) {
-            LogDebug $commit
-        }
+        # foreach ($commit in $commits) {
+        #     LogDebug $commit
+        # }
+
+        ParseCommitMessage $commits[0]
     } 
 
-    Update-AssemblyVersion './src/BoltOn/AssemblyInfo.cs' 0.8.3
-    Update-PackageVersion './src/BoltOn/BoltOn.csproj' 0.8.3
-    BuildAndTest
+    # UpdateVersion './src/BoltOn/BoltOn.csproj' 0.8.3
+    # BuildAndTest
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
