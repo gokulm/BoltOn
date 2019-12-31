@@ -89,12 +89,16 @@ function ParseCommitMessage {
     #     LogDebug $changed
     # }
 
+
     LogDebug $commitMessageLines[0]
-    $found = $commitMessageLines[0] -match "^(?<type>\\w*)(?:\\((?<scope>.*)\\))?: (?<subject>.*)$"
-    if ($found) {
-        $matched = $matches[1]
-        LogDebug "matched: $matched"
-    }
+
+        $b = [regex]::Match($commitMessageLines[0],'^(?<type>.*)\((?<scope>.*)\): (?<subject>.*)$')
+        if($b.Success)
+        {
+            LogDebug $b.Groups['type']
+            LogDebug $b.Groups['scope']
+            LogDebug $b.Groups['subject']
+        }
 }
 
 export-modulemember -function LogError, LogWarning, LogDebug, GetNugetPackageLatestVersion, `
