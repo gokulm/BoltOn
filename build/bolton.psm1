@@ -1,6 +1,3 @@
-$_allowedCommitTypes = "refactor", "fix", "feat"
-$_allowedScopes = "BoltOn", "BoltOn.Data.EF", "BoltOn.Data.CosmosDb", "BoltOn.Bus.MassTransit"
-
 function LogError([string]$message) {
     Write-Host "$message" -ForegroundColor Red
 }
@@ -71,7 +68,9 @@ function UpdateVersion() {
 
 function ParseConventionalCommitMessage {
     param (
-        [parameter(Mandatory)]$commitMessage
+        [parameter(Mandatory)]$commitMessage,
+        [parameter(Mandatory)]$allowedCommitTypes,
+        [parameter(Mandatory)]$allowedScopes
     )
 
     $option = [System.StringSplitOptions]::RemoveEmptyEntries
@@ -87,8 +86,8 @@ function ParseConventionalCommitMessage {
     $scope = $match.Groups['scope']
     $subject = $match.Groups['subject']
     Validate ($type -and $scope -and $subject) "Type or scope or subject not found in commit message"
-    Validate ($_allowedCommitTypes | Where-Object { $type -like $_ }) "Invalid commit type"
-    Validate ($_allowedScopes | Where-Object { $scope -like $_ }) "Invalid scope"
+    Validate ($allowedCommitTypes | Where-Object { $type -like $_ }) "Invalid commit type"
+    Validate ($allowedScopes | Where-Object { $scope -like $_ }) "Invalid scope"
 
 
 }

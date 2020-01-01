@@ -2,6 +2,8 @@ Param([string]$branchName, [string]$nugetApiKey)
 
 $_scriptDirPath = $PSScriptRoot
 $_boltOnModulePath = Join-Path $_scriptDirPath "bolton.psm1"
+# $_allowedScopes = "BoltOn", "BoltOn.Data.EF", "BoltOn.Data.CosmosDb", "BoltOn.Bus.MassTransit"
+$_allowedCommitTypes = "refactor", "fix", "feat"
 
 function Main
 {
@@ -34,12 +36,10 @@ function Main
         #     LogDebug $changedFile
         # }
 
-        $commits = git log -n 3 --pretty=%B
-        # foreach ($commit in $commits) {
-        #     LogDebug $commit
-        # }
+        $allowedScopes = Get-ChildItem "src/" -Name -attributes D 
 
-        ParseConventionalCommitMessage $commits[0]
+        $commits = git log -n 1 --pretty=%B
+        ParseConventionalCommitMessage $commits[0] $_allowedCommitTypes $allowedScopes 
     } 
 
     # UpdateVersion './src/BoltOn/BoltOn.csproj' 0.8.3
