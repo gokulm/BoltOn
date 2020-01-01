@@ -1,43 +1,38 @@
-function LogError([string]$message)
-{
-	Write-Host "$message" -ForegroundColor Red
+$_allowedCommitTypes = "refactor", "fix", "feat"
+$_allowedScopes = "BoltOn", "BoltOn.Data.EF", "BoltOn.Data.CosmosDb", "BoltOn.Bus.MassTransit"
+
+function LogError([string]$message) {
+    Write-Host "$message" -ForegroundColor Red
 }
 
-function LogWarning([string]$message)
-{
+function LogWarning([string]$message) {
     Write-Host "$message" -ForegroundColor Yellow
 }
 
-function LogInfo([string]$message)
-{
+function LogInfo([string]$message) {
     Write-Host "$message" -ForegroundColor DarkGreen
 }
 
-function LogDebug([string]$message)
-{
+function LogDebug([string]$message) {
     Write-Host "$message" -ForegroundColor DarkCyan
 }
 
-function LogBeginFunction([string]$message)
-{
-	LogInfo "== BEGIN $message =="
+function LogBeginFunction([string]$message) {
+    LogInfo "== BEGIN $message =="
 }
 
-function LogEndFunction([string]$message)
-{
-	LogInfo "== END $message =="
+function LogEndFunction([string]$message) {
+    LogInfo "== END $message =="
 }
 
-function GetNugetPackageLatestVersion()
-{ 
+function GetNugetPackageLatestVersion() { 
     param(
         [parameter(Mandatory)]$packageName
     )
     return Find-Package $packageName | Select-Object -ExpandProperty Version -first 1
 }
 
-function UpdateAssemblyVersion() 
-{
+function UpdateAssemblyVersion() {
     param(
         [parameter(Mandatory)]$assemblyInfoFilePath,
         [parameter(Mandatory)]$version
@@ -55,16 +50,14 @@ function UpdateAssemblyVersion()
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
-function UpdateVersion()
-{
+function UpdateVersion() {
     param(
         [parameter(Mandatory)]$csprojFilePath,
         [string]$version
     )
 
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
-    if(!(Test-Path $csprojFilePath))
-    {
+    if (!(Test-Path $csprojFilePath)) {
         throw "File not found: $csprojFilePath"
     }
 
@@ -76,7 +69,7 @@ function UpdateVersion()
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
-function ParseCommitMessage {
+function ParseConventionalCommitMessage {
     param (
         [parameter(Mandatory)]$commitMessage
     )
@@ -84,23 +77,35 @@ function ParseCommitMessage {
     $option = [System.StringSplitOptions]::RemoveEmptyEntries
     $separator = "\r\n", "\r", "\n"
     $commitMessageLines = $commitMessage.Split($separator, $option);
+    $header = $commitMessageLines[0]
+    LogDebug "Commit header: $header"
 
-    # foreach ($changed in $commitMessageLines) {
-    #     LogDebug $changed
-    # }
+    $match = [regex]::Match($header, '^(?<type>.*)\((?<scope>.*)\): (?<subject>.*)$')
+    Validate $match.Success "Invalid commit message"
+
+    $type = $match.Groups['type']
+    $scope = $match.Groups['scope']
+    $subject = $match.Groups['subject']
+    Validate ($type -and $scope -and $subject) "Type or scope or subject not found in commit message"
+    Validate ($_allowedCommitTypes | Where-Object { $type -like $_ }) "Invalid commit type"
+    Validate ($_allowedScopes | Where-Object { $scope -like $_ }) "Invalid scope"
 
 
-    LogDebug $commitMessageLines[0]
+}
 
-        $b = [regex]::Match($commitMessageLines[0],'^(?<type>.*)\((?<scope>.*)\): (?<subject>.*)$')
-        if($b.Success)
-        {
-            LogDebug $b.Groups['type']
-            LogDebug $b.Groups['scope']
-            LogDebug $b.Groups['subject']
-        }
+function Validate {
+    param (
+        [string]$isValid,
+        [string]$exceptionMessage
+    )
+    
+    if(-Not($isValid))
+    {
+        throw $exceptionMessage
+    }
 }
 
 export-modulemember -function LogError, LogWarning, LogDebug, GetNugetPackageLatestVersion, `
-    UpdateAssemblyVersion, UpdateVersion, LogBeginFunction, LogEndFunction, ParseCommitMessage
+    UpdateAssemblyVersion, UpdateVersion, LogBeginFunction, LogEndFunction, `
+    ParseConventionalCommitMessage
     

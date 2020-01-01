@@ -39,7 +39,7 @@ function Main
         #     LogDebug $commit
         # }
 
-        ParseCommitMessage $commits[0]
+        ParseConventionalCommitMessage $commits[0]
     } 
 
     # UpdateVersion './src/BoltOn/BoltOn.csproj' 0.8.3
