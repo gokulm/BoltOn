@@ -1,4 +1,4 @@
-$_allowedCommitTypes = "fix", "feat"
+$_allowedCommitTypes = "fix", "feat", "fix!", "feat!"
 
 function LogError([string]$message) {
     Write-Host "$message" -ForegroundColor Red
@@ -81,17 +81,26 @@ function ParseConventionalCommitMessage {
     $header = $commitMessageLines[0]
     LogDebug "Commit header: $header"
 
+    # to support commit messages w/ and w/o scopes
     $match = [regex]::Match($header, '^(?<type>.*)\((?<scope>.*)\): (?<subject>.*)$')
-    Validate $match.Success "Invalid commit message"
+    if(-Not($match.Success))
+    {
+        $match = [regex]::Match($header, '^(?<type>.*): (?<subject>.*)$')
+        Validate $match.Success "Invalid commit message"
+    }
 
     $type = $match.Groups['type']
     $scope = $match.Groups['scope']
     $subject = $match.Groups['subject']
-    Validate ($type -and $scope -and $subject) "Type or scope or subject not found in commit message"
+    Validate ($type -and $subject) "Type or subject not found in commit message"
     Validate ($_allowedCommitTypes | Where-Object { $type -like $_ }) "Invalid commit type"
-    $scopes = $scope.ToString().Split(",", $option)
-    foreach ($tempScope in $scopes) {
-        Validate ($allowedScopes | Where-Object { $tempScope.Trim() -like $_ }) "Invalid scope"
+
+    if($scope)
+    {
+        $scopes = $scope.ToString().Split(",", $option)
+        foreach ($tempScope in $scopes) {
+            Validate ($allowedScopes | Where-Object { $tempScope.Trim() -like $_ }) "Invalid scope"
+        }
     }
 
     foreach($changedProject in $changedProjects){
