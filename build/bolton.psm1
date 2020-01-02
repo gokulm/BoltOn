@@ -95,16 +95,22 @@ function ParseConventionalCommitMessage {
     }
 
     foreach($changedProject in $changedProjects){
-        Versionize $changedProject $type
+        if($type -match "\!$")
+        {
+            Versionize $changedProject $type -isBreakingChange:$true
+        }
+        else {
+            Versionize $changedProject $type
+        }
     }
 }
 
 function Versionize()
 {
     param(
-        [string]$project,
-        [string]$commitType,
-        [switch]$isBreakingChange = $false
+        [Parameter(Mandatory=$true)][string]$project,
+        [Parameter(Mandatory=$true)][string]$commitType,
+        [Parameter(Mandatory=$false)][switch]$isBreakingChange=$false
     )
 
     $currentVersion =  New-Object System.Version ( GetNugetPackageLatestVersion $project )
@@ -112,7 +118,8 @@ function Versionize()
 
     if($isBreakingChange)
     {
-        $newVersion = New-Object System.Version ($currentVersion.Major + 1, $currentVersion.Minor, $currentVersion.Build)
+        "test"
+        $newVersion = New-Object System.Version (($currentVersion.Major + 1), 0, 0)
         LogDebug "Project: $project New version: $newVersion"
         return $newVersion
     }

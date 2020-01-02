@@ -39,7 +39,7 @@ function Main
 
         $commits = git log -n 1 --pretty=%B
         # ParseConventionalCommitMessage $commits[0] $_allowedCommitTypes $allowedScopes 
-        ParseConventionalCommitMessage "feat(BoltOn, BoltOn.Data.EF): test" $allowedScopes "BoltOn"
+        ParseConventionalCommitMessage "fix(BoltOn, BoltOn.Data.EF): test" $allowedScopes "BoltOn"
     } 
 
     # UpdateVersion './src/BoltOn/BoltOn.csproj' 0.8.3
