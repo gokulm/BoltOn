@@ -39,7 +39,8 @@ function Main
         $allowedScopes = Get-ChildItem "src/" -Name -attributes D 
 
         $commits = git log -n 1 --pretty=%B
-        ParseConventionalCommitMessage $commits[0] $_allowedCommitTypes $allowedScopes 
+        # ParseConventionalCommitMessage $commits[0] $_allowedCommitTypes $allowedScopes 
+        ParseConventionalCommitMessage "feat(BoltOn, BoltOn.Data.EF): test" $_allowedCommitTypes $allowedScopes 
     } 
 
     # UpdateVersion './src/BoltOn/BoltOn.csproj' 0.8.3

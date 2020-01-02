@@ -87,9 +87,10 @@ function ParseConventionalCommitMessage {
     $subject = $match.Groups['subject']
     Validate ($type -and $scope -and $subject) "Type or scope or subject not found in commit message"
     Validate ($allowedCommitTypes | Where-Object { $type -like $_ }) "Invalid commit type"
-    Validate ($allowedScopes | Where-Object { $scope -like $_ }) "Invalid scope"
-
-
+    $scopes = $scope.ToString().Split(",", $option)
+    foreach ($tempScope in $scopes) {
+        Validate ($allowedScopes | Where-Object { $tempScope.Trim() -like $_ }) "Invalid scope"
+    }
 }
 
 function Validate {
@@ -98,8 +99,7 @@ function Validate {
         [string]$exceptionMessage
     )
     
-    if(-Not($isValid))
-    {
+    if (-Not($isValid)) {
         throw $exceptionMessage
     }
 }
