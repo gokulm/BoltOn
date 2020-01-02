@@ -3,7 +3,6 @@ Param([string]$branchName, [string]$nugetApiKey)
 $_scriptDirPath = $PSScriptRoot
 $_boltOnModulePath = Join-Path $_scriptDirPath "bolton.psm1"
 # $_allowedScopes = "BoltOn", "BoltOn.Data.EF", "BoltOn.Data.CosmosDb", "BoltOn.Bus.MassTransit"
-$_allowedCommitTypes = "refactor", "fix", "feat"
 
 function Main
 {
@@ -40,7 +39,7 @@ function Main
 
         $commits = git log -n 1 --pretty=%B
         # ParseConventionalCommitMessage $commits[0] $_allowedCommitTypes $allowedScopes 
-        ParseConventionalCommitMessage "feat(BoltOn, BoltOn.Data.EF): test" $_allowedCommitTypes $allowedScopes 
+        ParseConventionalCommitMessage "feat(BoltOn, BoltOn.Data.EF): test" $allowedScopes "BoltOn"
     } 
 
     # UpdateVersion './src/BoltOn/BoltOn.csproj' 0.8.3

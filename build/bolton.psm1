@@ -1,3 +1,5 @@
+$_allowedCommitTypes = "fix", "feat"
+
 function LogError([string]$message) {
     Write-Host "$message" -ForegroundColor Red
 }
@@ -69,8 +71,8 @@ function UpdateVersion() {
 function ParseConventionalCommitMessage {
     param (
         [parameter(Mandatory)]$commitMessage,
-        [parameter(Mandatory)]$allowedCommitTypes,
-        [parameter(Mandatory)]$allowedScopes
+        [parameter(Mandatory)]$allowedScopes,
+        [parameter(Mandatory)]$changedProjects
     )
 
     $option = [System.StringSplitOptions]::RemoveEmptyEntries
@@ -86,11 +88,45 @@ function ParseConventionalCommitMessage {
     $scope = $match.Groups['scope']
     $subject = $match.Groups['subject']
     Validate ($type -and $scope -and $subject) "Type or scope or subject not found in commit message"
-    Validate ($allowedCommitTypes | Where-Object { $type -like $_ }) "Invalid commit type"
+    Validate ($_allowedCommitTypes | Where-Object { $type -like $_ }) "Invalid commit type"
     $scopes = $scope.ToString().Split(",", $option)
     foreach ($tempScope in $scopes) {
         Validate ($allowedScopes | Where-Object { $tempScope.Trim() -like $_ }) "Invalid scope"
     }
+
+    foreach($changedProject in $changedProjects){
+        Versionize $changedProject $type
+    }
+}
+
+function Versionize()
+{
+    param(
+        [string]$project,
+        [string]$commitType,
+        [switch]$isBreakingChange = $false
+    )
+
+    $currentVersion =  New-Object System.Version ( GetNugetPackageLatestVersion $project )
+    $newVersion = $null
+
+    if($isBreakingChange)
+    {
+        $newVersion = New-Object System.Version ($currentVersion.Major + 1, $currentVersion.Minor, $currentVersion.Build)
+        LogDebug "Project: $project New version: $newVersion"
+        return $newVersion
+    }
+
+    switch($commitType)
+    {
+        "feat" { $newVersion = New-Object System.Version ($currentVersion.Major, ($currentVersion.Minor + 1), 0); break; }
+        "fix" {  $newVersion = New-Object System.Version ($currentVersion.Major, $currentVersion.Minor, ($currentVersion.Build + 1)); break; }
+        default { throw "Invalid commit type: $commitType" }
+    }
+
+    LogDebug "Project: $project New version: $newVersion"
+    return $newVersion
+
 }
 
 function Validate {
