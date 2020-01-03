@@ -8,7 +8,8 @@ function Main {
     Import-Module $_boltOnModulePath -Force
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     LogDebug "Branch: $branchName"
-    LogDebug "NuGet API Key: $nugetApiKey"
+    # BuildAndTest
+
     if ($branchName) {
         $changedFiles = git diff "origin/$branchName...HEAD" --no-commit-id --name-only
         if ($changedFiles.Length -gt 0) {
@@ -35,12 +36,12 @@ function Main {
 
         foreach($key in $newVersions.keys)
         {
-            UpdateVersion "./src/$($key)/$($key).csproj" $newVersions[$key]
+            $projectPath = "./src/$($key)/$($key).csproj"
+            UpdateVersion $projectPath  $newVersions[$key]
+            dotnet pack $projectPath --configuration Release
         }
     } 
 
-    # UpdateVersion './src/BoltOn/BoltOn.csproj' 0.8.3
-    # BuildAndTest
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
