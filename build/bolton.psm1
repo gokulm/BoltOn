@@ -1,4 +1,5 @@
 $_allowedCommitTypes = "fix", "feat", "fix!", "feat!"
+$_srcDirPath = "src/"
 
 function LogError([string]$message) {
     Write-Host "$message" -ForegroundColor Red
@@ -51,7 +52,7 @@ function UpdateAssemblyVersion() {
 
 function UpdateVersion() {
     param(
-        [parameter(Mandatory)]$csprojFilePath,
+        [parameter(Mandatory)][string]$csprojFilePath,
         [string]$version
     )
 
@@ -68,11 +69,10 @@ function UpdateVersion() {
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
-function ParseConventionalCommitMessage {
+function GetProjectNewVersions {
     param (
-        [parameter(Mandatory)]$commitMessage,
-        [parameter(Mandatory)]$allowedScopes,
-        [parameter(Mandatory)]$changedProjects
+        [Parameter(Mandatory=$true)][string]$commitMessage,
+        [Parameter(Mandatory=$false)][string]$changedProjects
     )
 
     $option = [System.StringSplitOptions]::RemoveEmptyEntries
@@ -82,6 +82,7 @@ function ParseConventionalCommitMessage {
     LogDebug "Commit header: $header"
 
     # to support commit messages w/ and w/o scopes
+    # if scope is present, only scoped projects will be versioned, else, all the changed projects
     $match = [regex]::Match($header, '^(?<type>.*)\((?<scope>.*)\): (?<subject>.*)$')
     if(-Not($match.Success))
     {
@@ -94,24 +95,30 @@ function ParseConventionalCommitMessage {
     $subject = $match.Groups['subject']
     Validate ($type -and $subject) "Type or subject not found in commit message"
     Validate ($_allowedCommitTypes | Where-Object { $type -like $_ }) "Invalid commit type"
+    $isBreakingChange = $type -match "\!$"
+    $projectVersions = @{};
 
-    if($scope)
+    if(-Not([string]::IsNullOrEmpty($scope)))
     {
+        $allowedScopes = Get-ChildItem $_srcDirPath -Name -attributes D 
         $scopes = $scope.ToString().Split(",", $option)
         foreach ($tempScope in $scopes) {
-            Validate ($allowedScopes | Where-Object { $tempScope.Trim() -like $_ }) "Invalid scope"
+            $tempScope = $tempScope.Trim()
+            Validate ($allowedScopes | Where-Object { $tempScope -like $_ }) "Invalid scope"
+            $newVersion = Versionize $tempScope $type $isBreakingChange
+            $projectVersions[$tempScope] = $newVersion
+        }
+    }
+    else {
+        Validate $changedProjects "Changed projects is required as scope is not part of commit message"
+
+        foreach($changedProject in $changedProjects){
+            $newVersion = Versionize $changedProject $type $isBreakingChange
+            $projectVersions[$changedProject] = $newVersion
         }
     }
 
-    foreach($changedProject in $changedProjects){
-        if($type -match "\!$")
-        {
-            Versionize $changedProject $type -isBreakingChange:$true
-        }
-        else {
-            Versionize $changedProject $type
-        }
-    }
+    return $projectVersions
 }
 
 function Versionize()
@@ -119,7 +126,7 @@ function Versionize()
     param(
         [Parameter(Mandatory=$true)][string]$project,
         [Parameter(Mandatory=$true)][string]$commitType,
-        [Parameter(Mandatory=$false)][switch]$isBreakingChange=$false
+        [Parameter(Mandatory=$true)][bool]$isBreakingChange
     )
 
     $currentVersion =  New-Object System.Version ( GetNugetPackageLatestVersion $project )
@@ -127,7 +134,6 @@ function Versionize()
 
     if($isBreakingChange)
     {
-        "test"
         $newVersion = New-Object System.Version (($currentVersion.Major + 1), 0, 0)
         LogDebug "Project: $project New version: $newVersion"
         return $newVersion
@@ -158,5 +164,5 @@ function Validate {
 
 export-modulemember -function LogError, LogWarning, LogDebug, GetNugetPackageLatestVersion, `
     UpdateAssemblyVersion, UpdateVersion, LogBeginFunction, LogEndFunction, `
-    ParseConventionalCommitMessage
+    GetProjectNewVersions
     
