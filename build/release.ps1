@@ -1,6 +1,7 @@
 Param([string]$branchName, [string]$nugetApiKey)
 
 $_scriptDirPath = $PSScriptRoot
+$_rootDirPath = Split-Path $_scriptDirPath
 $_boltOnModulePath = Join-Path $_scriptDirPath "bolton.psm1"
 # $_allowedScopes = "BoltOn", "BoltOn.Data.EF", "BoltOn.Data.CosmosDb", "BoltOn.Bus.MassTransit"
 
@@ -36,7 +37,7 @@ function Main {
 
         foreach($key in $newVersions.keys)
         {
-            $projectPath = "./src/$($key)/$($key).csproj"
+            $projectPath = Join-Path $_rootDirPath "src/$($key)/$($key).csproj"
             UpdateVersion $projectPath  $newVersions[$key]
             dotnet pack $projectPath --configuration Release
         }

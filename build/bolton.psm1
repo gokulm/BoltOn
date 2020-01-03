@@ -129,7 +129,8 @@ function Versionize()
         [Parameter(Mandatory=$true)][bool]$isBreakingChange
     )
 
-    $currentVersion =  New-Object System.Version ( GetNugetPackageLatestVersion $project )
+    $nugetPackageLatestVersion = (GetNugetPackageLatestVersion $project)
+    $currentVersion =  New-Object System.Version ( $nugetPackageLatestVersion )
     $newVersion = $null
 
     if($isBreakingChange)
