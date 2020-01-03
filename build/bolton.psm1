@@ -29,7 +29,7 @@ function GetNugetPackageLatestVersion() {
     param(
         [parameter(Mandatory)]$packageName
     )
-    Install-Module PackageManagement -Force -Repository PSGallery 
+    Register-PackageSource -Name MyNuGet -Location https://api.nuget.org/v3/index.json -ProviderName NuGet
     return Find-Package $packageName | Select-Object -ExpandProperty Version -first 1
 }
 
