@@ -29,6 +29,7 @@ function GetNugetPackageLatestVersion() {
     param(
         [parameter(Mandatory)]$packageName
     )
+    Install-Module PackageManagement -Force -Repository PSGallery 
     return Find-Package $packageName | Select-Object -ExpandProperty Version -first 1
 }
 
