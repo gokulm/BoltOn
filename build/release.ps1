@@ -30,11 +30,11 @@ function Main {
             $newVersions = GetProjectNewVersions $commits[0] $changedProjects 
             # $newVersions = GetProjectNewVersions "feat(BoltOn, BoltOn.Data.EF): test" 
             $newVersions
-
+            $outputPath = Join-Path $_rootDirPath "publish"
             foreach ($key in $newVersions.keys) {
                 $projectPath = Join-Path $_rootDirPath "src/$($key)/$($key).csproj"
                 UpdateVersion $projectPath  $newVersions[$key]
-                dotnet pack $projectPath --configuration Release -o "/publish"
+                dotnet pack $projectPath --configuration Release -o $outputPath
             }
         }
     } 
