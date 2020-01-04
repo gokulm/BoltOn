@@ -1,5 +1,6 @@
 $_allowedCommitTypes = "fix", "feat", "fix!", "feat!"
 $_srcDirPath = "src/"
+$_nugetUrl = "https://api.nuget.org/v3/index.json"
 
 function LogError([string]$message) {
     Write-Host "$message" -ForegroundColor Red
@@ -29,7 +30,6 @@ function GetNugetPackageLatestVersion() {
     param(
         [parameter(Mandatory)]$packageName
     )
-    Register-PackageSource -Name MyNuGet -Location https://api.nuget.org/v3/index.json -ProviderName NuGet
     return Find-Package $packageName | Select-Object -ExpandProperty Version -first 1
 }
 
@@ -99,6 +99,8 @@ function GetProjectNewVersions {
     $isBreakingChange = $type -match "\!$"
     $projectVersions = @{};
 
+    RegisterNuGetPackageSource
+
     if(-Not([string]::IsNullOrEmpty($scope)))
     {
         $allowedScopes = Get-ChildItem $_srcDirPath -Name -attributes D 
@@ -131,7 +133,7 @@ function Versionize()
     )
 
     $nugetPackageLatestVersion = (GetNugetPackageLatestVersion $project)
-    $currentVersion =  New-Object System.Version ( $nugetPackageLatestVersion )
+    $currentVersion =  New-Object System.Version($nugetPackageLatestVersion)
     $newVersion = $null
 
     if($isBreakingChange)
@@ -161,6 +163,15 @@ function Validate {
     
     if (-Not($isValid)) {
         throw $exceptionMessage
+    }
+}
+
+# this method call can be removed once GitHub Action PowerShell supports NuGet v3
+function RegisterNuGetPackageSource {
+    $packageSources = Get-PackageSource
+    if(@($packageSources).Where{$_.location -eq $_nugetUrl}.count -eq 0)
+    {
+        Register-PackageSource -Name MyNuGet -Location $_nugetUrl -ProviderName NuGet
     }
 }
 

@@ -10,8 +10,6 @@ function Main {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     LogDebug "Branch: $branchName"
     # BuildAndTest
-    $PSVersionTable.PSVersion
-    Get-PackageSource   
 
     if ($branchName) {
         $changedFiles = git diff "origin/$branchName...HEAD" --no-commit-id --name-only
