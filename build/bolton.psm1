@@ -73,7 +73,7 @@ function UpdateVersion() {
 function GetProjectNewVersions {
     param (
         [Parameter(Mandatory=$true)][string]$commitMessage,
-        [Parameter(Mandatory=$false)][string]$changedProjects
+        [Parameter(Mandatory=$true)][string[]]$changedProjects
     )
 
     $option = [System.StringSplitOptions]::RemoveEmptyEntries
@@ -108,6 +108,7 @@ function GetProjectNewVersions {
         foreach ($tempScope in $scopes) {
             $tempScope = $tempScope.Trim()
             Validate ($allowedScopes | Where-Object { $tempScope -like $_ }) "Invalid scope"
+            Validate ($changedProjects | Where-Object { $tempScope -like $_ }) "Scope not in changed projects"
             $newVersion = Versionize $tempScope $type $isBreakingChange
             $projectVersions[$tempScope] = $newVersion
         }

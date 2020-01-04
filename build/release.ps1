@@ -14,7 +14,7 @@ function Main {
     if ($branchName) {
         $changedFiles = git diff "origin/$branchName...HEAD" --no-commit-id --name-only
         if ($changedFiles.Length -gt 0) {
-            $changedProjects = $changedFiles | Where-Object { $_.ToString().StartsWith("src/", 1) } | Select-Object `
+            $tempChangedProjects = $changedFiles | Where-Object { $_.ToString().StartsWith("src/", 1) } | Select-Object `
             @{
                 N = 'Project';
                 E = 
@@ -24,22 +24,18 @@ function Main {
                 }
             } -Unique
 
-            # LogDebug "All the changed projects:"
-            # foreach ($changed in $changedProjects) {
-            #     LogDebug $changed.Project
-            # }
-        }
+            $changedProjects = $tempChangedProjects | Select-Object -ExpandProperty Project
+            $changedProjects
+            $commits = git log -n 1 --pretty=%B
+            $newVersions = GetProjectNewVersions $commits[0] $changedProjects 
+            # $newVersions = GetProjectNewVersions "feat(BoltOn, BoltOn.Data.EF): test" 
+            $newVersions
 
-        $commits = git log -n 1 --pretty=%B
-        # ParseConventionalCommitMessage $commits[0] $_allowedCommitTypes $allowedScopes 
-        $newVersions = GetProjectNewVersions "feat(BoltOn, BoltOn.Data.EF): test" 
-        $newVersions
-
-        foreach($key in $newVersions.keys)
-        {
-            $projectPath = Join-Path $_rootDirPath "src/$($key)/$($key).csproj"
-            UpdateVersion $projectPath  $newVersions[$key]
-            dotnet pack $projectPath --configuration Release
+            foreach ($key in $newVersions.keys) {
+                $projectPath = Join-Path $_rootDirPath "src/$($key)/$($key).csproj"
+                UpdateVersion $projectPath  $newVersions[$key]
+                dotnet pack $projectPath --configuration Release -o "/publish"
+            }
         }
     } 
 
