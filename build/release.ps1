@@ -3,13 +3,22 @@ Param([string]$branchName, [string]$nugetApiKey)
 $_scriptDirPath = $PSScriptRoot
 $_rootDirPath = Split-Path $_scriptDirPath
 $_boltOnModulePath = Join-Path $_scriptDirPath "bolton.psm1"
-# $_allowedScopes = "BoltOn", "BoltOn.Data.EF", "BoltOn.Data.CosmosDb", "BoltOn.Bus.MassTransit"
+$_nugetSource = "https://api.nuget.org/v3/index.json"
 
 function Main {
     Import-Module $_boltOnModulePath -Force
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     LogDebug "Branch: $branchName"
     # BuildAndTest
+    # todo: cleanup publish folder if exists
+    PackAndPublish $branchName
+    LogEndFunction "$($MyInvocation.MyCommand.Name)"
+}
+
+function PackAndPublish {
+    param (
+        [string]$branchName
+    )
 
     if ($branchName) {
         $changedFiles = git diff "origin/$branchName...HEAD" --no-commit-id --name-only
@@ -36,10 +45,20 @@ function Main {
                 UpdateVersion $projectPath  $newVersions[$key]
                 dotnet pack $projectPath --configuration Release -o $outputPath
             }
+            if ($branchName -eq "master" -and $nugetApiKey) {
+                dotnet nuget push "$outputPath/*.nupkg" -k $nugetApiKey -s $_nugetSource
+            }
+            else {
+                # this block is useful for testing
+                $testNugetSource = Join-Path $_rootDirPath "nuget"
+                if(-Not(Test-Path $testNugetSource))
+                {
+                    New-Item -ItemType Directory -Force -Path $testNugetSource
+                }
+                dotnet nuget push "$outputPath/*.nupkg" -s $testNugetSource
+            }
         }
     } 
-
-    LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
 function BuildAndTest {

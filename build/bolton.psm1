@@ -1,6 +1,6 @@
 $_allowedCommitTypes = "fix", "feat", "fix!", "feat!"
 $_srcDirPath = "src/"
-$_nugetUrl = "https://api.nuget.org/v3/index.json"
+$_nugetSource = "https://api.nuget.org/v3/index.json"
 
 function LogError([string]$message) {
     Write-Host "$message" -ForegroundColor Red
@@ -170,9 +170,9 @@ function Validate {
 # this method call can be removed once GitHub Action PowerShell supports NuGet v3
 function RegisterNuGetPackageSource {
     $packageSources = Get-PackageSource
-    if(@($packageSources).Where{$_.location -eq $_nugetUrl}.count -eq 0)
+    if(@($packageSources).Where{$_.location -eq $_nugetSource}.count -eq 0)
     {
-        Register-PackageSource -Name MyNuGet -Location $_nugetUrl -ProviderName NuGet
+        Register-PackageSource -Name MyNuGet -Location $_nugetSource -ProviderName NuGet
     }
 }
 
