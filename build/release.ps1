@@ -44,47 +44,34 @@ function NuGetPackAndPublish {
             $newVersions = GetProjectNewVersions $commits[0] $changedProjects 
             $newVersions
             
-            NuGetPack $newVersions
-            NuGetPublish $newVersions
+            # nuget pack
+            foreach ($key in $newVersions.keys) {
+                $projectPath = Join-Path $_rootDirPath "src/$($key)/$($key).csproj"
+                UpdateVersion $projectPath $newVersions[$key]
+                dotnet pack $projectPath --configuration Release -o $_outputPath
+                LogDebug "Packed package: $($key).$($newVersions[$key]).nupkg"
+            }
+
+            # nuget publish
+            foreach ($key in $newVersions.keys) {
+                if ($_branchName -eq "master") {
+                    if (-Not($_nugetApiKey)) {
+                        throw "NuGet API key not found"
+                    }
+                    dotnet nuget push "$_outputPath/$($key).$($newVersions[$key]).nupkg" -k $_nugetApiKey -s $_nugetSource
+                    LogInfo "Published package: $($key).$($newVersions[$key]).nupkg"
+                }
+                else {
+                    # this block is useful for testing
+                    if (-Not(Test-Path $_testNugetSource)) {
+                        New-Item -ItemType Directory -Force -Path $_testNugetSource
+                    }
+                    dotnet nuget push "$_outputPath/$($key).$($newVersions[$key]).nupkg" -s $_testNugetSource
+                    LogInfo "Published package: $($key).$($newVersions[$key]).nupkg"
+                }
+            }
         }
     } 
-}
-
-function NuGetPack {
-    param (
-        [hashtable]$newVersions
-    )
-
-    foreach ($key in $newVersions.keys) {
-        $projectPath = Join-Path $_rootDirPath "src/$($key)/$($key).csproj"
-        UpdateVersion $projectPath $newVersions[$key]
-        dotnet pack $projectPath --configuration Release -o $_outputPath
-        LogDebug "Packed package: $($key).$($newVersions[$key]).nupkg"
-    }
-}
-
-function NuGetPublish {
-    param (
-        [hashtable]$newVersions
-    )
-    
-    foreach ($key in $newVersions.keys) {
-        if ($_branchName -eq "master") {
-            if (-Not($_nugetApiKey)) {
-                throw "NuGet API key not found"
-            }
-            dotnet nuget push "$_outputPath/$($key).$($newVersions[$key]).nupkg" -k $_nugetApiKey -s $_nugetSource
-            LogInfo "Published package: $($key).$($newVersions[$key]).nupkg"
-        }
-        else {
-            # this block is useful for testing
-            if (-Not(Test-Path $_testNugetSource)) {
-                New-Item -ItemType Directory -Force -Path $_testNugetSource
-            }
-            dotnet nuget push "$_outputPath/$($key).$($newVersions[$key]).nupkg" -s $_testNugetSource
-            LogInfo "Published package: $($key).$($newVersions[$key]).nupkg"
-        }
-    }
 }
 
 function BuildAndTest {
