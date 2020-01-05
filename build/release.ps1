@@ -41,8 +41,8 @@ function NuGetPackAndPublish {
             $changedProjects = $tempChangedProjects | Select-Object -ExpandProperty Project
             $changedProjects
             $commits = git log -n 1 --pretty=%B
-            $newVersions = GetProjectNewVersions $commits[0] $changedProjects 
-            # $newVersions = GetProjectNewVersions "feat(BoltOn, BoltOn.Data.EF): test" 
+            # $newVersions = GetProjectNewVersions $commits[0] $changedProjects 
+            $newVersions = GetProjectNewVersions "feat(BoltOn, BoltOn.Data.EF): test" 
             $newVersions
             
             NuGetPack $newVersions
