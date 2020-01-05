@@ -176,7 +176,7 @@ function RegisterNuGetPackageSource {
     }
 }
 
-export-modulemember -function LogError, LogWarning, LogDebug, GetNugetPackageLatestVersion, `
+export-modulemember -function LogError, LogWarning, LogDebug, LogInfo, GetNugetPackageLatestVersion, `
     UpdateAssemblyVersion, UpdateVersion, LogBeginFunction, LogEndFunction, `
     GetProjectNewVersions
     
