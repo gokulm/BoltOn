@@ -37,12 +37,7 @@ namespace BoltOn.Cqrs
 			dynamic sourceEntityRepository = genericMethodForSourceEntity.Invoke(_cqrsRepositoryFactory, null);
 			_logger.Debug($"Built {nameof(CqrsRepositoryFactory)}");
 			_logger.Debug($"Fetching entity by Id. Id: {cqrsEvent.SourceId}");
-			var uowOptions = new UnitOfWorkOptions
-			{
-				IsolationLevel = IsolationLevel.ReadCommitted,
-				TransactionScopeOption = TransactionScopeOption.RequiresNew
-			};
-			using (var uow = _unitOfWorkManager.Get(uowOptions))
+			using (var uow = _unitOfWorkManager.Get())
 			{
 				var cqrsEntity = await sourceEntityRepository.GetByIdAsync(cqrsEvent.SourceId, cancellationToken);
 				var baseCqrsEntity = cqrsEntity as BaseCqrsEntity;
