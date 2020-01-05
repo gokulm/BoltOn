@@ -11,8 +11,8 @@ function Main {
     Import-Module $_boltOnModulePath -Force
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     LogDebug "Branch: $_branchName"
-    BuildAndTest
-    CleanUp
+    # BuildAndTest
+    # CleanUp
     NuGetPackAndPublish 
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
@@ -41,7 +41,7 @@ function NuGetPackAndPublish {
             $changedProjects = $tempChangedProjects | Select-Object -ExpandProperty Project
             $changedProjects
             $commits = git log -n 1 --pretty=%B
-            $newVersions = GetProjectNewVersions $commits[0] $changedProjects 
+            $newVersions = [hashtable](GetProjectNewVersions $commits[0] $changedProjects)
             $newVersions
             
             # nuget pack

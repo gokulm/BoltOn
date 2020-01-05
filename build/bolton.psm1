@@ -2,27 +2,45 @@ $_allowedCommitTypes = "fix", "feat", "fix!", "feat!"
 $_srcDirPath = "src/"
 $_nugetSource = "https://api.nuget.org/v3/index.json"
 
-function LogError([string]$message) {
+function LogError() {
+    param(
+        [parameter(Mandatory)]$message
+    )
     Write-Host "$message" -ForegroundColor Red
 }
 
-function LogWarning([string]$message) {
+function LogWarning() {
+    param(
+        [parameter(Mandatory)]$message
+    )
     Write-Host "$message" -ForegroundColor Yellow
 }
 
-function LogInfo([string]$message) {
+function LogInfo() {
+    param(
+        [parameter(Mandatory)]$message
+    )
     Write-Host "$message" -ForegroundColor DarkGreen
 }
 
-function LogDebug([string]$message) {
+function LogDebug() {
+    param(
+        [parameter(Mandatory)]$message
+    )
     Write-Host "$message" -ForegroundColor DarkCyan
 }
 
-function LogBeginFunction([string]$message) {
+function LogBeginFunction() {
+    param(
+        [parameter(Mandatory)]$message
+    )
     LogInfo "== BEGIN $message =="
 }
 
-function LogEndFunction([string]$message) {
+function LogEndFunction() {
+    param(
+        [parameter(Mandatory)]$message
+    )
     LogInfo "== END $message =="
 }
 
@@ -54,7 +72,7 @@ function UpdateAssemblyVersion() {
 function UpdateVersion() {
     param(
         [parameter(Mandatory)][string]$csprojFilePath,
-        [string]$version
+        [parameter(Mandatory)][string]$version
     )
 
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
