@@ -88,14 +88,14 @@ function GetProjectNewVersions {
     if(-Not($match.Success))
     {
         $match = [regex]::Match($header, '^(?<type>.*): (?<subject>.*)$')
-        Validate $match.Success "Invalid commit message"
+        ThrowIfNotValid $match.Success "Invalid commit message"
     }
 
     $type = $match.Groups['type']
     $scope = $match.Groups['scope']
     $subject = $match.Groups['subject']
-    Validate ($type -and $subject) "Type or subject not found in commit message"
-    Validate ($_allowedCommitTypes | Where-Object { $type -like $_ }) "Invalid commit type"
+    ThrowIfNotValid ($type -and $subject) "Type or subject not found in commit message"
+    ThrowIfNotValid ($_allowedCommitTypes | Where-Object { $type -like $_ }) "Invalid commit type"
     $isBreakingChange = $type -match "\!$"
     $projectVersions = @{};
 
@@ -107,14 +107,14 @@ function GetProjectNewVersions {
         $scopes = $scope.ToString().Split(",", $option)
         foreach ($tempScope in $scopes) {
             $tempScope = $tempScope.Trim()
-            Validate ($allowedScopes | Where-Object { $tempScope -like $_ }) "Invalid scope"
-            Validate ($changedProjects | Where-Object { $tempScope -like $_ }) "Scope not in changed projects"
+            ThrowIfNotValid ($allowedScopes | Where-Object { $tempScope -like $_ }) "Invalid scope"
+            ThrowIfNotValid ($changedProjects | Where-Object { $tempScope -like $_ }) "Scope not in changed projects"
             $newVersion = Versionize $tempScope $type $isBreakingChange
             $projectVersions[$tempScope] = $newVersion
         }
     }
     else {
-        Validate $changedProjects "Changed projects is required as scope is not part of commit message"
+        ThrowIfNotValid $changedProjects "Changed projects is required as scope is not part of commit message"
 
         foreach($changedProject in $changedProjects){
             $newVersion = Versionize $changedProject $type $isBreakingChange
@@ -156,7 +156,7 @@ function Versionize()
 
 }
 
-function Validate {
+function ThrowIfNotValid {
     param (
         [string]$isValid,
         [string]$exceptionMessage

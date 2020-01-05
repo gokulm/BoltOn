@@ -1,4 +1,4 @@
-Param([string]$branchName, [string]$nugetApiKey)
+Param([string]$_branchName, [string]$_nugetApiKey)
 
 $_scriptDirPath = $PSScriptRoot
 $_rootDirPath = Split-Path $_scriptDirPath
@@ -10,10 +10,10 @@ $_testNugetSource = Join-Path $_rootDirPath "nuget"
 function Main {
     Import-Module $_boltOnModulePath -Force
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
-    LogDebug "Branch: $branchName"
+    LogDebug "Branch: $_branchName"
     BuildAndTest
     CleanUp
-    PackAndPublish $branchName
+    NuGetPackAndPublish 
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
@@ -22,13 +22,9 @@ function CleanUp {
     Remove-Item $_testNugetSource -Recurse -ErrorAction Ignore
 }
 
-function PackAndPublish {
-    param (
-        [string]$branchName
-    )
-
-    if ($branchName) {
-        $changedFiles = git diff "origin/$branchName...HEAD" --no-commit-id --name-only
+function NuGetPackAndPublish {
+    if ($_branchName) {
+        $changedFiles = git diff "origin/$_branchName...HEAD" --no-commit-id --name-only
         $changedFiles = $changedFiles | Where-Object { $_.ToString().StartsWith("src/", 1) } 
         $changedFiles
         if ($changedFiles.Length -gt 0) {
@@ -48,29 +44,48 @@ function PackAndPublish {
             $newVersions = GetProjectNewVersions $commits[0] $changedProjects 
             # $newVersions = GetProjectNewVersions "feat(BoltOn, BoltOn.Data.EF): test" 
             $newVersions
-            foreach ($key in $newVersions.keys) {
-                $projectPath = Join-Path $_rootDirPath "src/$($key)/$($key).csproj"
-                UpdateVersion $projectPath $newVersions[$key]
-                dotnet pack $projectPath --configuration Release -o $_outputPath
-                LogDebug "Packed package: $($key).$($newVersions[$key]).nupkg"
-            }
-
-            foreach ($key in $newVersions.keys) {
-                if ($branchName -eq "master" -and $nugetApiKey) {
-                    dotnet nuget push "$_outputPath/$($key).$($newVersions[$key]).nupkg" -k $nugetApiKey -s $_nugetSource
-                    LogInfo "Published package: $($key).$($newVersions[$key]).nupkg"
-                }
-                else {
-                    # this block is useful for testing
-                    if (-Not(Test-Path $_testNugetSource)) {
-                        New-Item -ItemType Directory -Force -Path $_testNugetSource
-                    }
-                    dotnet nuget push "$_outputPath/$($key).$($newVersions[$key]).nupkg" -s $_testNugetSource
-                    LogInfo "Published package: $($key).$($newVersions[$key]).nupkg"
-                }
-            }
+            
+            NuGetPack $newVersions
+            NuGetPublish $newVersions
         }
     } 
+}
+
+function NuGetPack {
+    param (
+        [hashtable]$newVersions
+    )
+
+    foreach ($key in $newVersions.keys) {
+        $projectPath = Join-Path $_rootDirPath "src/$($key)/$($key).csproj"
+        UpdateVersion $projectPath $newVersions[$key]
+        dotnet pack $projectPath --configuration Release -o $_outputPath
+        LogDebug "Packed package: $($key).$($newVersions[$key]).nupkg"
+    }
+}
+
+function NuGetPublish {
+    param (
+        [hashtable]$newVersions
+    )
+    
+    foreach ($key in $newVersions.keys) {
+        if ($_branchName -eq "master") {
+            if (-Not($_nugetApiKey)) {
+                throw "NuGet API key not found"
+            }
+            dotnet nuget push "$_outputPath/$($key).$($newVersions[$key]).nupkg" -k $_nugetApiKey -s $_nugetSource
+            LogInfo "Published package: $($key).$($newVersions[$key]).nupkg"
+        }
+        else {
+            # this block is useful for testing
+            if (-Not(Test-Path $_testNugetSource)) {
+                New-Item -ItemType Directory -Force -Path $_testNugetSource
+            }
+            dotnet nuget push "$_outputPath/$($key).$($newVersions[$key]).nupkg" -s $_testNugetSource
+            LogInfo "Published package: $($key).$($newVersions[$key]).nupkg"
+        }
+    }
 }
 
 function BuildAndTest {
