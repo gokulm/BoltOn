@@ -7,10 +7,11 @@ RUN dotnet restore ./samples/BoltOn.Samples.WebApi/BoltOn.Samples.WebApi.csproj
 RUN dotnet publish -c Release ./samples/BoltOn.Samples.WebApi/BoltOn.Samples.WebApi.csproj -o /publish
 
 # runtime
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2.8
 WORKDIR /app
 COPY --from=build /publish .
 
 ENTRYPOINT ["dotnet", "BoltOn.Samples.WebApi.dll"]
 
-# docker build -t gokulm/bolton:bolton.samples.webapi
+# docker build -t gokulm/bolton:bolton.samples.webapi .
+# docker run --rm -it -p 5000:5000 gokulm/bolton:bolton.samples.webapi
