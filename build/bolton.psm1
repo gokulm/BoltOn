@@ -140,7 +140,7 @@ function GetProjectNewVersions {
         }
     }
 
-    return $projectVersions
+    return [hashtable]$projectVersions
 }
 
 function Versionize()
