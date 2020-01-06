@@ -3,8 +3,8 @@ name: CD
 on: 
   push:
     branches:
-      - build
       - develop
+      - master
 
 jobs:
   release:

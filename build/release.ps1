@@ -13,6 +13,8 @@ function Main {
     LogDebug "Branch: $_branchName"
     BuildAndTest
     CleanUp
+    # this is invoked in develop branch only to test packaging and publishing
+    # the packages are published only to local folder in develop branch
     NuGetPackAndPublish 
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
