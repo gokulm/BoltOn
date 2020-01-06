@@ -11,8 +11,8 @@ function Main {
     Import-Module $_boltOnModulePath -Force
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     LogDebug "Branch: $_branchName"
-    # BuildAndTest
-    # CleanUp
+    BuildAndTest
+    CleanUp
     NuGetPackAndPublish 
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
@@ -46,7 +46,7 @@ function NuGetPackAndPublish {
             
             # nuget pack
             foreach ($key in $newVersions.keys) {
-                $projectPath = Join-Path $_rootDirPath "src/$($key)/$($key).csproj"
+                $projectPath = Join-Path $_rootDirPath "src/$key/$key.csproj"
                 $newVersion = $newVersions.$key
                 UpdateVersion $projectPath $newVersion
                 dotnet pack $projectPath --configuration Release -o $_outputPath
