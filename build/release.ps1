@@ -41,7 +41,7 @@ function NuGetPackAndPublish {
             $changedProjects = $tempChangedProjects | Select-Object -ExpandProperty Project
             $changedProjects
             $commits = git log -n 1 --pretty=%B
-            $newVersions = [hashtable](GetProjectNewVersions $commits[0] $changedProjects)
+            $newVersions = GetProjectNewVersions $commits[0] $changedProjects
             $newVersions
             
             # nuget pack
