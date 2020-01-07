@@ -6,6 +6,7 @@ $_boltOnModulePath = Join-Path $_scriptDirPath "bolton.psm1"
 $_nugetSource = "https://api.nuget.org/v3/index.json"
 $_outputPath = Join-Path $_rootDirPath "publish"
 $_testNugetSource = Join-Path $_rootDirPath "nuget"
+$ErrorActionPreference = 'stop'
 
 function Main {
     try {

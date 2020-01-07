@@ -1,5 +1,6 @@
 $_scriptDirPath = $PSScriptRoot
 $_boltOnModulePath = Join-Path $_scriptDirPath "bolton.psm1"
+$ErrorActionPreference = 'stop'
 
 function Main
 {
