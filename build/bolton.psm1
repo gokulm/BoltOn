@@ -218,4 +218,3 @@ function BuildAndTest {
 export-modulemember -function LogError, LogWarning, LogDebug, LogInfo, GetNugetPackageLatestVersion, `
     UpdateAssemblyVersion, UpdateVersion, LogBeginFunction, LogEndFunction, `
     GetProjectNewVersions, CheckLastExitCode, BuildAndTest
-    
