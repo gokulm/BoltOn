@@ -44,7 +44,7 @@ namespace BoltOn.Cqrs
 			var genericMethodForSourceEntity = getRepositoryMethod.MakeGenericMethod(sourceEntityType);
 			dynamic sourceEntityRepository = genericMethodForSourceEntity.Invoke(_cqrsRepositoryFactory, null);
 			_logger.Debug($"Built {nameof(CqrsRepositoryFactory)}");
-			using (var uow = _unitOfWorkManager.Get(u => u.TransactionScopeOption = TransactionScopeOption.RequiresNew))
+			using (var uow = _unitOfWorkManager.Get())
 			{
 				_logger.Debug($"Fetched source entity by Id. Id: {request.SourceId}");
 				var cqrsEntity = await sourceEntityRepository.GetByIdAsync(request.SourceId, cancellationToken);
@@ -69,7 +69,7 @@ namespace BoltOn.Cqrs
 			var genericMethodForDestinationEntity = getRepositoryMethod.MakeGenericMethod(destinationEntityType);
 			dynamic destinationEntityRepository = genericMethodForDestinationEntity.Invoke(_cqrsRepositoryFactory, null);
 			_logger.Debug($"Built {nameof(CqrsRepositoryFactory)}");
-			using (var uow = _unitOfWorkManager.Get(u => u.TransactionScopeOption = TransactionScopeOption.RequiresNew))
+			using (var uow = _unitOfWorkManager.Get())
 			{
 				_logger.Debug($"Fetched destination entity by Id. Id: {request.DestinationId}");
 				var cqrsEntity = await destinationEntityRepository.GetByIdAsync(request.DestinationId, cancellationToken);

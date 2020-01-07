@@ -196,7 +196,7 @@ namespace BoltOn.Tests.Cqrs
 			var studentId = Guid.NewGuid();
 
 			// act
-			await mediator.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input" });
+			await mediator.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input", RaiseAnotherCreateEvent = false });
 
 			// assert
 			await Task.Delay(1000);

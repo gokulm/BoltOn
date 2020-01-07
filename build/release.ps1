@@ -8,15 +8,20 @@ $_outputPath = Join-Path $_rootDirPath "publish"
 $_testNugetSource = Join-Path $_rootDirPath "nuget"
 
 function Main {
-    Import-Module $_boltOnModulePath -Force
-    LogBeginFunction "$($MyInvocation.MyCommand.Name)"
-    LogDebug "Branch: $_branchName"
-    BuildAndTest
-    CleanUp
-    # this is invoked in develop branch only to test packaging and publishing
-    # the packages are published only to local folder in develop branch
-    NuGetPackAndPublish 
-    LogEndFunction "$($MyInvocation.MyCommand.Name)"
+    try {
+        Import-Module $_boltOnModulePath -Force
+        LogBeginFunction "$($MyInvocation.MyCommand.Name)"
+        LogDebug "Branch: $_branchName"
+        BuildAndTest
+        CleanUp
+        # this is invoked in develop branch only to test packaging and publishing
+        # the packages are published only to local folder in develop branch
+        NuGetPackAndPublish 
+        LogEndFunction "$($MyInvocation.MyCommand.Name)"
+    }
+    catch {
+        LogError $_.Exception.Message
+    }
 }
 
 function CleanUp {
@@ -25,8 +30,10 @@ function CleanUp {
 }
 
 function NuGetPackAndPublish {
+    LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     if ($_branchName) {
-        $changedFiles = git diff "origin/$_branchName...HEAD" --no-commit-id --name-only
+        # $changedFiles = git diff "origin/$_branchName...HEAD" --name-only
+        $changedFiles = git diff --name-only
         $changedFiles = $changedFiles | Where-Object { $_.ToString().StartsWith("src/", 1) } 
         $changedFiles
         if ($changedFiles.Length -gt 0) {
@@ -43,6 +50,7 @@ function NuGetPackAndPublish {
             $changedProjects = $tempChangedProjects | Select-Object -ExpandProperty Project
             $changedProjects
             $commits = git log -n 1 --pretty=%B
+            # $newVersions = GetProjectNewVersions "feat: test" $changedProjects
             $newVersions = GetProjectNewVersions $commits[0] $changedProjects
             $newVersions
             
@@ -76,13 +84,6 @@ function NuGetPackAndPublish {
             }
         }
     } 
-}
-
-function BuildAndTest {
-    LogBeginFunction "$($MyInvocation.MyCommand.Name)"
-    dotnet build --configuration Release
-    LogDebug "Built"
-    dotnet test --configuration Release
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
