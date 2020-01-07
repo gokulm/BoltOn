@@ -120,10 +120,7 @@ function GetProjectNewVersions {
     $projectVersions = @{};
 
     RegisterNuGetPackageSource
-<<<<<<< HEAD
     CheckLastExitCode "RegisterNuGetPackageSource failed"
-=======
->>>>>>> 8abbd60bba2d48cf50a0a98f6e957501b070d4f9
 
     if(-Not([string]::IsNullOrEmpty($scope)))
     {
@@ -200,7 +197,6 @@ function RegisterNuGetPackageSource {
     }
 }
 
-<<<<<<< HEAD
 function CheckLastExitCode([string]$exceptionMessage)
 {
 	if($LastExitCode -ne 0)
@@ -222,9 +218,3 @@ function BuildAndTest {
 export-modulemember -function LogError, LogWarning, LogDebug, LogInfo, GetNugetPackageLatestVersion, `
     UpdateAssemblyVersion, UpdateVersion, LogBeginFunction, LogEndFunction, `
     GetProjectNewVersions, CheckLastExitCode, BuildAndTest
-=======
-export-modulemember -function LogError, LogWarning, LogDebug, LogInfo, GetNugetPackageLatestVersion, `
-    UpdateAssemblyVersion, UpdateVersion, LogBeginFunction, LogEndFunction, `
-    GetProjectNewVersions
->>>>>>> 8abbd60bba2d48cf50a0a98f6e957501b070d4f9
-    
