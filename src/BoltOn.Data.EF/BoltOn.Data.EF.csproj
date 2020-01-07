@@ -1,34 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-        <PackageVersion>0.4.1</PackageVersion>
-        <Authors>Gokulnath Murugesan</Authors>
-        <Owners>Gokulnath Murugesan</Owners>
-        <PackageProjectUrl>https://github.com/gokulm/BoltOn</PackageProjectUrl>
-        <PackageTags>C#, .NET</PackageTags>
-        <Title>BoltOn.Data.EF</Title>
-        <PackageId>BoltOn.Data.EF</PackageId>
-        <Description>This is an add-on to BoltOn NuGet package to support Entity Framework</Description>
-    </PropertyGroup>
-	 <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-      <LangVersion>latest</LangVersion>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-      <LangVersion>latest</LangVersion>
-      <DefineConstants>TRACE;RELEASE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
-      <DocumentationFile></DocumentationFile>
-      <NoStdLib>true</NoStdLib>
-      <DefineConstants>TRACE;RELEASE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
-      <DocumentationFile></DocumentationFile>
-      <NoStdLib>true</NoStdLib>
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
-    </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>0.4.1</Version>
+    <Authors>Gokulnath Murugesan</Authors>
+    <Owners>Gokulnath Murugesan</Owners>
+    <PackageProjectUrl>https://github.com/gokulm/BoltOn</PackageProjectUrl>
+    <PackageTags>C#, .NET</PackageTags>
+    <Title>BoltOn.Data.EF</Title>
+    <PackageId>BoltOn.Data.EF</PackageId>
+    <Description>This is an add-on to BoltOn NuGet package to support Entity Framework</Description>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <LangVersion>latest</LangVersion>
+    <DefineConstants>TRACE;RELEASE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <NoStdLib>true</NoStdLib>
+    <DefineConstants>TRACE;RELEASE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
+  </ItemGroup>
 </Project>
