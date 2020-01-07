@@ -23,9 +23,9 @@ namespace BoltOn.Tests.UoW
 			var result = sut.Get();
 
 			// assert
-			var uowProviderLoggerStmt = $"About to start UoW. IsolationLevel: {IsolationLevel.Serializable} " +
+			var uowProviderLoggerStmt = $"About to start UoW. IsolationLevel: {IsolationLevel.ReadCommitted} " +
 						  $"TransactionTimeOut: {TransactionManager.DefaultTimeout}" +
-						  $"TransactionScopeOption: {TransactionScopeOption.Required}";
+						  $"TransactionScopeOption: {TransactionScopeOption.RequiresNew}";
 			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
 
 			// cleanup
@@ -47,9 +47,9 @@ namespace BoltOn.Tests.UoW
 			var result = sut.Get(unitOfWorkOptions);
 
 			// assert
-			var uowProviderLoggerStmt = $"About to start UoW. IsolationLevel: {IsolationLevel.Serializable} " +
+			var uowProviderLoggerStmt = $"About to start UoW. IsolationLevel: {IsolationLevel.ReadCommitted} " +
 						  $"TransactionTimeOut: {TransactionManager.DefaultTimeout}" +
-						  $"TransactionScopeOption: {TransactionScopeOption.Required}";
+						  $"TransactionScopeOption: {TransactionScopeOption.RequiresNew}";
 			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
 
 			// cleanup
@@ -78,41 +78,11 @@ namespace BoltOn.Tests.UoW
 			// assert
 			var uowProviderLoggerStmt = $"About to start UoW. IsolationLevel: {IsolationLevel.ReadCommitted} " +
 						  $"TransactionTimeOut: {timeSpan}" +
-						  $"TransactionScopeOption: {TransactionScopeOption.Required}";
+						  $"TransactionScopeOption: {TransactionScopeOption.RequiresNew}";
 			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));      
 
 			// cleanup
 			result.Dispose();
-		}
-
-		[Fact]
-		public void Get_WithDefaultsTwice_StartsTransactionWithDefaultsAndJoinsWithThePreviousOne()
-		{
-			// arrange
-			var uowManagerLogger = new Mock<IBoltOnLogger<UnitOfWorkManager>>();
-			var uow = new Mock<IUnitOfWork>();
-			var uowFactory = new Mock<IUnitOfWorkFactory>();
-			var unitOfWorkOptions = new UnitOfWorkOptions();
-			uowFactory.Setup(u => u.Create(unitOfWorkOptions)).Returns(uow.Object);
-			var sut = new UnitOfWorkManager(uowManagerLogger.Object, uowFactory.Object);
-
-			// act
-			var result = sut.Get(unitOfWorkOptions);
-			var result2 = sut.Get(unitOfWorkOptions);
-
-			// assert
-			var uowProviderLoggerStmt = $"About to start UoW. IsolationLevel: {IsolationLevel.Serializable} " +
-					  $"TransactionTimeOut: {TransactionManager.DefaultTimeout}" +
-					  $"TransactionScopeOption: {TransactionScopeOption.Required}";
-			var uowProviderLoggerStmt2 = $"About to start UoW. IsolationLevel: {IsolationLevel.Serializable} " +
-					  $"TransactionTimeOut: {TransactionManager.DefaultTimeout}" +
-					  $"TransactionScopeOption: {TransactionScopeOption.Required}";
-			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
-			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt2));
-
-			// cleanup
-			result.Dispose();
-			result2.Dispose();
 		}
 
 		[Fact]
@@ -128,14 +98,13 @@ namespace BoltOn.Tests.UoW
 
 			// act
 			var result = sut.Get(unitOfWorkOptions);
-			unitOfWorkOptions.TransactionScopeOption = TransactionScopeOption.RequiresNew;
 			var result2 = sut.Get(unitOfWorkOptions);
 
 			// assert
-			var uowProviderLoggerStmt = $"About to start UoW. IsolationLevel: {IsolationLevel.Serializable} " +
+			var uowProviderLoggerStmt = $"About to start UoW. IsolationLevel: {IsolationLevel.ReadCommitted} " +
 					  $"TransactionTimeOut: {TransactionManager.DefaultTimeout}" +
-					  $"TransactionScopeOption: {TransactionScopeOption.Required}";
-			var uowProviderLoggerStmt2 = $"About to start UoW. IsolationLevel: {IsolationLevel.Serializable} " +
+					  $"TransactionScopeOption: {TransactionScopeOption.RequiresNew}";
+			var uowProviderLoggerStmt2 = $"About to start UoW. IsolationLevel: {IsolationLevel.ReadCommitted} " +
 					  $"TransactionTimeOut: {TransactionManager.DefaultTimeout}" +
 					  $"TransactionScopeOption: {TransactionScopeOption.RequiresNew}";
 			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
@@ -146,7 +115,38 @@ namespace BoltOn.Tests.UoW
 			result2.Dispose();
 		}
 
-		[Fact]
+        [Fact]
+        public void Get_WithDefaultsTwiceButSecondOneDoesNotRequiresNew_StartsTransactionWithDefaultsAndAnExistingOne()
+        {
+            // arrange
+            var uowManagerLogger = new Mock<IBoltOnLogger<UnitOfWorkManager>>();
+            var uow = new Mock<IUnitOfWork>();
+            var uowFactory = new Mock<IUnitOfWorkFactory>();
+            var unitOfWorkOptions = new UnitOfWorkOptions();
+            uowFactory.Setup(u => u.Create(unitOfWorkOptions)).Returns(uow.Object);
+            var sut = new UnitOfWorkManager(uowManagerLogger.Object, uowFactory.Object);
+
+            // act
+            var result = sut.Get(unitOfWorkOptions);
+            unitOfWorkOptions.TransactionScopeOption = TransactionScopeOption.Required;
+            var result2 = sut.Get(unitOfWorkOptions);
+
+            // assert
+            var uowProviderLoggerStmt = $"About to start UoW. IsolationLevel: {IsolationLevel.ReadCommitted} " +
+                                        $"TransactionTimeOut: {TransactionManager.DefaultTimeout}" +
+                                        $"TransactionScopeOption: {TransactionScopeOption.RequiresNew}";
+            var uowProviderLoggerStmt2 = $"About to start UoW. IsolationLevel: {IsolationLevel.ReadCommitted} " +
+                                         $"TransactionTimeOut: {TransactionManager.DefaultTimeout}" +
+                                         $"TransactionScopeOption: {TransactionScopeOption.Required}";
+            uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
+            uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt2));
+
+            // cleanup
+            result.Dispose();
+            result2.Dispose();
+        }
+
+        [Fact]
 		public void Get_WithCustomIsolationLevelSetUsingAction_StartsTransactionWithSpecifiedIsolationLevelAndReturnsUnitOfWork()
 		{
 			// arrange
@@ -165,7 +165,7 @@ namespace BoltOn.Tests.UoW
 			// assert
 			var uowProviderLoggerStmt = $"About to start UoW. IsolationLevel: {IsolationLevel.ReadCommitted} " +
 						  $"TransactionTimeOut: {timeSpan}" +
-						  $"TransactionScopeOption: {TransactionScopeOption.Required}";
+						  $"TransactionScopeOption: {TransactionScopeOption.RequiresNew}";
 			uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
 		}
 	}
