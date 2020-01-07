@@ -84,8 +84,8 @@ function UpdateVersion() {
     $xml.Load($csprojFilePath)
     $xml.Project.PropertyGroup[0].Version = $version
     $xml.Save($csprojFilePath)
-
     CheckLastExitCode "Updating csproj version failed"
+    
     LogDebug "Updated version to $version"
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
