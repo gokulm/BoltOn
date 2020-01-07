@@ -84,6 +84,8 @@ function UpdateVersion() {
     $xml.Load($csprojFilePath)
     $xml.Project.PropertyGroup[0].Version = $version
     $xml.Save($csprojFilePath)
+    CheckLastExitCode "Updating csproj version failed"
+    
     LogDebug "Updated version to $version"
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
@@ -118,6 +120,7 @@ function GetProjectNewVersions {
     $projectVersions = @{};
 
     RegisterNuGetPackageSource
+    CheckLastExitCode "RegisterNuGetPackageSource failed"
 
     if(-Not([string]::IsNullOrEmpty($scope)))
     {
@@ -194,7 +197,25 @@ function RegisterNuGetPackageSource {
     }
 }
 
+function CheckLastExitCode([string]$exceptionMessage)
+{
+	if($LastExitCode -ne 0)
+	{
+        throw $exceptionMessage
+	}
+}
+
+function BuildAndTest {
+    LogBeginFunction "$($MyInvocation.MyCommand.Name)"
+    dotnet build --configuration Release
+    CheckLastExitCode "dotnet build failed"
+    LogDebug "Built"
+    dotnet test --configuration Release
+    CheckLastExitCode "test(s) failed"
+    LogEndFunction "$($MyInvocation.MyCommand.Name)"
+}
+
 export-modulemember -function LogError, LogWarning, LogDebug, LogInfo, GetNugetPackageLatestVersion, `
     UpdateAssemblyVersion, UpdateVersion, LogBeginFunction, LogEndFunction, `
-    GetProjectNewVersions
+    GetProjectNewVersions, CheckLastExitCode, BuildAndTest
     
