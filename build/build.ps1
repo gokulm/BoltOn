@@ -6,7 +6,6 @@ function Main
     Import-Module $_boltOnModulePath -Force
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     BuildAndTest
-    DotNetBuildAndTest "BoltOn.sln --configuration Release"
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
