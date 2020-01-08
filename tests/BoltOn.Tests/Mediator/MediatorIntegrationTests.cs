@@ -6,6 +6,7 @@ using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Overrides.Mediator;
+using BoltOn.Tests.Common;
 using BoltOn.Tests.Mediator.Fakes;
 using BoltOn.Tests.Other;
 using BoltOn.Tests.UoW;
@@ -16,10 +17,11 @@ using Xunit;
 
 namespace BoltOn.Tests.Mediator
 {
+	[TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
 	[Collection("IntegrationTests")]
 	public class MediatorIntegrationTests : IDisposable
 	{
-		[Fact]
+		[Fact, TestPriority(1)]
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
@@ -44,7 +46,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 
-		[Fact]
+		[Fact, TestPriority(2)]
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayRequest()
 		{
 			// arrange
@@ -69,7 +71,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 		}
 
-		[Fact]
+		[Fact, TestPriority(3)]
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayCommand()
 		{
 			// arrange
@@ -94,7 +96,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 		}
 
-		[Fact]
+		[Fact, TestPriority(4)]
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayAsyncRequest()
 		{
 			// arrange
@@ -119,7 +121,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 		}
 
-		[Fact]
+		[Fact, TestPriority(5)]
 		public async Task Process_BootstrapWithDefaultsAndAsyncHandler_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
@@ -146,7 +148,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 		}
 
-		[Fact]
+		[Fact, TestPriority(6)]
 		public async Task Process_BootstrapWithTestInterceptors_InvokesDefaultAndTestInterceptorInOrderAndReturnsSuccessfulResult()
 		{
 			// arrange
@@ -175,7 +177,7 @@ namespace BoltOn.Tests.Mediator
 						MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended"));
 		}
 
-		[Fact]
+		[Fact, TestPriority(7)]
 		public async Task Process_BootstrapWithTestInterceptorsAndAsyncHandler_InvokesDefaultAndTestInterceptorInOrderAndReturnsSuccessfulResult()
 		{
 			// arrange
@@ -228,7 +230,7 @@ namespace BoltOn.Tests.Mediator
 																				"Time elapsed: 0"));
 		}
 
-		[Fact]
+		[Fact, TestPriority(8)]
 		public async Task Process_BootstrapWithRemoveInterceptor_DoesNotInvokeRemovedInterceptorAndReturnsSuccessfulResult()
 		{
 			// arrange
@@ -272,7 +274,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Query"));
 		}
 
-		[Fact]
+		[Fact, TestPriority(10)]
 		public async Task Process_MediatorWithQueryUncommittedRequest_ExecutesCustomChangeTrackerInterceptor()
 		{
 			// arrange
