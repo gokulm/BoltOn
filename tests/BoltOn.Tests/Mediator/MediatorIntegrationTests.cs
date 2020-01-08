@@ -206,7 +206,7 @@ namespace BoltOn.Tests.Mediator
 						MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended"));
 		}
 
-		[Fact]
+		[Fact, TestPriority(8)]
 		public async Task Process_BootstrapWithTestInterceptorsAndRemoveAll_InvokesOnlyTestInterceptorAndReturnsSuccessfulResult()
 		{
 			// arrange
@@ -294,7 +294,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for QueryUncommitted"));
 		}
 
-		[Fact]
+		[Fact, TestPriority(11)]
 		public async Task Process_MediatorWithQueryRequest_StartsTransactionsWithCustomizedQueryIsolationLevel()
 		{
 			// arrange
@@ -314,7 +314,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
-		[Fact]
+		[Fact, TestPriority(12)]
 		public async Task Process_MediatorWithQueryRequestAndAsyncHandler_StartsTransactionsWithCustomizedQueryIsolationLevel()
 		{
 			// arrange
@@ -334,7 +334,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
-		[Fact]
+		[Fact, TestPriority(13)]
 		public async Task Process_MediatorWithOneWayCommandRequestAndAsyncHandler_StartsTransactionsWithCustomizedQueryIsolationLevel()
 		{
 			// arrange
@@ -356,7 +356,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 
-		[Fact]
+		[Fact, TestPriority(14)]
 		public async Task Process_MediatorWithQueryRequest_ExecutesChangeTrackerContextInterceptorAndDisablesTracking()
 		{
 			// arrange
@@ -381,7 +381,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.False(isAutoDetectChangesEnabled);
 		}
 
-		[Fact]
+		[Fact, TestPriority(15)]
 		public async Task Process_MediatorWithCommandRequest_ExecutesChangeTrackerContextInterceptorAndEnablesTrackAll()
 		{
 			// arrange
