@@ -36,8 +36,8 @@ function CleanUp {
 function NuGetPackAndPublish {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     if ($_branchName) {
-        # $changedFiles = git diff --name-only "origin/$_branchName...HEAD" 
-        $changedFiles = git diff --name-only master...
+        $changedFiles = git diff --name-only "origin/$_branchName...HEAD" 
+        # $changedFiles = git diff --name-only master...
         $changedFiles = $changedFiles | Where-Object { $_.ToString().StartsWith("src/", 1) } 
         $changedFiles
         if ($changedFiles.Length -gt 0) {
