@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
 {
-	internal sealed class Bootstrapper : IDisposable
+    internal sealed class Bootstrapper : IDisposable
 	{
 		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
 		private Assembly _callingAssembly;

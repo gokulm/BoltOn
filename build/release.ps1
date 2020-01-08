@@ -6,6 +6,7 @@ $_boltOnModulePath = Join-Path $_scriptDirPath "bolton.psm1"
 $_nugetSource = "https://api.nuget.org/v3/index.json"
 $_outputPath = Join-Path $_rootDirPath "publish"
 $_testNugetSource = Join-Path $_rootDirPath "nuget"
+$ErrorActionPreference = 'stop'
 
 function Main {
     try {
@@ -21,6 +22,9 @@ function Main {
     }
     catch {
         LogError $_.Exception.Message
+        if ($LastExitCode -ne 0) {
+            exit $LastExitCode
+        }
     }
 }
 
@@ -32,8 +36,8 @@ function CleanUp {
 function NuGetPackAndPublish {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     if ($_branchName) {
-        # $changedFiles = git diff "origin/$_branchName...HEAD" --name-only
-        $changedFiles = git diff --name-only
+        $changedFiles = git diff --name-only "origin/$_branchName...HEAD" 
+        # $changedFiles = git diff --name-only master...
         $changedFiles = $changedFiles | Where-Object { $_.ToString().StartsWith("src/", 1) } 
         $changedFiles
         if ($changedFiles.Length -gt 0) {
