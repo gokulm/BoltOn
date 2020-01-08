@@ -414,6 +414,7 @@ namespace BoltOn.Tests.Mediator
 			Bootstrapper
 				.Instance
 				.Dispose();
+			Thread.Sleep(250);
 		}
 	}
 }
