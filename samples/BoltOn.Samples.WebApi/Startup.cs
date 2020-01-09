@@ -27,9 +27,9 @@ namespace BoltOn.Samples.WebApi
 			services.BoltOn(options =>
 			{
 				options.BoltOnEFModule();
-				options.BoltOnCosmosDbModule();
-				options.BoltOnMassTransitBusModule();
-				options.BoltOnCqrsModule();
+				// options.BoltOnCosmosDbModule();
+				// options.BoltOnMassTransitBusModule();
+				// options.BoltOnCqrsModule();
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolDbContext).Assembly);
 			});
 		}
