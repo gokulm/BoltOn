@@ -15,7 +15,3 @@ ENTRYPOINT ["dotnet", "BoltOn.Samples.WebApi.dll"]
 
 # docker build -t gokulm/bolton:bolton.samples.webapi .
 # docker run --rm -it -p 5000:80 gokulm/bolton:bolton.samples.webapi
-
-# d for daemon mode
-# docker-compose up -d 
-# docker-compose down

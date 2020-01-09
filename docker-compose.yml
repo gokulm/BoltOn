@@ -20,14 +20,14 @@ services:
     container_name: bolton-sql-container
     networks:
       - bolton-network
-  # rabbitmq:
-  #   image: rabbitmq:3-management
-  #   ports:
-  #     - "5010:5672"
-  #     - "5015:15672"
-  #   container_name: bolton-rabbitmq-container
-  #   networks:
-  #     - bolton-network
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5010:5672"
+      - "5015:15672"
+    container_name: bolton-rabbitmq-container
+    networks:
+      - bolton-network
 
 # since both service and db are in the same host, service connects to db using the container name idp-db-host 
 # in the connection string
@@ -36,6 +36,11 @@ networks:
 
 
 
-# d for daemon mode
-# docker-compose up -d 
-# docker-compose down
+# d detached mode or background mode
+# docker-compose up -d
+
+# to rebuild images
+# docker-compose up -d --build 
+
+# --rmi remove local images
+# docker-compose down --rmi local
