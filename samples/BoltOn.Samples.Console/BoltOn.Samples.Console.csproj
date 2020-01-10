@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BoltOn" Version="0.8.1" />
+    <PackageReference Include="BoltOn.Data.EF" Version="0.4.1" />
+    <PackageReference Include="BoltOn.Data.CosmosDb" Version="0.2.0" />
+    <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="5.5.4" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
@@ -15,10 +19,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />
-    <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
-    <ProjectReference Include="..\..\src\BoltOn.Bus.MassTransit\BoltOn.Bus.MassTransit.csproj" />
-    <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Infrastructure\BoltOn.Samples.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\src\BoltOn.Data.CosmosDb\BoltOn.Data.CosmosDb.csproj" />
   </ItemGroup>
 </Project>
