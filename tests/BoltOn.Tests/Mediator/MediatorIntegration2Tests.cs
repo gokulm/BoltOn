@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Bootstrapping;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Tests.Common;
 using BoltOn.Tests.Mediator.Fakes;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +11,7 @@ using Xunit;
 
 namespace BoltOn.Tests.Mediator
 {
-	[Collection("IntegrationTests")]
+    [Collection("IntegrationTests")]
 	public class MediatorIntegration2Tests : IClassFixture<MediatorIntegration2TestFixture>
 	{
 		private static IServiceCollection _serviceCollection;
@@ -167,7 +166,7 @@ namespace BoltOn.Tests.Mediator
 						MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended"));
 		}
 
-		[Fact, TestPriority(90)]
+		[Fact]
 		public async Task Process_MediatorWithQueryRequest_StartsTransactionsWithDefaultQueryIsolationLevel()
 		{
 			// arrange
