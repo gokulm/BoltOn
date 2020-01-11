@@ -2,11 +2,9 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Data.EF;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Tests.Common;
 using BoltOn.Tests.Mediator.Fakes;
-using BoltOn.Tests.Other;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -189,9 +187,6 @@ namespace BoltOn.Tests.Mediator
 
 		public void Dispose()
 		{
-			//Bootstrapper
-			//	.Instance
-			//	.Dispose();
 		}
 	}
 }
