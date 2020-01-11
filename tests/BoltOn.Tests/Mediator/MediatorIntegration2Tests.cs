@@ -65,45 +65,10 @@ namespace BoltOn.Tests.Mediator
 																				   $"StopwatchInterceptor ended at {_boltOnClock.Now}. Time elapsed: 0"));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 		}
+		
 
 		[Fact]
-		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayCommand()
-		{
-			// arrange
-			var request = new TestOneWayCommand();
-
-			// act
-			await _sut.ProcessAsync(request);
-
-			// assert 
-			Assert.Equal(1, request.Value);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor started at {_boltOnClock.Now}"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor ended at {_boltOnClock.Now}. Time elapsed: 0"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
-		}
-
-		[Fact]
-		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayAsyncRequest()
-		{
-			// arrange
-			var request = new TestOneWayRequest();
-
-			// act
-			await _sut.ProcessAsync(request);
-
-			// assert 
-			Assert.Equal(1, request.Value);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor started at {_boltOnClock.Now}"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor ended at {_boltOnClock.Now}. Time elapsed: 0"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
-		}
-
-		[Fact]
-		public async Task Process_BootstrapWithDefaultsAndAsyncHandler_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
+		public async Task Process_BootstrapWithDefaultsAndCancellationToken_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
 
@@ -142,41 +107,6 @@ namespace BoltOn.Tests.Mediator
 																				   "Time elapsed: 0"));
 			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf($"StopwatchInterceptor ended at {_boltOnClock.Now}. Time elapsed: 0") >
 						MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended"));
-		}
-
-		[Fact]
-		public async Task Process_BootstrapWithTestInterceptorsAndAsyncHandler_InvokesDefaultAndTestInterceptorInOrderAndReturnsSuccessfulResult()
-		{
-			// arrange
-
-			// act
-			var result = await _sut.ProcessAsync(new TestRequest());
-
-			// assert 
-			Assert.True(result);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Started") > 0);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended") > 0);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestRequestSpecificInterceptor Started") == -1);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf($"StopwatchInterceptor started at {_boltOnClock.Now}") <
-						MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Started"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor started at {_boltOnClock.Now}"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor ended at {_boltOnClock.Now}. " +
-																				   "Time elapsed: 0"));
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf($"StopwatchInterceptor ended at {_boltOnClock.Now}. Time elapsed: 0") >
-						MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended"));
-		}
-
-		[Fact]
-		public async Task Process_MediatorWithQueryRequest_StartsTransactionsWithDefaultQueryIsolationLevel()
-		{
-			// arrange
-
-			// act
-			var result = await _sut.ProcessAsync(new TestQuery());
-
-			// assert 
-			Assert.True(result);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Query"));
 		}
 	}
 
