@@ -11,8 +11,8 @@ function Main {
     }
     catch {
         LogError $_.Exception.Message
-        if ($LastExitCode -ne 0) {
-            exit $LastExitCode
+        if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
         }
     }
 }
