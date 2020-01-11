@@ -52,7 +52,7 @@ namespace BoltOn.Tests.Mediator
 																				"Time elapsed: 0"));
 		}
 
-		[Fact, TestPriority(9)]
+		[Fact, TestPriority(85)]
 		public async Task Process_BootstrapWithRemoveInterceptor_DoesNotInvokeRemovedInterceptorAndReturnsSuccessfulResult()
 		{
 			// arrange
@@ -76,7 +76,27 @@ namespace BoltOn.Tests.Mediator
 																				"Time elapsed: 0"));
 		}
 
-		[Fact, TestPriority(10)]
+		[Fact, TestPriority(90)]
+		public async Task Process_MediatorWithQueryRequest_StartsTransactionsWithDefaultQueryIsolationLevel()
+		{
+			// arrange
+			MediatorTestHelper.IsCustomizeIsolationLevel = false;
+			var serviceCollection = new ServiceCollection();
+			serviceCollection
+				.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var sut = serviceProvider.GetService<IMediator>();
+
+			// act
+			var result = await sut.ProcessAsync(new TestQuery());
+
+			// assert 
+			Assert.True(result);
+			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Query"));
+		}
+
+		[Fact, TestPriority(100)]
 		public async Task Process_MediatorWithQueryUncommittedRequest_ExecutesCustomChangeTrackerInterceptor()
 		{
 			// arrange
@@ -183,11 +203,10 @@ namespace BoltOn.Tests.Mediator
 			Assert.False(isAutoDetectChangesEnabled);
 		}
 
-		[Fact, TestPriority(15)]
+		[Fact, TestPriority(120)]
 		public async Task Process_MediatorWithCommandRequest_ExecutesChangeTrackerContextInterceptorAndEnablesTrackAll()
 		{
 			// arrange
-			IntegrationTestHelper.IsSeedData = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(options => options.BoltOnEFModule());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
