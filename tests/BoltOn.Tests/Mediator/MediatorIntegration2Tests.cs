@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BoltOn.Bootstrapping;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Tests.Common;
 using BoltOn.Tests.Mediator.Fakes;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,9 +11,8 @@ using Xunit;
 
 namespace BoltOn.Tests.Mediator
 {
-	[TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
-	[Collection("IntegrationTests")]
-	public class MediatorIntegration2Tests : IDisposable
+    [Collection("IntegrationTests")]
+	public class MediatorIntegration2Tests : IClassFixture<MediatorIntegration2TestFixture>
 	{
 		private static IServiceCollection _serviceCollection;
 		private static IServiceProvider _serviceProvider;
@@ -29,14 +28,9 @@ namespace BoltOn.Tests.Mediator
 			_serviceProvider.TightenBolts();
 			_boltOnClock = _serviceProvider.GetService<IBoltOnClock>();
 			_sut = _serviceProvider.GetService<IMediator>();
-
-			MediatorTestHelper.IsRemoveStopwatchInterceptor = false;
-			MediatorTestHelper.IsClearInterceptors = false;
-			MediatorTestHelper.IsCustomizeIsolationLevel = false;
-			MediatorTestHelper.LoggerStatements.Clear();
 		}
 
-		[Fact, TestPriority(1)]
+		[Fact]
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
@@ -54,7 +48,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 
-		[Fact, TestPriority(20)]
+		[Fact]
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayRequest()
 		{
 			// arrange
@@ -72,7 +66,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 		}
 
-		[Fact, TestPriority(30)]
+		[Fact]
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayCommand()
 		{
 			// arrange
@@ -90,7 +84,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 		}
 
-		[Fact, TestPriority(40)]
+		[Fact]
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayAsyncRequest()
 		{
 			// arrange
@@ -108,7 +102,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 		}
 
-		[Fact, TestPriority(50)]
+		[Fact]
 		public async Task Process_BootstrapWithDefaultsAndAsyncHandler_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
@@ -128,7 +122,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 		}
 
-		[Fact, TestPriority(60)]
+		[Fact]
 		public async Task Process_BootstrapWithTestInterceptors_InvokesDefaultAndTestInterceptorInOrderAndReturnsSuccessfulResult()
 		{
 			// arrange
@@ -150,7 +144,7 @@ namespace BoltOn.Tests.Mediator
 						MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended"));
 		}
 
-		[Fact, TestPriority(70)]
+		[Fact]
 		public async Task Process_BootstrapWithTestInterceptorsAndAsyncHandler_InvokesDefaultAndTestInterceptorInOrderAndReturnsSuccessfulResult()
 		{
 			// arrange
@@ -172,7 +166,7 @@ namespace BoltOn.Tests.Mediator
 						MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended"));
 		}
 
-		[Fact, TestPriority(90)]
+		[Fact]
 		public async Task Process_MediatorWithQueryRequest_StartsTransactionsWithDefaultQueryIsolationLevel()
 		{
 			// arrange
@@ -184,9 +178,23 @@ namespace BoltOn.Tests.Mediator
 			Assert.True(result);
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Query"));
 		}
+	}
+
+	public class MediatorIntegration2TestFixture : IDisposable
+	{
+		public MediatorIntegration2TestFixture()
+		{
+			MediatorTestHelper.IsRemoveStopwatchInterceptor = false;
+			MediatorTestHelper.IsClearInterceptors = false;
+			MediatorTestHelper.IsCustomizeIsolationLevel = false;
+			MediatorTestHelper.LoggerStatements.Clear();
+		}
 
 		public void Dispose()
 		{
+			Bootstrapper
+				.Instance
+				.Dispose();
 		}
 	}
 }
