@@ -115,6 +115,7 @@ function GetProjectNewVersions {
     $scope = $match.Groups['scope']
     $subject = $match.Groups['subject']
     ThrowIfNotValid ($type -and $subject) "Type or subject not found in commit message"
+    $type = $type.ToString().Trim();
     ThrowIfNotValid ($_allowedCommitTypes | Where-Object { $type -like $_ }) "Invalid commit type"
     $isBreakingChange = $type -match "\!$"
     $projectVersions = @{};
@@ -184,6 +185,7 @@ function ThrowIfNotValid {
     )
     
     if (-Not($isValid)) {
+        $LASTEXITCODE = 1
         throw $exceptionMessage
     }
 }
@@ -199,7 +201,7 @@ function RegisterNuGetPackageSource {
 
 function CheckLastExitCode([string]$exceptionMessage)
 {
-	if($LastExitCode -ne 0)
+	if($LASTEXITCODE -ne 0)
 	{
         throw $exceptionMessage
 	}
