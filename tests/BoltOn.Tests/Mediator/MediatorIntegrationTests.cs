@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
@@ -21,192 +20,15 @@ namespace BoltOn.Tests.Mediator
 	[Collection("IntegrationTests")]
 	public class MediatorIntegrationTests : IDisposable
 	{
-		[Fact, TestPriority(1)]
-		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
+		public MediatorIntegrationTests()
 		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
-			var mediator = serviceProvider.GetService<IMediator>();
-
-			// act
-			var result = await mediator.ProcessAsync(new TestRequest());
-
-			// assert 
-			Assert.True(result);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
-		}
-
-
-		[Fact, TestPriority(2)]
-		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayRequest()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
-			var mediator = serviceProvider.GetService<IMediator>();
-			var request = new TestOneWayRequest();
-
-			// act
-			await mediator.ProcessAsync(request);
-
-			// assert 
-			Assert.Equal(1, request.Value);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
-		}
-
-		[Fact, TestPriority(3)]
-		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayCommand()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
-			var mediator = serviceProvider.GetService<IMediator>();
-			var request = new TestOneWayCommand();
-
-			// act
-			await mediator.ProcessAsync(request);
-
-			// assert 
-			Assert.Equal(1, request.Value);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
-		}
-
-		[Fact, TestPriority(4)]
-		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayAsyncRequest()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
-			var mediator = serviceProvider.GetService<IMediator>();
-			var request = new TestOneWayRequest();
-
-			// act
-			await mediator.ProcessAsync(request);
-
-			// assert 
-			Assert.Equal(1, request.Value);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
+			MediatorTestHelper.IsRemoveStopwatchInterceptor = false;
+			MediatorTestHelper.IsClearInterceptors = false;
+			MediatorTestHelper.IsCustomizeIsolationLevel = false;
+			MediatorTestHelper.LoggerStatements.Clear();
 		}
 
 		[Fact, TestPriority(5)]
-		public async Task Process_BootstrapWithDefaultsAndAsyncHandler_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
-			var mediator = serviceProvider.GetService<IMediator>();
-
-			// act
-			CancellationTokenSource cts = new CancellationTokenSource();
-			cts.Cancel();
-			CancellationToken token = cts.Token;
-			var result = await mediator.ProcessAsync(new TestRequest(), token);
-
-			// assert 
-			Assert.True(result);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
-		}
-
-		[Fact, TestPriority(6)]
-		public async Task Process_BootstrapWithTestInterceptors_InvokesDefaultAndTestInterceptorInOrderAndReturnsSuccessfulResult()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
-			var mediator = serviceProvider.GetService<IMediator>();
-
-			// act
-			var result = await mediator.ProcessAsync(new TestRequest());
-
-			// assert 
-			Assert.True(result);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Started") > 0);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended") > 0);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestRequestSpecificInterceptor Started") == -1);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf($"StopwatchInterceptor started at {boltOnClock.Now}") <
-						MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Started"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor started at {boltOnClock.Now}"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor ended at {boltOnClock.Now}. " +
-																				   "Time elapsed: 0"));
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf($"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0") >
-						MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended"));
-		}
-
-		[Fact, TestPriority(7)]
-		public async Task Process_BootstrapWithTestInterceptorsAndAsyncHandler_InvokesDefaultAndTestInterceptorInOrderAndReturnsSuccessfulResult()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
-			var mediator = serviceProvider.GetService<IMediator>();
-
-			// act
-			var result = await mediator.ProcessAsync(new TestRequest());
-
-			// assert 
-			Assert.True(result);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Started") > 0);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended") > 0);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf("TestRequestSpecificInterceptor Started") == -1);
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf($"StopwatchInterceptor started at {boltOnClock.Now}") <
-						MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Started"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor started at {boltOnClock.Now}"));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor ended at {boltOnClock.Now}. " +
-																				   "Time elapsed: 0"));
-			Assert.True(MediatorTestHelper.LoggerStatements.IndexOf($"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0") >
-						MediatorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended"));
-		}
-
-		[Fact]
 		public async Task Process_BootstrapWithTestInterceptorsAndRemoveAll_InvokesOnlyTestInterceptorAndReturnsSuccessfulResult()
 		{
 			// arrange
@@ -230,7 +52,7 @@ namespace BoltOn.Tests.Mediator
 																				"Time elapsed: 0"));
 		}
 
-		[Fact, TestPriority(8)]
+		[Fact, TestPriority(85)]
 		public async Task Process_BootstrapWithRemoveInterceptor_DoesNotInvokeRemovedInterceptorAndReturnsSuccessfulResult()
 		{
 			// arrange
@@ -254,7 +76,7 @@ namespace BoltOn.Tests.Mediator
 																				"Time elapsed: 0"));
 		}
 
-		[Fact]
+		[Fact, TestPriority(90)]
 		public async Task Process_MediatorWithQueryRequest_StartsTransactionsWithDefaultQueryIsolationLevel()
 		{
 			// arrange
@@ -274,7 +96,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Query"));
 		}
 
-		[Fact, TestPriority(10)]
+		[Fact, TestPriority(100)]
 		public async Task Process_MediatorWithQueryUncommittedRequest_ExecutesCustomChangeTrackerInterceptor()
 		{
 			// arrange
@@ -294,7 +116,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for QueryUncommitted"));
 		}
 
-		[Fact]
+		[Fact, TestPriority(11)]
 		public async Task Process_MediatorWithQueryRequest_StartsTransactionsWithCustomizedQueryIsolationLevel()
 		{
 			// arrange
@@ -314,7 +136,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
-		[Fact]
+		[Fact, TestPriority(12)]
 		public async Task Process_MediatorWithQueryRequestAndAsyncHandler_StartsTransactionsWithCustomizedQueryIsolationLevel()
 		{
 			// arrange
@@ -334,7 +156,7 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
-		[Fact]
+		[Fact, TestPriority(13)]
 		public async Task Process_MediatorWithOneWayCommandRequestAndAsyncHandler_StartsTransactionsWithCustomizedQueryIsolationLevel()
 		{
 			// arrange
@@ -356,7 +178,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 
-		[Fact]
+		[Fact, TestPriority(14)]
 		public async Task Process_MediatorWithQueryRequest_ExecutesChangeTrackerContextInterceptorAndDisablesTracking()
 		{
 			// arrange
@@ -381,11 +203,10 @@ namespace BoltOn.Tests.Mediator
 			Assert.False(isAutoDetectChangesEnabled);
 		}
 
-		[Fact]
+		[Fact, TestPriority(120)]
 		public async Task Process_MediatorWithCommandRequest_ExecutesChangeTrackerContextInterceptorAndEnablesTrackAll()
 		{
 			// arrange
-			IntegrationTestHelper.IsSeedData = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(options => options.BoltOnEFModule());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -408,10 +229,6 @@ namespace BoltOn.Tests.Mediator
 
 		public void Dispose()
 		{
-			MediatorTestHelper.IsRemoveStopwatchInterceptor = false;
-			MediatorTestHelper.IsClearInterceptors = false;
-			MediatorTestHelper.IsCustomizeIsolationLevel = false;
-			MediatorTestHelper.LoggerStatements.Clear();
 			Bootstrapper
 				.Instance
 				.Dispose();

@@ -210,7 +210,7 @@ function BuildAndTest {
     dotnet build --configuration Release
     CheckLastExitCode "dotnet build failed"
     LogDebug "Built"
-    dotnet test --configuration Release
+    dotnet test --no-build --no-restore --configuration Release --verbosity normal
     CheckLastExitCode "test(s) failed"
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }

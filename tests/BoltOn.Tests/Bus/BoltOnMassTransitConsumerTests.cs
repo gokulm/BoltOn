@@ -1,9 +1,7 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Bus.MassTransit;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Tests.Other;
 using MassTransit;
 using Moq;
 using Moq.AutoMock;
@@ -12,7 +10,7 @@ using BoltOn.Logging;
 
 namespace BoltOn.Tests.Bus
 {
-	public class BoltOnMassTransitConsumerTests
+    public class BoltOnMassTransitConsumerTests
 	{
 		[Fact]
 		public async Task Consume_ValidRequestObject_GetsConsumed()
