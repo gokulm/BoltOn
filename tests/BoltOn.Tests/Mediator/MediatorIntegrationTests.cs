@@ -22,6 +22,9 @@ namespace BoltOn.Tests.Mediator
 	{
 		public MediatorIntegrationTests()
 		{
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
+
 			MediatorTestHelper.IsRemoveStopwatchInterceptor = false;
 			MediatorTestHelper.IsClearInterceptors = false;
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
@@ -152,6 +155,9 @@ namespace BoltOn.Tests.Mediator
 
 		public void Dispose()
 		{
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
+
 			Bootstrapper
 				.Instance
 				.Dispose();
