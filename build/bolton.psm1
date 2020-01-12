@@ -207,11 +207,15 @@ function CheckLastExitCode([string]$exceptionMessage)
 	}
 }
 
-function BuildAndTest {
+function Build {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     dotnet build --configuration Release
     CheckLastExitCode "dotnet build failed"
-    LogDebug "Built"
+    LogEndFunction "$($MyInvocation.MyCommand.Name)"
+}
+
+function Test {
+    LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     dotnet test --no-build --no-restore --configuration Release --verbosity normal
     CheckLastExitCode "test(s) failed"
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
@@ -219,4 +223,4 @@ function BuildAndTest {
 
 export-modulemember -function LogError, LogWarning, LogDebug, LogInfo, GetNugetPackageLatestVersion, `
     UpdateAssemblyVersion, UpdateVersion, LogBeginFunction, LogEndFunction, `
-    GetProjectNewVersions, CheckLastExitCode, BuildAndTest
+    GetProjectNewVersions, CheckLastExitCode, Build, Test

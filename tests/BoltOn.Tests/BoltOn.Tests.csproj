@@ -48,4 +48,7 @@
         <ProjectReference Include="..\..\src\BoltOn.Bus.MassTransit\BoltOn.Bus.MassTransit.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Data.CosmosDb\BoltOn.Data.CosmosDb.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="Mediator\MediatorIntegration2Tests.cs" />
+    </ItemGroup>
 </Project>
