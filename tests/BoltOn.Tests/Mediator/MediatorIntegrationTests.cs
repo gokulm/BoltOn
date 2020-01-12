@@ -29,9 +29,11 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact, TestPriority(5)]
-		public async Task Process_BootstrapWithTestInterceptorsAndRemoveAll_InvokesOnlyTestInterceptorAndReturnsSuccessfulResult()
+		public async Task Process_BootstrapAndRemoveAllInterceptorsAndAddTestInterceptorAfterRemove_InvokesOnlyTestInterceptorAndReturnsSuccessfulResult()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 			MediatorTestHelper.IsClearInterceptors = true;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn();
@@ -52,10 +54,12 @@ namespace BoltOn.Tests.Mediator
 																				"Time elapsed: 0"));
 		}
 
-		[Fact, TestPriority(85)]
+		[Fact, TestPriority(10)]
 		public async Task Process_BootstrapWithRemoveInterceptor_DoesNotInvokeRemovedInterceptorAndReturnsSuccessfulResult()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 			MediatorTestHelper.IsRemoveStopwatchInterceptor = true;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn();
@@ -76,30 +80,12 @@ namespace BoltOn.Tests.Mediator
 																				"Time elapsed: 0"));
 		}
 
-		[Fact, TestPriority(90)]
-		public async Task Process_MediatorWithQueryRequest_StartsTransactionsWithDefaultQueryIsolationLevel()
-		{
-			// arrange
-			MediatorTestHelper.IsCustomizeIsolationLevel = false;
-			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-			var sut = serviceProvider.GetService<IMediator>();
-
-			// act
-			var result = await sut.ProcessAsync(new TestQuery());
-
-			// assert 
-			Assert.True(result);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Query"));
-		}
-
-		[Fact, TestPriority(100)]
+		[Fact, TestPriority(15)]
 		public async Task Process_MediatorWithQueryUncommittedRequest_ExecutesCustomChangeTrackerInterceptor()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(options => options.BoltOnEFModule());
@@ -116,30 +102,12 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for QueryUncommitted"));
 		}
 
-		[Fact, TestPriority(11)]
-		public async Task Process_MediatorWithQueryRequest_StartsTransactionsWithCustomizedQueryIsolationLevel()
-		{
-			// arrange
-			MediatorTestHelper.IsCustomizeIsolationLevel = true;
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(o => o.BoltOnEFModule());
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-			var sut = serviceProvider.GetService<IMediator>();
-
-			// act
-			var result = await sut.ProcessAsync(new TestQuery());
-
-			// assert 
-			Assert.True(result);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(CustomChangeTrackerInterceptor)}..."));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
-		}
-
-		[Fact, TestPriority(12)]
+		[Fact, TestPriority(20)]
 		public async Task Process_MediatorWithQueryRequestAndAsyncHandler_StartsTransactionsWithCustomizedQueryIsolationLevel()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(o => o.BoltOnEFModule());
@@ -156,57 +124,12 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
-		[Fact, TestPriority(13)]
-		public async Task Process_MediatorWithOneWayCommandRequestAndAsyncHandler_StartsTransactionsWithCustomizedQueryIsolationLevel()
-		{
-			// arrange
-			MediatorTestHelper.IsCustomizeIsolationLevel = true;
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(o => o.BoltOnEFModule());
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-			var sut = serviceProvider.GetService<IMediator>();
-			var command = new TestOneWayCommand();
-
-			// act
-			await sut.ProcessAsync(command);
-
-			// assert 
-			Assert.Equal(1, command.Value); 
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(CustomChangeTrackerInterceptor)}..."));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
-		}
-
-
-		[Fact, TestPriority(14)]
-		public async Task Process_MediatorWithQueryRequest_ExecutesChangeTrackerContextInterceptorAndDisablesTracking()
-		{
-			// arrange
-			IntegrationTestHelper.IsSeedData = true;
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(options => options.BoltOnEFModule());
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-			var sut = serviceProvider.GetService<IMediator>();
-
-			// act
-			var result = await sut.ProcessAsync(new GetStudentRequest { StudentId = 2 });
-			var dbContext = serviceProvider.GetService<IDbContextFactory>().Get<SchoolDbContext>();
-			var isAutoDetectChangesEnabled = dbContext.ChangeTracker.AutoDetectChangesEnabled;
-			var queryTrackingBehavior = dbContext.ChangeTracker.QueryTrackingBehavior;
-
-			// assert 
-			Assert.NotNull(result);
-			Assert.Equal(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking, queryTrackingBehavior);
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(ChangeTrackerInterceptor)}..."));
-			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {true}"));
-			Assert.False(isAutoDetectChangesEnabled);
-		}
-
-		[Fact, TestPriority(120)]
+		[Fact, TestPriority(25)]
 		public async Task Process_MediatorWithCommandRequest_ExecutesChangeTrackerContextInterceptorAndEnablesTrackAll()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(options => options.BoltOnEFModule());
 			var serviceProvider = serviceCollection.BuildServiceProvider();

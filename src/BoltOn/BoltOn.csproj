@@ -9,7 +9,7 @@
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <PackageId>BoltOn</PackageId>
     <Description>BoltOn is an open source framework to build any .NET application with proper separation of concerns.</Description>
-    <Version>0.9.0</Version>
+    <Version>0.0.1</Version>
     <PackageTags>C#, .NET Core</PackageTags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
