@@ -70,11 +70,6 @@ namespace BoltOn.Tests.Mediator.Fakes
 				context.RemoveInterceptor<StopwatchInterceptor>();
 
 			context.AddInterceptor<TestInterceptor>();
-
-			//var changeTrackerInterceptor = new Mock<IBoltOnLogger<CustomChangeTrackerInterceptor>>();
-			//changeTrackerInterceptor.Setup(s => s.Debug(It.IsAny<string>()))
-			//						 .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-			//context.Container.AddTransient((s) => changeTrackerInterceptor.Object);
 		}
 	}
 }

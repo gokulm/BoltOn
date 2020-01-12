@@ -18,13 +18,6 @@ namespace BoltOn.Tests.Bus
 	[Collection("IntegrationTests")]
 	public class BoltOnMassTransitBusIntegrationTests : IDisposable
 	{
-		public BoltOnMassTransitBusIntegrationTests()
-		{
-			Bootstrapper
-				.Instance
-				.Dispose();
-		}
-
 		[Fact]
 		public async Task PublishAsync_InMemoryHost_GetsConsumed()
 		{
