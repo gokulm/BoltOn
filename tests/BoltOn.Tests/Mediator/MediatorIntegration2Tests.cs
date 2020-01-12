@@ -69,6 +69,7 @@ namespace BoltOn.Tests.Mediator
 																				   $"StopwatchInterceptor ended at {_boltOnClock.Now}. Time elapsed: 0"));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 		}
+		
 
 
 		[Fact]
