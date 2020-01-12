@@ -23,6 +23,9 @@ namespace BoltOn.Tests.Mediator
 
 		static MediatorIntegration2Tests()
 		{
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
+
 			_serviceCollection = new ServiceCollection();
 			_serviceCollection.AddLogging();
 			_serviceCollection.BoltOn();
@@ -137,6 +140,9 @@ namespace BoltOn.Tests.Mediator
 
 		public void Dispose()
 		{
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
+
 			Bootstrapper
 				.Instance
 				.Dispose(); 
