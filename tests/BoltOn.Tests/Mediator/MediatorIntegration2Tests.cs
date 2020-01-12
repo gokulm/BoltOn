@@ -131,7 +131,7 @@ namespace BoltOn.Tests.Mediator
 		{
 			Bootstrapper
 				.Instance
-				.Dispose();
+				.Dispose(); 
 		}
 	}
 }
