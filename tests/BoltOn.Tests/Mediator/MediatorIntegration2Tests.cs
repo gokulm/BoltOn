@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Bootstrapping;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.Tests.Common;
 using BoltOn.Tests.Mediator.Fakes;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,8 @@ using Xunit;
 
 namespace BoltOn.Tests.Mediator
 {
-    [Collection("IntegrationTests")]
+	[Collection("IntegrationTests")]
+	[TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
 	public class MediatorIntegration2Tests : IClassFixture<MediatorIntegration2TestFixture>
 	{
 		private static IServiceCollection _serviceCollection;
@@ -19,7 +21,7 @@ namespace BoltOn.Tests.Mediator
 		private static IBoltOnClock _boltOnClock;
 		private static IMediator _sut;
 
-	    static MediatorIntegration2Tests()
+		static MediatorIntegration2Tests()
 		{
 			_serviceCollection = new ServiceCollection();
 			_serviceCollection.AddLogging();
@@ -31,9 +33,12 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
+		[TestPriority(3)]
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 
 			// act
 			var result = await _sut.ProcessAsync(new TestRequest());
@@ -49,9 +54,12 @@ namespace BoltOn.Tests.Mediator
 
 
 		[Fact]
+		[TestPriority(6)]
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayRequest()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 			var request = new TestOneWayRequest();
 
 			// act
@@ -67,10 +75,14 @@ namespace BoltOn.Tests.Mediator
 		}
 		
 
+
 		[Fact]
+		[TestPriority(9)]
 		public async Task Process_BootstrapWithDefaultsAndCancellationToken_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 
 			// act
 			CancellationTokenSource cts = new CancellationTokenSource();
@@ -88,9 +100,12 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
+		[TestPriority(12)]
 		public async Task Process_BootstrapWithTestInterceptors_InvokesDefaultAndTestInterceptorInOrderAndReturnsSuccessfulResult()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 
 			// act
 			var result = await _sut.ProcessAsync(new TestRequest());
@@ -124,7 +139,7 @@ namespace BoltOn.Tests.Mediator
 		{
 			Bootstrapper
 				.Instance
-				.Dispose();
+				.Dispose(); 
 		}
 	}
 }

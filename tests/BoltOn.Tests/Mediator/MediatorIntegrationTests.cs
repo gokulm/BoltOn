@@ -29,9 +29,11 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact, TestPriority(5)]
-		public async Task Process_BootstrapWithTestInterceptorsAndRemoveAllAndAddTestInterceptorAfterRemove_InvokesOnlyTestInterceptorAndReturnsSuccessfulResult()
+		public async Task Process_BootstrapAndRemoveAllInterceptorsAndAddTestInterceptorAfterRemove_InvokesOnlyTestInterceptorAndReturnsSuccessfulResult()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 			MediatorTestHelper.IsClearInterceptors = true;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn();
@@ -56,6 +58,8 @@ namespace BoltOn.Tests.Mediator
 		public async Task Process_BootstrapWithRemoveInterceptor_DoesNotInvokeRemovedInterceptorAndReturnsSuccessfulResult()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 			MediatorTestHelper.IsRemoveStopwatchInterceptor = true;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn();
@@ -80,6 +84,8 @@ namespace BoltOn.Tests.Mediator
 		public async Task Process_MediatorWithQueryUncommittedRequest_ExecutesCustomChangeTrackerInterceptor()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(options => options.BoltOnEFModule());
@@ -100,6 +106,8 @@ namespace BoltOn.Tests.Mediator
 		public async Task Process_MediatorWithQueryRequestAndAsyncHandler_StartsTransactionsWithCustomizedQueryIsolationLevel()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(o => o.BoltOnEFModule());
@@ -120,6 +128,8 @@ namespace BoltOn.Tests.Mediator
 		public async Task Process_MediatorWithCommandRequest_ExecutesChangeTrackerContextInterceptorAndEnablesTrackAll()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(options => options.BoltOnEFModule());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
