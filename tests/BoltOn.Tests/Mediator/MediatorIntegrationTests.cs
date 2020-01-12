@@ -29,7 +29,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact, TestPriority(5)]
-		public async Task Process_BootstrapWithTestInterceptorsAndRemoveAllAndAddTestInterceptorAfterRemove_InvokesOnlyTestInterceptorAndReturnsSuccessfulResult()
+		public async Task Process_BootstrapAndRemoveAllInterceptorsAndAddTestInterceptorAfterRemove_InvokesOnlyTestInterceptorAndReturnsSuccessfulResult()
 		{
 			// arrange
 			MediatorTestHelper.IsClearInterceptors = true;
@@ -145,6 +145,7 @@ namespace BoltOn.Tests.Mediator
 			Bootstrapper
 				.Instance
 				.Dispose();
+			GC.Collect();
 		}
 	}
 }
