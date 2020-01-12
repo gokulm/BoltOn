@@ -37,6 +37,8 @@ namespace BoltOn.Tests.Mediator
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 
 			// act
 			var result = await _sut.ProcessAsync(new TestRequest());
@@ -56,6 +58,8 @@ namespace BoltOn.Tests.Mediator
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayRequest()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 			var request = new TestOneWayRequest();
 
 			// act
@@ -77,6 +81,8 @@ namespace BoltOn.Tests.Mediator
 		public async Task Process_BootstrapWithDefaultsAndCancellationToken_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 
 			// act
 			CancellationTokenSource cts = new CancellationTokenSource();
@@ -98,6 +104,8 @@ namespace BoltOn.Tests.Mediator
 		public async Task Process_BootstrapWithTestInterceptors_InvokesDefaultAndTestInterceptorInOrderAndReturnsSuccessfulResult()
 		{
 			// arrange
+			if (!MediatorTestHelper.IsIntegrationTestsEnabled)
+				return;
 
 			// act
 			var result = await _sut.ProcessAsync(new TestRequest());

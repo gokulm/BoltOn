@@ -8,5 +8,6 @@ namespace BoltOn.Tests.Mediator.Fakes
         public static bool IsClearInterceptors { get; set; }
         public static bool IsCustomizeIsolationLevel { get; set; }
 		public static bool IsRemoveStopwatchInterceptor { get; set; }
+		public static bool IsIntegrationTestsEnabled { get; set; } = false;
 	}
 }
