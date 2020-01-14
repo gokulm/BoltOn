@@ -22,6 +22,7 @@ namespace BoltOn.Samples.Console
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
+			System.Console.ReadLine();
 		}
 	}
 }

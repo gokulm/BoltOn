@@ -24,6 +24,7 @@ namespace BoltOn.Samples.Console
                 x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
                     var host = cfg.Host(new Uri("rabbitmq://bolton-rabbitmq-container:5010"), hostConfigurator =>
+                    // var host = cfg.Host(new Uri("rabbitmq://127.0.0.1:5672"), hostConfigurator =>
                     {
                         hostConfigurator.Username("guest");
                         hostConfigurator.Password("guest");

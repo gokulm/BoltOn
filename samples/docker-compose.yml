@@ -23,6 +23,9 @@ services:
       context: ./
       dockerfile: Dockerfile.Console
     container_name: bolton-console-container
+    depends_on:
+      - "sql"
+      - "rabbitmq"
     networks:
       - bolton-network
   api:
@@ -34,6 +37,9 @@ services:
     container_name: bolton-api-container
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - "sql"
+      - "rabbitmq"
     networks:
       - bolton-network
 
