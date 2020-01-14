@@ -10,10 +10,10 @@
       <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
       <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
     </PackageReference>
-    <PackageReference Include="BoltOn" Version="0.8.1" />
-    <PackageReference Include="BoltOn.Data.EF" Version="0.4.1" />
-    <PackageReference Include="BoltOn.Data.CosmosDb" Version="0.2.0" />
-    <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.1.0" />
+    <PackageReference Include="BoltOn" Version="0.9.0" />
+    <PackageReference Include="BoltOn.Data.EF" Version="0.5.0" />
+    <PackageReference Include="BoltOn.Data.CosmosDb" Version="0.3.0" />
+    <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />

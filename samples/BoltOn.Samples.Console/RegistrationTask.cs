@@ -23,7 +23,7 @@ namespace BoltOn.Samples.Console
             {
                 x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
-                    var host = cfg.Host(new Uri("rabbitmq://localhost:5672"), hostConfigurator =>
+                    var host = cfg.Host(new Uri("rabbitmq://bolton-rabbitmq-container:5010"), hostConfigurator =>
                     {
                         hostConfigurator.Username("guest");
                         hostConfigurator.Password("guest");
@@ -43,15 +43,15 @@ namespace BoltOn.Samples.Console
 
             container.AddDbContext<SchoolDbContext>(options =>
             {
-                options.UseSqlServer("Data Source=127.0.0.1;initial catalog=BoltOnSamples;persist security info=True;User ID=sa;Password=Password1;");
+                options.UseSqlServer("Data Source=bolton-sql-container;initial catalog=BoltOnSamples;persist security info=True;User ID=sa;Password=Password1;");
             });
 
-			container.AddCosmosDb<SchoolCosmosDbOptions>(options =>
-			{
-				options.Uri = "https://bolton.documents.azure.com:443/";
-				options.AuthorizationKey = "XZZAFWzdJoqG5IoJGUHIFGoYMP4rCof5o60wbMSIyzEZBwID4POEmCDRLUNscPh2K9VcV0Ccm7aGsLnvccGj7A==";
-				options.DatabaseName = "School";
-			});
+			// container.AddCosmosDb<SchoolCosmosDbOptions>(options =>
+			// {
+			// 	options.Uri = "https://bolton.documents.azure.com:443/";
+			// 	options.AuthorizationKey = "XZZAFWzdJoqG5IoJGUHIFGoYMP4rCof5o60wbMSIyzEZBwID4POEmCDRLUNscPh2K9VcV0Ccm7aGsLnvccGj7A==";
+			// 	options.DatabaseName = "School";
+			// });
 
 			container.AddTransient<IRepository<Student>, Data.EF.Repository<Student, SchoolDbContext>>();
 			container.AddTransient<IRepository<StudentFlattened>, Data.EF.Repository<StudentFlattened, SchoolDbContext>>();

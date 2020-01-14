@@ -1,16 +1,5 @@
 version: '3'
 services:
-  api:
-    build:
-      context: ./
-      dockerfile: Dockerfile.WebApi
-    ports:
-      - "5000:80"
-    container_name: bolton-api-container
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-    networks:
-      - bolton-network
   sql:
     image: microsoft/mssql-server-linux:latest
     ports:
@@ -29,13 +18,29 @@ services:
     container_name: bolton-rabbitmq-container
     networks:
       - bolton-network
+  console:
+    build:
+      context: ./
+      dockerfile: Dockerfile.Console
+    container_name: bolton-console-container
+    networks:
+      - bolton-network
+  api:
+    build:
+      context: ./
+      dockerfile: Dockerfile.WebApi
+    ports:
+      - "5000:80"
+    container_name: bolton-api-container
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - bolton-network
 
-# since both service and db are in the same host, service connects to db using the container name idp-db-host 
+# if services are in the same network, services can connect using the container name like bolton-sql-container 
 # in the connection string
 networks: 
   bolton-network:
-
-
 
 # d detached mode or background mode
 # docker-compose up -d
@@ -45,3 +50,5 @@ networks:
 
 # --rmi remove local images
 # docker-compose down --rmi local
+
+# to connect to the sql server from SSMS, use 127.0.0.1, 5005
