@@ -1,52 +1,60 @@
 version: '3'
 services:
-  sql:
-    image: microsoft/mssql-server-linux:latest
-    ports:
-      - "5005:1433"
-    environment:
-      SA_PASSWORD: "Password1"
-      ACCEPT_EULA: "Y"
-    container_name: bolton-sql-container
-    networks:
-      - bolton-network
+  # sql:
+  #   image: microsoft/mssql-server-linux:latest
+  #   ports:
+  #     - "5005:1433"
+  #   environment:
+  #     SA_PASSWORD: "Password1"
+  #     ACCEPT_EULA: "Y"
+  #   container_name: bolton-sql-container
+  #   networks:
+  #     - bolton-network
   rabbitmq:
     image: rabbitmq:3-management
     ports:
       - "5010:5672"
       - "5015:15672"
+    # hostname: bolton-rabbitmq-container
+    # expose:
+    #   - 5010
+    #   - 5015
     container_name: bolton-rabbitmq-container
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.config
     networks:
       - bolton-network
   console:
+    depends_on:
+      - rabbitmq
+      # - sql
     build:
       context: ./
       dockerfile: Dockerfile.Console
     container_name: bolton-console-container
-    depends_on:
-      - "sql"
-      - "rabbitmq"
     networks:
       - bolton-network
-  api:
-    build:
-      context: ./
-      dockerfile: Dockerfile.WebApi
-    ports:
-      - "5000:80"
-    container_name: bolton-api-container
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-    depends_on:
-      - "sql"
-      - "rabbitmq"
-    networks:
-      - bolton-network
+  # api:
+  #   build:
+  #     context: ./
+  #     dockerfile: Dockerfile.WebApi
+  #   ports:
+  #     - "5000:80"
+  #   container_name: bolton-api-container
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #   depends_on:
+  #     - rabbitmq
+  #     - sql
+  #     - console
+  #   networks:
+  #     - bolton-network
 
 # if services are in the same network, services can connect using the container name like bolton-sql-container 
 # in the connection string
 networks: 
   bolton-network:
+    driver: bridge
 
 # d detached mode or background mode
 # docker-compose up -d

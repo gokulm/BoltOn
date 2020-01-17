@@ -26,8 +26,8 @@ namespace BoltOn.Samples.Console
                     var host = cfg.Host(new Uri("rabbitmq://bolton-rabbitmq-container:5010"), hostConfigurator =>
                     // var host = cfg.Host(new Uri("rabbitmq://127.0.0.1:5672"), hostConfigurator =>
                     {
-                        hostConfigurator.Username("guest");
-                        hostConfigurator.Password("guest");
+                        hostConfigurator.Username("test");
+                        hostConfigurator.Password("test");
                     });
 
                     cfg.ReceiveEndpoint("StudentCreatedEvent_queue", ep =>
