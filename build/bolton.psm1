@@ -201,7 +201,7 @@ function Build {
 
 function GetConventionalCommitScope {
     param (
-        [Parameter(Mandatory=$true)][string]$commitMessage
+        [Parameter(Mandatory=$true)]$commitMessage
     )
     $match = GetConventionalCommitMessage $commitMessage
     if($match.Success)

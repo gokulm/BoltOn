@@ -38,9 +38,9 @@ function CleanUp {
 function NuGetPackAndPublish {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
 
-    # $commits = git log -n 1 --pretty=%B
+    $commits = git log -n 1 --pretty=%B
     # $commits = "feat(BoltOn.Data.EF, BoltOn): test"
-    $commits = "feat: test"
+    # $commits = "feat: test"
     $scope = GetConventionalCommitScope $commits
     $newVersions = @{ }
 
