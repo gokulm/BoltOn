@@ -87,6 +87,14 @@ function NuGetPackAndPublish {
         $version = $newVersions.BoltOn
         NugetPack "BoltOn" $version
         NugetPublish "BoltOn" $version
+
+        $tag = "BoltOn.$version"
+        git tag "$tag"
+        LogDebug "Git tagged: $tag"
+        if ($_branchName -eq "master") {
+            git push origin tag $tag
+            LogInfo "Pushed Git Tag $tag"
+        }
         $newVersions.Remove("BoltOn")
     }
             
@@ -103,15 +111,19 @@ function NuGetPackAndPublish {
     }
 
     # git tag
-    if ($_branchName -eq "master") {
-        foreach ($key in $newVersions.keys) {
-            git tag "$key.$newVersion"
-            LogDebug "Git tagged: $key.$newVersion"
-        }
+    foreach ($key in $newVersions.keys) {
+        $newVersion = $newVersions.$key
+        $tag = "$key.$newVersion"
+        git tag "$tag"
+        LogDebug "Git tagged: $tag"
 
-        git push origin --tags
-        LogInfo "Pushed Git Tags"
+        if ($_branchName -eq "master") {
+            git push origin tag $tag
+            LogInfo "Pushed Git Tag $tag"
+        }
     }
+
+    
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
