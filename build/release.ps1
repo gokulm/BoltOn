@@ -39,17 +39,23 @@ function NuGetPackAndPublish {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
 
     # $commits = git log -n 1 --pretty=%B
-    $commits = "feat(BoltOn.Data.EF, BoltOn): test"
+    # $commits = "feat(BoltOn.Data.EF, BoltOn): test"
+    $commits = "feat: test"
     $scope = GetConventionalCommitScope $commits
-    $newVersions = @{}
+    $newVersions = @{ }
 
-    if ($scope) {
+    if ($null -ne $scope -and $scope.ToString().Trim()) {
         LogDebug "Scope: $scope"
         $newVersions = GetProjectNewVersions $commits $null
     }
     else {
         LogDebug "Scope not found..."
-        $changedFiles = git diff --name-only "HEAD^..HEAD" 
+        if ($_branchName -eq "master") {
+            $changedFiles = git diff --name-only "HEAD^..HEAD" 
+        }
+        else {
+            $changedFiles = git diff --name-only "origin/$_branchName...HEAD" 
+        }
         $changedFiles = $changedFiles | Where-Object { $_.ToString().StartsWith("src/", 1) } 
         $changedFiles
         if ($changedFiles.Length -gt 0) {
@@ -65,13 +71,12 @@ function NuGetPackAndPublish {
 
             $changedProjects = $tempChangedProjects | Select-Object -ExpandProperty Project
             $changedProjects
-            $newVersions = GetProjectNewVersions $null $changedProjects
+            $newVersions = GetProjectNewVersions $commits $changedProjects
         }
     }
 
     $newVersions
-    if($newVersions.keys.Length -eq 0)
-    {
+    if ($newVersions.keys.Length -eq 0) {
         LogDebug "No version changes"
         return
     }
@@ -79,13 +84,16 @@ function NuGetPackAndPublish {
     # if the core BoltOn exists, then pack and publish it first 
     # when projects with multiple level of dependencies are added, this should be changed
     if ($newVersions.BoltOn) {
-        NugetPack "BoltOn" $newVersions.BoltOn 
+        $version = $newVersions.BoltOn
+        NugetPack "BoltOn" $version
+        NugetPublish "BoltOn" $version
         $newVersions.Remove("BoltOn")
     }
             
     # nuget pack
     foreach ($key in $newVersions.keys) {
-        NugetPack $key $newVersions.$key 
+        $newVersion = $newVersions.$key
+        NugetPack $key $newVersion 
     }
 
     # nuget publish and git tag
@@ -114,10 +122,9 @@ function NugetPack {
     )
     
     $projectPath = Join-Path $_rootDirPath "src/$key/$key.csproj"
-    $newVersion = $newVersions.$key
-    UpdateVersion $projectPath $newVersion
+    UpdateVersion $projectPath $value
     dotnet pack $projectPath --configuration Release -o $_outputPath
-    LogDebug "Packed package: $key.$newVersion.nupkg"
+    LogDebug "Packed package: $key.$value.nupkg"
 }
 
 function NugetPublish {
