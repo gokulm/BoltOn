@@ -16,7 +16,7 @@ using Xunit;
 
 namespace BoltOn.Tests.Mediator
 {
-	[Collection("IntegrationTests")]
+    [Collection("IntegrationTests")]
 	public class MediatorIntegrationTests : IDisposable
 	{
 		[Fact]

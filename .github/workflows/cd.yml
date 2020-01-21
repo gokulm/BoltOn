@@ -16,4 +16,4 @@ jobs:
       with:
         dotnet-version: 2.2.108
     - name: Run release.ps1
-      run: pwsh './build/release.ps1' '${GITHUB_REF##*/}' ${{ secrets.NuGetApiKey }}
+      run: pwsh './build/release.ps1' ${GITHUB_REF##*/} ${{ secrets.NuGetApiKey }}

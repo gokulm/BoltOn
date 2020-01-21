@@ -115,6 +115,7 @@ function GetProjectNewVersions {
     $scope = $match.Groups['scope']
     $subject = $match.Groups['subject']
     ThrowIfNotValid ($type -and $subject) "Type or subject not found in commit message"
+    $type = $type.ToString().Trim();
     ThrowIfNotValid ($_allowedCommitTypes | Where-Object { $type -like $_ }) "Invalid commit type"
     $isBreakingChange = $type -match "\!$"
     $projectVersions = @{};
@@ -184,6 +185,7 @@ function ThrowIfNotValid {
     )
     
     if (-Not($isValid)) {
+        $LASTEXITCODE = 1
         throw $exceptionMessage
     }
 }
@@ -199,22 +201,26 @@ function RegisterNuGetPackageSource {
 
 function CheckLastExitCode([string]$exceptionMessage)
 {
-	if($LastExitCode -ne 0)
+	if($LASTEXITCODE -ne 0)
 	{
         throw $exceptionMessage
 	}
 }
 
-function BuildAndTest {
+function Build {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     dotnet build --configuration Release
     CheckLastExitCode "dotnet build failed"
-    LogDebug "Built"
-    dotnet test --configuration Release
+    LogEndFunction "$($MyInvocation.MyCommand.Name)"
+}
+
+function Test {
+    LogBeginFunction "$($MyInvocation.MyCommand.Name)"
+    dotnet test --no-build --no-restore --configuration Release --verbosity normal
     CheckLastExitCode "test(s) failed"
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
 export-modulemember -function LogError, LogWarning, LogDebug, LogInfo, GetNugetPackageLatestVersion, `
     UpdateAssemblyVersion, UpdateVersion, LogBeginFunction, LogEndFunction, `
-    GetProjectNewVersions, CheckLastExitCode, BuildAndTest
+    GetProjectNewVersions, CheckLastExitCode, Build, Test

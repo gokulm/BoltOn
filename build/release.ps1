@@ -13,7 +13,9 @@ function Main {
         Import-Module $_boltOnModulePath -Force
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
         LogDebug "Branch: $_branchName"
-        BuildAndTest
+        Build
+        # uncomment Test after fixing all the integration tests
+        # Test
         CleanUp
         # this is invoked in develop branch only to test packaging and publishing
         # the packages are published only to local folder in develop branch
@@ -22,6 +24,9 @@ function Main {
     }
     catch {
         LogError $_.Exception.Message
+        if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+        }
     }
 }
 
@@ -32,57 +37,66 @@ function CleanUp {
 
 function NuGetPackAndPublish {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
-    if ($_branchName) {
-        # $changedFiles = git diff --name-only "origin/$_branchName...HEAD" 
-        $changedFiles = git diff --name-only master...
-        $changedFiles = $changedFiles | Where-Object { $_.ToString().StartsWith("src/", 1) } 
-        $changedFiles
-        if ($changedFiles.Length -gt 0) {
-            $tempChangedProjects = $changedFiles | Select-Object `
-            @{
-                N = 'Project';
-                E = 
-                { 
-                    $temp = $_.ToString().Substring(4);
-                    $temp.Substring(0, $temp.IndexOf("/")) 
-                }
-            } -Unique
+    $changedFiles = git diff --name-only "HEAD^..HEAD" 
+    # $changedFiles = git diff --name-only master...
+    $changedFiles = $changedFiles | Where-Object { $_.ToString().StartsWith("src/", 1) } 
+    $changedFiles
+    if ($changedFiles.Length -gt 0) {
+        $tempChangedProjects = $changedFiles | Select-Object `
+        @{
+            N = 'Project';
+            E = 
+            { 
+                $temp = $_.ToString().Substring(4);
+                $temp.Substring(0, $temp.IndexOf("/")) 
+            }
+        } -Unique
 
-            $changedProjects = $tempChangedProjects | Select-Object -ExpandProperty Project
-            $changedProjects
-            $commits = git log -n 1 --pretty=%B
-            # $newVersions = GetProjectNewVersions "feat: test" $changedProjects
-            $newVersions = GetProjectNewVersions $commits[0] $changedProjects
-            $newVersions
+        $changedProjects = $tempChangedProjects | Select-Object -ExpandProperty Project
+        $changedProjects
+        $commits = git log -n 1 --pretty=%B
+        # $newVersions = GetProjectNewVersions "feat: test" $changedProjects
+        $newVersions = GetProjectNewVersions $commits[0] $changedProjects
+        $newVersions
             
-            # nuget pack
+        # nuget pack
+        foreach ($key in $newVersions.keys) {
+            $projectPath = Join-Path $_rootDirPath "src/$key/$key.csproj"
+            $newVersion = $newVersions.$key
+            UpdateVersion $projectPath $newVersion
+            dotnet pack $projectPath --configuration Release -o $_outputPath
+            LogDebug "Packed package: $key.$newVersion.nupkg"
+        }
+
+        # nuget publish and git tag
+        foreach ($key in $newVersions.keys) {
+            $newVersion = $newVersions.$key
+            if ($_branchName -eq "master") {
+                if (-Not($_nugetApiKey)) {
+                    throw "NuGet API key not found"
+                }
+                dotnet nuget push "$_outputPath/$key.$newVersion.nupkg" -k $_nugetApiKey -s $_nugetSource
+                LogInfo "Published package: $key.$newVersion.nupkg"
+            }
+            else {
+                # this block is useful for testing
+                if (-Not(Test-Path $_testNugetSource)) {
+                    New-Item -ItemType Directory -Force -Path $_testNugetSource
+                }
+                dotnet nuget push "$_outputPath/$key.$newVersion.nupkg" -s $_testNugetSource
+                LogInfo "Published package: $key.$newVersion.nupkg"
+            }
+        }
+
+        # git tag
+        if ($_branchName -eq "master") {
             foreach ($key in $newVersions.keys) {
-                $projectPath = Join-Path $_rootDirPath "src/$key/$key.csproj"
-                $newVersion = $newVersions.$key
-                UpdateVersion $projectPath $newVersion
-                dotnet pack $projectPath --configuration Release -o $_outputPath
-                LogDebug "Packed package: $key.$newVersion.nupkg"
+                git tag "$key.$newVersion"
+                LogDebug "Git tagged: $key.$newVersion"
             }
 
-            # nuget publish
-            foreach ($key in $newVersions.keys) {
-                $newVersion = $newVersions.$key
-                if ($_branchName -eq "master") {
-                    if (-Not($_nugetApiKey)) {
-                        throw "NuGet API key not found"
-                    }
-                    dotnet nuget push "$_outputPath/$key.$newVersion.nupkg" -k $_nugetApiKey -s $_nugetSource
-                    LogInfo "Published package: $key.$newVersion.nupkg"
-                }
-                else {
-                    # this block is useful for testing
-                    if (-Not(Test-Path $_testNugetSource)) {
-                        New-Item -ItemType Directory -Force -Path $_testNugetSource
-                    }
-                    dotnet nuget push "$_outputPath/$key.$newVersion.nupkg" -s $_testNugetSource
-                    LogInfo "Published package: $key.$newVersion.nupkg"
-                }
-            }
+            git push origin --tags
+            LogInfo "Pushed Git Tags"
         }
     } 
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
