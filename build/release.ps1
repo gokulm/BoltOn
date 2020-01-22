@@ -13,7 +13,7 @@ function Main {
         Import-Module $_boltOnModulePath -Force
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
         LogDebug "Branch: $_branchName"
-        # Build
+        Build
         # uncomment Test after fixing all the integration tests
         # Test
         CleanUp

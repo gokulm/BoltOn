@@ -17,18 +17,18 @@ namespace BoltOn.Samples.WebApi
 
         public void Run(PostRegistrationTaskContext context)
         {
-			// using (var scope = _serviceProvider.CreateScope())
-			// {
-			// 	var testDbContext = scope.ServiceProvider.GetService<SchoolDbContext>();
-			// 	testDbContext.Database.EnsureDeleted();
-			// 	testDbContext.Database.EnsureCreated();
+			using (var scope = _serviceProvider.CreateScope())
+			{
+				var testDbContext = scope.ServiceProvider.GetService<SchoolDbContext>();
+				testDbContext.Database.EnsureDeleted();
+				testDbContext.Database.EnsureCreated();
 
-			// 	var inState = new StudentType(1, "In-State");
-			// 	var outOfState = new StudentType(2, "Out-of-State");
-			// 	testDbContext.Set<StudentType>().Add(inState);
-			// 	testDbContext.Set<StudentType>().Add(outOfState);
-			// 	testDbContext.SaveChanges();
-			// }
+				var inState = new StudentType(1, "In-State");
+				var outOfState = new StudentType(2, "Out-of-State");
+				testDbContext.Set<StudentType>().Add(inState);
+				testDbContext.Set<StudentType>().Add(outOfState);
+				testDbContext.SaveChanges();
+			}
 		}
     }
 }
