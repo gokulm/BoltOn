@@ -7,7 +7,7 @@ function Main {
         Import-Module $_boltOnModulePath -Force
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
         Build
-        Test
+        # Test
         LogEndFunction "$($MyInvocation.MyCommand.Name)"
     }
     catch {
