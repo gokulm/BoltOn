@@ -24,7 +24,7 @@ namespace BoltOn
 		public static void LoosenBolts(this IServiceProvider serviceProvider)
 		{
 			var bootstrapper = serviceProvider.GetService<Bootstrapper>();
-			bootstrapper.RunCleanupTasks();
+			bootstrapper.Dispose();
 		}
 
 		public static BoltOnOptions BoltOnCqrsModule(this BoltOnOptions boltOnOptions,

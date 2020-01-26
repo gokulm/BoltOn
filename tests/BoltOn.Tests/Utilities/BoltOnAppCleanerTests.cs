@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using BoltOn.Bootstrapping;
 using BoltOn.Logging;
-using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -12,13 +11,6 @@ namespace BoltOn.Tests.Bootstrapping
 	[Collection("IntegrationTests")]
 	public class BoltOnAppCleanerTests : IDisposable
 	{
-		public BoltOnAppCleanerTests()
-		{
-			//Bootstrapper
-			//	.Instance
-			//	.Dispose();
-		}
-
 		[Fact]
 		public void BoltOnAppCleaner_Clean_ExecutesAllCleanupTasksInOrder()
 		{
@@ -50,9 +42,6 @@ namespace BoltOn.Tests.Bootstrapping
 		public void Dispose()
 		{
 			BoltOnAppCleanerHelper.LoggerStatements.Clear();
-			//Bootstrapper
-			//	.Instance
-			//	.Dispose();
 		}
 	}
 

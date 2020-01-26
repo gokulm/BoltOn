@@ -8,37 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
 {
-	internal sealed class BootstrapperContainer
-	{
-		private static readonly Lazy<BootstrapperContainer> _instance = new Lazy<BootstrapperContainer>(() => new BootstrapperContainer());
-
-		internal static BootstrapperContainer Instance => _instance.Value;
-
-		private Dictionary<IServiceCollection, Bootstrapper> _bootStrappers = new Dictionary<IServiceCollection, Bootstrapper>();
-		private Dictionary<IServiceCollection, BoltOnOptions> _optionsDictionary = new Dictionary<IServiceCollection, BoltOnOptions>();
-
-
-		//public void Set(IServiceCollection serviceCollection, Bootstrapper bootstrapper)
-		//{
-		//	_bootStrappers.Add(serviceCollection, bootstrapper);
-		//}
-
-		//public Bootstrapper Get(IServiceCollection serviceCollection)
-		//{
-		//	return _bootStrappers[serviceCollection];
-		//}
-
-		public void SetOptions(IServiceCollection serviceCollection, BoltOnOptions bootstrapper)
-		{
-			_optionsDictionary.Add(serviceCollection, bootstrapper);
-		}
-
-		public BoltOnOptions GetOptions(IServiceCollection serviceCollection)
-		{
-			return _optionsDictionary[serviceCollection];
-		}
-	}
-
 	internal sealed class Bootstrapper : IDisposable
 	{
 		private Assembly _callingAssembly;

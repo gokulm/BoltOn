@@ -84,7 +84,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact, TestPriority(11)]
-		public void BoltOn_BoltOnCalledMoreThanOnce_RegistrationTasksGetCalledOnce()
+		public void BoltOn_BoltOnCalledMoreThanOnce_RegistrationTasksGetCalledMoreThanOnce()
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
@@ -96,7 +96,7 @@ namespace BoltOn.Tests.Bootstrapping
 			// assert
 			var registrationTaskCount = BootstrapperRegistrationTasksHelper.Tasks
 									.Count(w => w == $"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
-			Assert.True(registrationTaskCount == 1);
+			Assert.True(registrationTaskCount > 1);
 		}
 
 		[Fact, TestPriority(12)]

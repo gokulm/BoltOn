@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
@@ -356,9 +355,6 @@ namespace BoltOn.Tests.Mediator
 		public void Dispose()
 		{
 			MediatorTestHelper.LoggerStatements.Clear();
-			//Bootstrapper
-			//	.Instance
-			//	.Dispose();
 		}
 	}
 }
