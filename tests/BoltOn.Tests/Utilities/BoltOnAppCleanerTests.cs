@@ -14,9 +14,9 @@ namespace BoltOn.Tests.Bootstrapping
 	{
 		public BoltOnAppCleanerTests()
 		{
-			Bootstrapper
-				.Instance
-				.Dispose();
+			//Bootstrapper
+			//	.Instance
+			//	.Dispose();
 		}
 
 		[Fact]
@@ -37,7 +37,7 @@ namespace BoltOn.Tests.Bootstrapping
 			serviceProvider.TightenBolts();
 
 			// act
-			BoltOnAppCleaner.Clean();
+			serviceProvider.LoosenBolts();
 
 			// assert
 			var testCleanupTask = BoltOnAppCleanerHelper.LoggerStatements.IndexOf($"Executed {nameof(TestCleanupTask)}");
@@ -50,9 +50,9 @@ namespace BoltOn.Tests.Bootstrapping
 		public void Dispose()
 		{
 			BoltOnAppCleanerHelper.LoggerStatements.Clear();
-			Bootstrapper
-				.Instance
-				.Dispose();
+			//Bootstrapper
+			//	.Instance
+			//	.Dispose();
 		}
 	}
 

@@ -53,7 +53,7 @@ namespace BoltOn.Bootstrapping
 			serviceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
 			serviceCollection.AddScoped<EventBag>();
 
-            foreach (var option in Bootstrapper.Instance.OtherOptions)
+            foreach (var option in context.Bootstrapper.Options.OtherOptions)
             {
                 serviceCollection.AddSingleton(option.GetType(), option);
             }
@@ -73,7 +73,7 @@ namespace BoltOn.Bootstrapping
 		{
 			context.AddInterceptor<StopwatchInterceptor>();
 
-			if (Bootstrapper.Instance.Options.IsCqrsEnabled)
+			if (context.Bootstrapper.Options.IsCqrsEnabled)
 			{
 				context.AddInterceptor<CqrsInterceptor>();
 				context.Container.AddTransient<IEventDispatcher, EventDispatcher>();

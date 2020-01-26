@@ -159,9 +159,9 @@ namespace BoltOn.Tests.Data.CosmosDb
 				_sut.DeleteAsync(student, new RequestOptions { PartitionKey = new PartitionKey(1) }).GetAwaiter().GetResult();
 			}
 
-			Bootstrapper
-				.Instance
-				.Dispose();
+			//Bootstrapper
+			//	.Instance
+			//	.Dispose();
 		}
 	}
 }

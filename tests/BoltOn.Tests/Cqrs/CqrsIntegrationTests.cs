@@ -521,9 +521,9 @@ namespace BoltOn.Tests.Cqrs
 		public void Dispose()
 		{
 			CqrsTestHelper.LoggerStatements.Clear();
-			Bootstrapper
-				.Instance
-				.Dispose();
+			//Bootstrapper
+			//	.Instance
+			//	.Dispose();
 		}
 	}
 }

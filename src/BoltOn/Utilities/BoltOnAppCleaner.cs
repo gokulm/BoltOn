@@ -2,11 +2,19 @@
 
 namespace BoltOn.Utilities
 {
-    public static class BoltOnAppCleaner
+    public class BoltOnAppCleaner
     {
-        public static void Clean()
+		private readonly Bootstrapper _bootstrapper;
+
+		//public BoltOnAppCleaner(Bootstrapper bootstrapper)
+		//{
+		//	this._bootstrapper = bootstrapper;
+		//}
+
+        public  void Clean()
         {
-            Bootstrapper.Instance.RunCleanupTasks();
+			//Bootstrapper.Instance.RunCleanupTasks();
+			//this._bootstrapper.RunCleanupTasks();
         }
     }
 }

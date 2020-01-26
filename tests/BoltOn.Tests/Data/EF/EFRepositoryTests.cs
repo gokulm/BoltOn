@@ -256,9 +256,9 @@ namespace BoltOn.Tests.Data.EF
 
 		public void Dispose()
 		{
-			Bootstrapper
-				.Instance
-				.Dispose();
+			//Bootstrapper
+			//	.Instance
+			//	.Dispose();
 		}
 	}
 }

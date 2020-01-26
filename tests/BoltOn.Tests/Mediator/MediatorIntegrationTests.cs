@@ -410,9 +410,9 @@ namespace BoltOn.Tests.Mediator
 			MediatorTestHelper.IsClearInterceptors = false;
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
 			MediatorTestHelper.LoggerStatements.Clear();
-			Bootstrapper
-				.Instance
-				.Dispose();
+			//Bootstrapper
+			//	.Instance
+			//	.Dispose();
 		}
 	}
 }

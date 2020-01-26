@@ -78,9 +78,9 @@ namespace BoltOn.Tests.Mediator
 		public void Dispose()
 		{
 			MediatorTestHelper.LoggerStatements.Clear();
-			Bootstrapper
-				.Instance
-				.Dispose();
+			//Bootstrapper
+			//	.Instance
+			//	.Dispose();
 		}
 	}
 }

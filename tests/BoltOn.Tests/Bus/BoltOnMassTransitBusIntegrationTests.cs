@@ -19,11 +19,11 @@ namespace BoltOn.Tests.Bus
 	{
 		public BoltOnMassTransitBusIntegrationTests()	
 		{	
-			Bootstrapper	
-				.Instance	
-				.Dispose();	
+			//Bootstrapper	
+			//	.Instance	
+			//	.Dispose();	
 		}
-
+		 
 		[Fact]
 		public async Task PublishAsync_InMemoryHost_GetsConsumed()
 		{
@@ -119,9 +119,9 @@ namespace BoltOn.Tests.Bus
 		public void Dispose()
 		{
 			MediatorTestHelper.LoggerStatements.Clear();
-			Bootstrapper
-				.Instance
-				.Dispose();
+			//Bootstrapper
+			//	.Instance
+			//	.Dispose();
 		}
 	}
 }
