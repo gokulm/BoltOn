@@ -17,7 +17,7 @@ namespace BoltOn.Bootstrapping
 			InterceptorTypes = new HashSet<Type>();
 		}
 
-		public IServiceCollection Container => Bootstrapper.Container;
+		public IServiceCollection ServiceCollection => Bootstrapper.ServiceCollection;
 
 	    public IReadOnlyList<Assembly> Assemblies => Bootstrapper.Assemblies;
 

@@ -11,7 +11,7 @@ namespace BoltOn
 		{
 			var options = new BoltOnOptions(serviceCollection);
 			action?.Invoke(options);
-			_ = Bootstrapper.Create(serviceCollection, options, Assembly.GetCallingAssembly());
+			_ = Bootstrapper.Create(options, Assembly.GetCallingAssembly());
 			return serviceCollection;
 		}
 
@@ -33,7 +33,7 @@ namespace BoltOn
 			boltOnOptions.IsCqrsEnabled = true;
 			var options = new CqrsOptions();
 			action?.Invoke(options);
-			boltOnOptions.OtherOptions.Add(options);
+			boltOnOptions.ServiceCollection.AddSingleton(options);
 			return boltOnOptions;
 		}
 	}

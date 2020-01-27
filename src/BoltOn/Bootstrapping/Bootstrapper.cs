@@ -16,7 +16,7 @@ namespace BoltOn.Bootstrapping
 		private bool _isBolted, _isAppCleaned, _isTightened;
 		private RegistrationTaskContext _registrationTaskContext;
 
-		internal Bootstrapper(IServiceCollection serviceCollection, BoltOnOptions options, Assembly callingAssembly = null)
+		internal Bootstrapper(BoltOnOptions options, Assembly callingAssembly = null)
 		{
 			Assemblies = new List<Assembly>().AsReadOnly();
 			_isBolted = false;
@@ -24,15 +24,15 @@ namespace BoltOn.Bootstrapping
 			_serviceProvider = null;
 			Options = null;
 
-			BoltOn(serviceCollection, options, callingAssembly);
+			BoltOn(options, callingAssembly);
 		}
 
-	    internal static Bootstrapper Create(IServiceCollection serviceCollection, BoltOnOptions options, Assembly callingAssembly = null)
+	    internal static Bootstrapper Create(BoltOnOptions options, Assembly callingAssembly = null)
 		{
-			return new Bootstrapper(serviceCollection, options, callingAssembly);
+			return new Bootstrapper(options, callingAssembly);
 		}
 
-		internal IServiceCollection Container
+		internal IServiceCollection ServiceCollection
 		{
 			get
 			{
@@ -63,12 +63,12 @@ namespace BoltOn.Bootstrapping
 
         internal IReadOnlyList<Assembly> Assemblies { get; private set; }
 
-		internal void BoltOn(IServiceCollection serviceCollection, BoltOnOptions options, Assembly callingAssembly = null)
+		internal void BoltOn(BoltOnOptions options, Assembly callingAssembly = null)
 		{
 			if (_isBolted)
 				return;
 
-			_serviceCollection = serviceCollection;
+			_serviceCollection = options.ServiceCollection;
 			Options = options;
 			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
 			LoadAssemblies();

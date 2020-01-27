@@ -7,8 +7,7 @@ namespace BoltOn.Data.EF
 	{
 		public void Run(RegistrationTaskContext context)
 		{
-			var container = context.Container;
-			container.AddScoped<ChangeTrackerContext>();
+			context.ServiceCollection.AddScoped<ChangeTrackerContext>();
 			context.AddInterceptor<ChangeTrackerInterceptor>();
 		}
 	}

@@ -24,33 +24,33 @@ namespace BoltOn.Tests.Mediator.Fakes
 			var changeTrackerInterceptor = new Mock<IBoltOnLogger<ChangeTrackerInterceptor>>();
 			changeTrackerInterceptor.Setup(s => s.Debug(It.IsAny<string>()))
 									 .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-			context.Container.AddTransient(s => changeTrackerInterceptor.Object);
+			context.ServiceCollection.AddTransient(s => changeTrackerInterceptor.Object);
 
 
 			var boltOnClock = new Mock<IBoltOnClock>();
 			var currentDateTime = DateTime.Parse("10/27/2018 12:51:59 PM");
 			boltOnClock.Setup(s => s.Now).Returns(currentDateTime);
-			context.Container.AddTransient((s) => boltOnClock.Object);
+			context.ServiceCollection.AddTransient((s) => boltOnClock.Object);
 
 			var testInterceptorLogger = new Mock<IBoltOnLogger<TestInterceptor>>();
 			testInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-			context.Container.AddTransient((s) => testInterceptorLogger.Object);
+			context.ServiceCollection.AddTransient((s) => testInterceptorLogger.Object);
 
 			var stopWatchInterceptorLogger = new Mock<IBoltOnLogger<StopwatchInterceptor>>();
 			stopWatchInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
 									 .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-			context.Container.AddTransient((s) => stopWatchInterceptorLogger.Object);
+			context.ServiceCollection.AddTransient((s) => stopWatchInterceptorLogger.Object);
 
 			var customUoWOptionsBuilder = new Mock<IBoltOnLogger<TestCustomUnitOfWorkOptionsBuilder>>();
 			customUoWOptionsBuilder.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-			context.Container.AddTransient((s) => customUoWOptionsBuilder.Object);
+			context.ServiceCollection.AddTransient((s) => customUoWOptionsBuilder.Object);
 
 			var uowOptionsBuilderLogger = new Mock<IBoltOnLogger<UnitOfWorkOptionsBuilder>>();
 			uowOptionsBuilderLogger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-			context.Container.AddTransient((s) => uowOptionsBuilderLogger.Object);
+			context.ServiceCollection.AddTransient((s) => uowOptionsBuilderLogger.Object);
 
 			if (MediatorTestHelper.IsClearInterceptors)
 				context.RemoveAllInterceptors();
@@ -59,11 +59,11 @@ namespace BoltOn.Tests.Mediator.Fakes
 			{
 				context.RemoveInterceptor<ChangeTrackerInterceptor>();
 				context.AddInterceptor<CustomChangeTrackerInterceptor>();
-				context.Container.AddSingleton<IUnitOfWorkOptionsBuilder, TestCustomUnitOfWorkOptionsBuilder>();
+				context.ServiceCollection.AddSingleton<IUnitOfWorkOptionsBuilder, TestCustomUnitOfWorkOptionsBuilder>();
 				var customChangeTrackerInterceptorLogger = new Mock<IBoltOnLogger<CustomChangeTrackerInterceptor>>();
 				customChangeTrackerInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
 										 .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-				context.Container.AddTransient((s) => customChangeTrackerInterceptorLogger.Object);
+				context.ServiceCollection.AddTransient((s) => customChangeTrackerInterceptorLogger.Object);
 			}
 
 			if (MediatorTestHelper.IsRemoveStopwatchInterceptor)

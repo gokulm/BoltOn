@@ -10,21 +10,18 @@ namespace BoltOn.Bootstrapping
 
         internal bool IsCqrsEnabled { get; set; }
 
-		internal IServiceCollection ServiceCollection { get; set; }
-
-		//public Bootstrapper Bootstrapper { get; set; }
-
 		internal List<object> OtherOptions { get; } = new List<object>();
 
-		public void BoltOnAssemblies(params Assembly[] assemblies)
-		{
-			AssembliesToBeIncluded.AddRange(assemblies);
-		}
+		public IServiceCollection ServiceCollection { get; private set; }
 
 		public BoltOnOptions(IServiceCollection serviceCollection)
 		{
 			ServiceCollection = serviceCollection;
-			//BootstrapperContainer.Instance.SetOptions(serviceCollection, this);
+		}
+
+		public void BoltOnAssemblies(params Assembly[] assemblies)
+		{
+			AssembliesToBeIncluded.AddRange(assemblies);
 		}
 	}
 }
