@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Tests.Common;
@@ -78,9 +77,6 @@ namespace BoltOn.Tests.Mediator
 		public void Dispose()
 		{
 			MediatorTestHelper.LoggerStatements.Clear();
-			Bootstrapper
-				.Instance
-				.Dispose();
 		}
 	}
 }

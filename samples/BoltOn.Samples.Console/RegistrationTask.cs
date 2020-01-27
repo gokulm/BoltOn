@@ -17,9 +17,9 @@ namespace BoltOn.Samples.Console
     {
         public void Run(RegistrationTaskContext context)
         {
-            var container = context.Container;
+            var serviceCollection = context.ServiceCollection;
 
-            container.AddMassTransit(x =>
+            serviceCollection.AddMassTransit(x =>
             {
                 x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
@@ -41,13 +41,13 @@ namespace BoltOn.Samples.Console
 				}));
             });
 
-            container.AddDbContext<SchoolDbContext>(options =>
+            serviceCollection.AddDbContext<SchoolDbContext>(options =>
             {
                 options.UseSqlServer("Data Source=127.0.0.1;initial catalog=BoltOnSamples;persist security info=True;User ID=sa;Password=Password1;");
             });
 
-			container.AddTransient<IRepository<Student>, Data.EF.Repository<Student, SchoolDbContext>>();
-			container.AddTransient<IRepository<StudentFlattened>, Data.EF.Repository<StudentFlattened, SchoolDbContext>>();
+			serviceCollection.AddTransient<IRepository<Student>, Data.EF.Repository<Student, SchoolDbContext>>();
+			serviceCollection.AddTransient<IRepository<StudentFlattened>, Data.EF.Repository<StudentFlattened, SchoolDbContext>>();
 			//container.AddTransient<IRepository<StudentFlattened>, Data.CosmosDb.Repository<StudentFlattened, SchoolCosmosDbOptions>>();
 		}
     }

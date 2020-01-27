@@ -38,12 +38,12 @@ namespace BoltOn.Bootstrapping
 								 where grp.Count() == 1
 								 select new { Interface = grp.Key, grp.First().Implementation }).ToList();
 
-			registrations.ForEach(f => context.Container.AddTransient(f.Interface, f.Implementation));
+			registrations.ForEach(f => context.ServiceCollection.AddTransient(f.Interface, f.Implementation));
 		}
 
 		private void RegisterOtherTypes(RegistrationTaskContext context)
 		{
-			var serviceCollection = context.Container;
+			var serviceCollection = context.ServiceCollection;
 			serviceCollection.AddScoped<IUnitOfWorkManager>(s =>
 			{
 				return new UnitOfWorkManager(s.GetRequiredService<IBoltOnLogger<UnitOfWorkManager>>(), 
@@ -53,7 +53,7 @@ namespace BoltOn.Bootstrapping
 			serviceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
 			serviceCollection.AddScoped<EventBag>();
 
-            foreach (var option in Bootstrapper.Instance.OtherOptions)
+            foreach (var option in context.Bootstrapper.Options.OtherOptions)
             {
                 serviceCollection.AddSingleton(option.GetType(), option);
             }
@@ -61,9 +61,9 @@ namespace BoltOn.Bootstrapping
 
 		public void RegisterMediator(RegistrationTaskContext context)
 		{
-			var container = context.Container;
-			container.AddTransient<IMediator, Mediator.Pipeline.Mediator>();
-			container.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
+			var serviceCollection = context.ServiceCollection;
+			serviceCollection.AddTransient<IMediator, Mediator.Pipeline.Mediator>();
+			serviceCollection.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
 			RegisterInterceptors(context);
 			RegisterHandlers(context);
 			RegisterOneWayHandlers(context);
@@ -73,10 +73,10 @@ namespace BoltOn.Bootstrapping
 		{
 			context.AddInterceptor<StopwatchInterceptor>();
 
-			if (Bootstrapper.Instance.Options.IsCqrsEnabled)
+			if (context.Bootstrapper.Options.IsCqrsEnabled)
 			{
 				context.AddInterceptor<CqrsInterceptor>();
-				context.Container.AddTransient<IEventDispatcher, EventDispatcher>();
+				context.ServiceCollection.AddTransient<IEventDispatcher, EventDispatcher>();
 			}
 
 			context.AddInterceptor<UnitOfWorkInterceptor>();
@@ -92,7 +92,7 @@ namespace BoltOn.Bootstrapping
 								handlerInterfaceType.IsAssignableFrom(i.GetGenericTypeDefinition())
 							select new { Interface = i, Implementation = t }).ToList();
 			foreach (var handler in handlers)
-				context.Container.AddTransient(handler.Interface, handler.Implementation);
+				context.ServiceCollection.AddTransient(handler.Interface, handler.Implementation);
 		}
 
 		private static void RegisterOneWayHandlers(RegistrationTaskContext context)
@@ -105,7 +105,7 @@ namespace BoltOn.Bootstrapping
 								handlerInterfaceType.IsAssignableFrom(i.GetGenericTypeDefinition())
 							select new { Interface = i, Implementation = t }).ToList();
 			foreach (var handler in handlers)
-				context.Container.AddTransient(handler.Interface, handler.Implementation);
+				context.ServiceCollection.AddTransient(handler.Interface, handler.Implementation);
 		}
 	}
 }

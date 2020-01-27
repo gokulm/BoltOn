@@ -38,7 +38,7 @@ namespace BoltOn.Samples.WebApi
 		{
 			app.UseMvc();
 			app.ApplicationServices.TightenBolts();
-			appLifetime.ApplicationStopping.Register(() => BoltOnAppCleaner.Clean());
+			appLifetime.ApplicationStopping.Register(() => app.ApplicationServices.LoosenBolts());
 		}
 	}
 }
