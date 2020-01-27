@@ -24,7 +24,6 @@ namespace BoltOn.Samples.Console
                 x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
                     var host = cfg.Host(new Uri("rabbitmq://bolton-rabbitmq-container:5672"), hostConfigurator =>
-                    // var host = cfg.Host(new Uri("rabbitmq://127.0.0.1:5600"), hostConfigurator =>
                     {
                         hostConfigurator.Username("guest");
                         hostConfigurator.Password("guest");
@@ -44,7 +43,7 @@ namespace BoltOn.Samples.Console
 
             container.AddDbContext<SchoolDbContext>(options =>
             {
-                options.UseSqlServer("Data Source=bolton-sql-container,5005;initial catalog=BoltOnSamples;persist security info=True;User ID=sa;Password=Password1;");
+                options.UseSqlServer("Data Source=bolton-sql-container;initial catalog=BoltOnSamples;persist security info=True;User ID=sa;Password=Password1;");
             });
 
 			// container.AddCosmosDb<SchoolCosmosDbOptions>(options =>

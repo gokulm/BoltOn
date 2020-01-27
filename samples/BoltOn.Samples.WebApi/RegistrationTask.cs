@@ -29,7 +29,7 @@ namespace BoltOn.Samples.WebApi
 
             container.AddDbContext<SchoolDbContext>(options =>
             {
-                options.UseSqlServer("Data Source=bolton-sql-container,5005;initial catalog=BoltOnSamples;persist security info=True;User ID=sa;Password=Password1;");
+                options.UseSqlServer("Data Source=bolton-sql-container;initial catalog=BoltOnSamples;persist security info=True;User ID=sa;Password=Password1;");
             });
 
 			// container.AddCosmosDb<SchoolCosmosDbOptions>(options =>

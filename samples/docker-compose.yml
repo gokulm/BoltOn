@@ -13,36 +13,34 @@ services:
   rabbitmq:
     image: rabbitmq:3.8.2-management
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5010:5672"
+      - "5015:15672"
     container_name: bolton-rabbitmq-container
-    # volumes:
-    #   - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.config
     networks:
       - bolton-network
-  # console:
-  #   depends_on:
-  #     - rabbitmq
-  #     - sql
-  #   build:
-  #     context: ./
-  #     dockerfile: Dockerfile.Console
-  #   container_name: bolton-console-container
-  #   networks:
-  #     - bolton-network
+  console:
+    depends_on:
+      - rabbitmq
+      - sql
+    build:
+      context: ./
+      dockerfile: Dockerfile.Console
+    container_name: bolton-console-container
+    networks:
+      - bolton-network
   api:
     build:
       context: ./
       dockerfile: Dockerfile.WebApi
     ports:
-      - "5000:80"
+      - "5020:80"
     container_name: bolton-api-container
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       - rabbitmq
       - sql
-      # - console
+      - console
     networks:
       - bolton-network
 

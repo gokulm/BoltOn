@@ -28,8 +28,8 @@ namespace BoltOn.Samples.WebApi
 			{
 				options.BoltOnEFModule();
 				// options.BoltOnCosmosDbModule();
-				// options.BoltOnMassTransitBusModule();
-				// options.BoltOnCqrsModule();
+				options.BoltOnMassTransitBusModule();
+				options.BoltOnCqrsModule();
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolDbContext).Assembly);
 			});
 		}
