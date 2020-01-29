@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Overrides.Mediator;
 using BoltOn.Tests.Mediator.Fakes;
-using BoltOn.Tests.Other;
 using BoltOn.UoW;
 using BoltOn.Utilities;
 using Moq;
@@ -19,7 +17,7 @@ using Xunit;
 
 namespace BoltOn.Tests.Mediator
 {
-	public class MediatorTests : IDisposable
+    public class MediatorTests : IDisposable
 	{
 		[Fact]
 		public async Task Process_RegisteredHandlerThatReturnsBool_ReturnsSuccessfulResult()
@@ -357,9 +355,6 @@ namespace BoltOn.Tests.Mediator
 		public void Dispose()
 		{
 			MediatorTestHelper.LoggerStatements.Clear();
-			Bootstrapper
-				.Instance
-				.Dispose();
 		}
 	}
 }

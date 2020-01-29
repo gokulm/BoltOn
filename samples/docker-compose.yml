@@ -33,7 +33,7 @@ services:
       context: ./
       dockerfile: Dockerfile.WebApi
     ports:
-      - "5020:80"
+      - "5000:80"
     container_name: bolton-api-container
     environment:
       - ASPNETCORE_ENVIRONMENT=Development

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -11,26 +10,29 @@ namespace BoltOn.Bootstrapping
 {
 	internal sealed class Bootstrapper : IDisposable
 	{
-		private static readonly Lazy<Bootstrapper> _instance = new Lazy<Bootstrapper>(() => new Bootstrapper());
 		private Assembly _callingAssembly;
 		private IServiceCollection _serviceCollection;
 		private IServiceProvider _serviceProvider;
 		private bool _isBolted, _isAppCleaned, _isTightened;
 		private RegistrationTaskContext _registrationTaskContext;
-        private List<object> _options = new List<object>();
 
-		private Bootstrapper()
+		internal Bootstrapper(BoltOnOptions options, Assembly callingAssembly = null)
 		{
 			Assemblies = new List<Assembly>().AsReadOnly();
 			_isBolted = false;
 			_serviceCollection = null;
 			_serviceProvider = null;
 			Options = null;
+
+			BoltOn(options, callingAssembly);
 		}
 
-		internal static Bootstrapper Instance => _instance.Value;
+	    internal static Bootstrapper Create(BoltOnOptions options, Assembly callingAssembly = null)
+		{
+			return new Bootstrapper(options, callingAssembly);
+		}
 
-		internal IServiceCollection Container
+		internal IServiceCollection ServiceCollection
 		{
 			get
 			{
@@ -61,16 +63,17 @@ namespace BoltOn.Bootstrapping
 
         internal IReadOnlyList<Assembly> Assemblies { get; private set; }
 
-		internal void BoltOn(IServiceCollection serviceCollection, BoltOnOptions options, Assembly callingAssembly = null)
+		internal void BoltOn(BoltOnOptions options, Assembly callingAssembly = null)
 		{
 			if (_isBolted)
 				return;
 
-			_serviceCollection = serviceCollection;
+			_serviceCollection = options.ServiceCollection;
 			Options = options;
 			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
 			LoadAssemblies();
 			RunRegistrationTasks();
+			_serviceCollection.AddSingleton(this);
 			_isBolted = true;
 		}
 

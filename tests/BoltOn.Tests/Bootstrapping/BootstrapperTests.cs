@@ -13,26 +13,6 @@ namespace BoltOn.Tests.Bootstrapping
 	[Collection("IntegrationTests")]
 	public class BootstrapperTests : IDisposable
 	{
-		[Fact, TestPriority(1)]
-		public void Container_CallContainerBeforeInitializingContainer_ThrowsException()
-		{
-		    // act and assert
-			Assert.Throws<Exception>(() => Bootstrapper.Instance.Container);
-		}
-
-		[Fact, TestPriority(2)] 
-		public void Container_CallContainerAfterInitializingContainer_ReturnsContainer()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-
-			// act 
-			serviceCollection.BoltOn();
-
-			// assert
-			Assert.NotNull(Bootstrapper.Instance.Container);
-		}
-
 		[Fact, TestPriority(6)]
 		public void BoltOn_ConcreteClassWithoutRegistrationButResolvableDependencies_ReturnsInstance()
 		{
@@ -84,7 +64,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact, TestPriority(11)]
-		public void BoltOn_BoltOnCalledMoreThanOnce_RegistrationTasksGetCalledOnce()
+		public void BoltOn_BoltOnCalledMoreThanOnce_RegistrationTasksGetCalledMoreThanOnce()
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
@@ -96,7 +76,7 @@ namespace BoltOn.Tests.Bootstrapping
 			// assert
 			var registrationTaskCount = BootstrapperRegistrationTasksHelper.Tasks
 									.Count(w => w == $"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
-			Assert.True(registrationTaskCount == 1);
+			Assert.True(registrationTaskCount > 1);
 		}
 
 		[Fact, TestPriority(12)]
@@ -193,9 +173,9 @@ namespace BoltOn.Tests.Bootstrapping
 
 		public void Dispose()
 		{
-			Bootstrapper
-				.Instance
-				.Dispose();
+			//Bootstrapper
+			//	.Instance
+			//	.Dispose();
 			BootstrapperRegistrationTasksHelper.Tasks.Clear();
 		}
 	}
@@ -270,7 +250,7 @@ namespace BoltOn.Tests.Bootstrapping
 		public void Run(RegistrationTaskContext context)
 		{
 			BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
-			context.Container
+			context.ServiceCollection
 				   .AddTransient<Employee>()
 				   .AddTransient<ClassWithInjectedDependency>();
 		}

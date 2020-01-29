@@ -7,7 +7,7 @@ namespace BoltOn.Bus.MassTransit
     {
         public void Run(RegistrationTaskContext context)
         {
-            var serviceCollection = context.Container;
+            var serviceCollection = context.ServiceCollection;
             serviceCollection.AddSingleton<IBus, BoltOnMassTransitBus>();
 			serviceCollection.AddTransient(typeof(BoltOnMassTransitConsumer<>));
         }

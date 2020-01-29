@@ -2,7 +2,6 @@ using System;
 using BoltOn.Data.EF;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-using BoltOn.Bootstrapping;
 using System.Threading.Tasks;
 using System.Linq;
 using BoltOn.Tests.Other;
@@ -15,7 +14,7 @@ namespace BoltOn.Tests.Data.EF
 	// Collection is used to prevent running tests in parallel i.e., tests in the same collection
 	// will not be executed in parallel
 	[Collection("IntegrationTests")]
-	public class EFRepositoryTests : IDisposable
+	public class EFRepositoryTests 
 	{
 		private readonly IRepository<Student> _sut;
 
@@ -252,13 +251,6 @@ namespace BoltOn.Tests.Data.EF
 
 			// assert
 			Assert.Null(queryResult);
-		}
-
-		public void Dispose()
-		{
-			Bootstrapper
-				.Instance
-				.Dispose();
 		}
 	}
 }

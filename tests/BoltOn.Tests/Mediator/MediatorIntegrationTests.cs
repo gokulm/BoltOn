@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Overrides.Mediator;
@@ -16,7 +15,7 @@ using Xunit;
 
 namespace BoltOn.Tests.Mediator
 {
-	[Collection("IntegrationTests")]
+    [Collection("IntegrationTests")]
 	public class MediatorIntegrationTests : IDisposable
 	{
 		[Fact]
@@ -410,9 +409,6 @@ namespace BoltOn.Tests.Mediator
 			MediatorTestHelper.IsClearInterceptors = false;
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
 			MediatorTestHelper.LoggerStatements.Clear();
-			Bootstrapper
-				.Instance
-				.Dispose();
 		}
 	}
 }

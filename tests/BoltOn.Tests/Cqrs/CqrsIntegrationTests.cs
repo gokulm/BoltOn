@@ -6,7 +6,6 @@ using BoltOn.Bus.MassTransit;
 using BoltOn.Logging;
 using Moq;
 using System.Linq;
-using BoltOn.Bootstrapping;
 using MassTransit;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Cqrs;
@@ -196,7 +195,7 @@ namespace BoltOn.Tests.Cqrs
 			var studentId = Guid.NewGuid();
 
 			// act
-			await mediator.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input" });
+			await mediator.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input", RaiseAnotherCreateEvent = false });
 
 			// assert
 			await Task.Delay(1000);
@@ -521,9 +520,6 @@ namespace BoltOn.Tests.Cqrs
 		public void Dispose()
 		{
 			CqrsTestHelper.LoggerStatements.Clear();
-			Bootstrapper
-				.Instance
-				.Dispose();
 		}
 	}
 }

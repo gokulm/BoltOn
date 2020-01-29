@@ -1,27 +1,46 @@
 $_allowedCommitTypes = "fix", "feat", "fix!", "feat!"
 $_srcDirPath = "src/"
+$_nugetSource = "https://api.nuget.org/v3/index.json"
 
-function LogError([string]$message) {
+function LogError() {
+    param(
+        [parameter(Mandatory)]$message
+    )
     Write-Host "$message" -ForegroundColor Red
 }
 
-function LogWarning([string]$message) {
+function LogWarning() {
+    param(
+        [parameter(Mandatory)]$message
+    )
     Write-Host "$message" -ForegroundColor Yellow
 }
 
-function LogInfo([string]$message) {
+function LogInfo() {
+    param(
+        [parameter(Mandatory)]$message
+    )
     Write-Host "$message" -ForegroundColor DarkGreen
 }
 
-function LogDebug([string]$message) {
+function LogDebug() {
+    param(
+        [parameter(Mandatory)]$message
+    )
     Write-Host "$message" -ForegroundColor DarkCyan
 }
 
-function LogBeginFunction([string]$message) {
+function LogBeginFunction() {
+    param(
+        [parameter(Mandatory)]$message
+    )
     LogInfo "== BEGIN $message =="
 }
 
-function LogEndFunction([string]$message) {
+function LogEndFunction() {
+    param(
+        [parameter(Mandatory)]$message
+    )
     LogInfo "== END $message =="
 }
 
@@ -53,7 +72,7 @@ function UpdateAssemblyVersion() {
 function UpdateVersion() {
     param(
         [parameter(Mandatory)][string]$csprojFilePath,
-        [string]$version
+        [parameter(Mandatory)][string]$version
     )
 
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
@@ -65,38 +84,32 @@ function UpdateVersion() {
     $xml.Load($csprojFilePath)
     $xml.Project.PropertyGroup[0].Version = $version
     $xml.Save($csprojFilePath)
-    LogDebug "Updated version to $version"
+    CheckLastExitCode "Updating csproj version failed"
+    
+    LogDebug "Updated $csprojFilePath version to $version"
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
 function GetProjectNewVersions {
     param (
-        [Parameter(Mandatory=$true)][string]$commitMessage,
-        [Parameter(Mandatory=$false)][string]$changedProjects
+        [string]$commitMessage,
+        [string[]]$changedProjects
     )
 
     $option = [System.StringSplitOptions]::RemoveEmptyEntries
-    $separator = "\r\n", "\r", "\n"
-    $commitMessageLines = $commitMessage.Split($separator, $option);
-    $header = $commitMessageLines[0]
-    LogDebug "Commit header: $header"
-
-    # to support commit messages w/ and w/o scopes
-    # if scope is present, only scoped projects will be versioned, else, all the changed projects
-    $match = [regex]::Match($header, '^(?<type>.*)\((?<scope>.*)\): (?<subject>.*)$')
-    if(-Not($match.Success))
-    {
-        $match = [regex]::Match($header, '^(?<type>.*): (?<subject>.*)$')
-        Validate $match.Success "Invalid commit message"
-    }
-
+    $match = GetConventionalCommitMessage $commitMessage
+    ThrowIfNotValid $match.Success "Invalid commit message"
     $type = $match.Groups['type']
     $scope = $match.Groups['scope']
     $subject = $match.Groups['subject']
-    Validate ($type -and $subject) "Type or subject not found in commit message"
-    Validate ($_allowedCommitTypes | Where-Object { $type -like $_ }) "Invalid commit type"
+    ThrowIfNotValid ($type -and $subject) "Type or subject not found in commit message"
+    $type = $type.ToString().Trim();
+    ThrowIfNotValid ($_allowedCommitTypes | Where-Object { $type -like $_ }) "Invalid commit type"
     $isBreakingChange = $type -match "\!$"
-    $projectVersions = @{};
+    $projectVersions = @{}
+
+    RegisterNuGetPackageSource
+    CheckLastExitCode "RegisterNuGetPackageSource failed"
 
     if(-Not([string]::IsNullOrEmpty($scope)))
     {
@@ -104,14 +117,12 @@ function GetProjectNewVersions {
         $scopes = $scope.ToString().Split(",", $option)
         foreach ($tempScope in $scopes) {
             $tempScope = $tempScope.Trim()
-            Validate ($allowedScopes | Where-Object { $tempScope -like $_ }) "Invalid scope"
+            ThrowIfNotValid ($allowedScopes | Where-Object { $tempScope -like $_ }) "Invalid scope"
             $newVersion = Versionize $tempScope $type $isBreakingChange
             $projectVersions[$tempScope] = $newVersion
         }
     }
     else {
-        Validate $changedProjects "Changed projects is required as scope is not part of commit message"
-
         foreach($changedProject in $changedProjects){
             $newVersion = Versionize $changedProject $type $isBreakingChange
             $projectVersions[$changedProject] = $newVersion
@@ -130,7 +141,7 @@ function Versionize()
     )
 
     $nugetPackageLatestVersion = (GetNugetPackageLatestVersion $project)
-    $currentVersion =  New-Object System.Version ( $nugetPackageLatestVersion )
+    $currentVersion =  New-Object System.Version($nugetPackageLatestVersion)
     $newVersion = $null
 
     if($isBreakingChange)
@@ -152,18 +163,83 @@ function Versionize()
 
 }
 
-function Validate {
+function ThrowIfNotValid {
     param (
         [string]$isValid,
         [string]$exceptionMessage
     )
     
     if (-Not($isValid)) {
+        $LASTEXITCODE = 1
         throw $exceptionMessage
     }
 }
 
-export-modulemember -function LogError, LogWarning, LogDebug, GetNugetPackageLatestVersion, `
-    UpdateAssemblyVersion, UpdateVersion, LogBeginFunction, LogEndFunction, `
-    GetProjectNewVersions
+# this method call can be removed once GitHub Action PowerShell supports NuGet v3
+function RegisterNuGetPackageSource {
+    $packageSources = Get-PackageSource
+    if(@($packageSources).Where{$_.location -eq $_nugetSource}.count -eq 0)
+    {
+        Register-PackageSource -Name MyNuGet -Location $_nugetSource -ProviderName NuGet
+    }
+}
+
+function CheckLastExitCode([string]$exceptionMessage)
+{
+	if($LASTEXITCODE -ne 0)
+	{
+        throw $exceptionMessage
+	}
+}
+
+function Build {
+    LogBeginFunction "$($MyInvocation.MyCommand.Name)"
+    dotnet build --configuration Release
+    CheckLastExitCode "dotnet build failed"
+    LogEndFunction "$($MyInvocation.MyCommand.Name)"
+}
+
+function GetConventionalCommitScope {
+    param (
+        [Parameter(Mandatory=$true)]$commitMessage
+    )
+    $match = GetConventionalCommitMessage $commitMessage
+    if($match.Success)
+    {
+        return $match.Groups['scope']
+    }
+    return $null
+}
+
+function Test {
+    LogBeginFunction "$($MyInvocation.MyCommand.Name)"
+    dotnet test --no-build --no-restore --configuration Release --verbosity normal
+    CheckLastExitCode "test(s) failed"
+    LogEndFunction "$($MyInvocation.MyCommand.Name)"
+}
+
+function GetConventionalCommitMessage {
+    param (
+        [string]$commitMessage
+    )
+
+    $option = [System.StringSplitOptions]::RemoveEmptyEntries
+    $separator = "\r\n", "\r", "\n"
+    $commitMessageLines = $commitMessage.Split($separator, $option);
+    $header = $commitMessageLines[0]
+    LogDebug "Commit header: $header"
+
+    # to support commit messages w/ and w/o scopes
+    # if scope is present, only scoped projects will be versioned, else, all the changed projects
+    $match = [regex]::Match($header, '^(?<type>.*)\((?<scope>.*)\): (?<subject>.*)$')
+    if(-Not($match.Success))
+    {
+        $match = [regex]::Match($header, '^(?<type>.*): (?<subject>.*)$')
+    }
     
+    return $match
+}
+
+export-modulemember -function LogError, LogWarning, LogDebug, LogInfo, GetNugetPackageLatestVersion, `
+    UpdateAssemblyVersion, UpdateVersion, LogBeginFunction, LogEndFunction, `
+    GetProjectNewVersions, CheckLastExitCode, Build, Test, GetConventionalCommitScope

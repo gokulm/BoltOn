@@ -11,14 +11,14 @@ namespace BoltOn.Tests.Cqrs.Fakes
     {
         public void Run(RegistrationTaskContext context)
         {
-            context.Container.AddDbContext<CqrsDbContext>(options =>
+            context.ServiceCollection.AddDbContext<CqrsDbContext>(options =>
             {
                 options.UseInMemoryDatabase("InMemoryDbCqrsDbContext");
                 options.ConfigureWarnings(x => x.Ignore(RelationalEventId.AmbientTransactionWarning));
             });
 
-            context.Container.AddTransient<IRepository<Student>, Repository<Student, CqrsDbContext>>();
-            context.Container.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, CqrsDbContext>>();
+            context.ServiceCollection.AddTransient<IRepository<Student>, Repository<Student, CqrsDbContext>>();
+            context.ServiceCollection.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, CqrsDbContext>>();
         }
     }
 }

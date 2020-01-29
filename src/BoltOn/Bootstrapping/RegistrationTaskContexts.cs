@@ -8,18 +8,18 @@ namespace BoltOn.Bootstrapping
 {
 	public sealed class RegistrationTaskContext
 	{
-		private readonly Bootstrapper _bootstrapper;
+		internal Bootstrapper Bootstrapper { get; private set; }
 		internal HashSet<Type> InterceptorTypes { get; private set; }
 
 		internal RegistrationTaskContext(Bootstrapper bootstrapper)
 		{
-			_bootstrapper = bootstrapper;
+			Bootstrapper = bootstrapper;
 			InterceptorTypes = new HashSet<Type>();
 		}
 
-		public IServiceCollection Container => _bootstrapper.Container;
+		public IServiceCollection ServiceCollection => Bootstrapper.ServiceCollection;
 
-	    public IReadOnlyList<Assembly> Assemblies => _bootstrapper.Assemblies;
+	    public IReadOnlyList<Assembly> Assemblies => Bootstrapper.Assemblies;
 
 		public void AddInterceptor<TInterceptor>() where TInterceptor : IInterceptor
 		{
