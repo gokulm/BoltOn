@@ -11,9 +11,9 @@
       <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
     </PackageReference>
     <PackageReference Include="BoltOn" Version="0.11.0" />
-    <PackageReference Include="BoltOn.Data.EF" Version="0.6.0" />
+    <PackageReference Include="BoltOn.Data.EF" Version="0.7.0" />
     <PackageReference Include="BoltOn.Data.CosmosDb" Version="0.4.0" />
-    <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.3.0" />
+    <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
