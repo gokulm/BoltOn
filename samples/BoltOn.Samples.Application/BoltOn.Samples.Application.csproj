@@ -5,17 +5,18 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
+      <Compile Remove="Abstractions\**" />
+      <EmbeddedResource Remove="Abstractions\**" />
+      <None Remove="Abstractions\**" />
+    </ItemGroup>
+    <ItemGroup>
         <Folder Include="Handlers\" />
-        <Folder Include="Abstractions\" />
-        <Folder Include="Abstractions\Data\" />
         <Folder Include="DTOs\" />
         <Folder Include="Entities\" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-        <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.5.1" />
+        <PackageReference Include="BoltOn" Version="0.11.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+        <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.9.2" />
     </ItemGroup>
 </Project>

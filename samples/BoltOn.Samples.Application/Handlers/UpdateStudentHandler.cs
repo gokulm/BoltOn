@@ -5,8 +5,6 @@ using BoltOn.Data;
 using BoltOn.Logging;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Samples.Application.Entities;
-using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
 
 namespace BoltOn.Samples.Application.Handlers
 {
@@ -39,11 +37,10 @@ namespace BoltOn.Samples.Application.Handlers
 		public async Task HandleAsync(UpdateStudentRequest request, CancellationToken cancellationToken)
 		{
 			_logger.Debug("Updating student...");
-			var studentType = await _studentTypeRepository.GetByIdAsync(request.StudentTypeId);
-			var requestOptions = new RequestOptions { PartitionKey = new PartitionKey(request.StudentTypeId) };
-			var student = await _studentRepository.GetByIdAsync(request.StudentId, requestOptions, cancellationToken);
+			var studentType = await _studentTypeRepository.GetByIdAsync(request.StudentTypeId, cancellationToken: cancellationToken);
+			var student = await _studentRepository.GetByIdAsync(request.StudentId, cancellationToken: cancellationToken);
 			student.Update(request, studentType.Description);
-			await _studentRepository.UpdateAsync(student, cancellationToken);
+			await _studentRepository.UpdateAsync(student, cancellationToken: cancellationToken);
 		}
 	}
 }

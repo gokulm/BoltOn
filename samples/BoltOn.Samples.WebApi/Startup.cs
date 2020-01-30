@@ -5,9 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using BoltOn.Data.EF;
 using BoltOn.Samples.Application.Handlers;
-using BoltOn.Data.CosmosDb;
 using BoltOn.Bus.MassTransit;
-using BoltOn.Utilities;
 using BoltOn.Samples.Infrastructure.Data;
 
 namespace BoltOn.Samples.WebApi
@@ -27,7 +25,6 @@ namespace BoltOn.Samples.WebApi
 			services.BoltOn(options =>
 			{
 				options.BoltOnEFModule();
-				options.BoltOnCosmosDbModule();
 				options.BoltOnMassTransitBusModule();
 				options.BoltOnCqrsModule();
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolDbContext).Assembly);
