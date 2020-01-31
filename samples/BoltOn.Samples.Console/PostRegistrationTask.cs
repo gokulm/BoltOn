@@ -22,9 +22,9 @@ namespace BoltOn.Samples.Console
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var testDbContext = scope.ServiceProvider.GetService<SchoolReadDbContext>();
-                testDbContext.Database.EnsureDeleted();
-                testDbContext.Database.EnsureCreated();
+                var schoolReadDbContext = scope.ServiceProvider.GetService<SchoolReadDbContext>();
+                schoolReadDbContext.Database.EnsureDeleted();
+                schoolReadDbContext.Database.EnsureCreated();
             }
 
             var response = _mediator.ProcessAsync(new PingRequest()).GetAwaiter().GetResult();

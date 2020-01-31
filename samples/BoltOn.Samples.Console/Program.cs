@@ -21,6 +21,8 @@ namespace BoltOn.Samples.Console
                 .SetBasePath(Path.Combine(AppContext.BaseDirectory))
                 .AddJsonFile("appsettings.json");
 
+            System.Console.WriteLine($"Environment: {environment}");
+
             if (!string.IsNullOrEmpty(environment))
                 builder.AddJsonFile($"appsettings.{environment}.json");
 
