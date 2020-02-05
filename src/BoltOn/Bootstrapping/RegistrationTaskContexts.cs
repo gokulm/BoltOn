@@ -8,8 +8,8 @@ namespace BoltOn.Bootstrapping
 {
 	public sealed class RegistrationTaskContext
 	{
-		internal Bootstrapper Bootstrapper { get; private set; }
-		internal HashSet<Type> InterceptorTypes { get; private set; }
+		internal Bootstrapper Bootstrapper { get; }
+		internal HashSet<Type> InterceptorTypes { get; }
 
 		internal RegistrationTaskContext(Bootstrapper bootstrapper)
 		{
