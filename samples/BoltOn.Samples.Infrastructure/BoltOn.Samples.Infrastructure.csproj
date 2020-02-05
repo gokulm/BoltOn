@@ -16,7 +16,6 @@
       <None Remove="Data\Repositories\**" />
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Data\" />
         <Folder Include="Data\Mappings\" />
     </ItemGroup>
     <ItemGroup>

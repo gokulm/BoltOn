@@ -7,6 +7,9 @@ using BoltOn.Data.EF;
 using BoltOn.Samples.Application.Handlers;
 using BoltOn.Bus.MassTransit;
 using BoltOn.Samples.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using MassTransit;
+using System;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -27,9 +30,37 @@ namespace BoltOn.Samples.WebApi
 				options.BoltOnEFModule();
 				options.BoltOnMassTransitBusModule();
 				options.BoltOnCqrsModule();
-				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolDbContext).Assembly);
+				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolWriteDbContext).Assembly);
 			});
-		}
+			
+			var writeDbConnectionString = Configuration.GetValue<string>("SqlWriteDbConnectionString");
+            var readDbConnectionString = Configuration.GetValue<string>("SqlReadDbConnectionString");
+            var rabbitmqUri = Configuration.GetValue<string>("RabbitMqUri");
+			var rabbitmqUsername = Configuration.GetValue<string>("RabbitMqUsername");
+			var rabbitmqPassword = Configuration.GetValue<string>("RabbitMqPassword");
+            services.AddMassTransit(x =>
+            {
+                x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
+                {
+                    var host = cfg.Host(new Uri(rabbitmqUri), hostConfigurator =>
+                    {
+                        hostConfigurator.Username(rabbitmqUsername);
+                        hostConfigurator.Password(rabbitmqPassword);
+                    });
+                }));
+            });
+
+            services.AddDbContext<SchoolWriteDbContext>(options =>
+            {
+                options.UseSqlServer(writeDbConnectionString);
+            });
+
+            services.AddDbContext<SchoolReadDbContext>(options =>
+            {
+                options.UseSqlServer(readDbConnectionString);
+            });
+
+        }
 
 		public void Configure(IApplicationBuilder app, IApplicationLifetime appLifetime)
 		{

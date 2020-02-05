@@ -22,21 +22,23 @@ services:
     depends_on:
       - rabbitmq
       - sql
+    environment:
+      - CONSOLE_ENVIRONMENT=Docker
     build:
       context: ./
-      dockerfile: Dockerfile.Console
+      dockerfile: Console.Dockerfile
     container_name: bolton-console-container
     networks:
       - bolton-network
   api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
     build:
       context: ./
-      dockerfile: Dockerfile.WebApi
+      dockerfile: WebApi.Dockerfile
     ports:
       - "5000:80"
     container_name: bolton-api-container
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       - rabbitmq
       - sql
