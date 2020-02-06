@@ -39,7 +39,7 @@ namespace BoltOn.Cqrs
 
 		private async Task DispatchEventsToBeProcessed(CancellationToken cancellationToken)
 		{
-			Guid eventId;
+			var eventId = Guid.Empty;
 			try
 			{
 				_logger.Debug("About to dispatch EventsToBeProcessed...");

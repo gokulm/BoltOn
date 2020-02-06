@@ -20,10 +20,10 @@ namespace BoltOn.Data.CosmosDb
         private readonly EventBag _eventBag;
         private readonly IBoltOnClock _boltOnClock;
 
-        protected string DatabaseName { get; private set; }
-        protected string CollectionName { get; private set; }
-        protected DocumentClient DocumentClient { get; private set; }
-        protected Uri DocumentCollectionUri { get; private set; }
+        protected string DatabaseName { get; }
+        protected string CollectionName { get; }
+        protected DocumentClient DocumentClient { get; }
+        protected Uri DocumentCollectionUri { get; }
 
         public Repository(TCosmosDbOptions options, EventBag eventBag,
             IBoltOnClock boltOnClock, string collectionName = null)
