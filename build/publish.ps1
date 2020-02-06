@@ -14,7 +14,6 @@ function Main {
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
         LogDebug "Branch: $_branchName"
         Build
-        # uncomment Test after fixing all the integration tests
         Test
         CleanUp
         # this is invoked in develop branch only to test packaging and publishing

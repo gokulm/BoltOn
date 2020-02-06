@@ -6,7 +6,7 @@ RUN dotnet restore ./BoltOn.Samples.Console/BoltOn.Samples.Console.csproj
 RUN dotnet publish -c Release ./BoltOn.Samples.Console/BoltOn.Samples.Console.csproj -o /publish
 
 # runtime
-FROM mcr.microsoft.com/dotnet/core/runtime:2.2
+FROM mcr.microsoft.com/dotnet/core/runtime:3.1
 WORKDIR /app    
 COPY --from=build /publish .
 

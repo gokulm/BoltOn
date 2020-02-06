@@ -46,18 +46,11 @@ services:
     networks:
       - bolton-network
 
-# if services are in the same network, services can connect using the container name like bolton-sql-container 
-# in the connection string
 networks: 
   bolton-network:
 
 # d detached mode or background mode
-# docker-compose up -d
-
-# to rebuild images
 # docker-compose up -d --build 
 
 # --rmi remove local images
 # docker-compose down --rmi local
-
-# to connect to the sql server from SSMS, use 127.0.0.1, 5005

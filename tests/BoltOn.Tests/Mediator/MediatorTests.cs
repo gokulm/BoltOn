@@ -7,7 +7,6 @@ using BoltOn.Data.EF;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Overrides.Mediator;
 using BoltOn.Tests.Mediator.Fakes;
 using BoltOn.UoW;
 using BoltOn.Utilities;

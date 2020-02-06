@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
@@ -15,8 +15,8 @@
         <Folder Include="Entities\" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="BoltOn" Version="0.11.0" />
+        <PackageReference Include="BoltOn" Version="0.13.0" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-        <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.9.2" />
+        <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.9.3" />
     </ItemGroup>
 </Project>

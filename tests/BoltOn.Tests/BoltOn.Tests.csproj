@@ -30,7 +30,6 @@
     <ItemGroup>
         <Folder Include="Bootstrapping\" />
         <Folder Include="Common\" />
-        <Folder Include="Mediator\" />
         <Folder Include="UoW\" />
         <Folder Include="Data\" />
         <Folder Include="Data\EF\" />
@@ -39,12 +38,10 @@
         <Folder Include="Utilities\" />
         <Folder Include="Data\CosmosDb\" />
         <Folder Include="Cqrs\Fakes\" />
-        <Folder Include="Mediator\Fakes\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
-        <ProjectReference Include="..\..\src\BoltOn.Overrides\BoltOn.Overrides.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Bus.MassTransit\BoltOn.Bus.MassTransit.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Data.CosmosDb\BoltOn.Data.CosmosDb.csproj" />
     </ItemGroup>

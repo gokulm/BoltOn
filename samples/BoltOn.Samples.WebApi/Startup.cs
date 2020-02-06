@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,10 +9,11 @@ using BoltOn.Samples.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
 using System;
+using Microsoft.Extensions.Hosting;
 
 namespace BoltOn.Samples.WebApi
 {
-	public class Startup
+    public class Startup
 	{
 		public Startup(IConfiguration configuration)
 		{
@@ -24,7 +24,7 @@ namespace BoltOn.Samples.WebApi
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 			services.BoltOn(options =>
 			{
 				options.BoltOnEFModule();
@@ -62,10 +62,14 @@ namespace BoltOn.Samples.WebApi
 
         }
 
-		public void Configure(IApplicationBuilder app, IApplicationLifetime appLifetime)
+		public void Configure(IApplicationBuilder app, IHostApplicationLifetime appLifetime)
 		{
-			app.UseMvc();
-			app.ApplicationServices.TightenBolts();
+			app.UseRouting(); 
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+            app.ApplicationServices.TightenBolts();
 			appLifetime.ApplicationStopping.Register(() => app.ApplicationServices.LoosenBolts());
 		}
 	}

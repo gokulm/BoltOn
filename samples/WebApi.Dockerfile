@@ -6,7 +6,7 @@ RUN dotnet restore ./BoltOn.Samples.WebApi/BoltOn.Samples.WebApi.csproj
 RUN dotnet publish -c Release ./BoltOn.Samples.WebApi/BoltOn.Samples.WebApi.csproj -o /publish
 
 # runtime
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2.8
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 WORKDIR /app    
 COPY --from=build /publish .
 
