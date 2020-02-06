@@ -19,15 +19,15 @@ namespace BoltOn.Samples.WebApi
         {
 			using (var scope = _serviceProvider.CreateScope())
 			{
-				var testDbContext = scope.ServiceProvider.GetService<SchoolWriteDbContext>();
-				testDbContext.Database.EnsureDeleted();
-				testDbContext.Database.EnsureCreated();
+				//var testDbContext = scope.ServiceProvider.GetService<SchoolWriteDbContext>();
+				//testDbContext.Database.EnsureDeleted();
+				//testDbContext.Database.EnsureCreated();
 
-				var inState = new StudentType(1, "In-State");
-				var outOfState = new StudentType(2, "Out-of-State");
-				testDbContext.Set<StudentType>().Add(inState);
-				testDbContext.Set<StudentType>().Add(outOfState);
-				testDbContext.SaveChanges();
+				//var inState = new StudentType(1, "In-State");
+				//var outOfState = new StudentType(2, "Out-of-State");
+				//testDbContext.Set<StudentType>().Add(inState);
+				//testDbContext.Set<StudentType>().Add(outOfState);
+				//testDbContext.SaveChanges();
 			}
 		}
     }
