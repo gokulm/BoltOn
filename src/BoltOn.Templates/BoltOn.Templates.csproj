@@ -2,17 +2,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <PackageType>Template</PackageType>
-        <PackageVersion>0.1.0</PackageVersion>
+        <Version>0.1.0</Version>
         <PackageId>BoltOn.Templates</PackageId>
         <Title>BoltOn Templates</Title>
         <Authors>Gokulnath Murugesan</Authors>
         <Description>Templates to use when creating an application using BoltOn Application Framework</Description>
         <PackageTags>dotnet-new;templates;C#</PackageTags>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
         <IncludeContentInPack>true</IncludeContentInPack>
         <IncludeBuildOutput>false</IncludeBuildOutput>
         <ContentTargetFolders>content</ContentTargetFolders>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <Copyright>BoltOn</Copyright>
     </PropertyGroup>
     <ItemGroup>
         <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**" />
@@ -20,8 +20,5 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="templates\" />
-    </ItemGroup>
-    <ItemGroup>
-      <Compile Include="AssemblyInfo.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
     </ItemGroup>
 </Project>
