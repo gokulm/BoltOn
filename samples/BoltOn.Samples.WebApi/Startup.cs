@@ -68,8 +68,7 @@ namespace BoltOn.Samples.WebApi
 			app.UseRouting(); 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
-                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
             });
             app.ApplicationServices.TightenBolts();
 			appLifetime.ApplicationStopping.Register(() => app.ApplicationServices.LoosenBolts());
