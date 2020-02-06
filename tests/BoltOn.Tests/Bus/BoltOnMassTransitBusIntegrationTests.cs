@@ -81,7 +81,7 @@ namespace BoltOn.Tests.Bus
 						hostConfigurator.Password("guest");
 					});
 
-					cfg.ReceiveEndpoint(host, "CreateTestStudent_Queue", endpoint =>
+					cfg.ReceiveEndpoint("CreateTestStudent_Queue", endpoint =>
 					{
 						endpoint.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CreateTestStudent>>());
 					});

@@ -1,4 +1,4 @@
-$_allowedCommitTypes = "fix", "feat", "fix!", "feat!"
+$_allowedCommitTypes = "fix", "feat", "fix!", "feat!", "docs"
 $_srcDirPath = "src/"
 $_nugetSource = "https://api.nuget.org/v3/index.json"
 
