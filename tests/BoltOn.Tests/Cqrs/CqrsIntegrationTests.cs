@@ -6,7 +6,6 @@ using BoltOn.Bus.MassTransit;
 using BoltOn.Logging;
 using Moq;
 using System.Linq;
-using BoltOn.Bootstrapping;
 using MassTransit;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Cqrs;
@@ -521,9 +520,6 @@ namespace BoltOn.Tests.Cqrs
 		public void Dispose()
 		{
 			CqrsTestHelper.LoggerStatements.Clear();
-			Bootstrapper
-				.Instance
-				.Dispose();
 		}
 	}
 }

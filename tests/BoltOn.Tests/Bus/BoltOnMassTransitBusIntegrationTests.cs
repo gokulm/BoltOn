@@ -8,23 +8,14 @@ using BoltOn.Logging;
 using Moq;
 using BoltOn.Tests.Other;
 using System.Linq;
-using BoltOn.Bootstrapping;
 using MassTransit;
-using BoltOn.Tests.Mediator;
 using BoltOn.Tests.Mediator.Fakes;
 
 namespace BoltOn.Tests.Bus
 {
-	[Collection("IntegrationTests")]
+    [Collection("IntegrationTests")]
 	public class BoltOnMassTransitBusIntegrationTests : IDisposable
-	{
-		public BoltOnMassTransitBusIntegrationTests()
-		{
-			Bootstrapper
-				.Instance
-				.Dispose();
-		}
-
+	{	 
 		[Fact]
 		public async Task PublishAsync_InMemoryHost_GetsConsumed()
 		{
@@ -90,7 +81,7 @@ namespace BoltOn.Tests.Bus
 						hostConfigurator.Password("guest");
 					});
 
-					cfg.ReceiveEndpoint(host, "CreateTestStudent_Queue", endpoint =>
+					cfg.ReceiveEndpoint("CreateTestStudent_Queue", endpoint =>
 					{
 						endpoint.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CreateTestStudent>>());
 					});
@@ -120,9 +111,6 @@ namespace BoltOn.Tests.Bus
 		public void Dispose()
 		{
 			MediatorTestHelper.LoggerStatements.Clear();
-			Bootstrapper
-				.Instance
-				.Dispose();
 		}
 	}
 }

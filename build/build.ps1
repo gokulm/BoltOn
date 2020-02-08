@@ -6,13 +6,14 @@ function Main {
     try {
         Import-Module $_boltOnModulePath -Force
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
-        BuildAndTest
+        Build
+        Test 
         LogEndFunction "$($MyInvocation.MyCommand.Name)"
     }
     catch {
         LogError $_.Exception.Message
-        if ($LastExitCode -ne 0) {
-            exit $LastExitCode
+        if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
         }
     }
 }

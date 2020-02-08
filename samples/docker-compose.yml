@@ -1,0 +1,56 @@
+version: '3'
+services:
+  sql:
+    image: microsoft/mssql-server-linux:latest
+    ports:
+      - "5005:1433"
+    environment:
+      SA_PASSWORD: "Password1"
+      ACCEPT_EULA: "Y"
+    container_name: bolton-sql-container
+    networks:
+      - bolton-network
+  rabbitmq:
+    image: rabbitmq:3.8.2-management
+    ports:
+      - "5010:5672"
+      - "5015:15672"
+    container_name: bolton-rabbitmq-container
+    networks:
+      - bolton-network
+  console:
+    depends_on:
+      - rabbitmq
+      - sql
+    environment:
+      - CONSOLE_ENVIRONMENT=Docker
+    build:
+      context: ./
+      dockerfile: Console.Dockerfile
+    container_name: bolton-console-container
+    networks:
+      - bolton-network
+  api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    build:
+      context: ./
+      dockerfile: WebApi.Dockerfile
+    ports:
+      - "5000:80"
+    container_name: bolton-api-container
+    depends_on:
+      - rabbitmq
+      - sql
+      - console
+    networks:
+      - bolton-network
+
+networks: 
+  bolton-network:
+
+# d detached mode or background mode
+# docker-compose up -d --build 
+
+# --rmi remove local images
+# docker-compose down --rmi local

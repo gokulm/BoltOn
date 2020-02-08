@@ -7,13 +7,13 @@ on:
       - master
 
 jobs:
-  release:
+  publish:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 2.2.108
-    - name: Run release.ps1
-      run: pwsh './build/release.ps1' '${GITHUB_REF##*/}' ${{ secrets.NuGetApiKey }}
+        dotnet-version: 3.1.100
+    - name: Run publish.ps1
+      run: pwsh './build/publish.ps1' ${GITHUB_REF##*/} ${{ secrets.NuGetApiKey }}

@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Logging;
-using BoltOn.Mediator.Pipeline;
 using BoltOn.Utilities;
 
 namespace BoltOn.Mediator.Interceptors

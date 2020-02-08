@@ -9,24 +9,32 @@ namespace BoltOn
 	{
 		public static IServiceCollection BoltOn(this IServiceCollection serviceCollection, Action<BoltOnOptions> action = null)
 		{
-			var options = new BoltOnOptions();
+			var options = new BoltOnOptions(serviceCollection);
 			action?.Invoke(options);
-			Bootstrapper.Instance.BoltOn(serviceCollection, options, Assembly.GetCallingAssembly());
+			_ = Bootstrapper.Create(options, Assembly.GetCallingAssembly());
 			return serviceCollection;
 		}
 
 		public static void TightenBolts(this IServiceProvider serviceProvider)
 		{
-			Bootstrapper.Instance.RunPostRegistrationTasks(serviceProvider);
+			var bootstrapper = serviceProvider.GetService<Bootstrapper>();
+			bootstrapper.RunPostRegistrationTasks(serviceProvider);
 		}
 
-		public static BoltOnOptions BoltOnCqrsModule(this BoltOnOptions boltOnOptions, Action<CqrsOptions> action = null)
+		public static void LoosenBolts(this IServiceProvider serviceProvider)
+		{
+			var bootstrapper = serviceProvider.GetService<Bootstrapper>();
+			bootstrapper.Dispose();
+		}
+
+		public static BoltOnOptions BoltOnCqrsModule(this BoltOnOptions boltOnOptions,
+			Action<CqrsOptions> action = null)
         {
-            boltOnOptions.IsCqrsEnabled = true;
+			boltOnOptions.IsCqrsEnabled = true;
 			var options = new CqrsOptions();
 			action?.Invoke(options);
-            Bootstrapper.Instance.OtherOptions.Add(options);
-            return boltOnOptions;
+			boltOnOptions.ServiceCollection.AddSingleton(options);
+			return boltOnOptions;
 		}
 	}
 }

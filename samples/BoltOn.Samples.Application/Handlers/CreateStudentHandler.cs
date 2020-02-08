@@ -35,8 +35,8 @@ namespace BoltOn.Samples.Application.Handlers
 		public async Task<Guid> HandleAsync(CreateStudentRequest request, CancellationToken cancellationToken)
 		{
 			_logger.Debug("Creating student...");
-			var studentType = await _studentTypeRepository.GetByIdAsync(request.StudentTypeId);
-			var student = await _studentRepository.AddAsync(new Student(request, studentType.Description), cancellationToken);
+			var studentType = await _studentTypeRepository.GetByIdAsync(request.StudentTypeId, cancellationToken: cancellationToken);
+			var student = await _studentRepository.AddAsync(new Student(request, studentType.Description), cancellationToken: cancellationToken);
 			return student.Id;
 		}
 	}

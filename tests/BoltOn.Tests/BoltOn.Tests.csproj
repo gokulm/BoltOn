@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 	 <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -11,26 +11,25 @@
       <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
         <PackageReference Include="xunit" Version="2.4.1" />
         <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
-        <PackageReference Include="Moq" Version="4.10.1" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.1" />
+        <PackageReference Include="Moq" Version="4.13.1" />
         <PackageReference Include="Moq.AutoMock" Version="1.2.0.120" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.0" />
-        <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="5.5.4" />
-        <PackageReference Include="MassTransit.RabbitMQ" Version="5.5.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.1" />
+        <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="6.0.2" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="6.0.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-        <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.5.1" />
+        <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.9.3" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Bootstrapping\" />
         <Folder Include="Common\" />
-        <Folder Include="Mediator\" />
         <Folder Include="UoW\" />
         <Folder Include="Data\" />
         <Folder Include="Data\EF\" />
@@ -39,13 +38,14 @@
         <Folder Include="Utilities\" />
         <Folder Include="Data\CosmosDb\" />
         <Folder Include="Cqrs\Fakes\" />
-        <Folder Include="Mediator\Fakes\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
-        <ProjectReference Include="..\..\src\BoltOn.Overrides\BoltOn.Overrides.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Bus.MassTransit\BoltOn.Bus.MassTransit.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Data.CosmosDb\BoltOn.Data.CosmosDb.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="Mediator\MediatorIntegration2Tests.cs" />
     </ItemGroup>
 </Project>
