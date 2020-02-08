@@ -124,7 +124,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			var student = new StudentFlattened { Id = id, LastName = "smith jr", FirstName = "john", StudentTypeId = 1 };
 
 			// act
-			await _sut.UpdateAsync(student, new RequestOptions { PartitionKey = new PartitionKey(1) });
+			await _sut.UpdateAsync(student, new RequestOptions { PartitionKey = new PartitionKey(1) }, true);
 
 			// assert
 			var result = (await _sut.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "john")).FirstOrDefault();

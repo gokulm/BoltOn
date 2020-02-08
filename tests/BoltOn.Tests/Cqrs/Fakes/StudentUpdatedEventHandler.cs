@@ -45,7 +45,7 @@ namespace BoltOn.Tests.Cqrs.Fakes
                     $"Input1: {studentFlattened.FirstName} Input2Property1: {studentFlattened.Input2Property1} " +
                     $"Input2Propert2: {studentFlattened.Input2Property2}");
 				// comment the below line to avoid test warning, as TestCqrsUpdateEvent gets added in two different entities
-				await _repository.UpdateAsync(studentFlattened);
+				await _repository.UpdateAsync(studentFlattened, isSaveChanges:true, cancellationToken: cancellationToken);
 			}
         }
 

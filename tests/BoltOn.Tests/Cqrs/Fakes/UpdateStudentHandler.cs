@@ -26,9 +26,9 @@ namespace BoltOn.Tests.Cqrs.Fakes
         public async Task HandleAsync(UpdateStudentRequest request, CancellationToken cancellationToken)
         {
             _logger.Debug($"{nameof(UpdateStudentHandler)} invoked");
-            var student = await _repository.GetByIdAsync(CqrsConstants.EntityId);
+            var student = await _repository.GetByIdAsync(CqrsConstants.EntityId, cancellationToken: cancellationToken);
             student.Modify(request);
-            await _repository.UpdateAsync(student, cancellationToken);
+            await _repository.UpdateAsync(student, isSaveChanges:true, cancellationToken: cancellationToken);
         }
     }
 }

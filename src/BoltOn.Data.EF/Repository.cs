@@ -49,17 +49,22 @@ namespace BoltOn.Data.EF
 			return await query.ToListAsync(cancellationToken);
 		}
 
-		public virtual async Task<TEntity> AddAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
+		public virtual async Task<TEntity> AddAsync(TEntity entity, object options = null, bool isSaveChanges = true, CancellationToken cancellationToken = default)
 		{
 			DbSets.Add(entity);
-			await SaveChangesAsync(entity, cancellationToken);
+
+            if(isSaveChanges)
+                await SaveChangesAsync(entity, cancellationToken);
+
 			return entity;
 		}
 
-		public virtual async Task UpdateAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
+		public virtual async Task UpdateAsync(TEntity entity, object options = null, bool isSaveChanges = false, CancellationToken cancellationToken = default)
 		{
 			DbSets.Update(entity);
-			await SaveChangesAsync(entity, cancellationToken);
+
+            if (isSaveChanges)
+                await SaveChangesAsync(entity, cancellationToken);
 		}
 
 		public virtual async Task<TEntity> GetByIdAsync(object id, object options = null, CancellationToken cancellationToken = default)
@@ -67,12 +72,14 @@ namespace BoltOn.Data.EF
 			return await DbSets.FindAsync(id);
 		}
 
-		public virtual async Task DeleteAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
+		public virtual async Task DeleteAsync(TEntity entity, object options = null, bool isSaveChanges = false, CancellationToken cancellationToken = default)
 		{
 			if (DbContext.Entry(entity).State == EntityState.Detached)
 				DbSets.Attach(entity);
 			DbSets.Remove(entity);
-			await SaveChangesAsync(entity, cancellationToken);
+
+            if (isSaveChanges)
+                await SaveChangesAsync(entity, cancellationToken);
 		}
 
 		protected async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
