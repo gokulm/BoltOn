@@ -88,10 +88,7 @@
     <a class="current" href="./">Samples</a>
     <ul class="subnav">
             
-    <li class="toctree-l2"><a href="#sql-server">SQL Server</a></li>
-    
-
-    <li class="toctree-l2"><a href="#rabbitmq">RabbitMq</a></li>
+    <li class="toctree-l2"><a href="#docker-compose">docker-compose</a></li>
     
 
     </ul>
@@ -100,6 +97,11 @@
             <li class="toctree-l1">
 		
     <a class="" href="../cli/">CLI</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../build/">CI & CD</a>
 	    </li>
           
         </ul>
@@ -134,34 +136,18 @@
           <div role="main">
             <div class="section">
               
-                <p>In order to run the Samples projects, SQL server and RabbitMq should be configured. </p>
-<h2 id="sql-server">SQL Server</h2>
-<p>You could run SQL in Docker using this command:</p>
-<p><code>docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Password1' -p 1433:1433 -d microsoft/mssql-server-linux:latest</code></p>
-<p>Please modify the port if SQL is already installed. After launching SQL server, connect to the SQL Server and create a database using this command - <code>Create Database BoltOnSamples</code></p>
-<p>Configure the DbContext in the RegistrationTask like this:</p>
-<pre><code>container.AddDbContext&lt;SchoolDbContext&gt;(options =&gt;
-{
-    options.UseSqlServer("Data Source=127.0.0.1;initial catalog=BoltOnSamples;persist security info=True;User ID=sa;Password=Password1;");
-});
-</code></pre>
-<h2 id="rabbitmq">RabbitMq</h2>
-<p>You could run RabbitMq in Docker using this command:</p>
+                <p>In order to run the Samples projects, SQL server and RabbitMq should be configured. If you already have SQL server and RabbitMq installed, please change the appsettings in the BoltOn.Samples.WebApi and BoltOn.Samples.Console projects. If you do not have them installed, you could use <a href="#docker-compose">docker-compose</a>, or run SQL Server and RabbitMq separately in docker using the commands mentioned below and change the appsettings.</p>
+<h2 id="docker-compose">docker-compose</h2>
+<p>Navigate to samples folder and execute any of the commands mentioned below.</p>
+<p>To build and run:</p>
+<p><code>docker-compose up -d --build</code></p>
+<p>To stop the conainers and remove the images:</p>
+<p><code>docker-compose down --rmi local</code></p>
+<p>Here is the <a href="https://github.com/gokulm/BoltOn/blob/master/samples/docker-compose.yml">docker-compose</a> file used. It launches the samples API, console app (which acts MassTransit event consumer), RabbitMq and SQL Server. You could test the <a href="https://github.com/gokulm/BoltOn/blob/master/samples/BoltOn.Samples.WebApi/Controllers/StudentsController.cs">StudentsController's</a> actions. Go over <a href="../cqrs/#implementation">CQRS</a> documentation to understand the flow.</p>
+<p>To run SQL Server separately:</p>
+<p><code>docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Password1' -p 6000:1433 -d microsoft/mssql-server-linux:latest</code></p>
+<p>To run RabbitMq separately:</p>
 <p><code>docker run -d --name bolton-rabbitmq -p 15672:15672 -p 5672:5672 rabbitmq:3-management</code></p>
-<p>If RabbitMq is running, you should be able to monitor from http://localhost:15672 (guest/guest is the default password)</p>
-<p>Configure the RabbitMq in the RegistrationTask like this:</p>
-<pre><code>container.AddMassTransit(x =&gt;
-{
-    x.AddBus(provider =&gt; MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =&gt;
-    {
-        var host = cfg.Host(new Uri("rabbitmq://localhost:5672"), hostConfigurator =&gt;
-        {
-            hostConfigurator.Username("guest");
-            hostConfigurator.Password("guest");
-        });
-    }));
-});
-</code></pre>
               
             </div>
           </div>

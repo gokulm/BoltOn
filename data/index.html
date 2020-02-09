@@ -108,6 +108,11 @@
     <a class="" href="../cli/">CLI</a>
 	    </li>
           
+            <li class="toctree-l1">
+		
+    <a class="" href="../build/">CI & CD</a>
+	    </li>
+          
         </ul>
       </div>
       &nbsp;
@@ -163,9 +168,9 @@
 var result = repository.FindBy(f =&gt; f.Id == 2, includes).FirstOrDefault();
 </code></pre>
 <ul>
-<li>Add all the database columns to entity properties mapping inside a mapping class by implementing <code>IEntityTypeConfiguration&lt;TEntity&gt;</code> interface.
-<br>
-The mapping classes will be automatically added to your DbContext if you inherit <code>BaseDbContext&lt;TDbContext&gt;</code> and if they are in the same assembly where the DbContext resides. </li>
+<li>Add all the database columns to entity properties mapping inside a mapping class by implementing <code>IEntityTypeConfiguration&lt;TEntity&gt;</code> interface.</li>
+<li>The mapping classes will be automatically added to your DbContext if you inherit <code>BaseDbContext&lt;TDbContext&gt;</code> and if they are in the same assembly where the DbContext resides.</li>
+<li>In case if you do not want all the mapping configuration classes in the assembly to be added, you can override <code>ApplyConfigurations(ModelBuilder modelBuilder)</code> method of <code>BaseDbContext</code> and add the configuration classes manually.</li>
 </ul>
 <p>Example:</p>
 <pre><code>// DbContext

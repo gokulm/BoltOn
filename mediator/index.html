@@ -105,6 +105,11 @@
     <a class="" href="../cli/">CLI</a>
 	    </li>
           
+            <li class="toctree-l1">
+		
+    <a class="" href="../build/">CI & CD</a>
+	    </li>
+          
         </ul>
       </div>
       &nbsp;
@@ -181,7 +186,7 @@ public class GetAllStudentsHandler : IHandler&lt;GetAllStudentsRequest, IEnumera
 }
 </code></pre>
 <ul>
-<li>Finally, inject <code>IMediator</code> anywhere in your application, like a controller in WebAPI or a MVC application, and call <code>Process</code> or <code>ProcessAsync</code> method. Check out the implemenation <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Mediator/Pipeline/Mediator.cs">Mediator</a> to know the internals.</li>
+<li>Finally, inject <code>IMediator</code> anywhere in your application, like a controller in WebAPI or a MVC application, and call <code>ProcessAsync</code> method. Check out the implemenation <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Mediator/Pipeline/Mediator.cs">Mediator</a> to know the internals.</li>
 </ul>
 <p>Example:</p>
 <pre><code>[Route("api/[controller]")]
@@ -225,7 +230,7 @@ public class StudentsController : Controller
 <h2 id="unit-of-work">Unit of Work</h2>
 <ul>
 <li>If you use Mediator and implement any of the interfaces like IQuery or ICommand, which in turn implements <code>IEnableUnitOfWorkInterceptor</code>, you need not worry about starting or committing unit of work, it will be done automatically using <code>UnitOfWorkInterceptor</code>. </li>
-<li>If you're not using Mediator and if you want to start a unit of work, you could call Get method in <code>IUnitOfWorkManager</code> by passing <code>UnitOfWorkOptions</code> based on your needs. It will start a new transaction with <code>System.Transactions.TransactionScopeOption.RequiresNew</code>. The default transaction isolation level is <code>IsolationLevel.Serializable</code></li>
+<li>If you're not using Mediator and if you want to start a unit of work, you could just used .NET's TransactionScope or call Get method in <code>IUnitOfWorkManager</code> by passing <code>UnitOfWorkOptions</code> based on your needs. All that it does is start a new transaction with <code>System.Transactions.TransactionScopeOption.RequiresNew</code>. The default transaction isolation level is <code>IsolationLevel.ReadCommitted</code>. </li>
 </ul>
 <p><strong>Note:</strong> Though it's possible to start a unit of work manually, please try to do avoid it, especially when there is already one, as having more than one unit of work isn't a proper way to build applications. This will be useful only when you want to query a database with an isolation level different from the one started by <code>UnitOfWorkInterceptor</code>.</p>
 <p>In case if you want to change the default transaction isolation level for all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement <code>IUnitOfWorkOptionsBuilder</code> like <a href="../optional/#unitofworkoptionsbuilder">this</a> or inherit <code>UnitOfWorkOptionsBuilder</code> and override the Build method.</p>

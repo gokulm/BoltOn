@@ -81,12 +81,6 @@
     <li class="toctree-l2"><a href="#iboltonclockboltonclock">IBoltOnClock/BoltOnClock</a></li>
     
 
-    <li class="toctree-l2"><a href="#boltonappcleaner">BoltOnAppCleaner</a></li>
-    
-
-    <li class="toctree-l2"><a href="#boltonservicelocator">BoltOnServiceLocator</a></li>
-    
-
     </ul>
 	    </li>
           
@@ -103,6 +97,11 @@
             <li class="toctree-l1">
 		
     <a class="" href="../cli/">CLI</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../build/">CI & CD</a>
 	    </li>
           
         </ul>
@@ -139,18 +138,6 @@
               
                 <h2 id="iboltonclockboltonclock">IBoltOnClock/BoltOnClock</h2>
 <p>There are instances where you have to use static properties DateTime.Now or DateTimeOffset.UtcNow, which makes hard to unit test, in those instances you could inject <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Utilities/BoltOnClock.cs"><code>IBoltOnClock</code></a></p>
-<h2 id="boltonappcleaner">BoltOnAppCleaner</h2>
-<p>It scans all the <code>ICleanupTask</code> in the assembly collection formed by BoltOn() method in the Startup and executes them in the reverse order of assembly dependencies. If your module needs any cleanup work like purging data, stopping bus, disposing objects etc., implement <code>ICleanupTask</code> and it will be invoked automatically when internal classes get disposed. In case if you want all the cleanup tasks to be invoked on demand, use the static method <code>Clean()</code> in this class. However, make sure that it gets called only once in your application.</p>
-<p>In a WebAPI, you could call this method using IApplicationLifetime:</p>
-<pre><code>public void Configure(IApplicationBuilder app, IApplicationLifetime appLifetime)
-{
-    app.UseMvc();
-    app.ApplicationServices.TightenBolts();
-    appLifetime.ApplicationStopping.Register(() =&gt; BoltOnAppCleaner.Clean());
-}
-</code></pre>
-<h2 id="boltonservicelocator">BoltOnServiceLocator</h2>
-<p>Service Locator is an <a href="https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/">Anti-Pattern</a>, so try to avoid using it. In case if you want to use it, you could use the Current property in the class which is of type <code>IServiceProvider</code>.</p>
               
             </div>
           </div>

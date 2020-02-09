@@ -102,6 +102,11 @@
     <a class="" href="../cli/">CLI</a>
 	    </li>
           
+            <li class="toctree-l1">
+		
+    <a class="" href="../build/">CI & CD</a>
+	    </li>
+          
         </ul>
       </div>
       &nbsp;
@@ -160,7 +165,7 @@ method that returns a value).</p>
 <p><strong>Data store synchronization could be handled by the following ways:</strong></p>
 <ol>
 <li>Using a feature like database mirroring (if SQL server), if both the read and writes stores use the same database technology and schemas</li>
-<li>By persisting data in the write store and publishing an event to an enterprise bus; updating the read store could be handled by a subscriber to the event. But, this will be consistent only if persisting to the write store and publishing are part of a single transaction. As most of the buses do not support transactions, if write store persistence is successful and publishing to bus fails, the read store would be out of sync. Or, the other way, by publishing event to an enterprise bus and then persisting data in the write store. But, this also relies on transaction, else write store could be out of sync.</li>
+<li>By persisting data in the write store and publishing an event to an enterprise bus; updating the read store could be handled by a subscriber to the event. But, this will be consistent only if persisting to the write store and publishing are part of a single transaction. As most of the buses do not support transactions, if write store persistence is successful and publishing to bus fails, the read store would be out of sync. Or, the other way, by publishing event to an enterprise bus and then persisting data in the write store. But, this also relies on transaction, else write store could be out of sync. BoltOn overcomes it using <a href="https://microservices.io/patterns/data/transactional-outbox.html">outbox pattern</a>.</li>
 <li>Event sourcing - there are many libraries supporting event sourcing with CQRS.</li>
 </ol>
 <p>BoltOn synchronizes data using pub/sub, but without using transactions, it's a slight variation of method 2 mentioned above. The implementation was majorly inspired by <a href="https://jimmybogard.com/life-beyond-transactions-implementation-primer/">these series of posts</a>. In BoltOn, business entity is persisted along with the events raised in the same data store <strong>as part of a collection within the entity</strong>, and then the persisted events get published to the bus. As events are persisted along with the entity, even if the publish fails, events could be republished later on, provided the business is fine with <a href="https://en.wikipedia.org/wiki/Eventual_consistency">eventual consistency</a>. </p>
@@ -190,7 +195,7 @@ serviceCollection.BoltOn(b =&gt;
 </ul>
 <h2 id="how-does-it-work">How does it work?</h2>
 <p>The best way to understand the implementation is by looking into <a href="https://github.com/gokulm/BoltOn/tree/master/samples/BoltOn.Samples.WebApi">BoltOn.Samples.WebApi</a> project's <code>StudentsController</code> and by going thru GET, POST and PUT student endpoints, corresponding requests and their handlers. </p>
-<p>Though separate databases could be used for commands and queries i.e., writes and reads respectively, in this sample we have used only one database, but different tables Student and StudentFlattened. You can <strong>switch the read/write store to SQL or CosmosDb</strong> (or any other database that will be supported in the future) by just changing the <code>IRepository</code> registration.</p>
+<p>In this sample we have used only two tables - Student and StudentFlattened in  BoltOnSamplesWrite and BoltOnSamplesRead databases respectively.</p>
 <ul>
 <li>The events that get raised from your entities (that inherit BaseCqrsEntity) get added to EventsToBeProcessed collection. Two entities <a href="https://github.com/gokulm/BoltOn/blob/master/samples/BoltOn.Samples.Application/Entities/Student.cs"><code>Student</code></a> and <a href="https://github.com/gokulm/BoltOn/blob/master/samples/BoltOn.Samples.Application/Entities/StudentFlattened.cs"><code>StudentFlattened</code></a> inherit <code>BaseCqrsEntity</code>. Student entity is saved in Student table with foreign-key constraint to StudentType table. Commands (aka writes) go to this table. StudentFlattened entity is saved in StudentFlattened table, which is denormalized without any foreign-key constraints. Queries (aka reads) go to this table. Private and internal constructors are added to both the entities. The private constructor is to support EF and the internal constructor is to allow instantiation of the entity with appropriate request object as parameter.</li>
 <li>Student's internal ctor is called from <code>CreateStudentHandler</code>, which gets invoked by <code>Mediator</code> from StudentController's POST call.</li>

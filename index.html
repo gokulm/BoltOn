@@ -65,7 +65,7 @@
     <li class="toctree-l2"><a href="#tightenbolts">TightenBolts()</a></li>
     
 
-    <li class="toctree-l2"><a href="#cleanup">Cleanup</a></li>
+    <li class="toctree-l2"><a href="#loosenbolts">LoosenBolts()</a></li>
     
 
     </ul>
@@ -111,6 +111,11 @@
     <a class="" href="cli/">CLI</a>
 	    </li>
           
+            <li class="toctree-l1">
+		
+    <a class="" href="build/">CI & CD</a>
+	    </li>
+          
         </ul>
       </div>
       &nbsp;
@@ -143,14 +148,15 @@
           <div role="main">
             <div class="section">
               
-                <p><a href="https://github.com/gokulm/BoltOn"><strong>BoltOn</strong></a> is an open source application framework which can be used to build any type of .NET applications like Console, MVC, WebAPI, Windows Service etc., with <a href="https://en.wikipedia.org/wiki/Modular_programming">modularity</a> being the crux of it. Though it doesn't have all the components to call it as an enterprise application framework (EAF) currently, the plan is to make it an EAF eventually. The components are written in such a way that they're modular, thus they can be bolted on with other components and interchanged easily, and hence the name Bolt-On. </p>
+                <p><a href="https://github.com/gokulm/BoltOn"><strong>BoltOn</strong></a> is an open source application framework which can be used to build any type of .NET applications like Console, MVC, WebAPI, Windows Service etc. The components are written in such a way that they're <a href="https://en.wikipedia.org/wiki/Modular_programming">modular</a>, thus they can be bolted on with other components and interchanged easily, and hence the name Bolt-On. </p>
 <h2 id="installation">Installation</h2>
-<p>There are a <a href="https://www.nuget.org/packages?q=BoltOn">couple of packages</a> for BoltOn available on NuGet, out of which BoltOn package is the core. To install BoltOn in your .NET application, type the following command in the Package Manager Console window:</p>
+<p>To install BoltOn in your .NET application, type the following command in the Package Manager Console window:</p>
 <pre><code>PM&gt; Install-Package BoltOn
 </code></pre>
 <p>From CLI:</p>
 <pre><code>dotnet add package BoltOn
 </code></pre>
+<p>Here is the <a href="https://www.nuget.org/packages?q=BoltOn">list of NuGet Packages</a>. </p>
 <h2 id="configuration">Configuration</h2>
 <p>After installing the package, call BoltOn() and TightenBolts() extension methods in ConfigureServices() and Configure() methods respectively. </p>
 <pre><code>namespace BoltOn.Samples.WebApi
@@ -170,10 +176,13 @@
             services.BoltOn();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app,
+            IHostApplicationLifetime lifeTime)
         {
             app.UseMvc();
             app.ApplicationServices.TightenBolts();
+            lifetime.ApplicationStopping.Register(
+                () =&gt; app.ApplicationServices.LoosenBolts());
         }
     }
 }
@@ -225,9 +234,25 @@ Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other 
     }
 }
 </code></pre>
-<h2 id="cleanup">Cleanup</h2>
-<p>BoltOn internally uses a class called <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Bootstrapping/Bootstrapper.cs">Bootstrapper</a> to invoke all the registration and post registration tasks, and when it gets disposed, it calls cleanup tasks in all the modules. It's basically done by scanning all the <code>ICleanupTask</code> in the assembly collection formed by BoltOn() and executing them.</p>
-<p>The cleanup tasks can be invoked on demand using <a href="utilities/#boltonappcleaner">BoltOnAppCleaner</a>.</p>
+<h2 id="loosenbolts">LoosenBolts()</h2>
+<p>This extension method scans the classes that implement <code>ICleanupTask</code> in all the bolted assemblies and execute them. This is mainly used to dispose and perform other clean-up tasks.</p>
+<p>Example:</p>
+<pre><code>public class CleanupTask : ICleanupTask
+{
+    private readonly IServiceProvider _serviceProvider;
+
+    public CleanupTask(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
+    public void Run()
+    {
+        var busControl = _serviceProvider.GetService&lt;IBusControl&gt;();
+        busControl?.Stop();
+    }
+}
+</code></pre>
               
             </div>
           </div>
@@ -276,5 +301,5 @@ Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other 
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-12-25 13:08:42
+Build Date UTC : 2020-02-09 16:42:23
 -->
