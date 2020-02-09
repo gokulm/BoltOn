@@ -88,6 +88,15 @@ namespace BoltOn.Data.EF
 			await DbContext.SaveChangesAsync(cancellationToken);
 		}
 
+		protected async Task SaveChangesAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+		{
+			foreach(var entity in entities)
+			{
+				PublishEvents(entity);
+			}
+			await DbContext.SaveChangesAsync(cancellationToken);
+		}
+
 		protected void PublishEvents(TEntity entity)
 		{
 			if (entity is BaseCqrsEntity baseCqrsEntity)
@@ -108,6 +117,19 @@ namespace BoltOn.Data.EF
 					_eventBag.ProcessedEvents.Add(@event);
 				}
 			}
+		}
+
+		public virtual async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null, bool isSaveChanges = true, CancellationToken cancellationToken = default)
+		{
+			foreach(var entity in entities)
+			{
+				DbSets.Add(entity);
+			}
+
+			if (isSaveChanges)
+				await SaveChangesAsync(entities, cancellationToken);
+
+			return entities;
 		}
 	}
 }

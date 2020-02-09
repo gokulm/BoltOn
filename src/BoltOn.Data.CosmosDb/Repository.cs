@@ -165,5 +165,22 @@ namespace BoltOn.Data.CosmosDb
                 }
             }
         }
-	}
+
+        public async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null, bool isSaveChanges = true, CancellationToken cancellationToken = default)
+        {
+            if (isSaveChanges)
+            {
+                foreach(var entity in entities)
+                {
+                    PublishEvents(entity);
+                }
+
+                if (options is RequestOptions requestOptions)
+                    await DocumentClient.CreateDocumentCollectionAsync(DocumentCollectionUri, entities as DocumentCollection, requestOptions);
+                else
+                    await DocumentClient.CreateDocumentCollectionAsync(DocumentCollectionUri, entities as DocumentCollection);
+            }
+            return entities;
+        }
+    }
 }
