@@ -44,7 +44,7 @@ After installing the package, call BoltOn() and TightenBolts() extension methods
         }
     }
 
-LoosenBolts() will run all the classes that implement `ICleanupTask` in all the bolted assemblies. To use other BoltOn packages and/or add other assemblies, add them using options:
+To use other BoltOn packages and/or add other assemblies, add them using options:
 
     services.BoltOn(options =>
     {
@@ -97,5 +97,27 @@ Example:
             var serviceProvider = context.ServiceProvider;
             var schoolDbContext = serviceProvider.GetService<TestDbContext>();
             testDbContext.Database.EnsureCreated();
+        }
+    }
+
+LoosenBolts()
+-------------
+This extension method scans the classes that implement `ICleanupTask` in all the bolted assemblies and execute them. This is mainly used to dispose and perform other clean-up tasks.
+
+Example:
+
+    public class CleanupTask : ICleanupTask
+    {
+        private readonly IServiceProvider _serviceProvider;
+
+		public CleanupTask(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+		}
+
+        public void Run()
+        {
+            var busControl = _serviceProvider.GetService<IBusControl>();
+            busControl?.Stop();
         }
     }
