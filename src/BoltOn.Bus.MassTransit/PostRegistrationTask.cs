@@ -14,7 +14,7 @@ namespace BoltOn.Bus.MassTransit
 			_serviceProvider = serviceProvider;
 		}
 
-		public void Run(PostRegistrationTaskContext context)
+		public void Run()
         {
             var busControl = _serviceProvider.GetService<IBusControl>();
             busControl?.Start();

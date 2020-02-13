@@ -4,9 +4,8 @@ namespace BoltOn.Bootstrapping
 {
     public class BoltOnPostRegistrationTask : IPostRegistrationTask
     {
-        public void Run(PostRegistrationTaskContext context)
+        public void Run()
         {
-            BoltOnServiceLocator.Current = context.ServiceProvider;
         }
     }
 }

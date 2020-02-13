@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using BoltOn.Bootstrapping;
+using BoltOn.Mediator.Pipeline;
+using BoltOn.Other;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn
@@ -11,15 +15,27 @@ namespace BoltOn
 		{
 			var options = new BoltOnOptions(serviceCollection);
 			action?.Invoke(options);
-			_ = Bootstrapper.Create(options, Assembly.GetCallingAssembly());
+			options.RegisterByConvention(Assembly.GetCallingAssembly());
+			var bootstrapper = Bootstrapper.Create(options, Assembly.GetCallingAssembly());
+            serviceCollection.AddSingleton(bootstrapper);
 			return serviceCollection;
 		}
 
 		public static void TightenBolts(this IServiceProvider serviceProvider)
 		{
 			var bootstrapper = serviceProvider.GetService<Bootstrapper>();
-			bootstrapper.RunPostRegistrationTasks(serviceProvider);
-		}
+            if (!bootstrapper.IsTightened)
+            {
+                //bootstrapper.RunPostRegistrationTasks(serviceProvider);
+                var postRegistrationTasks = serviceProvider.GetServices<IPostRegistrationTask>();
+                foreach (var postRegistrationTask in postRegistrationTasks)
+                {
+                    postRegistrationTask.Run();
+                }
+
+                bootstrapper.IsTightened = true;
+            }
+        }
 
 		public static void LoosenBolts(this IServiceProvider serviceProvider)
 		{
@@ -36,5 +52,5 @@ namespace BoltOn
 			boltOnOptions.ServiceCollection.AddSingleton(options);
 			return boltOnOptions;
 		}
-	}
+    }
 }

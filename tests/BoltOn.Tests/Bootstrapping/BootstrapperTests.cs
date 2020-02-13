@@ -9,255 +9,232 @@ using Xunit;
 
 namespace BoltOn.Tests.Bootstrapping
 {
-	[TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
-	[Collection("IntegrationTests")]
-	public class BootstrapperTests : IDisposable
-	{
-		[Fact, TestPriority(6)]
-		public void BoltOn_ConcreteClassWithoutRegistrationButResolvableDependencies_ReturnsInstance()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
+    [TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
+    [Collection("IntegrationTests")]
+    public class BootstrapperTests : IDisposable
+    {
+        [Fact, TestPriority(6)]
+        public void BoltOn_ConcreteClassWithoutRegistrationButResolvableDependencies_ReturnsInstance()
+        {
+            // arrange
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging();
+            serviceCollection.BoltOn();
+            serviceCollection.AddTransient<Employee>();
+            serviceCollection.AddTransient<ClassWithInjectedDependency>();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
 
-			// act 
-			var employee = serviceProvider.GetRequiredService<Employee>();
+            // act 
+            var employee = serviceProvider.GetRequiredService<Employee>();
 
-			// assert
-			Assert.NotNull(employee);
-		}
+            // assert
+            Assert.NotNull(employee);
+        }
 
-		[Fact, TestPriority(8)]
-		public void BoltOn_DefaultBoltOnWithAllTheAssemblies_RunsRegistrationTasksAndResolvesDependencies()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
+        [Fact, TestPriority(8)]
+        public void BoltOn_DefaultBoltOnWithAllTheAssemblies_RunsRegistrationTasksAndResolvesDependencies()
+        {
+            // arrange
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging();
+            serviceCollection.BoltOn();
+            serviceCollection.AddTransient<Employee>();
+            serviceCollection.AddTransient<ClassWithInjectedDependency>();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
 
-			// act 
-			var employee = serviceProvider.GetRequiredService<Employee>();
+            // act 
+            var employee = serviceProvider.GetRequiredService<Employee>();
 
-			// assert
-			var name = employee.GetName();
-			Assert.Equal("John", name);
-		}
+            // assert
+            var name = employee.GetName();
+            Assert.Equal("John", name);
+        }
 
-		[Fact, TestPriority(9)]
-		public void BoltOn_DefaultBoltOnWithAllTheAssemblies_ResolvesDependenciesRegisteredByConvention()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
+        [Fact, TestPriority(9)]
+        public void BoltOn_DefaultBoltOnWithAllTheAssemblies_ResolvesDependenciesRegisteredByConvention()
+        {
+            // arrange
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging();
+            serviceCollection.BoltOn();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
 
-			// act 
-			var result = serviceProvider.GetRequiredService<ITestService>();
+            // act 
+            var result = serviceProvider.GetRequiredService<ITestService>();
 
-			// assert
-			var name = result.GetName();
-			Assert.Equal("test", name);
-		}
+            // assert
+            var name = result.GetName();
+            Assert.Equal("test", name);
+        }
 
-		[Fact, TestPriority(11)]
-		public void BoltOn_BoltOnCalledMoreThanOnce_RegistrationTasksGetCalledMoreThanOnce()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn();
+        [Fact, TestPriority(12)]
+        public void BoltOn_BoltOn_DoesNotExecutePostRegistrationTask()
+        {
+            // arrange
+            var serviceCollection = new ServiceCollection();
 
-			// act
-			serviceCollection.BoltOn();
+            // act 
+            serviceCollection.BoltOn();
 
-			// assert
-			var registrationTaskCount = BootstrapperRegistrationTasksHelper.Tasks
-									.Count(w => w == $"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
-			Assert.True(registrationTaskCount > 1);
-		}
+            // assert
+            var postRegistrationTaskIndex = BootstrapperRegistrationTasksHelper.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
+            Assert.True(postRegistrationTaskIndex == -1);
+        }
 
-		[Fact, TestPriority(12)]
-		public void BoltOn_BoltOn_ExecutesRegistrationTasksInOrderAndNotPostRegistrationTask()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
+        [Fact, TestPriority(13)]
+        public void BoltOn_BoltOnAndTightenBolts_ExecutesAllPostRegistrationTasksInOrder()
+        {
+            // arrange
+            BootstrapperRegistrationTasksHelper.Tasks.Clear();
+            var serviceCollection = new ServiceCollection();
 
-			// act 
-			serviceCollection.BoltOn();
+            // act 
+            serviceCollection.AddLogging();
+            serviceCollection.BoltOn();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            serviceProvider.TightenBolts();
 
-			// assert
-			var registrationTaskIndex = BootstrapperRegistrationTasksHelper.Tasks.IndexOf($"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
-			var postRegistrationTaskIndex = BootstrapperRegistrationTasksHelper.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
-			Assert.True(registrationTaskIndex != -1);
-			Assert.True(postRegistrationTaskIndex == -1);
-		}
+            // assert
+            var postRegistrationTaskIndex = BootstrapperRegistrationTasksHelper.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
+            Assert.True(postRegistrationTaskIndex != -1);
+        }
 
-		[Fact, TestPriority(13)]
-		public void BoltOn_BoltOnAndTightenBolts_ExecutesAllRegistrationTasksInOrder()
-		{
-			// arrange
-			BootstrapperRegistrationTasksHelper.Tasks.Clear();
-			var serviceCollection = new ServiceCollection();
+        [Fact, TestPriority(14)]
+        public void BoltOn_BoltOnAndTightenBoltsWithExcludedFromRegistration_ReturnsNull()
+        {
+            // arrange
+            var serviceCollection = new ServiceCollection();
 
-			// act 
-			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
+            // act 
+            serviceCollection.AddLogging();
+            serviceCollection.BoltOn();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            serviceProvider.TightenBolts();
+            var test = serviceProvider.GetService<ITestExcludeRegistrationService>();
 
-			// assert
-			var registrationTaskIndex = BootstrapperRegistrationTasksHelper.Tasks.IndexOf($"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
-			var postRegistrationTaskIndex = BootstrapperRegistrationTasksHelper.Tasks.IndexOf($"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
-			Assert.True(registrationTaskIndex != -1);
-			Assert.True(postRegistrationTaskIndex != -1);
-			Assert.True(registrationTaskIndex < postRegistrationTaskIndex);
-		}
+            // assert
+            Assert.Null(test);
+        }
 
-		[Fact, TestPriority(14)]
-		public void BoltOn_BoltOnAndTightenBoltsWithExcludedFromRegistration_ReturnsNull()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
+        [Fact, TestPriority(11)]
+        public void BoltOn_TightenBoltsCalledMoreThanOnce_PostRegistrationTasksGetCalledOnce()
+        {
+            // arrange
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.BoltOn();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
 
-			// act 
-			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-			var test = serviceProvider.GetService<ITestExcludeRegistrationService>();
+            // act
+            serviceProvider.TightenBolts();
+            serviceProvider.TightenBolts();
 
-			// assert
-			Assert.Null(test);
-		}
+            // assert
+            var postRegistrationTaskCount = BootstrapperRegistrationTasksHelper.Tasks
+                                    .Count(w => w == $"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
+            Assert.True(postRegistrationTaskCount == 1);
+        }
 
-		[Fact, TestPriority(11)]
-		public void BoltOn_TightenBoltsCalledMoreThanOnce_RegistrationAndPostRegistrationTasksGetCalledOnce()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
+        [Fact, TestPriority(12)]
+        public void BoltOn_TightenBolts_PostRegistrationWithDependencyGetCalledOnce()
+        {
+            // arrange
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.BoltOn();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
 
-			// act
-			serviceProvider.TightenBolts();
-			serviceProvider.TightenBolts();
+            // act
+            serviceProvider.TightenBolts();
 
-			// assert
-			var registrationTaskCount = BootstrapperRegistrationTasksHelper.Tasks
-									.Count(w => w == $"Executed {typeof(TestBootstrapperRegistrationTask).Name}");
-			var postRegistrationTaskCount = BootstrapperRegistrationTasksHelper.Tasks
-									.Count(w => w == $"Executed {typeof(TestBootstrapperPostRegistrationTask).Name}");
-			Assert.True(registrationTaskCount == 1);
-			Assert.True(postRegistrationTaskCount == 1);
-		}
+            // assert
+            var postRegistrationTaskCount = BootstrapperRegistrationTasksHelper.Tasks
+                                    .Count(w => w == "Executed test service");
+            Assert.True(postRegistrationTaskCount == 1);
+        }
 
-		[Fact, TestPriority(12)]
-		public void BoltOn_TightenBolts_PostRegistrationWithDependencyGetCalledOnce()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
+        public void Dispose()
+        {
+            BootstrapperRegistrationTasksHelper.Tasks.Clear();
+        }
+    }
 
-			// act
-			serviceProvider.TightenBolts();
+    public interface ITestService
+    {
+        string GetName();
+    }
 
-			// assert
-			var postRegistrationTaskCount = BootstrapperRegistrationTasksHelper.Tasks
-									.Count(w => w == "Executed test service");
-			Assert.True(postRegistrationTaskCount == 1);
-		}
+    public class TestService : ITestService
+    {
+        public string GetName()
+        {
+            return "test";
+        }
+    }
 
-		public void Dispose()
-		{
-			//Bootstrapper
-			//	.Instance
-			//	.Dispose();
-			BootstrapperRegistrationTasksHelper.Tasks.Clear();
-		}
-	}
+    public interface ITestExcludeRegistrationService
+    {
+        string GetName();
+    }
 
-	public interface ITestService
-	{
-		string GetName();
-	}
+    [ExcludeFromRegistration]
+    public class TestExcludeRegistrationService : ITestExcludeRegistrationService
+    {
+        public string GetName()
+        {
+            return "test";
+        }
+    }
 
-	public class TestService : ITestService
-	{
-		public string GetName()
-		{
-			return "test";
-		}
-	}
+    public class ClassWithInjectedDependency
+    {
+        public ClassWithInjectedDependency(ITestService testService)
+        {
+            Name = testService.GetName();
+        }
 
-	public interface ITestExcludeRegistrationService
-	{
-		string GetName();
-	}
+        public string Name
+        {
+            get;
+            set;
+        }
+    }
 
-	[ExcludeFromRegistration]
-	public class TestExcludeRegistrationService : ITestExcludeRegistrationService
-	{
-		public string GetName()
-		{
-			return "test";
-		}
-	}
+    public class TestBootstrapperPostRegistrationTask : IPostRegistrationTask
+    {
+        public void Run()
+        {
+            BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
+        }
+    }
 
-	public class ClassWithInjectedDependency
-	{
-		public ClassWithInjectedDependency(ITestService testService)
-		{
-			Name = testService.GetName();
-		}
+    public class TestBootstrapperPostRegistrationTaskWithDependency : IPostRegistrationTask
+    {
+        private readonly ITestService _testService;
 
-		public string Name
-		{
-			get;
-			set;
-		}
-	}
+        public TestBootstrapperPostRegistrationTaskWithDependency(ITestService testService)
+        {
+            _testService = testService;
+        }
 
-	public class TestBootstrapperPostRegistrationTask : IPostRegistrationTask
-	{
-		public void Run(PostRegistrationTaskContext context)
-		{
-			BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
-		}
-	}
+        public void Run()
+        {
+            BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
+            BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {_testService.GetName()} service");
+        }
+    }
 
-	public class TestBootstrapperPostRegistrationTaskWithDependency : IPostRegistrationTask
-	{
-		private readonly ITestService _testService;
+    public class TestBootstrapperRegistrationTask : IRegistrationTask
+    {
+        public void Run(RegistrationTaskContext context)
+        {
+            BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
+            context.ServiceCollection
+                   .AddTransient<Employee>()
+                   .AddTransient<ClassWithInjectedDependency>();
+        }
+    }
 
-		public TestBootstrapperPostRegistrationTaskWithDependency(ITestService testService)
-		{
-			_testService = testService;
-		}
-
-		public void Run(PostRegistrationTaskContext context)
-		{
-			BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
-			BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {_testService.GetName()} service");
-		}
-	}
-
-	public class TestBootstrapperRegistrationTask : IRegistrationTask
-	{
-		public void Run(RegistrationTaskContext context)
-		{
-			BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
-			context.ServiceCollection
-				   .AddTransient<Employee>()
-				   .AddTransient<ClassWithInjectedDependency>();
-		}
-	}
-
-	public class BootstrapperRegistrationTasksHelper
-	{
-		public static List<string> Tasks { get; set; } = new List<string>();
-	}
+    public class BootstrapperRegistrationTasksHelper
+    {
+        public static List<string> Tasks { get; set; } = new List<string>();
+    }
 }

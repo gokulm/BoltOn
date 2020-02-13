@@ -15,7 +15,7 @@ namespace BoltOn.Bootstrapping
 		public void Run()
 		{
 			_logger.Debug($"{nameof(BoltOnCleanupTask)} invoked");
-			BoltOnServiceLocator.Current = null;
+            // todo: dispose bootstrapper
 			_logger.Debug("Cleaned up all the modules...");
 		}
     }

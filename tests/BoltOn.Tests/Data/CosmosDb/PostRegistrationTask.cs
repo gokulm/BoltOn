@@ -8,12 +8,18 @@ namespace BoltOn.Tests.Data.CosmosDb
 {
 	public class PostRegistrationTask : IPostRegistrationTask
 	{
-		public void Run(PostRegistrationTaskContext context)
+        private readonly IServiceProvider _serviceProvider;
+
+        public PostRegistrationTask(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
+		public void Run()
 		{
 			if (IntegrationTestHelper.IsCosmosDbServer && IntegrationTestHelper.IsSeedCosmosDbData)
 			{
-				var serviceProvider = context.ServiceProvider;
-				using (var scope = serviceProvider.CreateScope())
+				using (var scope = _serviceProvider.CreateScope())
 				{
 					var guid = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
 					var studentFlattened = new StudentFlattened

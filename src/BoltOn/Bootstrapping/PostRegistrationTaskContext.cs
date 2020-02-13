@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace BoltOn.Bootstrapping
 {
     public sealed class PostRegistrationTaskContext
     {
-        private readonly Bootstrapper _bootstrapper;
-
-        internal PostRegistrationTaskContext(Bootstrapper bootstrapper)
+        internal PostRegistrationTaskContext(IServiceProvider serviceProvider)
         {
-            _bootstrapper = bootstrapper;
+            ServiceProvider = serviceProvider;
         }
 
-        public IServiceProvider ServiceProvider => _bootstrapper.ServiceProvider;
-
-        public IReadOnlyList<Assembly> Assemblies => _bootstrapper.Assemblies;
+        public IServiceProvider ServiceProvider { get; }
     }
 }

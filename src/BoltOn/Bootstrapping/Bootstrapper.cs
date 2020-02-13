@@ -59,6 +59,8 @@ namespace BoltOn.Bootstrapping
 			private set;
 		}
 
+        public bool IsTightened { get; set; }
+
         internal List<object> OtherOptions { get; } = new List<object>();
 
         internal IReadOnlyList<Assembly> Assemblies { get; private set; }
@@ -71,76 +73,78 @@ namespace BoltOn.Bootstrapping
 			_serviceCollection = options.ServiceCollection;
 			Options = options;
 			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
-			LoadAssemblies();
+			//LoadAssemblies();
 			RunRegistrationTasks();
 			_serviceCollection.AddSingleton(this);
 			_isBolted = true;
 		}
 
-		internal void RunPostRegistrationTasks(IServiceProvider serviceProvider)
-		{
-			if (_isTightened)
-				return;
+		//internal void RunPostRegistrationTasks(IServiceProvider serviceProvider)
+		//{
+		//	if (_isTightened)
+		//		return;
 
-			_serviceProvider = serviceProvider;
-			var context = new PostRegistrationTaskContext(this);
-			var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IPostRegistrationTask>>();
-			postRegistrationTasks.ToList().ForEach(t => t.Run(context));
-			_isTightened = true;
-		}
+		//	_serviceProvider = serviceProvider;
+		//	var context = new PostRegistrationTaskContext(this);
+		//	var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IPostRegistrationTask>>();
+		//	postRegistrationTasks.ToList().ForEach(t => t.Run(context));
+		//	_isTightened = true;
+		//}
 
-		private void LoadAssemblies()
-		{
-			var assemblies = new List<Assembly> { Assembly.GetExecutingAssembly(), _callingAssembly };
-			var sortedAssemblies = new HashSet<Assembly>();
-			assemblies = assemblies.Distinct().ToList();
-			assemblies.AddRange(Options.AssembliesToBeIncluded);
+		//private void LoadAssemblies()
+		//{
+		//	var assemblies = new List<Assembly> { Assembly.GetExecutingAssembly(), _callingAssembly };
+		//	var sortedAssemblies = new HashSet<Assembly>();
+		//	assemblies = assemblies.Distinct().ToList();
+		//	assemblies.AddRange(Options.AssembliesToBeIncluded);
 
-			// load assemblies in the order of dependency
-			var index = 0;
-			while (assemblies.Count != 0)
-			{
-				var tempRefs = GetReferencedAssemblies(assemblies[index]);
-				if (!tempRefs.Intersect(assemblies).Any())
-				{
-					sortedAssemblies.Add(assemblies[index]);
-					assemblies.Remove(assemblies[index]);
-					index = 0;
-				}
-				else
-					index += 1;
-			}
+		//	// load assemblies in the order of dependency
+		//	var index = 0;
+		//	while (assemblies.Count != 0)
+		//	{
+		//		var tempRefs = GetReferencedAssemblies(assemblies[index]);
+		//		if (!tempRefs.Intersect(assemblies).Any())
+		//		{
+		//			sortedAssemblies.Add(assemblies[index]);
+		//			assemblies.Remove(assemblies[index]);
+		//			index = 0;
+		//		}
+		//		else
+		//			index += 1;
+		//	}
 
-			Assemblies = sortedAssemblies.ToList().AsReadOnly();
+		//	Assemblies = sortedAssemblies.ToList().AsReadOnly();
 
-			IEnumerable<Assembly> GetReferencedAssemblies(Assembly assembly)
-			{
-				var referencedAssemblyNames = assembly.GetReferencedAssemblies();
-				foreach (var referencedAssemblyName in referencedAssemblyNames)
-				{
-					var tempAssembly = Assembly.Load(referencedAssemblyName);
-					yield return tempAssembly;
-				}
-			}
-		}
+		//	IEnumerable<Assembly> GetReferencedAssemblies(Assembly assembly)
+		//	{
+		//		var referencedAssemblyNames = assembly.GetReferencedAssemblies();
+		//		foreach (var referencedAssemblyName in referencedAssemblyNames)
+		//		{
+		//			var tempAssembly = Assembly.Load(referencedAssemblyName);
+		//			yield return tempAssembly;
+		//		}
+		//	}
+		//}
 
 		private void RunRegistrationTasks()
 		{
-			var registrationTaskType = typeof(IRegistrationTask);
-			var registrationTaskTypes = (from a in Assemblies
-										 from t in a.GetTypes()
-										 where registrationTaskType.IsAssignableFrom(t)
-										 && t.IsClass
-										 select t).ToList();
+			//var registrationTaskType = typeof(IRegistrationTask);
+			//var registrationTaskTypes = (from a in Assemblies
+			//							 from t in a.GetTypes()
+			//							 where registrationTaskType.IsAssignableFrom(t)
+			//							 && t.IsClass
+			//							 select t).ToList();
 
-			_registrationTaskContext = new RegistrationTaskContext(this);
-			foreach (var type in registrationTaskTypes)
-			{
-				var task = Activator.CreateInstance(type) as IRegistrationTask;
-				task?.Run(_registrationTaskContext);
-			}
+			//_registrationTaskContext = new RegistrationTaskContext(this);
+			//foreach (var type in registrationTaskTypes)
+			//{
+			//	var task = Activator.CreateInstance(type) as IRegistrationTask;
+			//	task?.Run(_registrationTaskContext);
+			//}
+			var boltOnRegistrationTask = new BoltOnRegistrationTask();
+			boltOnRegistrationTask.Run(Options);
 
-			FinalizeRegistrations();
+//			FinalizeRegistrations();
 			RegisterPostRegistrationTasks();
 			RegisterCleanupTasks();
 		}
@@ -194,7 +198,6 @@ namespace BoltOn.Bootstrapping
 			{
 				RunCleanupTasks();
 				_serviceCollection = null;
-				BoltOnServiceLocator.Current = null;
 				_serviceProvider = null;
 				_registrationTaskContext = null;
 				Assemblies = null;
