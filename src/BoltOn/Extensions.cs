@@ -26,7 +26,6 @@ namespace BoltOn
 			var bootstrapper = serviceProvider.GetService<Bootstrapper>();
             if (!bootstrapper.IsTightened)
             {
-                //bootstrapper.RunPostRegistrationTasks(serviceProvider);
                 var postRegistrationTasks = serviceProvider.GetServices<IPostRegistrationTask>();
                 foreach (var postRegistrationTask in postRegistrationTasks)
                 {
