@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Data.EF;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.Tests.Data.EF;
 using BoltOn.Tests.Mediator.Fakes;
 using BoltOn.Tests.Other;
 using BoltOn.Tests.UoW;
@@ -376,6 +377,7 @@ namespace BoltOn.Tests.Mediator
             serviceCollection.BoltOn(options =>
             {
                 options.RegisterMediatorFakes();
+				options.RegisterDataFakes();
                 options.BoltOnEFModule();
             });
 			var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -405,6 +407,7 @@ namespace BoltOn.Tests.Mediator
             serviceCollection.BoltOn(options =>
             {
                 options.RegisterMediatorFakes();
+				options.RegisterDataFakes();
                 options.BoltOnEFModule();
             });
 			var serviceProvider = serviceCollection.BuildServiceProvider();

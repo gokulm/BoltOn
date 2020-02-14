@@ -27,9 +27,9 @@ namespace BoltOn.Tests.Data.EF
 			serviceCollection
 				.BoltOn(options =>
 				{
-					options
-						.BoltOnEFModule();
-				});
+					options.BoltOnEFModule();
+                    options.RegisterDataFakes();
+                });
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			_sut = serviceProvider.GetService<IRepository<Student>>();

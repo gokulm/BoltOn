@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using BoltOn.Cqrs;
+using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Other;
+using BoltOn.UoW;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
@@ -20,13 +23,40 @@ namespace BoltOn.Bootstrapping
 		{
 			ServiceCollection = serviceCollection;
             RegisterByConvention(GetType().Assembly);
-		}
+            RegisterCoreTypes();
+            RegisterMediator();
+        }
 
 		public void BoltOnAssemblies(params Assembly[] assemblies)
 		{
 			//AssembliesToBeIncluded.AddRange(assemblies);
             RegisterByConvention(assemblies);
 		}
+
+        private  void RegisterCoreTypes()
+        {
+            ServiceCollection.AddScoped<IUnitOfWorkManager>(s =>
+            {
+                return new UnitOfWorkManager(s.GetRequiredService<IBoltOnLogger<UnitOfWorkManager>>(),
+                    s.GetRequiredService<IUnitOfWorkFactory>());
+            });
+            ServiceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
+            ServiceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
+            ServiceCollection.AddScoped<EventBag>();
+
+            //foreach (var option in context.Bootstrapper.Options.OtherOptions)
+            //{
+            //    serviceCollection.AddSingleton(option.GetType(), option);
+            //}
+        }
+
+        private void RegisterMediator()
+        {
+            ServiceCollection.AddTransient<IMediator, Mediator.Pipeline.Mediator>();
+            ServiceCollection.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
+            AddInterceptor<StopwatchInterceptor>();
+            AddInterceptor<UnitOfWorkInterceptor>();
+        }
 
         public void AddInterceptor<TInterceptor>() where TInterceptor : IInterceptor
         {
@@ -36,7 +66,7 @@ namespace BoltOn.Bootstrapping
         public void RemoveInterceptor<TInterceptor>() where TInterceptor : IInterceptor
         {
             var serviceDescriptor = ServiceCollection.FirstOrDefault(descriptor =>
-                descriptor.ServiceType == typeof(TInterceptor));
+                descriptor.ImplementationType == typeof(TInterceptor));
             if (serviceDescriptor != null)
                 ServiceCollection.Remove(serviceDescriptor);
         }
@@ -80,6 +110,7 @@ namespace BoltOn.Bootstrapping
             RegisterHandlers(tempAssemblies);
             RegisterOneWayHandlers(tempAssemblies);
             RegisterPostRegistrationTasks(tempAssemblies);
+            RegisterCleanupTasks(tempAssemblies);
         }
 
         private void RegisterHandlers(IEnumerable<Assembly> assemblies)

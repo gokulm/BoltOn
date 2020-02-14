@@ -39,7 +39,7 @@ namespace BoltOn.Tests.Mediator.Fakes
 			var customUoWOptionsBuilder = new Mock<IBoltOnLogger<TestCustomUnitOfWorkOptionsBuilder>>();
 			customUoWOptionsBuilder.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-			boltOnOptions.ServiceCollection.AddTransient((s) => customUoWOptionsBuilder.Object);
+			boltOnOptions.ServiceCollection.AddTransient(s => customUoWOptionsBuilder.Object);
 
 			var uowOptionsBuilderLogger = new Mock<IBoltOnLogger<UnitOfWorkOptionsBuilder>>();
 			uowOptionsBuilderLogger.Setup(s => s.Debug(It.IsAny<string>()))
@@ -57,7 +57,7 @@ namespace BoltOn.Tests.Mediator.Fakes
 				var customChangeTrackerInterceptorLogger = new Mock<IBoltOnLogger<CustomChangeTrackerInterceptor>>();
 				customChangeTrackerInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
 										 .Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
-				boltOnOptions.ServiceCollection.AddTransient((s) => customChangeTrackerInterceptorLogger.Object);
+				boltOnOptions.ServiceCollection.AddTransient(s => customChangeTrackerInterceptorLogger.Object);
 			}
 
 			if (MediatorTestHelper.IsRemoveStopwatchInterceptor)

@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
-namespace BoltOn.Tests.Bootstrapping
+namespace BoltOn.Tests.Utilities
 {
 	[Collection("IntegrationTests")]
 	public class BoltOnAppCleanerTests : IDisposable
@@ -23,7 +23,7 @@ namespace BoltOn.Tests.Bootstrapping
 			var logger = new Mock<IBoltOnLogger<BoltOnCleanupTask>>();
 			logger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => BoltOnAppCleanerHelper.LoggerStatements.Add(st));
-			serviceCollection.AddTransient((s) => logger.Object);
+			serviceCollection.AddTransient(s => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();

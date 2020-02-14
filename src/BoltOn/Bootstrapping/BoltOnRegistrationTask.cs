@@ -9,23 +9,23 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
 {
-	public class BoltOnRegistrationTask : IRegistrationTask
+	public static class BoltOnRegistrationTask //: IRegistrationTask
 	{
-        public void Run(BoltOnOptions boltOnOptions)
+        public static void Run(this BoltOnOptions boltOnOptions)
         {
 			//boltOnOptions.BoltOnAssemblies(GetType().Assembly);
             RegisterOtherTypes(boltOnOptions.ServiceCollection);
             RegisterMediator(boltOnOptions);
         }
 
-		public void Run(RegistrationTaskContext context)
-		{
-			//RegisterByConvention(context);
-			//RegisterOtherTypes(context);
-			//RegisterMediator(context);
-		}
+		//public void Run(RegistrationTaskContext context)
+		//{
+		//	//RegisterByConvention(context);
+		//	//RegisterOtherTypes(context);
+		//	//RegisterMediator(context);
+		//}
 
-		private void RegisterOtherTypes(IServiceCollection serviceCollection)
+		private static void RegisterOtherTypes(IServiceCollection serviceCollection)
 		{
 			serviceCollection.AddScoped<IUnitOfWorkManager>(s =>
 			{
@@ -42,7 +42,7 @@ namespace BoltOn.Bootstrapping
             //}
 		}
 
-		public void RegisterMediator(BoltOnOptions boltOnOptions)
+		public static void RegisterMediator(BoltOnOptions boltOnOptions)
 		{
 			boltOnOptions.ServiceCollection.AddTransient<IMediator, Mediator.Pipeline.Mediator>();
 			boltOnOptions.ServiceCollection.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();

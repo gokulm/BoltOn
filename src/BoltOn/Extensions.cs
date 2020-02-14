@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BoltOn.Bootstrapping;
-using BoltOn.Mediator.Pipeline;
-using BoltOn.Other;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn
@@ -27,18 +25,20 @@ namespace BoltOn
             if (!bootstrapper.IsTightened)
             {
                 var postRegistrationTasks = serviceProvider.GetServices<IPostRegistrationTask>();
-                foreach (var postRegistrationTask in postRegistrationTasks)
-                {
-                    postRegistrationTask.Run();
-                }
-
+				postRegistrationTasks.ToList().ForEach(t => t.Run());
                 bootstrapper.IsTightened = true;
             }
         }
 
 		public static void LoosenBolts(this IServiceProvider serviceProvider)
 		{
-			var bootstrapper = serviceProvider.GetService<Bootstrapper>();
+            var bootstrapper = serviceProvider.GetService<Bootstrapper>();
+            if (!bootstrapper.IsAppCleaned)
+			{
+                var postRegistrationTasks = serviceProvider.GetService<IEnumerable<ICleanupTask>>();
+                postRegistrationTasks.Reverse().ToList().ForEach(t => t.Run());
+                bootstrapper.IsAppCleaned = true;
+            }
 			bootstrapper.Dispose();
 		}
 

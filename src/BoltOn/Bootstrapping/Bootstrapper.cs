@@ -59,7 +59,8 @@ namespace BoltOn.Bootstrapping
 			private set;
 		}
 
-        public bool IsTightened { get; set; }
+        internal bool IsTightened { get; set; }
+        internal bool IsAppCleaned { get; set; }
 
         internal List<object> OtherOptions { get; } = new List<object>();
 
@@ -74,22 +75,21 @@ namespace BoltOn.Bootstrapping
 			Options = options;
 			_callingAssembly = callingAssembly ?? Assembly.GetCallingAssembly();
 			//LoadAssemblies();
-			RunRegistrationTasks();
+			//RunRegistrationTasks();
 			_serviceCollection.AddSingleton(this);
 			_isBolted = true;
 		}
 
-		//internal void RunPostRegistrationTasks(IServiceProvider serviceProvider)
-		//{
-		//	if (_isTightened)
-		//		return;
+		internal void RunPostRegistrationTasks(IServiceProvider serviceProvider)
+		{
+			if (_isTightened)
+				return;
 
-		//	_serviceProvider = serviceProvider;
-		//	var context = new PostRegistrationTaskContext(this);
-		//	var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IPostRegistrationTask>>();
-		//	postRegistrationTasks.ToList().ForEach(t => t.Run(context));
-		//	_isTightened = true;
-		//}
+			_serviceProvider = serviceProvider;
+			var postRegistrationTasks = serviceProvider.GetService<IEnumerable<IPostRegistrationTask>>();
+			postRegistrationTasks.ToList().ForEach(t => t.Run());
+			_isTightened = true;
+		}
 
 		//private void LoadAssemblies()
 		//{
@@ -141,8 +141,8 @@ namespace BoltOn.Bootstrapping
 			//	var task = Activator.CreateInstance(type) as IRegistrationTask;
 			//	task?.Run(_registrationTaskContext);
 			//}
-			var boltOnRegistrationTask = new BoltOnRegistrationTask();
-			boltOnRegistrationTask.Run(Options);
+			//var boltOnRegistrationTask = new BoltOnRegistrationTask();
+			//boltOnRegistrationTask.Run(Options);
 
 //			FinalizeRegistrations();
 			RegisterPostRegistrationTasks();
@@ -196,7 +196,6 @@ namespace BoltOn.Bootstrapping
 		{
 			if (disposing)
 			{
-				RunCleanupTasks();
 				_serviceCollection = null;
 				_serviceProvider = null;
 				_registrationTaskContext = null;
