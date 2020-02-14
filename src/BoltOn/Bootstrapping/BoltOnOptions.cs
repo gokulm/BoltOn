@@ -15,7 +15,7 @@ namespace BoltOn.Bootstrapping
 	{
         internal bool IsCqrsEnabled { get; set; }
 
-		internal List<object> OtherOptions { get; } = new List<object>();
+		//internal List<object> OtherOptions { get; } = new List<object>();
 
 		public IServiceCollection ServiceCollection { get; }
 
@@ -29,7 +29,6 @@ namespace BoltOn.Bootstrapping
 
 		public void BoltOnAssemblies(params Assembly[] assemblies)
 		{
-			//AssembliesToBeIncluded.AddRange(assemblies);
             RegisterByConvention(assemblies);
 		}
 
@@ -43,11 +42,6 @@ namespace BoltOn.Bootstrapping
             ServiceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
             ServiceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
             ServiceCollection.AddScoped<EventBag>();
-
-            //foreach (var option in context.Bootstrapper.Options.OtherOptions)
-            //{
-            //    serviceCollection.AddSingleton(option.GetType(), option);
-            //}
         }
 
         private void RegisterMediator()
@@ -55,6 +49,11 @@ namespace BoltOn.Bootstrapping
             ServiceCollection.AddTransient<IMediator, Mediator.Pipeline.Mediator>();
             ServiceCollection.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
             AddInterceptor<StopwatchInterceptor>();
+            if (IsCqrsEnabled)
+            {
+                AddInterceptor<CqrsInterceptor>();
+                ServiceCollection.AddTransient<IEventDispatcher, EventDispatcher>();
+            }
             AddInterceptor<UnitOfWorkInterceptor>();
         }
 

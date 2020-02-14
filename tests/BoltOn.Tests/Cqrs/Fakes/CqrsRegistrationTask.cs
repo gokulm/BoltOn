@@ -7,18 +7,20 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace BoltOn.Tests.Cqrs.Fakes
 {
-    public class CqrsRegistrationTask : IRegistrationTask
+    public static class CqrsRegistrationTask
     {
-        public void Run(RegistrationTaskContext context)
+        public static void RegisterCqrsFakes(this BoltOnOptions boltOnOptions)
         {
-            context.ServiceCollection.AddDbContext<CqrsDbContext>(options =>
+            boltOnOptions.ServiceCollection.AddDbContext<CqrsDbContext>(options =>
             {
                 options.UseInMemoryDatabase("InMemoryDbCqrsDbContext");
                 options.ConfigureWarnings(x => x.Ignore(RelationalEventId.AmbientTransactionWarning));
             });
 
-            context.ServiceCollection.AddTransient<IRepository<Student>, Repository<Student, CqrsDbContext>>();
-            context.ServiceCollection.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, CqrsDbContext>>();
+            boltOnOptions.ServiceCollection.AddTransient<IRepository<Student>, 
+                Repository<Student, CqrsDbContext>>();
+            boltOnOptions.ServiceCollection.AddTransient<IRepository<StudentFlattened>, 
+                Repository<StudentFlattened, CqrsDbContext>>();
         }
     }
 }

@@ -222,17 +222,6 @@ namespace BoltOn.Tests.Bootstrapping
         }
     }
 
-    public class TestBootstrapperRegistrationTask : IRegistrationTask
-    {
-        public void Run(RegistrationTaskContext context)
-        {
-            BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
-            context.ServiceCollection
-                   .AddTransient<Employee>()
-                   .AddTransient<ClassWithInjectedDependency>();
-        }
-    }
-
     public class BootstrapperRegistrationTasksHelper
     {
         public static List<string> Tasks { get; set; } = new List<string>();
