@@ -41,7 +41,10 @@ namespace BoltOn.Bootstrapping
             });
             ServiceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
             ServiceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
+            ServiceCollection.AddSingleton<IEventDispatcher, EventDispatcher>();
             ServiceCollection.AddScoped<EventBag>();
+            var options = new CqrsOptions();
+            ServiceCollection.AddSingleton(options);
         }
 
         private void RegisterMediator()
@@ -49,11 +52,11 @@ namespace BoltOn.Bootstrapping
             ServiceCollection.AddTransient<IMediator, Mediator.Pipeline.Mediator>();
             ServiceCollection.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
             AddInterceptor<StopwatchInterceptor>();
-            if (IsCqrsEnabled)
-            {
+            //if (IsCqrsEnabled)
+            //{
                 AddInterceptor<CqrsInterceptor>();
-                ServiceCollection.AddTransient<IEventDispatcher, EventDispatcher>();
-            }
+                //ServiceCollection.AddTransient<IEventDispatcher, EventBusDispatcher>();
+            //}
             AddInterceptor<UnitOfWorkInterceptor>();
         }
 

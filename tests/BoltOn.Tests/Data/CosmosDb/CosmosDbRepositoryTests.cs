@@ -26,8 +26,8 @@ namespace BoltOn.Tests.Data.CosmosDb
 			serviceCollection
 				.BoltOn(options =>
 				{
-					options
-						.BoltOnCosmosDbModule();
+					options.BoltOnCosmosDbModule();
+					options.RegisterCosmosdbFakes();
 				});
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();

@@ -37,7 +37,6 @@
     <Folder Include="Mediator\Pipeline\" />
     <Folder Include="Data\" />
     <Folder Include="Bus\" />
-    <Folder Include="Cqrs\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />

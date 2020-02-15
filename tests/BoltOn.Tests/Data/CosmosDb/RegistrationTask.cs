@@ -9,9 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Tests.Data.CosmosDb
 {
-	public class RegistrationTask : IRegistrationTask
+	public static class RegistrationTask 
 	{
-		public void Run(RegistrationTaskContext context)
+		public static void RegisterCosmosdbFakes(this BoltOnOptions boltOnOptions)
 		{
 			if (IntegrationTestHelper.IsCosmosDbServer)
 			{
@@ -21,7 +21,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 					AuthorizationKey = "",
 					DatabaseName = ""
 				};
-				context.ServiceCollection.AddCosmosDb<TestSchoolCosmosDbOptions>(options =>
+				boltOnOptions.ServiceCollection.AddCosmosDb<TestSchoolCosmosDbOptions>(options =>
 				{
 					options.Uri = cosmosDbOptions.Uri;
 					options.AuthorizationKey = cosmosDbOptions.AuthorizationKey;
@@ -39,7 +39,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 				}
 			}
 
-			context.ServiceCollection.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, TestSchoolCosmosDbOptions>>();
+			boltOnOptions.ServiceCollection.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, TestSchoolCosmosDbOptions>>();
 		}
 	}
 }

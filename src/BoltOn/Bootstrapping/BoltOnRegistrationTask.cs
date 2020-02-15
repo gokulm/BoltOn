@@ -58,7 +58,7 @@ namespace BoltOn.Bootstrapping
 			//if (context.Bootstrapper.Options.IsCqrsEnabled)
 			//{
 			//	context.AddInterceptor<CqrsInterceptor>();
-			//	context.ServiceCollection.AddTransient<IEventDispatcher, EventDispatcher>();
+			//	context.ServiceCollection.AddTransient<IEventDispatcher, EventBusDispatcher>();
 			//}
 
 			//context.AddInterceptor<UnitOfWorkInterceptor>();

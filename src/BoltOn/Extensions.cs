@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BoltOn.Bootstrapping;
+using BoltOn.Cqrs;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn
@@ -49,6 +50,7 @@ namespace BoltOn
 			var options = new CqrsOptions();
 			action?.Invoke(options);
 			boltOnOptions.ServiceCollection.AddSingleton(options);
+			boltOnOptions.ServiceCollection.AddTransient<IEventDispatcher, EventBusDispatcher>();
 			return boltOnOptions;
 		}
     }
