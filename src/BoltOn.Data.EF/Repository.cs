@@ -81,7 +81,11 @@ namespace BoltOn.Data.EF
 				DbSets.Add(entity);
 			}
 
-			await SaveChangesAsync(entities, cancellationToken);
+			foreach (var entity in entities)
+			{
+				PublishEvents(entity);
+			}
+			await DbContext.SaveChangesAsync(cancellationToken);
 
 			return entities;
 		}
@@ -112,15 +116,6 @@ namespace BoltOn.Data.EF
 					_eventBag.ProcessedEvents.Add(@event);
 				}
 			}
-		}		
-
-		protected async Task SaveChangesAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
-		{
-			foreach (var entity in entities)
-			{
-				PublishEvents(entity);
-			}
-			await DbContext.SaveChangesAsync(cancellationToken);
-		}
+		}				
 	}
 }
