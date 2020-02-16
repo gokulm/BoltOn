@@ -26,8 +26,8 @@ Example:
 	var result = repository.FindBy(f => f.Id == 2, includes).FirstOrDefault();
 
 * Add all the database columns to entity properties mapping inside a mapping class by implementing `IEntityTypeConfiguration<TEntity>` interface.
-<br>
-The mapping classes will be automatically added to your DbContext if you inherit `BaseDbContext<TDbContext>` and if they are in the same assembly where the DbContext resides. 
+* The mapping classes will be automatically added to your DbContext if you inherit `BaseDbContext<TDbContext>` and if they are in the same assembly where the DbContext resides.
+* In case if you do not want all the mapping configuration classes in the assembly to be added, you can override `ApplyConfigurations(ModelBuilder modelBuilder)` method of `BaseDbContext` and add the configuration classes manually.
 
 Example:
 

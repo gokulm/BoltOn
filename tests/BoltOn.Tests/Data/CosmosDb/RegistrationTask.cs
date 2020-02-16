@@ -21,7 +21,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 					AuthorizationKey = "",
 					DatabaseName = ""
 				};
-				context.Container.AddCosmosDb<TestSchoolCosmosDbOptions>(options =>
+				context.ServiceCollection.AddCosmosDb<TestSchoolCosmosDbOptions>(options =>
 				{
 					options.Uri = cosmosDbOptions.Uri;
 					options.AuthorizationKey = cosmosDbOptions.AuthorizationKey;
@@ -39,7 +39,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 				}
 			}
 
-			context.Container.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, TestSchoolCosmosDbOptions>>();
+			context.ServiceCollection.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, TestSchoolCosmosDbOptions>>();
 		}
 	}
 }

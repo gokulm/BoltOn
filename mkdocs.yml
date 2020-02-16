@@ -9,5 +9,6 @@ nav:
     - Optional: optional.md
     - Samples: samples.md
     - CLI: cli.md
+    - CI & CD: build.md
 theme: readthedocs
 

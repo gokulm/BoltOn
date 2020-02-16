@@ -12,7 +12,7 @@ namespace BoltOn.Data.CosmosDb
 
         public static string Pluralize(this string word)
         {
-            _pluralizer = _pluralizer ?? new Pluralizer();
+            _pluralizer ??= new Pluralizer();
             return _pluralizer.Pluralize(word);
         }
 

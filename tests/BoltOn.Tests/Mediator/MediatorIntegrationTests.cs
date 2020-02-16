@@ -2,10 +2,8 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Overrides.Mediator;
 using BoltOn.Tests.Mediator.Fakes;
 using BoltOn.Tests.Other;
 using BoltOn.Tests.UoW;
@@ -410,9 +408,6 @@ namespace BoltOn.Tests.Mediator
 			MediatorTestHelper.IsClearInterceptors = false;
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
 			MediatorTestHelper.LoggerStatements.Clear();
-			Bootstrapper
-				.Instance
-				.Dispose();
 		}
 	}
 }

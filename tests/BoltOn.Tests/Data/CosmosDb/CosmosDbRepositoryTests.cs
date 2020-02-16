@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BoltOn.Bootstrapping;
 using BoltOn.Data;
 using BoltOn.Data.CosmosDb;
 using BoltOn.Tests.Other;
@@ -180,10 +179,6 @@ namespace BoltOn.Tests.Data.CosmosDb
 				var student = new StudentFlattened { Id = id };
 				_sut.DeleteAsync(student, new RequestOptions { PartitionKey = new PartitionKey(1) }).GetAwaiter().GetResult();
 			}
-
-			Bootstrapper
-				.Instance
-				.Dispose();
 		}
 	}
 }

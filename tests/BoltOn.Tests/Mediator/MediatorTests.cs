@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
 using BoltOn.Logging;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
-using BoltOn.Overrides.Mediator;
 using BoltOn.Tests.Mediator.Fakes;
 using BoltOn.UoW;
 using BoltOn.Utilities;
@@ -356,9 +354,6 @@ namespace BoltOn.Tests.Mediator
 		public void Dispose()
 		{
 			MediatorTestHelper.LoggerStatements.Clear();
-			Bootstrapper
-				.Instance
-				.Dispose();
 		}
 	}
 }

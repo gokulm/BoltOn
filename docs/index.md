@@ -1,14 +1,16 @@
-[**BoltOn**](https://github.com/gokulm/BoltOn) is an open source application framework which can be used to build any type of .NET applications like Console, MVC, WebAPI, Windows Service etc., with [modularity](https://en.wikipedia.org/wiki/Modular_programming) being the crux of it. Though it doesn't have all the components to call it as an enterprise application framework (EAF) currently, the plan is to make it an EAF eventually. The components are written in such a way that they're modular, thus they can be bolted on with other components and interchanged easily, and hence the name Bolt-On. 
+[**BoltOn**](https://github.com/gokulm/BoltOn) is an open source application framework which can be used to build any type of .NET applications like Console, MVC, WebAPI, Windows Service etc. The components are written in such a way that they're [modular](https://en.wikipedia.org/wiki/Modular_programming), thus they can be bolted on with other components and interchanged easily, and hence the name Bolt-On. 
 
 Installation
 ------------
-There are a [couple of packages](https://www.nuget.org/packages?q=BoltOn) for BoltOn available on NuGet, out of which BoltOn package is the core. To install BoltOn in your .NET application, type the following command in the Package Manager Console window:
+To install BoltOn in your .NET application, type the following command in the Package Manager Console window:
 
     PM> Install-Package BoltOn
 
 From CLI:
 
     dotnet add package BoltOn
+
+Here is the [list of NuGet Packages](https://www.nuget.org/packages?q=BoltOn). 
 
 Configuration
 -------------
@@ -31,10 +33,13 @@ After installing the package, call BoltOn() and TightenBolts() extension methods
                 services.BoltOn();
             }
 
-            public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+            public void Configure(IApplicationBuilder app,
+                IHostApplicationLifetime lifeTime)
             {
                 app.UseMvc();
                 app.ApplicationServices.TightenBolts();
+                lifetime.ApplicationStopping.Register(
+                    () => app.ApplicationServices.LoosenBolts());
             }
         }
     }
@@ -95,8 +100,24 @@ Example:
         }
     }
 
-Cleanup
--------
-BoltOn internally uses a class called [Bootstrapper](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Bootstrapping/Bootstrapper.cs) to invoke all the registration and post registration tasks, and when it gets disposed, it calls cleanup tasks in all the modules. It's basically done by scanning all the `ICleanupTask` in the assembly collection formed by BoltOn() and executing them.
+LoosenBolts()
+-------------
+This extension method scans the classes that implement `ICleanupTask` in all the bolted assemblies and execute them. This is mainly used to dispose and perform other clean-up tasks.
 
-The cleanup tasks can be invoked on demand using [BoltOnAppCleaner](utilities/#boltonappcleaner).
+Example:
+
+    public class CleanupTask : ICleanupTask
+    {
+        private readonly IServiceProvider _serviceProvider;
+
+		public CleanupTask(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+		}
+
+        public void Run()
+        {
+            var busControl = _serviceProvider.GetService<IBusControl>();
+            busControl?.Stop();
+        }
+    }

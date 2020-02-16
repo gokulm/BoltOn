@@ -10,7 +10,7 @@ namespace BoltOn.Samples.Application.Entities
 		public string LastName { get; private set; }
 		public int StudentTypeId { get; private set; }
 
-		private Student()
+        private Student()
 		{
 		}
 

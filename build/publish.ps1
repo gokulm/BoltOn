@@ -14,8 +14,7 @@ function Main {
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
         LogDebug "Branch: $_branchName"
         Build
-        # uncomment Test after fixing all the integration tests
-        # Test
+        Test
         CleanUp
         # this is invoked in develop branch only to test packaging and publishing
         # the packages are published only to local folder in develop branch
@@ -46,6 +45,11 @@ function NuGetPackAndPublish {
 
     if ($null -ne $scope -and $scope.ToString().Trim()) {
         LogDebug "Scope: $scope"
+        if($scope -eq "docs")
+        {
+            LogDebug "No release"
+            return
+        }
         $newVersions = GetProjectNewVersions $commits $null
     }
     else {
