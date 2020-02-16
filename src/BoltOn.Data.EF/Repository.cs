@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -75,6 +74,18 @@ namespace BoltOn.Data.EF
 			await SaveChangesAsync(entity, cancellationToken);
 		}
 
+		public async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null, CancellationToken cancellationToken = default)
+		{
+			foreach (var entity in entities)
+			{
+				DbSets.Add(entity);
+			}
+
+			await SaveChangesAsync(entities, cancellationToken);
+
+			return entities;
+		}
+
 		protected async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
 			PublishEvents(entity);
@@ -101,6 +112,15 @@ namespace BoltOn.Data.EF
 					_eventBag.ProcessedEvents.Add(@event);
 				}
 			}
+		}		
+
+		protected async Task SaveChangesAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+		{
+			foreach (var entity in entities)
+			{
+				PublishEvents(entity);
+			}
+			await DbContext.SaveChangesAsync(cancellationToken);
 		}
 	}
 }

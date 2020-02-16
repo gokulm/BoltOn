@@ -118,7 +118,22 @@ namespace BoltOn.Data.CosmosDb
 				await DocumentClient.DeleteDocumentAsync(GetDocumentUri(entityWithId.Id.ToString()));
 		}
 
-		protected Uri GetDocumentUri(string id)
+        public async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null, CancellationToken cancellationToken = default)
+        {
+            foreach (var entity in entities)
+            {
+                PublishEvents(entity);
+            }
+
+            if (options is RequestOptions requestOptions)
+                await DocumentClient.CreateDocumentCollectionAsync(DocumentCollectionUri, entities as DocumentCollection, requestOptions);
+            else
+                await DocumentClient.CreateDocumentCollectionAsync(DocumentCollectionUri, entities as DocumentCollection);
+
+            return entities;
+        }
+
+        protected Uri GetDocumentUri(string id)
         {
             return UriFactory.CreateDocumentUri(DatabaseName, CollectionName, id);
         }
@@ -152,6 +167,6 @@ namespace BoltOn.Data.CosmosDb
                     @event.ProcessedDate = _boltOnClock.Now;
                 }
             }
-        }
-	}
+        }        
+    }
 }

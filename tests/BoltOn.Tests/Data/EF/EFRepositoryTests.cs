@@ -192,6 +192,34 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
+		public async Task Add_AddANewEntities_ReturnsAddedEntities()
+		{
+			// arrange
+			var student1 = new Student
+			{
+				Id = 5,
+				FirstName = "a",
+				LastName = "b"
+			};
+			var student2 = new Student
+			{
+				Id = 6,
+				FirstName = "c",
+				LastName = "d"
+			};
+			var students = new List<Student> { student1, student2 };
+			var studentIds = students.Select(i => i.Id);
+
+			// act
+			var actualResult = await _sut.AddAsync(students);
+			var expectedResult = await _sut.GetAllAsync();
+
+			// assert
+			Assert.NotNull(actualResult);
+			Assert.Equal(expectedResult.Where(s => studentIds.Contains(s.Id)), actualResult);
+		}
+
+		[Fact, Trait("Category", "Integration")]
 		public async Task Update_UpdateAnExistingEntity_UpdatesTheEntity()
 		{
 			// arrange
