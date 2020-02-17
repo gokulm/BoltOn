@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Tests.Data.EF
 {
-    public static class RegistrationTask
+    public static class EFRegistrationTask
     {
         public static void RegisterDataFakes(this BoltOnOptions boltOnOptions)
         {

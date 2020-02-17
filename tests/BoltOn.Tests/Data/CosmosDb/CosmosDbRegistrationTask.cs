@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Tests.Data.CosmosDb
 {
-	public static class RegistrationTask 
+	public static class CosmosDbRegistrationTask 
 	{
 		public static void RegisterCosmosdbFakes(this BoltOnOptions boltOnOptions)
 		{

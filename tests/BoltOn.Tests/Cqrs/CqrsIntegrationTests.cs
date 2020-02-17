@@ -66,7 +66,7 @@ namespace BoltOn.Tests.Cqrs
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient(s => logger3.Object);
 
-			var logger4 = new Mock<IBoltOnLogger<EventBusDispatcher>>();
+			var logger4 = new Mock<IBoltOnLogger<EventDispatcher>>();
 			logger4.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger4.Object);
@@ -90,10 +90,10 @@ namespace BoltOn.Tests.Cqrs
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Publishing event. Id: {CqrsConstants.EventId} SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"Publishing event to bus from EventBusDispatcher. Id: {CqrsConstants.EventId} " +
+										$"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.EventId} " +
 											$"SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										 $"Publishing event to bus from EventBusDispatcher. Id: {CqrsConstants.Event2Id} " +
+										 $"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.Event2Id} " +
 											 $"SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(StudentFlattened)} updated. Input1: test input Input2Property1: prop1 Input2Propert2: 10"));
@@ -328,7 +328,7 @@ namespace BoltOn.Tests.Cqrs
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Publishing event. Id: {CqrsConstants.EventId} SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"Publishing event to bus from EventBusDispatcher. Id: {CqrsConstants.EventId} " +
+										$"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.EventId} " +
 											$"SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Dispatching failed. Id: {CqrsConstants.EventId}"));
@@ -379,12 +379,12 @@ namespace BoltOn.Tests.Cqrs
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Publishing event. Id: {CqrsConstants.EventId} SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"Publishing event to bus from EventBusDispatcher. Id: {CqrsConstants.EventId} " +
+										$"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.EventId} " +
 											$"SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Dispatching failed. Id: {CqrsConstants.EventId}"));
 			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										 $"Publishing event to bus from EventBusDispatcher. Id: {CqrsConstants.Event2Id} " +
+										 $"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.Event2Id} " +
 											 $"SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			cqrsInterceptorLogger.Verify(v => v.Error(failedBusException), Times.Once);
 			var repository = serviceProvider.GetService<IRepository<Student>>();
@@ -431,14 +431,14 @@ namespace BoltOn.Tests.Cqrs
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Publishing event. Id: {CqrsConstants.EventId} SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										$"Publishing event to bus from EventBusDispatcher. Id: {CqrsConstants.EventId} " +
+										$"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.EventId} " +
 											$"SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Dispatching failed. Id: {CqrsConstants.EventId}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"Dispatching failed. Id: {CqrsConstants.Event2Id}"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										 $"Publishing event to bus from EventBusDispatcher. Id: {CqrsConstants.Event2Id} " +
+										 $"Publishing event to bus from EventDispatcher. Id: {CqrsConstants.Event2Id} " +
 											 $"SourceType: {typeof(Student).AssemblyQualifiedName}"));
 			cqrsInterceptorLogger.Verify(v => v.Error(failedBusException), Times.Once);
 			var repository = serviceProvider.GetService<IRepository<Student>>();
@@ -517,7 +517,7 @@ namespace BoltOn.Tests.Cqrs
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger2.Object);
 
-			var logger4 = new Mock<IBoltOnLogger<EventBusDispatcher>>();
+			var logger4 = new Mock<IBoltOnLogger<EventDispatcher>>();
 			logger4.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger4.Object);

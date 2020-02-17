@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BoltOn.Bootstrapping;
-using BoltOn.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using Xunit;
 
 namespace BoltOn.Tests.Utilities
@@ -20,11 +18,6 @@ namespace BoltOn.Tests.Utilities
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn();
 
-			var logger = new Mock<IBoltOnLogger<BoltOnCleanupTask>>();
-			logger.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => BoltOnAppCleanerHelper.LoggerStatements.Add(st));
-			serviceCollection.AddTransient(s => logger.Object);
-
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 
@@ -34,9 +27,7 @@ namespace BoltOn.Tests.Utilities
 			// assert
 			var testCleanupTask = BoltOnAppCleanerHelper.LoggerStatements.IndexOf($"Executed {nameof(TestCleanupTask)}");
 			Assert.True(testCleanupTask != -1, "failed 0");
-			var boltOnCleanupTask = BoltOnAppCleanerHelper.LoggerStatements.IndexOf($"{nameof(BoltOnCleanupTask)} invoked");
-			Assert.True(boltOnCleanupTask != -1, "failed 1");
-			Assert.True(testCleanupTask < boltOnCleanupTask, "failed 2");
+			// todo: add another cleanup task and check the order of execution
 		}
 
 		public void Dispose()
