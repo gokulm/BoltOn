@@ -148,7 +148,7 @@ namespace BoltOn.Data.CosmosDb
             return results;
         }
 
-        protected virtual void PublishEvents(TEntity entity)
+        private void PublishEvents(TEntity entity)
         {
             if (entity is BaseCqrsEntity baseCqrsEntity)
             {
