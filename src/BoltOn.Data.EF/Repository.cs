@@ -74,29 +74,29 @@ namespace BoltOn.Data.EF
 			await SaveChangesAsync(entity, cancellationToken);
 		}
 
-		public async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null, CancellationToken cancellationToken = default)
+		public virtual async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null, CancellationToken cancellationToken = default)
 		{
-			foreach (var entity in entities)
-			{
-				DbSets.Add(entity);
-			}
-
-			foreach (var entity in entities)
-			{
-				PublishEvents(entity);
-			}
-			await DbContext.SaveChangesAsync(cancellationToken);
-
+			await DbSets.AddRangeAsync(entities);
+			await SaveChangesAsync(entities, cancellationToken);
 			return entities;
 		}
 
-		protected async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
+		protected virtual async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
 			PublishEvents(entity);
 			await DbContext.SaveChangesAsync(cancellationToken);
 		}
 
-		protected void PublishEvents(TEntity entity)
+		protected virtual async Task SaveChangesAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+		{
+			foreach (var entity in entities)
+			{
+				PublishEvents(entity);
+			}
+			await DbContext.SaveChangesAsync(cancellationToken);
+		}
+
+		protected virtual void PublishEvents(TEntity entity)
 		{
 			if (entity is BaseCqrsEntity baseCqrsEntity)
 			{

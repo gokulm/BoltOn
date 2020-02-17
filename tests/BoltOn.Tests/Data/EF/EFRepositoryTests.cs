@@ -191,7 +191,7 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public async Task Add_AddANewEntities_ReturnsAddedEntities()
+		public async Task AddAsync_AddANewEntities_ReturnsAddedEntities()
 		{
 			// arrange
 			var student1 = new Student

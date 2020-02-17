@@ -118,7 +118,7 @@ namespace BoltOn.Data.CosmosDb
 				await DocumentClient.DeleteDocumentAsync(GetDocumentUri(entityWithId.Id.ToString()));
 		}
 
-        public async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null, CancellationToken cancellationToken = default)
         {
             foreach (var entity in entities)
             {
@@ -148,7 +148,7 @@ namespace BoltOn.Data.CosmosDb
             return results;
         }
 
-        protected void PublishEvents(TEntity entity)
+        protected virtual void PublishEvents(TEntity entity)
         {
             if (entity is BaseCqrsEntity baseCqrsEntity)
             {
