@@ -22,6 +22,8 @@ namespace BoltOn.Bootstrapping
 
 		internal HashSet<Type> InterceptorTypes { get; } = new HashSet<Type>();
 
+		internal HashSet<Assembly> RegisteredAssemblies { get; } = new HashSet<Assembly>();
+
 		public IServiceCollection ServiceCollection { get; }
 
 		public BoltOnOptions(IServiceCollection serviceCollection)
@@ -94,38 +96,41 @@ namespace BoltOn.Bootstrapping
 
 		private void RegisterByConvention(IEnumerable<Assembly> assemblies)
 		{
-			var tempAssemblies = assemblies.ToList();
-			var interfaces = (from assembly in tempAssemblies
-							  from type in assembly.GetTypes()
-							  where type.IsInterface
-							  select type).ToList();
-			var tempRegistrations = (from @interface in interfaces
-									 from assembly in tempAssemblies
-									 from type in assembly.GetTypes()
-									 where !type.IsAbstract
-										   && type.IsClass && @interface.IsAssignableFrom(type)
-										   && !type.GetCustomAttributes(typeof(ExcludeFromRegistrationAttribute), true).Any()
-									 select new { Interface = @interface, Implementation = type }).ToList();
+			foreach (var assembly in assemblies)
+			{
+				if (!RegisteredAssemblies.Contains(assembly))
+				{
+					var tempAssemblies = assemblies.ToList();
+					var interfaces = (from type in assembly.GetTypes()
+									  where type.IsInterface
+									  select type).ToList();
+					var tempRegistrations = (from @interface in interfaces
+											 from type in assembly.GetTypes()
+											 where !type.IsAbstract
+												   && type.IsClass && @interface.IsAssignableFrom(type)
+												   && !type.GetCustomAttributes(typeof(ExcludeFromRegistrationAttribute), true).Any()
+											 select new { Interface = @interface, Implementation = type }).ToList();
 
-			// get interfaces with only one implementation
-			var registrations = (from r in tempRegistrations
-								 group r by r.Interface into grp
-								 where grp.Count() == 1
-								 select new { Interface = grp.Key, grp.First().Implementation }).ToList();
+					// get interfaces with only one implementation
+					var registrations = (from r in tempRegistrations
+										 group r by r.Interface into grp
+										 where grp.Count() == 1
+										 select new { Interface = grp.Key, grp.First().Implementation }).ToList();
 
-			registrations.ForEach(f => ServiceCollection.AddTransient(f.Interface, f.Implementation));
+					registrations.ForEach(f => ServiceCollection.AddTransient(f.Interface, f.Implementation));
 
-			RegisterHandlers(tempAssemblies);
-			RegisterOneWayHandlers(tempAssemblies);
-			RegisterPostRegistrationTasks(tempAssemblies);
-			RegisterCleanupTasks(tempAssemblies);
+					RegisterHandlers(assembly);
+					RegisterOneWayHandlers(assembly);
+					RegisterPostRegistrationTasks(assembly);
+					RegisterCleanupTasks(assembly);
+				}
+			}
 		}
 
-		private void RegisterHandlers(IEnumerable<Assembly> assemblies)
+		private void RegisterHandlers(Assembly assembly)
 		{
 			var handlerInterfaceType = typeof(IHandler<,>);
-			var handlers = (from a in assemblies
-							from t in a.GetTypes()
+			var handlers = (from t in assembly.GetTypes()
 							from i in t.GetInterfaces()
 							where i.IsGenericType &&
 								  handlerInterfaceType.IsAssignableFrom(i.GetGenericTypeDefinition())
@@ -134,11 +139,10 @@ namespace BoltOn.Bootstrapping
 				ServiceCollection.AddTransient(handler.Interface, handler.Implementation);
 		}
 
-		private void RegisterOneWayHandlers(IEnumerable<Assembly> assemblies)
+		private void RegisterOneWayHandlers(Assembly assembly)
 		{
 			var handlerInterfaceType = typeof(IHandler<>);
-			var handlers = (from a in assemblies
-							from t in a.GetTypes()
+			var handlers = (from t in assembly.GetTypes()
 							from i in t.GetInterfaces()
 							where i.IsGenericType &&
 								  handlerInterfaceType.IsAssignableFrom(i.GetGenericTypeDefinition())
@@ -147,22 +151,20 @@ namespace BoltOn.Bootstrapping
 				ServiceCollection.AddTransient(handler.Interface, handler.Implementation);
 		}
 
-		private void RegisterPostRegistrationTasks(IEnumerable<Assembly> assemblies)
+		private void RegisterPostRegistrationTasks(Assembly assembly)
 		{
 			var registrationTaskType = typeof(IPostRegistrationTask);
-			var registrationTaskTypes = (from a in assemblies
-										 from t in a.GetTypes()
+			var registrationTaskTypes = (from t in assembly.GetTypes()
 										 where registrationTaskType.IsAssignableFrom(t)
 											   && t.IsClass
 										 select t).ToList();
 			registrationTaskTypes.ForEach(r => ServiceCollection.AddTransient(registrationTaskType, r));
 		}
 
-		private void RegisterCleanupTasks(IEnumerable<Assembly> assemblies)
+		private void RegisterCleanupTasks(Assembly assembly)
 		{
 			var cleanupTaskType = typeof(ICleanupTask);
-			var cleanupTaskTypes = (from a in assemblies
-									from t in a.GetTypes()
+			var cleanupTaskTypes = (from t in assembly.GetTypes()
 									where cleanupTaskType.IsAssignableFrom(t)
 										  && t.IsClass
 									select t).ToList();
