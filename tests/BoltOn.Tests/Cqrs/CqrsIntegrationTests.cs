@@ -466,6 +466,9 @@ namespace BoltOn.Tests.Cqrs
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient(s => logger2.Object);
 
+			var bus = new Mock<BoltOn.Bus.IBus>();
+			serviceCollection.AddSingleton(bus.Object);
+
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var mediator = serviceProvider.GetService<IMediator>();

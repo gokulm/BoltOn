@@ -20,13 +20,13 @@ namespace BoltOn.Tests.Data.EF
 			{
 				using (var scope = _serviceProvider.CreateScope())
 				{
-					var testDbContext = scope.ServiceProvider.GetService<SchoolDbContext>();
-                    if (testDbContext != null)
+					var schoolDbContext = scope.ServiceProvider.GetService<SchoolDbContext>();
+                    if (schoolDbContext != null)
                     {
-                        testDbContext.Database.EnsureDeleted();
-                        testDbContext.Database.EnsureCreated();
+                        schoolDbContext.Database.EnsureDeleted();
+                        schoolDbContext.Database.EnsureCreated();
 
-                        testDbContext.Set<Student>().Add(new Student
+                        schoolDbContext.Set<Student>().Add(new Student
                         {
                             Id = 1,
                             FirstName = "a",
@@ -38,23 +38,23 @@ namespace BoltOn.Tests.Data.EF
                             FirstName = "x",
                             LastName = "y"
                         };
-                        testDbContext.Set<Student>().Add(new Student
+                        schoolDbContext.Set<Student>().Add(new Student
                         {
                             Id = 10,
                             FirstName = "record to be deleted",
                             LastName = "b"
                         });
-                        testDbContext.Set<Student>().Add(new Student
+                        schoolDbContext.Set<Student>().Add(new Student
                         {
                             Id = 11,
                             FirstName = "record to be deleted",
                             LastName = "b"
                         });
                         var address = new Address {Id = Guid.NewGuid(), Street = "Computer Science", Student = student};
-                        testDbContext.Set<Student>().Add(student);
-                        testDbContext.Set<Address>().Add(address);
-                        testDbContext.SaveChanges();
-                        testDbContext.Dispose();
+                        schoolDbContext.Set<Student>().Add(student);
+                        schoolDbContext.Set<Address>().Add(address);
+                        schoolDbContext.SaveChanges();
+                        schoolDbContext.Dispose();
                     }
                 }
 			}
