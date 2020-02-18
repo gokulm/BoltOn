@@ -147,7 +147,7 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public async Task Add_AddANewEntity_ReturnsAddedEntity()
+		public async Task Add_AddNewEntity_ReturnsAddedEntity()
 		{
 			// arrange
 			const int newStudentId = 5;
@@ -169,7 +169,7 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public async Task AddAsync_AddANewEntity_ReturnsAddedEntity()
+		public async Task AddAsync_AddNewEntity_ReturnsAddedEntity()
 		{
 			// arrange
 			const int newStudentId = 6;
@@ -191,7 +191,7 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public async Task AddAsync_AddANewEntities_ReturnsAddedEntities()
+		public async Task AddAsync_AddNewEntities_ReturnsAddedEntities()
 		{
 			// arrange
 			var student1 = new Student

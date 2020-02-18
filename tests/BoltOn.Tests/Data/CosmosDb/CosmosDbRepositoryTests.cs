@@ -133,7 +133,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 		}
 
 		[Fact]
-		public async Task AddAsync_AddANewEntity_ReturnsAddedEntity()
+		public async Task AddAsync_AddNewEntity_ReturnsAddedEntity()
 		{
 			// arrange
 			if (!IntegrationTestHelper.IsCosmosDbServer)
