@@ -2,14 +2,12 @@
 using System.Threading.Tasks;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Logging;
-using System;
 
 namespace BoltOn.Tests.Bus
 {
 	public class CreateTestStudent : IRequest
 	{
 		public string FirstName { get; set; }
-		public Guid CorrelationId { get; set; } = Guid.NewGuid();
 	}
 
 	public class CreateTestStudentHandler : IHandler<CreateTestStudent>
@@ -18,7 +16,7 @@ namespace BoltOn.Tests.Bus
 
         public CreateTestStudentHandler(IBoltOnLogger<CreateTestStudentHandler> logger)
         {
-            this._logger = logger;
+            _logger = logger;
         }
 
         public async Task HandleAsync(CreateTestStudent request, CancellationToken cancellationToken)

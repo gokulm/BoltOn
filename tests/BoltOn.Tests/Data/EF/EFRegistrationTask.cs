@@ -26,7 +26,6 @@ namespace BoltOn.Tests.Data.EF
                 {
                     options.UseInMemoryDatabase("InMemoryDbForTesting");
                     options.ConfigureWarnings(x => x.Ignore(RelationalEventId.AmbientTransactionWarning));
-
                 });
             }
         }

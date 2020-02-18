@@ -12,8 +12,6 @@ using BoltOn.Cqrs;
 using BoltOn.Data.EF;
 using BoltOn.Data;
 using BoltOn.Tests.Cqrs.Fakes;
-using BoltOn.Tests.Data.EF;
-using BoltOn.Tests.Mediator.Fakes;
 using AddStudentRequest = BoltOn.Tests.Cqrs.Fakes.AddStudentRequest;
 
 namespace BoltOn.Tests.Cqrs
@@ -31,8 +29,6 @@ namespace BoltOn.Tests.Cqrs
 				b.BoltOnCqrsModule();
 				b.BoltOnMassTransitBusModule();
 				b.RegisterCqrsFakes();
-				//b.RegisterDataFakes();
-				//b.RegisterMediatorFakes();
 			});
 
 			serviceCollection.AddMassTransit(x =>
@@ -154,8 +150,8 @@ namespace BoltOn.Tests.Cqrs
 
 			var cqrsDbContext = serviceProvider.GetService<CqrsDbContext>();
 			var student = cqrsDbContext.Set<Student>().Find(studentId);
-			Assert.True(student.EventsToBeProcessed.Count() > 0);
-			Assert.True(student.ProcessedEvents.Count() == 0);
+			Assert.True(student.EventsToBeProcessed.Any());
+			Assert.True(!student.ProcessedEvents.Any());
 			var studentFlattened = cqrsDbContext.Set<StudentFlattened>().Find(studentId);
 			Assert.True(studentFlattened.EventsToBeProcessed.Count() == 0);
 			Assert.True(studentFlattened.ProcessedEvents.Count() > 0);
@@ -476,7 +472,7 @@ namespace BoltOn.Tests.Cqrs
 			// act
 			await mediator.ProcessAsync(new StudentUpdatedEvent
 			{
-				Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId),
+				Id = Guid.Parse(CqrsConstants.ALREADY_PROCESSED_EVENT_ID),
 				SourceId = CqrsConstants.EntityId
 			});
 

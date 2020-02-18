@@ -15,10 +15,7 @@ namespace BoltOn.Tests.Cqrs.Fakes
 		{
 			Name = name;
 
-			if (!id.HasValue)
-				Id = Guid.NewGuid();
-			else
-				Id = id.GetValueOrDefault();
+			Id = id ?? Guid.NewGuid();
 
 			RaiseEvent(new StudentCreatedEvent
 			{

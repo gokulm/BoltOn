@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using BoltOn.Tests.Other;
 using Moq.AutoMock;
 using Xunit;
 using BoltOn.Bus.MassTransit;
@@ -28,6 +27,7 @@ namespace BoltOn.Tests.Bus
 			// assert 
 			logger.Verify(l => l.Debug($"Publishing message of type - {request.GetType().Name} ..."));
 			logger.Verify(l => l.Debug("Message published"));
+			// todo: fix this verification
 			//busControl.Verify(m => m.Publish(request, cts.Token));
 		}
 	}
