@@ -41,11 +41,9 @@ namespace BoltOn.Bootstrapping
 
 		private void RegisterCoreTypes()
 		{
-			ServiceCollection.AddScoped<IUnitOfWorkManager>(s =>
-			{
-				return new UnitOfWorkManager(s.GetRequiredService<IBoltOnLogger<UnitOfWorkManager>>(),
-					s.GetRequiredService<IUnitOfWorkFactory>());
-			});
+			ServiceCollection.AddScoped<IUnitOfWorkManager>(s => 
+                new UnitOfWorkManager(s.GetRequiredService<IBoltOnLogger<UnitOfWorkManager>>(),
+                s.GetRequiredService<IUnitOfWorkFactory>()));
 			ServiceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
 			ServiceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
 			ServiceCollection.AddSingleton<IEventDispatcher, DefaultDispatcher>();
@@ -96,35 +94,34 @@ namespace BoltOn.Bootstrapping
 
 		private void RegisterByConvention(IEnumerable<Assembly> assemblies)
 		{
-			foreach (var assembly in assemblies)
+			foreach (var assembly in assemblies.ToList())
 			{
-				if (!RegisteredAssemblies.Contains(assembly))
-				{
-					var tempAssemblies = assemblies.ToList();
-					var interfaces = (from type in assembly.GetTypes()
-									  where type.IsInterface
-									  select type).ToList();
-					var tempRegistrations = (from @interface in interfaces
-											 from type in assembly.GetTypes()
-											 where !type.IsAbstract
-												   && type.IsClass && @interface.IsAssignableFrom(type)
-												   && !type.GetCustomAttributes(typeof(ExcludeFromRegistrationAttribute), true).Any()
-											 select new { Interface = @interface, Implementation = type }).ToList();
+                if (RegisteredAssemblies.Contains(assembly)) 
+                    continue;
 
-					// get interfaces with only one implementation
-					var registrations = (from r in tempRegistrations
-										 group r by r.Interface into grp
-										 where grp.Count() == 1
-										 select new { Interface = grp.Key, grp.First().Implementation }).ToList();
+                var interfaces = (from type in assembly.GetTypes()
+                    where type.IsInterface
+                    select type).ToList();
+                var tempRegistrations = (from @interface in interfaces
+                    from type in assembly.GetTypes()
+                    where !type.IsAbstract
+                          && type.IsClass && @interface.IsAssignableFrom(type)
+                          && !type.GetCustomAttributes(typeof(ExcludeFromRegistrationAttribute), true).Any()
+                    select new { Interface = @interface, Implementation = type }).ToList();
 
-					registrations.ForEach(f => ServiceCollection.AddTransient(f.Interface, f.Implementation));
+                // get interfaces with only one implementation
+                var registrations = (from r in tempRegistrations
+                    group r by r.Interface into grp
+                    where grp.Count() == 1
+                    select new { Interface = grp.Key, grp.First().Implementation }).ToList();
 
-					RegisterHandlers(assembly);
-					RegisterOneWayHandlers(assembly);
-					RegisterPostRegistrationTasks(assembly);
-					RegisterCleanupTasks(assembly);
-				}
-			}
+                registrations.ForEach(f => ServiceCollection.AddTransient(f.Interface, f.Implementation));
+
+                RegisterHandlers(assembly);
+                RegisterOneWayHandlers(assembly);
+                RegisterPostRegistrationTasks(assembly);
+                RegisterCleanupTasks(assembly);
+            }
 		}
 
 		private void RegisterHandlers(Assembly assembly)

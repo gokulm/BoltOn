@@ -14,7 +14,6 @@ namespace BoltOn.Tests.Cqrs.Fakes
 		public Student(string name, Guid? id = null)
 		{
 			Name = name;
-
 			Id = id ?? Guid.NewGuid();
 
 			RaiseEvent(new StudentCreatedEvent

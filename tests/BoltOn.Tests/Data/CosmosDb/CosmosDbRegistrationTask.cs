@@ -28,16 +28,14 @@ namespace BoltOn.Tests.Data.CosmosDb
 					options.DatabaseName = cosmosDbOptions.DatabaseName;
 				});
 
-				using (var client = new DocumentClient(new Uri(cosmosDbOptions.Uri), cosmosDbOptions.AuthorizationKey))
-				{
-					client.CreateDatabaseIfNotExistsAsync(new Database { Id = cosmosDbOptions.DatabaseName }).GetAwaiter().GetResult();
+                using var client = new DocumentClient(new Uri(cosmosDbOptions.Uri), cosmosDbOptions.AuthorizationKey);
+                client.CreateDatabaseIfNotExistsAsync(new Database { Id = cosmosDbOptions.DatabaseName }).GetAwaiter().GetResult();
 
-					var documentCollection = new DocumentCollection { Id = nameof(StudentFlattened).Pluralize() };
-					documentCollection.PartitionKey.Paths.Add("/studentTypeId");
-					client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(cosmosDbOptions.DatabaseName),
-						documentCollection).GetAwaiter().GetResult();
-				}
-			}
+                var documentCollection = new DocumentCollection { Id = nameof(StudentFlattened).Pluralize() };
+                documentCollection.PartitionKey.Paths.Add("/studentTypeId");
+                client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(cosmosDbOptions.DatabaseName),
+                    documentCollection).GetAwaiter().GetResult();
+            }
 
 			boltOnOptions.ServiceCollection.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, TestSchoolCosmosDbOptions>>();
 		}

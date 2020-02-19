@@ -22,12 +22,12 @@ namespace BoltOn.Bus.MassTransit
         {
 			_logger.Debug("Cleaning up bus...");
             var busControl = _serviceProvider.GetService<IBusControl>();
-			if(busControl != null)
-			{
-				_logger.Debug("Stopping bus...");
-				busControl.Stop();
-				_logger.Debug("Stopped bus");
-			}
+            if (busControl == null) 
+                return;
+
+            _logger.Debug("Stopping bus...");
+            busControl.Stop();
+            _logger.Debug("Stopped bus");
         }
     }
 }

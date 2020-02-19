@@ -18,8 +18,8 @@ namespace BoltOn.Mediator.Interceptors
 
 		public abstract void Dispose();
 
-		public abstract Task<TResponse> ExecuteAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken,
-																			   Func<TRequest, CancellationToken, Task<TResponse>> next);
-
+		public abstract Task<TResponse> ExecuteAsync<TRequest, TResponse>(TRequest request, 
+            CancellationToken cancellationToken,
+			Func<TRequest, CancellationToken, Task<TResponse>> next);
 	}
 }

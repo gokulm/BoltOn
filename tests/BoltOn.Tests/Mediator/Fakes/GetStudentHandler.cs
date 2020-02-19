@@ -22,7 +22,8 @@ namespace BoltOn.Tests.Mediator.Fakes
 
 		public async Task<Student> HandleAsync(GetStudentRequest request, CancellationToken cancellationToken)
 		{
-			var student = (await _studentRepository.FindByAsync(f => f.Id == request.StudentId)).FirstOrDefault();
+			var student = (await _studentRepository
+                .FindByAsync(f => f.Id == request.StudentId, cancellationToken: cancellationToken)).FirstOrDefault();
 			return student;
 		}
 	}

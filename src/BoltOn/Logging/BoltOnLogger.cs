@@ -3,7 +3,8 @@ using Microsoft.Extensions.Logging;
 
 namespace BoltOn.Logging
 {
-	public interface IBoltOnLogger<TType>
+    // ReSharper disable once UnusedTypeParameter
+    public interface IBoltOnLogger<TType>
 	{
 		void Debug(string message);
 		void Info(string message);
