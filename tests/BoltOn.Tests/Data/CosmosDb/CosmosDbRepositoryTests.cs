@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BoltOn.Data;
@@ -132,7 +133,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 		}
 
 		[Fact]
-		public async Task AddAsync_AddANewEntity_ReturnsAddedEntity()
+		public async Task AddAsync_AddNewEntity_ReturnsAddedEntity()
 		{
 			// arrange
 			if (!IntegrationTestHelper.IsCosmosDbServer)
@@ -147,6 +148,27 @@ namespace BoltOn.Tests.Data.CosmosDb
 			var result = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(2) });
 			Assert.NotNull(result);
 			Assert.Equal("meghan", result.FirstName);
+		}
+
+		[Fact]
+		public async Task AddAsync_AddNewEntities_ReturnsAddedEntities()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+			var id1 = Guid.NewGuid();
+			var student1Flattened = new StudentFlattened { Id = id1, StudentTypeId = 2, FirstName = "meghan", LastName = "doe" };
+			var id2 = Guid.NewGuid();
+			var student2Flattened = new StudentFlattened { Id = id2, StudentTypeId = 2, FirstName = "john", LastName = "smith" };
+			var studentsFlattened = new List<StudentFlattened> { student1Flattened, student2Flattened };
+
+			// act
+			var actualResult = await _sut.AddAsync(studentsFlattened);
+
+			// assert
+			var expectedResult = await _sut.GetAllAsync(new RequestOptions { PartitionKey = new PartitionKey(2) });
+			Assert.NotNull(actualResult);
+			Assert.Equal(expectedResult, actualResult);
 		}
 
 		public void Dispose()

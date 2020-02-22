@@ -147,7 +147,7 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public async Task Add_AddANewEntity_ReturnsAddedEntity()
+		public async Task Add_AddNewEntity_ReturnsAddedEntity()
 		{
 			// arrange
 			const int newStudentId = 5;
@@ -169,7 +169,7 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public async Task AddAsync_AddANewEntity_ReturnsAddedEntity()
+		public async Task AddAsync_AddNewEntity_ReturnsAddedEntity()
 		{
 			// arrange
 			const int newStudentId = 6;
@@ -188,6 +188,34 @@ namespace BoltOn.Tests.Data.EF
 			Assert.NotNull(queryResult);
 			Assert.Equal("c", queryResult.FirstName);
 			Assert.Equal(result.FirstName, queryResult.FirstName);
+		}
+
+		[Fact, Trait("Category", "Integration")]
+		public async Task AddAsync_AddNewEntities_ReturnsAddedEntities()
+		{
+			// arrange
+			var student1 = new Student
+			{
+				Id = 5,
+				FirstName = "a",
+				LastName = "b"
+			};
+			var student2 = new Student
+			{
+				Id = 6,
+				FirstName = "c",
+				LastName = "d"
+			};
+			var students = new List<Student> { student1, student2 };
+			var studentIds = students.Select(i => i.Id);
+
+			// act
+			var actualResult = await _sut.AddAsync(students);
+			var expectedResult = await _sut.GetAllAsync();
+
+			// assert
+			Assert.NotNull(actualResult);
+			Assert.Equal(expectedResult.Where(s => studentIds.Contains(s.Id)), actualResult);
 		}
 
 		[Fact, Trait("Category", "Integration")]
