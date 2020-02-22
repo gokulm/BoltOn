@@ -50,10 +50,6 @@ function NuGetPackAndPublish {
 
     if ($null -ne $scope -and $scope.ToString().Trim()) {
         LogDebug "Scope: $scope"
-        if ($scope -eq "docs") {
-            LogDebug "No release"
-            return
-        }
         $newVersions = GetProjectNewVersions $commits $null
     }
     else {
