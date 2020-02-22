@@ -1,9 +1,14 @@
+Param(
+    [string]$GITHUB_ACTOR
+)
+
 $_scriptDirPath = $PSScriptRoot
 $_boltOnModulePath = Join-Path $_scriptDirPath "bolton.psm1"
 $ErrorActionPreference = 'stop'
 
 function Main {
     try {
+        LogDebug "Actor: $GITHUB_ACTOR"
         Import-Module $_boltOnModulePath -Force
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
         Build
