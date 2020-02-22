@@ -163,7 +163,6 @@ namespace BoltOn.Tests.Cqrs
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
 			{
-				//b.BoltOnAssemblies(GetType().Assembly);
 				b.BoltOnEFModule();
 				b.BoltOnCqrsModule(o => o.PurgeEventsToBeProcessed = true);
 				b.BoltOnMassTransitBusModule();
@@ -230,7 +229,6 @@ namespace BoltOn.Tests.Cqrs
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
 			{
-				//b.BoltOnAssemblies(GetType().Assembly);
 				b.BoltOnEFModule();
 				b.BoltOnCqrsModule(o => o.PurgeEventsToBeProcessed = true);
 				b.BoltOnMassTransitBusModule();
@@ -294,7 +292,6 @@ namespace BoltOn.Tests.Cqrs
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
 			{
-				//b.BoltOnAssemblies(GetType().Assembly);
 				b.BoltOnEFModule();
 				b.BoltOnCqrsModule();
 				b.BoltOnMassTransitBusModule();
@@ -345,7 +342,6 @@ namespace BoltOn.Tests.Cqrs
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
 			{
-				//b.BoltOnAssemblies(GetType().Assembly);
 				b.BoltOnEFModule();
 				b.BoltOnCqrsModule();
 				b.BoltOnMassTransitBusModule();
@@ -397,7 +393,6 @@ namespace BoltOn.Tests.Cqrs
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
 			{
-				//b.BoltOnAssemblies(GetType().Assembly);
 				b.BoltOnEFModule();
 				b.BoltOnCqrsModule();
 				b.BoltOnMassTransitBusModule();
@@ -451,7 +446,6 @@ namespace BoltOn.Tests.Cqrs
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
 			{
-				//b.BoltOnAssemblies(GetType().Assembly);
 				b.BoltOnEFModule();
                 b.BoltOnCqrsModule();
                 b.RegisterCqrsFakes();
@@ -472,7 +466,7 @@ namespace BoltOn.Tests.Cqrs
 			// act
 			await mediator.ProcessAsync(new StudentUpdatedEvent
 			{
-				Id = Guid.Parse(CqrsConstants.ALREADY_PROCESSED_EVENT_ID),
+				Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId),
 				SourceId = CqrsConstants.EntityId
 			});
 

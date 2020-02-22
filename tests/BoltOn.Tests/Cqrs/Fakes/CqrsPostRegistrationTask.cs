@@ -34,7 +34,7 @@ namespace BoltOn.Tests.Cqrs.Fakes
                     FirstName = "value to be replaced",
                     ProcessedEvents = new HashSet<CqrsEvent>
                     {
-                        new CqrsEvent {Id = Guid.Parse(CqrsConstants.ALREADY_PROCESSED_EVENT_ID)}
+                        new CqrsEvent {Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId)}
                     }
                 });
                 cqrsDbContext.SaveChanges();
