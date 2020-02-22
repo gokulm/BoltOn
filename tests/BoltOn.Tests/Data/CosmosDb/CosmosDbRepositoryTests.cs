@@ -27,8 +27,8 @@ namespace BoltOn.Tests.Data.CosmosDb
 			serviceCollection
 				.BoltOn(options =>
 				{
-					options
-						.BoltOnCosmosDbModule();
+					options.BoltOnCosmosDbModule();
+					options.RegisterCosmosdbFakes();
 				});
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
@@ -142,7 +142,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			var studentFlattened = new StudentFlattened { Id = id, StudentTypeId = 2, FirstName = "meghan", LastName = "doe" };
 
 			// act
-			_ = await _sut.AddAsync(studentFlattened);
+			await _sut.AddAsync(studentFlattened);
 
 			// assert
 			var result = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(2) });

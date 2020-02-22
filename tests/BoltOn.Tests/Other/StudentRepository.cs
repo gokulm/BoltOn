@@ -1,7 +1,6 @@
 using BoltOn.Cqrs;
 using BoltOn.Data;
 using BoltOn.Data.EF;
-using BoltOn.Tests.Other;
 using BoltOn.Utilities;
 
 namespace BoltOn.Tests.Other

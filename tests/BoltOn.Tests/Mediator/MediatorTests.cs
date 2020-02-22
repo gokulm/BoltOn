@@ -185,7 +185,7 @@ namespace BoltOn.Tests.Mediator
 				new UnitOfWorkInterceptor(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
-			testHandler.Setup(s => s.HandleAsync(request, default(CancellationToken))).Throws<Exception>();
+			testHandler.Setup(s => s.HandleAsync(request, default)).Throws<Exception>();
 
             // act 
 		    var result = await Record.ExceptionAsync(async () => await sut.ProcessAsync(request));
@@ -233,7 +233,7 @@ namespace BoltOn.Tests.Mediator
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>());
 			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
 			var request = new TestRequest();
-			testHandler.Setup(s => s.HandleAsync(request, default(CancellationToken))).Throws(new Exception("handler failed"));
+			testHandler.Setup(s => s.HandleAsync(request, default)).Throws(new Exception("handler failed"));
 
 			// act
 			var result = await Record.ExceptionAsync(() => sut.ProcessAsync(request));
@@ -353,7 +353,6 @@ namespace BoltOn.Tests.Mediator
 
 		public void Dispose()
 		{
-			MediatorTestHelper.LoggerStatements.Clear();
 		}
 	}
 }

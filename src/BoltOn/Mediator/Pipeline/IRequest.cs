@@ -1,6 +1,7 @@
 ﻿namespace BoltOn.Mediator.Pipeline
 {
-	public interface IRequest<out TResponse>
+    // ReSharper disable once UnusedTypeParameter
+    public interface IRequest<out TResponse>
 	{
 	}
 

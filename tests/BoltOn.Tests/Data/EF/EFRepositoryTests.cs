@@ -27,9 +27,9 @@ namespace BoltOn.Tests.Data.EF
 			serviceCollection
 				.BoltOn(options =>
 				{
-					options
-						.BoltOnEFModule();
-				});
+					options.BoltOnEFModule();
+                    options.RegisterDataFakes();
+                });
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			_sut = serviceProvider.GetService<IRepository<Student>>();
@@ -138,7 +138,7 @@ namespace BoltOn.Tests.Data.EF
 			};
 
 			// act
-			var result = (await _sut.FindByAsync(f => f.Id == 2, includes, default)).FirstOrDefault();
+			var result = (await _sut.FindByAsync(f => f.Id == 2, includes)).FirstOrDefault();
 
 			// assert
 			Assert.NotNull(result);

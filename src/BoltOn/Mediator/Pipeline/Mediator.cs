@@ -43,7 +43,7 @@ namespace BoltOn.Mediator.Pipeline
 		{
 			_logger.Debug("Running Interceptors...");
 			var next = _interceptors.Reverse().Aggregate(handleAsync,
-				   (handleDelegate, interceptor) => (req, token) => interceptor.RunAsync<IRequest<TResponse>, TResponse>(req, token, handleDelegate));
+				   (handleDelegate, interceptor) => (req, token) => interceptor.RunAsync(req, token, handleDelegate));
 			try
 			{
 				return await next.Invoke(request, cancellationToken).ConfigureAwait(false);
@@ -73,7 +73,7 @@ namespace BoltOn.Mediator.Pipeline
 				var handler = _serviceProvider.GetService(interfaceHandlerType);
 				if (handler == null)
 					throw new Exception(string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
-				_logger.Debug($"Resolved handler: {handler?.GetType()}");
+				_logger.Debug($"Resolved handler: {handler.GetType()}");
 				dynamic decorator = Activator.CreateInstance(typeof(HandlerDecorator<>)
 																	   .MakeGenericType(requestType), handler);
 				var response = await decorator.HandleAsync(request, cancellationToken).ConfigureAwait(false);
@@ -88,7 +88,7 @@ namespace BoltOn.Mediator.Pipeline
 				var handler = _serviceProvider.GetService(interfaceHandlerType);
 				if (handler == null)
 					throw new Exception(string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
-				_logger.Debug($"Resolved handler: {handler?.GetType()}");
+				_logger.Debug($"Resolved handler: {handler.GetType()}");
 				dynamic decorator = Activator.CreateInstance(typeof(HandlerDecorator<,>)
 																	   .MakeGenericType(requestType, typeof(TResponse)), handler);
 				var response = await decorator.HandleAsync(request, cancellationToken).ConfigureAwait(false);

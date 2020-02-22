@@ -15,27 +15,30 @@ namespace BoltOn.Tests.Cqrs.Fakes
             _serviceProvider = serviceProvider;
         }
 
-        public void Run(PostRegistrationTaskContext context)
+        public void Run()
         {
             var cqrsDbContext = _serviceProvider.GetService<CqrsDbContext>();
-            cqrsDbContext.Database.EnsureDeleted();
-            cqrsDbContext.Database.EnsureCreated();
-
-            cqrsDbContext.Set<Student>().Add(new Student
+            if (cqrsDbContext != null)
             {
-                Id = CqrsConstants.EntityId,
-                Name = "value to be replaced"
-            });
-            cqrsDbContext.Set<StudentFlattened>().Add(new StudentFlattened
-			{
-                Id = CqrsConstants.EntityId,
-                FirstName = "value to be replaced",
-                ProcessedEvents = new HashSet<CqrsEvent>
+                cqrsDbContext.Database.EnsureDeleted();
+                cqrsDbContext.Database.EnsureCreated();
+
+                cqrsDbContext.Set<Student>().Add(new Student
                 {
-                    new CqrsEvent { Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId) }
-                }
-            });
-            cqrsDbContext.SaveChanges();
+                    Id = CqrsConstants.EntityId,
+                    Name = "value to be replaced"
+                });
+                cqrsDbContext.Set<StudentFlattened>().Add(new StudentFlattened
+                {
+                    Id = CqrsConstants.EntityId,
+                    FirstName = "value to be replaced",
+                    ProcessedEvents = new HashSet<CqrsEvent>
+                    {
+                        new CqrsEvent {Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId)}
+                    }
+                });
+                cqrsDbContext.SaveChanges();
+            }
         }
     }
 }

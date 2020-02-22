@@ -74,18 +74,18 @@ namespace BoltOn.Tests.Bus
 			serviceCollection.AddMassTransit(x =>
 			{
 				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
-				{
-					var host = cfg.Host(new Uri("rabbitmq://localhost:5672"), hostConfigurator =>
-					{
-						hostConfigurator.Username("guest");
-						hostConfigurator.Password("guest");
-					});
+                {
+                    cfg.Host(new Uri("rabbitmq://localhost:5672"), hostConfigurator =>
+                    {
+                        hostConfigurator.Username("guest");
+                        hostConfigurator.Password("guest");
+                    });
 
-					cfg.ReceiveEndpoint("CreateTestStudent_Queue", endpoint =>
+                    cfg.ReceiveEndpoint("CreateTestStudent_Queue", endpoint =>
 					{
-						endpoint.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CreateTestStudent>>());
+						endpoint.Consumer(provider.GetService<BoltOnMassTransitConsumer<CreateTestStudent>>);
 					});
-				}));
+                }));
 			});
 
 			var logger = new Mock<IBoltOnLogger<CreateTestStudentHandler>>();

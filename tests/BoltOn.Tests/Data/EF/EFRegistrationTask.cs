@@ -8,30 +8,24 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Tests.Data.EF
 {
-    public class RegistrationTask : IRegistrationTask
+    public static class EFRegistrationTask
     {
-        public void Run(RegistrationTaskContext context)
+        public static void RegisterDataFakes(this BoltOnOptions boltOnOptions)
         {
-            RegisterDataFakes(context);
-            context.ServiceCollection.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
-        }
-
-        private static void RegisterDataFakes(RegistrationTaskContext context)
-        {
+            boltOnOptions.ServiceCollection.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
             if (IntegrationTestHelper.IsSqlServer)
             {
-                context.ServiceCollection.AddDbContext<SchoolDbContext>(options =>
+                boltOnOptions.ServiceCollection.AddDbContext<SchoolDbContext>(options =>
                 {
                     options.UseSqlServer("Data Source=127.0.0.1;initial catalog=Testing;persist security info=True;User ID=sa;Password=Password1;");
                 });
             }
             else
             {
-                context.ServiceCollection.AddDbContext<SchoolDbContext>(options =>
+                boltOnOptions.ServiceCollection.AddDbContext<SchoolDbContext>(options =>
                 {
                     options.UseInMemoryDatabase("InMemoryDbForTesting");
                     options.ConfigureWarnings(x => x.Ignore(RelationalEventId.AmbientTransactionWarning));
-
                 });
             }
         }

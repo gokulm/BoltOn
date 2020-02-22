@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using BoltOn.Bus;
 using BoltOn.Logging;
-using BoltOn.Other;
 
 namespace BoltOn.Cqrs
 {
@@ -11,8 +10,15 @@ namespace BoltOn.Cqrs
 		Task DispatchAsync(ICqrsEvent @event, CancellationToken cancellationToken = default);
     }
 
-	[ExcludeFromRegistration]
-    public class EventDispatcher : IEventDispatcher
+    public class DefaultDispatcher : IEventDispatcher
+    {
+        public Task DispatchAsync(ICqrsEvent @event, CancellationToken cancellationToken = default)
+        {
+			return Task.CompletedTask;
+        }
+	}
+
+	public class EventDispatcher : IEventDispatcher
 	{
 		private readonly IBoltOnLogger<EventDispatcher> _logger;
 		private readonly IBus _bus;

@@ -45,7 +45,7 @@ namespace BoltOn.Tests.Cqrs
 				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			logger.Setup(s => s.Error(It.IsAny<string>()))
 				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			var eventDispatcher = autoMocker.GetMock<IEventDispatcher>();
+			autoMocker.GetMock<IEventDispatcher>();
 
 			var cqrsOptions = autoMocker.GetMock<CqrsOptions>();
 			cqrsOptions.Setup(s => s.PurgeEventsToBeProcessed).Returns(true);

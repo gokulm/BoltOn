@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Data.EF;
 using BoltOn.Mediator.Pipeline;
+using BoltOn.Tests.Data.EF;
 using BoltOn.Tests.Mediator.Fakes;
 using BoltOn.Tests.Other;
 using BoltOn.Tests.UoW;
@@ -14,16 +15,17 @@ using Xunit;
 
 namespace BoltOn.Tests.Mediator
 {
-    [Collection("IntegrationTests")]
+	[Collection("IntegrationTests")]
 	public class MediatorIntegrationTests : IDisposable
 	{
 		[Fact]
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResult()
 		{
 			// arrange
+			MediatorTestHelper.IsRemoveStopwatchInterceptor = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
+			serviceCollection.BoltOn(b => b.RegisterMediatorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
@@ -46,9 +48,10 @@ namespace BoltOn.Tests.Mediator
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayRequest()
 		{
 			// arrange
+			MediatorTestHelper.IsRemoveStopwatchInterceptor = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
+			serviceCollection.BoltOn(b => b.RegisterMediatorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
@@ -71,9 +74,10 @@ namespace BoltOn.Tests.Mediator
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayCommand()
 		{
 			// arrange
+			MediatorTestHelper.IsRemoveStopwatchInterceptor = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
+            serviceCollection.BoltOn(b => b.RegisterMediatorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
@@ -96,9 +100,10 @@ namespace BoltOn.Tests.Mediator
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayAsyncRequest()
 		{
 			// arrange
+			MediatorTestHelper.IsRemoveStopwatchInterceptor = false;
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
+            serviceCollection.BoltOn(b => b.RegisterMediatorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
@@ -123,7 +128,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
+            serviceCollection.BoltOn(b => b.RegisterMediatorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
@@ -150,7 +155,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
+            serviceCollection.BoltOn(b => b.RegisterMediatorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
@@ -179,7 +184,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging();
-			serviceCollection.BoltOn();
+            serviceCollection.BoltOn(b => b.RegisterMediatorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
@@ -208,7 +213,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			MediatorTestHelper.IsClearInterceptors = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn();
+            serviceCollection.BoltOn(b => b.RegisterMediatorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
@@ -232,7 +237,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			MediatorTestHelper.IsRemoveStopwatchInterceptor = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn();
+            serviceCollection.BoltOn(b => b.RegisterMediatorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
@@ -256,8 +261,7 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn();
+            serviceCollection.BoltOn(b => b.RegisterMediatorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -276,7 +280,11 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(options => options.BoltOnEFModule());
+			serviceCollection.BoltOn(options =>
+            {
+				options.RegisterMediatorFakes();
+                options.BoltOnEFModule();
+            });
 			serviceCollection.AddSingleton<IUnitOfWorkOptionsBuilder, TestCustomUnitOfWorkOptionsBuilder>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
@@ -296,7 +304,11 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(o => o.BoltOnEFModule());
+            serviceCollection.BoltOn(options =>
+            {
+                options.RegisterMediatorFakes();
+                options.BoltOnEFModule();
+            });
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -315,8 +327,13 @@ namespace BoltOn.Tests.Mediator
 		{
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
+			MediatorTestHelper.IsRemoveStopwatchInterceptor = false;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(o => o.BoltOnEFModule());
+            serviceCollection.BoltOn(options =>
+            {
+                options.RegisterMediatorFakes();
+                options.BoltOnEFModule();
+            });
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -335,8 +352,13 @@ namespace BoltOn.Tests.Mediator
 		{
 			// arrange
 			MediatorTestHelper.IsCustomizeIsolationLevel = true;
+			MediatorTestHelper.IsRemoveStopwatchInterceptor = false;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(o => o.BoltOnEFModule());
+            serviceCollection.BoltOn(options =>
+			{
+				options.BoltOnEFModule();
+				options.RegisterMediatorFakes();
+            });
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -357,8 +379,14 @@ namespace BoltOn.Tests.Mediator
 		{
 			// arrange
 			IntegrationTestHelper.IsSeedData = true;
+			MediatorTestHelper.IsCustomizeIsolationLevel = true;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(options => options.BoltOnEFModule());
+            serviceCollection.BoltOn(options =>
+            {
+                options.RegisterMediatorFakes();
+				options.RegisterDataFakes();
+                options.BoltOnEFModule();
+            });
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -383,7 +411,12 @@ namespace BoltOn.Tests.Mediator
 			// arrange
 			IntegrationTestHelper.IsSeedData = false;
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(options => options.BoltOnEFModule());
+            serviceCollection.BoltOn(options =>
+            {
+                options.RegisterMediatorFakes();
+				options.RegisterDataFakes();
+                options.BoltOnEFModule();
+            });
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IMediator>();
@@ -408,6 +441,7 @@ namespace BoltOn.Tests.Mediator
 			MediatorTestHelper.IsClearInterceptors = false;
 			MediatorTestHelper.IsCustomizeIsolationLevel = false;
 			MediatorTestHelper.LoggerStatements.Clear();
+			IntegrationTestHelper.IsSeedData = false;
 		}
 	}
 }

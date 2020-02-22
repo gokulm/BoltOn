@@ -2,6 +2,6 @@
 {
     public interface IPostRegistrationTask
     {
-        void Run(PostRegistrationTaskContext context);
+        void Run();
     }
 }
