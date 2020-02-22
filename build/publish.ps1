@@ -90,10 +90,11 @@ function NuGetPackAndPublish {
     if ($newVersions.BoltOn) {
         $version = $newVersions.BoltOn
         NugetPack "BoltOn" $version
-        NugetPublish "BoltOn" $version
 
         $tag = "BoltOn.$version"
         GitTag $tag
+
+        NugetPublish "BoltOn" $version
         $newVersions.Remove("BoltOn")
     }
             
@@ -103,17 +104,17 @@ function NuGetPackAndPublish {
         NugetPack $key $newVersion 
     }
 
-    # nuget publish and git tag
-    foreach ($key in $newVersions.keys) {
-        $newVersion = $newVersions.$key
-        NugetPublish $key $newVersion
-    }
-
     # git tag
     foreach ($key in $newVersions.keys) {
         $newVersion = $newVersions.$key
         $tag = "$key.$newVersion"
         GitTag $tag
+    }
+
+    # nuget publish and git tag
+    foreach ($key in $newVersions.keys) {
+        $newVersion = $newVersions.$key
+        NugetPublish $key $newVersion
     }
 
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
