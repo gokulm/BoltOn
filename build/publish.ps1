@@ -1,4 +1,9 @@
-Param([string]$_branchName, [string]$_nugetApiKey)
+Param(
+    [string]$_branchName, 
+    [string]$_nugetApiKey, 
+    [string]$GITHUB_ACTOR,
+    [string]$GITHUB_TOKEN
+)
 
 $_scriptDirPath = $PSScriptRoot
 $_rootDirPath = Split-Path $_scriptDirPath
@@ -45,8 +50,7 @@ function NuGetPackAndPublish {
 
     if ($null -ne $scope -and $scope.ToString().Trim()) {
         LogDebug "Scope: $scope"
-        if($scope -eq "docs")
-        {
+        if ($scope -eq "docs") {
             LogDebug "No release"
             return
         }
@@ -93,12 +97,7 @@ function NuGetPackAndPublish {
         NugetPublish "BoltOn" $version
 
         $tag = "BoltOn.$version"
-        git tag "$tag"
-        LogDebug "Git tagged: $tag"
-        if ($_branchName -eq "master") {
-            git push origin tag $tag
-            LogInfo "Pushed Git Tag $tag"
-        }
+        GitTag $tag
         $newVersions.Remove("BoltOn")
     }
             
@@ -118,16 +117,9 @@ function NuGetPackAndPublish {
     foreach ($key in $newVersions.keys) {
         $newVersion = $newVersions.$key
         $tag = "$key.$newVersion"
-        git tag "$tag"
-        LogDebug "Git tagged: $tag"
-
-        if ($_branchName -eq "master") {
-            git push origin tag $tag
-            LogInfo "Pushed Git Tag $tag"
-        }
+        GitTag $tag
     }
 
-    
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
@@ -163,6 +155,22 @@ function NugetPublish {
         }
         dotnet nuget push "$_outputPath/$key.$value.nupkg" -s $_testNugetSource
         LogInfo "Published package: $key.$value.nupkg"
+    }
+}
+
+function GitTag {
+    param ([string]$tag)
+
+    git tag "$tag"
+    LogDebug "Git tagged: $tag"
+    if ($_branchName -eq "master") {
+        if ($null -ne $GITHUB_ACTOR -and $null -ne $GITHUB_TOKEN) {
+            git push "https://${GITHUB_ACTOR}:$GITHUB_TOKEN@github.com/BoltOn.git" tag $tag
+        }
+        else {
+            git push origin tag $tag
+        }
+        LogInfo "Pushed Git Tag $tag"
     }
 }
 
