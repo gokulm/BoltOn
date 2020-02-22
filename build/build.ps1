@@ -8,8 +8,8 @@ $ErrorActionPreference = 'stop'
 
 function Main {
     try {
-        LogDebug "Actor: $GITHUB_ACTOR"
         Import-Module $_boltOnModulePath -Force
+        LogDebug "Actor: $GITHUB_ACTOR"
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
         Build
         Test 
