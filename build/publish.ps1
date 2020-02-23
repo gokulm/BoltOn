@@ -158,16 +158,21 @@ function NugetPublish {
 function GitTag {
     param ([string]$tag)
 
-    git tag "$tag"
-    LogDebug "Git tagged: $tag"
-    if ($_branchName -eq "master") {
-        if ($null -ne $GITHUB_ACTOR -and $null -ne $GITHUB_TOKEN) {
-            git push "https://${GITHUB_ACTOR}:$GITHUB_TOKEN@github.com/BoltOn.git" tag $tag
+    try {
+        git tag "$tag"
+        LogDebug "Git tagged: $tag"
+        if ($_branchName -eq "master") {
+            if ($null -ne $GITHUB_ACTOR -and $null -ne $GITHUB_TOKEN) {
+                git push "https://${GITHUB_ACTOR}:$GITHUB_TOKEN@github.com/gokulm/BoltOn.git" tag $tag
+            }
+            else {
+                git push origin tag $tag
+            }
+            LogInfo "Pushed Git Tag $tag"
         }
-        else {
-            git push origin tag $tag
-        }
-        LogInfo "Pushed Git Tag $tag"
+    }
+    catch {
+        LogError $_.Exception.Message
     }
 }
 
