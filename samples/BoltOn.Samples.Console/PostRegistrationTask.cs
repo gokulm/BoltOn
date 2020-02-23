@@ -18,7 +18,7 @@ namespace BoltOn.Samples.Console
             _serviceProvider = serviceProvider;
         }
 
-        public void Run(PostRegistrationTaskContext context)
+        public void Run()
         {
             using (var scope = _serviceProvider.CreateScope())
             {

@@ -58,33 +58,18 @@ BoltOn()
 --------
 This method does the following:
 
-* It groups the executing assembly, all the assemblies of the other modules and the assemblies passed to BoltOnAssemblies() to a collection, sorts them based on the assembly dependencies, and finally scans for all the classes that implement `IRegistrationTask` and executes them in the order of the assembly dependencies. 
-<br />The assemblies collection can be accessed from `RegistrationTaskContext` and `PostRegistrationTaskContext` of the registration tasks.
-* A built-in registration task called [BoltOnRegistrationTask](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Bootstrapping/BoltOnRegistrationTask.cs) registers all the interfaces with **single** implementation as trasient. 
+* Registers all the interfaces in the calling assembly and assemblies passed to BoltOnAssemblies() method with **single** implementation as trasient.
+* Registers all the [Mediator](mediator) handlers.
 
-**Custom registrations:**
+**Note:** 
 
+* The order of the methods called is important though. If BoltOnEFModule() is called after BoltOnAssemblies(), the assemblies passed to the latter method will override the registrations.
 * To exclude classes from registration, decorate them with `[ExcludeFromRegistration]` attribute.
-* For all the other registration scopes like scoped or singleton, or to register interfaces with more than one implementations, implement `IRegistrationTask` and use the context.Container (which is of type `IServicesCollection`) to register them.
-
-Example:
-
-    public class CustomRegistrationTask : IRegistrationTask
-	{
-		public void Run(RegistrationTaskContext context)
-		{
-			var container = context.Container;
-			container.AddSingleton<IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOptionsBuilder>();
-			container.AddScoped<ITestService, TestService>();
-		}
-	}
-
-** Note: **
-Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other modules. Each and every module calls other extension methods to attach their own dependent modules. 
+* Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other modules. Each and every module calls other extension methods to attach their own dependent modules. 
 
 TightenBolts()
 --------------
-This extension method scans all the `IPostRegistrationTask` in the assembly collection formed by BoltOn() and executes them.
+This extension method scans all the `IPostRegistrationTask` in the assembly collection formed by BoltOn() and executes them. The post registration tasks support ctor injection.
 
 To run any task that involves resolving dependencies, like seeding data using any of the registered DbContexts, implement `IPostRegistrationTask`. 
 
@@ -92,7 +77,7 @@ Example:
 
     public class CustomPostRegistrationTask : IPostRegistrationTask
     {
-        public void Run(PostRegistrationTaskContext context)
+        public void Run()
         {
             var serviceProvider = context.ServiceProvider;
             var schoolDbContext = serviceProvider.GetService<TestDbContext>();

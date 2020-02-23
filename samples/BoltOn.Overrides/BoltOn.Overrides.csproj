@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BoltOn" Version="0.13.0" />
-    <PackageReference Include="BoltOn.Data.EF" Version="0.9.0" />
+    <PackageReference Include="BoltOn" Version="0.18.0" />
+    <PackageReference Include="BoltOn.Data.EF" Version="0.11.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Mediator\" />

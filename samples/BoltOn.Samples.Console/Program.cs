@@ -9,6 +9,8 @@ using BoltOn.Samples.Infrastructure.Data;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using BoltOn.Data;
+using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Console
 {
@@ -70,7 +72,9 @@ namespace BoltOn.Samples.Console
                 options.UseSqlServer(readDbConnectionString);
             });
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceCollection.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, SchoolReadDbContext>>();
+
+			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			System.Console.ReadLine();
 		}

@@ -12,7 +12,7 @@ To stop the conainers and remove the images:
 
 `docker-compose down --rmi local`
 
-Here is the [docker-compose](https://github.com/gokulm/BoltOn/blob/master/samples/docker-compose.yml) file used. It launches the samples API, console app (which acts MassTransit event consumer), RabbitMq and SQL Server. You could test the [StudentsController's](https://github.com/gokulm/BoltOn/blob/master/samples/BoltOn.Samples.WebApi/Controllers/StudentsController.cs) actions. Go over [CQRS](../cqrs/#implementation) documentation to understand the flow.
+Here is the [docker-compose](https://github.com/gokulm/BoltOn/blob/master/samples/docker-compose.yml) file used. It launches the samples API (http://localhost:5000/), console app (which acts MassTransit event consumer), RabbitMq (management interface http://localhost:5015/) and SQL Server (localhost,5005 with 2 databases - BoltOnSamplesWrite and BoltOnSamplesRead). You could test the [StudentsController's](https://github.com/gokulm/BoltOn/blob/master/samples/BoltOn.Samples.WebApi/Controllers/StudentsController.cs) actions using Postman or some other API testing tool. Go over [CQRS](../cqrs/#implementation) documentation to understand the flow.
 
 To run SQL Server separately:
 

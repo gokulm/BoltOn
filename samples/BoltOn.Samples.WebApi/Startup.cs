@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using MassTransit;
 using System;
 using Microsoft.Extensions.Hosting;
+using BoltOn.Data;
+using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -60,7 +62,10 @@ namespace BoltOn.Samples.WebApi
                 options.UseSqlServer(readDbConnectionString);
             });
 
-        }
+			services.AddTransient<IRepository<Student>, Repository<Student, SchoolWriteDbContext>>();
+			services.AddTransient<IRepository<StudentType>, Repository<StudentType, SchoolWriteDbContext>>();
+			services.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, SchoolReadDbContext>>();
+		}
 
 		public void Configure(IApplicationBuilder app, IHostApplicationLifetime appLifetime)
 		{
