@@ -103,13 +103,13 @@ Here is the Student entity:
 	}
 
 
-* `IRepository<Student>` injected in the `CreateStudentHandler` is registered to use `Repository<Student>`. Please look into the RegistrationTask class in the BoltOn.Samples.WebApi project for all the other registrations.
+* `IRepository<Student>` injected in the `CreateStudentHandler` is registered to use `Repository<Student>`. Please look into the Startup class in the BoltOn.Samples.WebApi project for all the other registrations.
 * When `AddAsync` of the repository is called in the handler, the repository adds the entity and on while saving changes, the events marked for processing are added to a request scoped object called `EventBag`.
 * If CQRS is enabled in the Startup's BoltOn method, [`CqrsInterceptor`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/CqrsInterceptor.cs) is added to the `Mediator` pipeline. 
 * The intercepor calls [EventDispatcher](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/EventDispatcher.cs) to dispatch events that need to be processed, which inturn publishes events using `IBus`. You could write your own implementation of `IEventDispatcher` or `IBus` if the built-in classes do not satisfy your needs.
 * Even if the dispatcher or the bus fails, the events to be processed will be persisted along with the entity, as the `CqrsIntercepor` is after the `UnitOfWorkIntercepor`, which takes care of committing the transaction.
 * If there are more than one event to be processed and if one fails, all the subsequent events dispatching get aborted, so that the order of the events could be maintained.
-* The MassTransit consumer registered to handle `StudentCreatedEvent` in the BoltOn.Samples.Console project's RegistrationTask class handles the event using `StudentCreatedEventHandler`.
+* The MassTransit consumer registered to handle `StudentCreatedEvent` in the BoltOn.Samples.Console project's Startup class handles the event using `StudentCreatedEventHandler`.
 
 Here is the registration:
 

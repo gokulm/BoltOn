@@ -83,7 +83,7 @@ You could create an interceptor by implementing `IInterceptor` interface, like [
 
 **Note: **
 
-* Interceptors from all the bolted modules and assemblies **must be** added explicitly in the registration tasks using `AddInterceptor<TInterceptor>` extension method.
+* Interceptors from all the bolted modules and assemblies **must be** added explicitly  using `AddInterceptor<TInterceptor>` extension method.
 * Interceptors get executed in the order they're added.
 * Interceptors can be removed using `RemoveInterceptor<TInterceptor>` extension method. 
 * All the interceptors in the pipeline (in other packages) can be removed using `RemoveAllInterceptors` extension method. However, if this extension method is executed in a registration task and if there is another registration task after your registration task to add interceptors, those interceptors will be added to the pipeline.
