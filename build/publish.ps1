@@ -43,7 +43,7 @@ function NuGetPackAndPublish {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
 
     $commits = git log -n 1 --pretty=%B
-    # $commits = "feat(BoltOn.Data.EF, BoltOn): test"
+    # $commits = "feat(BoltOn, BoltOn.Data.EF, BoltOn.Data.CosmosDb, BoltOn.Bus.MassTransit): test"
     # $commits = "feat: test"
     $scope = GetConventionalCommitScope $commits
     $newVersions = @{ }
@@ -95,7 +95,7 @@ function NuGetPackAndPublish {
         GitTag $tag
 
         NugetPublish "BoltOn" $version
-        $newVersions.Remove("BoltOn")
+        $newVersions = $newVersions | Where-Object { $_.key –ne "BoltOn" }
     }
             
     # nuget pack
@@ -159,9 +159,10 @@ function GitTag {
     param ([string]$tag)
 
     try {
-        git tag "$tag"
-        LogDebug "Git tagged: $tag"
+        LogDebug "About to tag: $tag"
         if ($_branchName -eq "master") {
+            git tag "$tag"
+            LogDebug "Git tagged: $tag"
             if ($null -ne $GITHUB_ACTOR -and $null -ne $GITHUB_TOKEN) {
                 git push "https://${GITHUB_ACTOR}:$GITHUB_TOKEN@github.com/gokulm/BoltOn.git" tag $tag
             }
