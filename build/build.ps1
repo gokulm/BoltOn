@@ -1,5 +1,6 @@
 Param(
-    [string]$GITHUB_ACTOR
+    [string]$GITHUB_ACTOR,
+    [string]$GITHUB_TOKEN
 )
 
 $_scriptDirPath = $PSScriptRoot
@@ -10,6 +11,10 @@ function Main {
     try {
         Import-Module $_boltOnModulePath -Force
         LogDebug "Actor: $GITHUB_ACTOR"
+        if($null -ne $GITHUB_TOKEN)
+        {
+            LogDebug "token found: $GITHUB_TOKEN"
+        }
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
         Build
         Test 

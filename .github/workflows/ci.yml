@@ -16,4 +16,4 @@ jobs:
       with:
         dotnet-version: 3.1.100
     - name: Run build.ps1
-      run: pwsh './build/build.ps1' ${GITHUB_ACTOR}
+      run: pwsh './build/build.ps1' ${GITHUB_ACTOR} ${{ secrets.GITHUB_TOKEN }}
