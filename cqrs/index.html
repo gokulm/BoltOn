@@ -233,13 +233,13 @@ serviceCollection.BoltOn(b =&gt;
 }
 </code></pre>
 <ul>
-<li><code>IRepository&lt;Student&gt;</code> injected in the <code>CreateStudentHandler</code> is registered to use <code>Repository&lt;Student&gt;</code>. Please look into the RegistrationTask class in the BoltOn.Samples.WebApi project for all the other registrations.</li>
+<li><code>IRepository&lt;Student&gt;</code> injected in the <code>CreateStudentHandler</code> is registered to use <code>Repository&lt;Student&gt;</code>. Please look into the Startup class in the BoltOn.Samples.WebApi project for all the other registrations.</li>
 <li>When <code>AddAsync</code> of the repository is called in the handler, the repository adds the entity and on while saving changes, the events marked for processing are added to a request scoped object called <code>EventBag</code>.</li>
 <li>If CQRS is enabled in the Startup's BoltOn method, <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/CqrsInterceptor.cs"><code>CqrsInterceptor</code></a> is added to the <code>Mediator</code> pipeline. </li>
 <li>The intercepor calls <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/EventDispatcher.cs">EventDispatcher</a> to dispatch events that need to be processed, which inturn publishes events using <code>IBus</code>. You could write your own implementation of <code>IEventDispatcher</code> or <code>IBus</code> if the built-in classes do not satisfy your needs.</li>
 <li>Even if the dispatcher or the bus fails, the events to be processed will be persisted along with the entity, as the <code>CqrsIntercepor</code> is after the <code>UnitOfWorkIntercepor</code>, which takes care of committing the transaction.</li>
 <li>If there are more than one event to be processed and if one fails, all the subsequent events dispatching get aborted, so that the order of the events could be maintained.</li>
-<li>The MassTransit consumer registered to handle <code>StudentCreatedEvent</code> in the BoltOn.Samples.Console project's RegistrationTask class handles the event using <code>StudentCreatedEventHandler</code>.</li>
+<li>The MassTransit consumer registered to handle <code>StudentCreatedEvent</code> in the BoltOn.Samples.Console project's Startup class handles the event using <code>StudentCreatedEventHandler</code>.</li>
 </ul>
 <p>Here is the registration:</p>
 <pre><code>container.AddMassTransit(x =&gt;

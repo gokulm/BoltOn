@@ -143,7 +143,7 @@
 <p><code>docker-compose up -d --build</code></p>
 <p>To stop the conainers and remove the images:</p>
 <p><code>docker-compose down --rmi local</code></p>
-<p>Here is the <a href="https://github.com/gokulm/BoltOn/blob/master/samples/docker-compose.yml">docker-compose</a> file used. It launches the samples API, console app (which acts MassTransit event consumer), RabbitMq and SQL Server. You could test the <a href="https://github.com/gokulm/BoltOn/blob/master/samples/BoltOn.Samples.WebApi/Controllers/StudentsController.cs">StudentsController's</a> actions. Go over <a href="../cqrs/#implementation">CQRS</a> documentation to understand the flow.</p>
+<p>Here is the <a href="https://github.com/gokulm/BoltOn/blob/master/samples/docker-compose.yml">docker-compose</a> file used. It launches the samples API (http://localhost:5000/), console app (which acts MassTransit event consumer), RabbitMq (management interface http://localhost:5015/) and SQL Server (localhost,5005 with 2 databases - BoltOnSamplesWrite and BoltOnSamplesRead). You could test the <a href="https://github.com/gokulm/BoltOn/blob/master/samples/BoltOn.Samples.WebApi/Controllers/StudentsController.cs">StudentsController's</a> actions using Postman or some other API testing tool. Go over <a href="../cqrs/#implementation">CQRS</a> documentation to understand the flow.</p>
 <p>To run SQL Server separately:</p>
 <p><code>docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Password1' -p 6000:1433 -d microsoft/mssql-server-linux:latest</code></p>
 <p>To run RabbitMq separately:</p>

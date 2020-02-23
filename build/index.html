@@ -134,8 +134,18 @@
             <div class="section">
               
                 <p>BoltOn uses <a href="https://github.com/features/actions">GitHub Actions</a> for CI and CD. </p>
-<p>CI involves just building and testing the projects, whereas CD involves building, testing, versioning, packing and publishing to NuGet, and tagging. Though pretty much most of them could be achieved using the GitHub tasks, we are using PowerShell to mainly support performing all the tasks locally. Both the PS scripts use some of the functions in <a href="https://github.com/gokulm/BoltOn/blob/master/build/bolton.psm1">bolton.psm1</a>.</p>
-<p>Versioning is done based on <a href="https://www.conventionalcommits.org/en/v1.0.0/">Conventional Commits</a>.</p>
+<p>CI involves just building and testing the projects, whereas CD involves building, testing, versioning, packing and publishing to NuGet, and tagging. Though pretty much most of them could be achieved using the GitHub tasks, we are using PowerShell to mainly support performing all the tasks locally. Both the PS scripts (<a href="https://github.com/gokulm/BoltOn/blob/master/build/build.ps1">build.ps1</a> and <a href="https://github.com/gokulm/BoltOn/blob/master/build/publish.ps1">publish.ps1</a>) use some of the functions in <a href="https://github.com/gokulm/BoltOn/blob/master/build/bolton.psm1">bolton.psm1</a>.</p>
+<p>Versioning is done based on <a href="https://www.conventionalcommits.org/en/v1.0.0/">Conventional Commits</a>. Here it is:</p>
+<ul>
+<li>feat: Increments minor version</li>
+<li>fix: Increments patch version</li>
+<li>feat! and fix!: Increments major version</li>
+</ul>
+<p><a href="https://github.com/gokulm/BoltOn/blob/master/build/publish.ps1">publish.ps1</a> script finds all the changed projects in a merge, and increments the version(s) of them based on the commit message.</p>
+<p>To force changing the versions of projects without making any changes to the project files, scope could be specified in the commit message:</p>
+<p>Example:</p>
+<p>feat(BoltOn, BoltOn.Data.EF): test comments</p>
+<p>Which will increment minor versions of both BoltOn and BoltOn.Data.EF projects, and publish them.</p>
               
             </div>
           </div>
