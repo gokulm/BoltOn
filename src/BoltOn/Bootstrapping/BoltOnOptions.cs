@@ -15,20 +15,18 @@ namespace BoltOn.Bootstrapping
 	public sealed class BoltOnOptions
 	{
 		internal bool IsCqrsEnabled { get; set; }
-
 		internal bool IsTightened { get; set; }
-
 		internal bool IsAppCleaned { get; set; }
-
-		internal HashSet<Type> InterceptorTypes { get; } = new HashSet<Type>();
-
 		internal HashSet<Assembly> RegisteredAssemblies { get; } = new HashSet<Assembly>();
-
 		public IServiceCollection ServiceCollection { get; }
+        internal HashSet<Type> InterceptorTypes { get; set; } = new HashSet<Type>();
+        internal Type RecentlyAddedInterceptor { get; set; }
+        internal InterceptorOptions InterceptorOptions { get; }
 
 		public BoltOnOptions(IServiceCollection serviceCollection)
 		{
 			ServiceCollection = serviceCollection;
+			InterceptorOptions = new InterceptorOptions(this);
 			RegisterByConvention(GetType().Assembly);
 			RegisterCoreTypes();
 			RegisterMediator();
@@ -168,4 +166,36 @@ namespace BoltOn.Bootstrapping
 			cleanupTaskTypes.ForEach(r => ServiceCollection.AddTransient(cleanupTaskType, r));
 		}
 	}
+
+    public static class InterceptorExtensions
+    {
+        public static void After<TInterceptor>(this InterceptorOptions options) 
+            where  TInterceptor : IInterceptor
+        {
+            var boltOnOptions = options.BoltOnOptions;
+			var tempInterceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+            if (boltOnOptions.RecentlyAddedInterceptor != null)
+            {
+                var recentlyAddedInterceptor = boltOnOptions.RecentlyAddedInterceptor;
+                tempInterceptorTypes.Remove(boltOnOptions.RecentlyAddedInterceptor);
+                var tempIndex = tempInterceptorTypes.IndexOf(typeof(TInterceptor));
+				tempInterceptorTypes.Insert(tempIndex + 1, recentlyAddedInterceptor);
+				boltOnOptions.InterceptorTypes = new HashSet<Type>(tempInterceptorTypes);
+			}
+		}
+    }
+
+	// 1 2 3 
+	// add 4
+	// after 2
+
+    public class InterceptorOptions
+    {
+        internal BoltOnOptions BoltOnOptions { get; }
+
+        public InterceptorOptions(BoltOnOptions boltOnOptions)
+        {
+            BoltOnOptions = boltOnOptions;
+        }
+    }
 }
