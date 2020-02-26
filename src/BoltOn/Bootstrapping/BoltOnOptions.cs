@@ -44,7 +44,7 @@ namespace BoltOn.Bootstrapping
                 s.GetRequiredService<IUnitOfWorkFactory>()));
 			ServiceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
 			ServiceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
-			ServiceCollection.AddSingleton<IEventDispatcher, DefaultDispatcher>();
+//			ServiceCollection.AddSingleton<IEventDispatcher, DefaultDispatcher>();
 			ServiceCollection.AddScoped<EventBag>();
 			var options = new CqrsOptions();
 			ServiceCollection.AddSingleton(options);
@@ -55,18 +55,20 @@ namespace BoltOn.Bootstrapping
 			ServiceCollection.AddTransient<IMediator, Mediator.Pipeline.Mediator>();
 			ServiceCollection.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
 			AddInterceptor<StopwatchInterceptor>();
-			AddInterceptor<CqrsInterceptor>();
 			AddInterceptor<UnitOfWorkInterceptor>();
 		}
 
-		public void AddInterceptor<TInterceptor>() where TInterceptor : IInterceptor
+		public InterceptorOptions AddInterceptor<TInterceptor>() where TInterceptor : IInterceptor
 		{
 			InterceptorTypes.Add(typeof(TInterceptor));
+            RecentlyAddedInterceptor = typeof(TInterceptor);
+			return new InterceptorOptions(this);
 		}
 
-		public void RemoveInterceptor<TInterceptor>() where TInterceptor : IInterceptor
+		public InterceptorOptions RemoveInterceptor<TInterceptor>() where TInterceptor : IInterceptor
 		{
 			InterceptorTypes.Remove(typeof(TInterceptor));
+            return new InterceptorOptions(this);
 		}
 
 		public void RemoveAllInterceptors()
@@ -177,25 +179,32 @@ namespace BoltOn.Bootstrapping
             if (boltOnOptions.RecentlyAddedInterceptor != null)
             {
                 var recentlyAddedInterceptor = boltOnOptions.RecentlyAddedInterceptor;
-                tempInterceptorTypes.Remove(boltOnOptions.RecentlyAddedInterceptor);
                 var tempIndex = tempInterceptorTypes.IndexOf(typeof(TInterceptor));
-				tempInterceptorTypes.Insert(tempIndex + 1, recentlyAddedInterceptor);
-				boltOnOptions.InterceptorTypes = new HashSet<Type>(tempInterceptorTypes);
+				if (tempIndex > -1)
+                {
+                    tempInterceptorTypes.Remove(recentlyAddedInterceptor);
+					tempInterceptorTypes.Insert(tempIndex + 1, recentlyAddedInterceptor);
+					boltOnOptions.InterceptorTypes = new HashSet<Type>(tempInterceptorTypes); 
+				}
 			}
 		}
-    }
 
-	// 1 2 3 
-	// add 4
-	// after 2
-
-    public class InterceptorOptions
-    {
-        internal BoltOnOptions BoltOnOptions { get; }
-
-        public InterceptorOptions(BoltOnOptions boltOnOptions)
+        public static void Before<TInterceptor>(this InterceptorOptions options)
+            where TInterceptor : IInterceptor
         {
-            BoltOnOptions = boltOnOptions;
+            var boltOnOptions = options.BoltOnOptions;
+            var tempInterceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+            if (boltOnOptions.RecentlyAddedInterceptor != null)
+            {
+                var recentlyAddedInterceptor = boltOnOptions.RecentlyAddedInterceptor;
+                var tempIndex = tempInterceptorTypes.IndexOf(typeof(TInterceptor));
+                if (tempIndex > 0)
+				{
+					tempInterceptorTypes.Remove(recentlyAddedInterceptor);
+					tempInterceptorTypes.Insert(tempIndex, recentlyAddedInterceptor);
+                    boltOnOptions.InterceptorTypes = new HashSet<Type>(tempInterceptorTypes);
+                }
+            }
         }
-    }
+	}
 }
