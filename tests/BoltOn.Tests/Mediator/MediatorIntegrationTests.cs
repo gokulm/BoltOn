@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Data.EF;
+using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Tests.Data.EF;
 using BoltOn.Tests.Mediator.Fakes;
@@ -433,6 +434,22 @@ namespace BoltOn.Tests.Mediator
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(ChangeTrackerInterceptor)}..."));
 			Assert.NotNull(MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {false}"));
 			Assert.True(isAutoDetectChangesEnabled);
+		}
+
+		[Fact]
+		public void GetService_WithAllDefaultInterceptors_ReturnsRegisteredInterceptorsInOrder()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+
+			// act
+			var interceptors = serviceProvider.GetServices<IInterceptor>();
+
+			// assert
+
 		}
 
 		public void Dispose()

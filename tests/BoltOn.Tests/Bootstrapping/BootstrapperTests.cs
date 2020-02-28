@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using BoltOn.Bootstrapping;
-using BoltOn.Other;
+using BoltOn.Tests.Bootstrapping.Fakes;
 using BoltOn.Tests.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace BoltOn.Tests.Bootstrapping
 {
-    [TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
+	[TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
     [Collection("IntegrationTests")]
     public class BootstrapperTests : IDisposable
     {
@@ -155,75 +153,5 @@ namespace BoltOn.Tests.Bootstrapping
         {
             BootstrapperRegistrationTasksHelper.Tasks.Clear();
         }
-    }
-
-    public interface ITestService
-    {
-        string GetName();
-    }
-
-    public class TestService : ITestService
-    {
-        public string GetName()
-        {
-            return "test";
-        }
-    }
-
-    public interface ITestExcludeRegistrationService
-    {
-        string GetName();
-    }
-
-    [ExcludeFromRegistration]
-    public class TestExcludeRegistrationService : ITestExcludeRegistrationService
-    {
-        public string GetName()
-        {
-            return "test";
-        }
-    }
-
-    public class ClassWithInjectedDependency
-    {
-        public ClassWithInjectedDependency(ITestService testService)
-        {
-            Name = testService.GetName();
-        }
-
-        public string Name
-        {
-            get;
-            set;
-        }
-    }
-
-    public class TestBootstrapperPostRegistrationTask : IPostRegistrationTask
-    {
-        public void Run()
-        {
-            BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
-        }
-    }
-
-    public class TestBootstrapperPostRegistrationTaskWithDependency : IPostRegistrationTask
-    {
-        private readonly ITestService _testService;
-
-        public TestBootstrapperPostRegistrationTaskWithDependency(ITestService testService)
-        {
-            _testService = testService;
-        }
-
-        public void Run()
-        {
-            BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
-            BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {_testService.GetName()} service");
-        }
-    }
-
-    public class BootstrapperRegistrationTasksHelper
-    {
-        public static List<string> Tasks { get; set; } = new List<string>();
     }
 }

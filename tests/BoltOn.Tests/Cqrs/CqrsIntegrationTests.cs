@@ -76,7 +76,7 @@ namespace BoltOn.Tests.Cqrs
 
 			// assert
 			// as assert not working after async method, added sleep
-			await Task.Delay(1000);
+			await Task.Delay(100);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(UpdateStudentHandler)} invoked"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
@@ -140,7 +140,7 @@ namespace BoltOn.Tests.Cqrs
 			await mediator.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input" });
 
 			// assert
-			await Task.Delay(1000);
+			await Task.Delay(100);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(StudentCreatedEventHandler)} invoked"));
 
@@ -199,7 +199,7 @@ namespace BoltOn.Tests.Cqrs
 			await mediator.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input", RaiseAnotherCreateEvent = false });
 
 			// assert
-			await Task.Delay(1000);
+			await Task.Delay(100);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(StudentCreatedEventHandler)} invoked"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
@@ -269,7 +269,7 @@ namespace BoltOn.Tests.Cqrs
 			await mediator.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input" });
 
 			// assert
-			await Task.Delay(1000);
+			await Task.Delay(100);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(StudentCreatedEventHandler)} invoked"));
 
@@ -315,7 +315,7 @@ namespace BoltOn.Tests.Cqrs
 
 			// assert
 			// as assert not working after async method, added sleep
-			await Task.Delay(1000);
+			await Task.Delay(100);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(UpdateStudentHandler)} invoked"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
@@ -365,7 +365,7 @@ namespace BoltOn.Tests.Cqrs
 
 			// assert
 			// as assert not working after async method, added sleep
-			await Task.Delay(1000);
+			await Task.Delay(100);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(UpdateStudentHandler)} invoked"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
@@ -416,7 +416,7 @@ namespace BoltOn.Tests.Cqrs
 
 			// assert
 			// as assert not working after async method, added sleep
-			await Task.Delay(1000);
+			await Task.Delay(100);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(UpdateStudentHandler)} invoked"));
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
@@ -472,7 +472,7 @@ namespace BoltOn.Tests.Cqrs
 
 			// assert
 			// as assert not working after async method, added sleep
-			await Task.Delay(1000);
+			await Task.Delay(100);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(StudentUpdatedEventHandler)} invoked"));
 			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==

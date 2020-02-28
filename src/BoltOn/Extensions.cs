@@ -54,5 +54,41 @@ namespace BoltOn
 			boltOnOptions.ServiceCollection.AddTransient<IEventDispatcher, EventDispatcher>();
 			return boltOnOptions;
 		}
-    }
+
+		public static void After<TInterceptor>(this InterceptorOptions options)
+			where TInterceptor : IInterceptor
+		{
+			var boltOnOptions = options.BoltOnOptions;
+			var tempInterceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+			if (boltOnOptions.RecentlyAddedInterceptor != null)
+			{
+				var recentlyAddedInterceptor = boltOnOptions.RecentlyAddedInterceptor;
+				var tempIndex = tempInterceptorTypes.IndexOf(typeof(TInterceptor));
+				if (tempIndex > -1)
+				{
+					tempInterceptorTypes.Remove(recentlyAddedInterceptor);
+					tempInterceptorTypes.Insert(tempIndex + 1, recentlyAddedInterceptor);
+					boltOnOptions.InterceptorTypes = new HashSet<Type>(tempInterceptorTypes);
+				}
+			}
+		}
+
+		public static void Before<TInterceptor>(this InterceptorOptions options)
+			where TInterceptor : IInterceptor
+		{
+			var boltOnOptions = options.BoltOnOptions;
+			var tempInterceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+			if (boltOnOptions.RecentlyAddedInterceptor != null)
+			{
+				var recentlyAddedInterceptor = boltOnOptions.RecentlyAddedInterceptor;
+				var tempIndex = tempInterceptorTypes.IndexOf(typeof(TInterceptor));
+				if (tempIndex > 0)
+				{
+					tempInterceptorTypes.Remove(recentlyAddedInterceptor);
+					tempInterceptorTypes.Insert(tempIndex, recentlyAddedInterceptor);
+					boltOnOptions.InterceptorTypes = new HashSet<Type>(tempInterceptorTypes);
+				}
+			}
+		}
+	}
 }
