@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using BoltOn.Mediator.Interceptors;
 using BoltOn.Tests.Bootstrapping.Fakes;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -153,7 +154,24 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.True(postRegistrationTaskCount == 1);
         }
 
-        public void Dispose()
+		[Fact]
+		public void GetService_WithAllDefaultInterceptors_ReturnsRegisteredInterceptorsInOrder()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+
+			// act
+			var interceptors = serviceProvider.GetServices<IInterceptor>().ToList();
+
+			// assert
+			Assert.NotNull(interceptors.FirstOrDefault(f => f.GetType() == typeof(StopwatchInterceptor)));
+			Assert.NotNull(interceptors.FirstOrDefault(f => f.GetType() == typeof(UnitOfWorkInterceptor)));
+		}
+
+		public void Dispose()
         {
         }
     }

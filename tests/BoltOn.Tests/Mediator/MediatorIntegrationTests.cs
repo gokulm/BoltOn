@@ -436,22 +436,6 @@ namespace BoltOn.Tests.Mediator
 			Assert.True(isAutoDetectChangesEnabled);
 		}
 
-		[Fact]
-		public void GetService_WithAllDefaultInterceptors_ReturnsRegisteredInterceptorsInOrder()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-
-			// act
-			var interceptors = serviceProvider.GetServices<IInterceptor>();
-
-			// assert
-
-		}
-
 		public void Dispose()
 		{
 			MediatorTestHelper.IsRemoveStopwatchInterceptor = false;
