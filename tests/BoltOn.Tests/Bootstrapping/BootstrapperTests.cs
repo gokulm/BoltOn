@@ -122,7 +122,6 @@ namespace BoltOn.Tests.Bootstrapping
         public void BoltOn_TightenBoltsCalledMoreThanOnce_PostRegistrationTasksGetCalledOnce()
         {
 			// arrange
-			BootstrapperRegistrationTasksHelper.Tasks.Clear();
 			var serviceCollection = new ServiceCollection();
             serviceCollection.BoltOn();
             var serviceProvider = serviceCollection.BuildServiceProvider();
