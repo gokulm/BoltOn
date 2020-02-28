@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Linq;
 using BoltOn.Tests.Bootstrapping.Fakes;
-using BoltOn.Tests.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace BoltOn.Tests.Bootstrapping
 {
-	[TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
-    [Collection("IntegrationTests")]
+	[Collection("IntegrationTests")]
     public class BootstrapperTests : IDisposable
     {
-        [Fact, TestPriority(6)]
+		public BootstrapperTests()
+		{
+			BootstrapperRegistrationTasksHelper.Tasks.Clear();
+		}
+
+        [Fact]
         public void BoltOn_ConcreteClassWithoutRegistrationButResolvableDependencies_ReturnsInstance()
         {
             // arrange
@@ -29,7 +32,7 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.NotNull(employee);
         }
 
-        [Fact, TestPriority(8)]
+        [Fact]
         public void BoltOn_DefaultBoltOnWithAllTheAssemblies_RunsRegistrationTasksAndResolvesDependencies()
         {
             // arrange
@@ -48,7 +51,7 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.Equal("John", name);
         }
 
-        [Fact, TestPriority(9)]
+        [Fact]
         public void BoltOn_DefaultBoltOnWithAllTheAssemblies_ResolvesDependenciesRegisteredByConvention()
         {
             // arrange
@@ -65,7 +68,7 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.Equal("test", name);
         }
 
-        [Fact, TestPriority(12)]
+        [Fact]
         public void BoltOn_BoltOn_DoesNotExecutePostRegistrationTask()
         {
             // arrange
@@ -79,7 +82,7 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.True(postRegistrationTaskIndex == -1);
         }
 
-        [Fact, TestPriority(13)]
+        [Fact]
         public void BoltOn_BoltOnAndTightenBolts_ExecutesAllPostRegistrationTasksInOrder()
         {
             // arrange
@@ -97,7 +100,7 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.True(postRegistrationTaskIndex != -1);
         }
 
-        [Fact, TestPriority(14)]
+        [Fact]
         public void BoltOn_BoltOnAndTightenBoltsWithExcludedFromRegistration_ReturnsNull()
         {
             // arrange
@@ -114,11 +117,12 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.Null(test);
         }
 
-        [Fact, TestPriority(11)]
+        [Fact]
         public void BoltOn_TightenBoltsCalledMoreThanOnce_PostRegistrationTasksGetCalledOnce()
         {
-            // arrange
-            var serviceCollection = new ServiceCollection();
+			// arrange
+			BootstrapperRegistrationTasksHelper.Tasks.Clear();
+			var serviceCollection = new ServiceCollection();
             serviceCollection.BoltOn();
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -132,7 +136,7 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.True(postRegistrationTaskCount == 1);
         }
 
-        [Fact, TestPriority(12)]
+        [Fact]
         public void BoltOn_TightenBolts_PostRegistrationWithDependencyGetCalledOnce()
         {
             // arrange
@@ -151,7 +155,6 @@ namespace BoltOn.Tests.Bootstrapping
 
         public void Dispose()
         {
-            BootstrapperRegistrationTasksHelper.Tasks.Clear();
         }
     }
 }
