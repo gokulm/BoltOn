@@ -269,7 +269,7 @@ namespace BoltOn.Tests.Cqrs
 			await mediator.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input" });
 
 			// assert
-			await Task.Delay(100);
+			await Task.Delay(300);
 			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(StudentCreatedEventHandler)} invoked"));
 

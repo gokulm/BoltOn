@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using BoltOn.Bootstrapping;
+using BoltOn.Cqrs;
 using BoltOn.Mediator.Interceptors;
 using BoltOn.Tests.Bootstrapping.Fakes;
 using Microsoft.Extensions.DependencyInjection;
@@ -170,7 +172,52 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.NotNull(interceptors.FirstOrDefault(f => f.GetType() == typeof(UnitOfWorkInterceptor)));
 		}
 
-		public void Dispose()
+        [Fact]
+        public void GetService_BoltOnOptionsWithDefaultInterceptors_ReturnsRegisteredInterceptorsInOrder()
+        {
+            // arrange
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.BoltOn();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            serviceProvider.TightenBolts();
+
+            // act
+            var boltOnOptions = serviceProvider.GetService<BoltOnOptions>();
+
+            // assert
+            var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+            var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
+            var uowInterceptorIndex = interceptorTypes.IndexOf(typeof(UnitOfWorkInterceptor));
+            Assert.True(stopWatchInterceptorIndex != -1);
+            Assert.True(uowInterceptorIndex != -1);
+            Assert.True(stopWatchInterceptorIndex < uowInterceptorIndex);
+        }
+
+        [Fact]
+        public void GetService_BoltOnOptionsWithCqrsModule_ReturnsRegisteredInterceptorsInOrder()
+        {
+            // arrange
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.BoltOn(b => b.BoltOnCqrsModule());
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            serviceProvider.TightenBolts();
+
+            // act
+            var boltOnOptions = serviceProvider.GetService<BoltOnOptions>();
+
+            // assert
+            var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+            var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
+            var uowInterceptorIndex = interceptorTypes.IndexOf(typeof(UnitOfWorkInterceptor));
+            var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
+            Assert.True(stopWatchInterceptorIndex != -1);
+            Assert.True(uowInterceptorIndex != -1);
+            Assert.True(cqrsInterceptorIndex != -1);
+            Assert.True(cqrsInterceptorIndex < uowInterceptorIndex);
+            Assert.True(cqrsInterceptorIndex > stopWatchInterceptorIndex);
+        }
+
+        public void Dispose()
         {
         }
     }
