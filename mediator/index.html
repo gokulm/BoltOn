@@ -226,6 +226,12 @@ public class StudentsController : Controller
 <li>Interceptors get executed in the order they're added.</li>
 <li>Interceptors can be removed using <code>RemoveInterceptor&lt;TInterceptor&gt;</code> extension method. </li>
 <li>All the interceptors in the pipeline (in other packages) can be removed using <code>RemoveAllInterceptors</code> extension method. However, if this extension method is executed in a registration task and if there is another registration task after your registration task to add interceptors, those interceptors will be added to the pipeline.</li>
+<li>
+<p>Interceptors can be added before or after an existing interceptor using <code>Before&lt;TInterceptor&gt;</code> or <code>After&lt;TInterceptor&gt;</code> respectively.</p>
+<p>Example:</p>
+<pre><code>boltOnOptions.AddInterceptor&lt;CqrsInterceptor&gt;().Before&lt;UnitOfWorkInterceptor&gt;();
+</code></pre>
+</li>
 </ul>
 <h2 id="unit-of-work">Unit of Work</h2>
 <ul>
