@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Data.EF;
+using BoltOn.Mediator.Interceptors;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Tests.Data.EF;
 using BoltOn.Tests.Mediator.Fakes;

@@ -15,20 +15,18 @@ namespace BoltOn.Bootstrapping
 	public sealed class BoltOnOptions
 	{
 		internal bool IsCqrsEnabled { get; set; }
-
 		internal bool IsTightened { get; set; }
-
 		internal bool IsAppCleaned { get; set; }
-
-		internal HashSet<Type> InterceptorTypes { get; } = new HashSet<Type>();
-
 		internal HashSet<Assembly> RegisteredAssemblies { get; } = new HashSet<Assembly>();
-
 		public IServiceCollection ServiceCollection { get; }
+        internal HashSet<Type> InterceptorTypes { get; set; } = new HashSet<Type>();
+        internal Type RecentlyAddedInterceptor { get; set; }
+        internal InterceptorOptions InterceptorOptions { get; }
 
 		public BoltOnOptions(IServiceCollection serviceCollection)
 		{
 			ServiceCollection = serviceCollection;
+			InterceptorOptions = new InterceptorOptions(this);
 			RegisterByConvention(GetType().Assembly);
 			RegisterCoreTypes();
 			RegisterMediator();
@@ -46,7 +44,6 @@ namespace BoltOn.Bootstrapping
                 s.GetRequiredService<IUnitOfWorkFactory>()));
 			ServiceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
 			ServiceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
-			ServiceCollection.AddSingleton<IEventDispatcher, DefaultDispatcher>();
 			ServiceCollection.AddScoped<EventBag>();
 			var options = new CqrsOptions();
 			ServiceCollection.AddSingleton(options);
@@ -57,18 +54,20 @@ namespace BoltOn.Bootstrapping
 			ServiceCollection.AddTransient<IMediator, Mediator.Pipeline.Mediator>();
 			ServiceCollection.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
 			AddInterceptor<StopwatchInterceptor>();
-			AddInterceptor<CqrsInterceptor>();
 			AddInterceptor<UnitOfWorkInterceptor>();
 		}
 
-		public void AddInterceptor<TInterceptor>() where TInterceptor : IInterceptor
+		public InterceptorOptions AddInterceptor<TInterceptor>() where TInterceptor : IInterceptor
 		{
 			InterceptorTypes.Add(typeof(TInterceptor));
+            RecentlyAddedInterceptor = typeof(TInterceptor);
+			return new InterceptorOptions(this);
 		}
 
-		public void RemoveInterceptor<TInterceptor>() where TInterceptor : IInterceptor
+		public InterceptorOptions RemoveInterceptor<TInterceptor>() where TInterceptor : IInterceptor
 		{
 			InterceptorTypes.Remove(typeof(TInterceptor));
+            return new InterceptorOptions(this);
 		}
 
 		public void RemoveAllInterceptors()

@@ -38,6 +38,7 @@
         <Folder Include="Utilities\" />
         <Folder Include="Data\CosmosDb\" />
         <Folder Include="Cqrs\Fakes\" />
+        <Folder Include="Bootstrapping\Fakes\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />

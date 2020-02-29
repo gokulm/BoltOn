@@ -1,19 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using BoltOn.Bootstrapping;
-using BoltOn.Other;
-using BoltOn.Tests.Common;
+using BoltOn.Cqrs;
+using BoltOn.Mediator.Interceptors;
+using BoltOn.Tests.Bootstrapping.Fakes;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace BoltOn.Tests.Bootstrapping
 {
-    [TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
-    [Collection("IntegrationTests")]
+	[Collection("IntegrationTests")]
     public class BootstrapperTests : IDisposable
     {
-        [Fact, TestPriority(6)]
+		public BootstrapperTests()
+		{
+			BootstrapperRegistrationTasksHelper.Tasks.Clear();
+		}
+
+        [Fact]
         public void BoltOn_ConcreteClassWithoutRegistrationButResolvableDependencies_ReturnsInstance()
         {
             // arrange
@@ -31,7 +35,7 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.NotNull(employee);
         }
 
-        [Fact, TestPriority(8)]
+        [Fact]
         public void BoltOn_DefaultBoltOnWithAllTheAssemblies_RunsRegistrationTasksAndResolvesDependencies()
         {
             // arrange
@@ -50,7 +54,7 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.Equal("John", name);
         }
 
-        [Fact, TestPriority(9)]
+        [Fact]
         public void BoltOn_DefaultBoltOnWithAllTheAssemblies_ResolvesDependenciesRegisteredByConvention()
         {
             // arrange
@@ -67,7 +71,7 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.Equal("test", name);
         }
 
-        [Fact, TestPriority(12)]
+        [Fact]
         public void BoltOn_BoltOn_DoesNotExecutePostRegistrationTask()
         {
             // arrange
@@ -81,7 +85,7 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.True(postRegistrationTaskIndex == -1);
         }
 
-        [Fact, TestPriority(13)]
+        [Fact]
         public void BoltOn_BoltOnAndTightenBolts_ExecutesAllPostRegistrationTasksInOrder()
         {
             // arrange
@@ -99,7 +103,7 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.True(postRegistrationTaskIndex != -1);
         }
 
-        [Fact, TestPriority(14)]
+        [Fact]
         public void BoltOn_BoltOnAndTightenBoltsWithExcludedFromRegistration_ReturnsNull()
         {
             // arrange
@@ -116,11 +120,11 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.Null(test);
         }
 
-        [Fact, TestPriority(11)]
+        [Fact]
         public void BoltOn_TightenBoltsCalledMoreThanOnce_PostRegistrationTasksGetCalledOnce()
         {
-            // arrange
-            var serviceCollection = new ServiceCollection();
+			// arrange
+			var serviceCollection = new ServiceCollection();
             serviceCollection.BoltOn();
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -134,7 +138,7 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.True(postRegistrationTaskCount == 1);
         }
 
-        [Fact, TestPriority(12)]
+        [Fact]
         public void BoltOn_TightenBolts_PostRegistrationWithDependencyGetCalledOnce()
         {
             // arrange
@@ -151,79 +155,72 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.True(postRegistrationTaskCount == 1);
         }
 
-        public void Dispose()
+		[Fact]
+		public void GetService_WithAllDefaultInterceptors_ReturnsRegisteredInterceptorsInOrder()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+
+			// act
+			var interceptors = serviceProvider.GetServices<IInterceptor>().ToList();
+
+			// assert
+			Assert.NotNull(interceptors.FirstOrDefault(f => f.GetType() == typeof(StopwatchInterceptor)));
+			Assert.NotNull(interceptors.FirstOrDefault(f => f.GetType() == typeof(UnitOfWorkInterceptor)));
+		}
+
+        [Fact]
+        public void GetService_BoltOnOptionsWithDefaultInterceptors_ReturnsRegisteredInterceptorsInOrder()
         {
-            BootstrapperRegistrationTasksHelper.Tasks.Clear();
-        }
-    }
+            // arrange
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.BoltOn();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            serviceProvider.TightenBolts();
 
-    public interface ITestService
-    {
-        string GetName();
-    }
+            // act
+            var boltOnOptions = serviceProvider.GetService<BoltOnOptions>();
 
-    public class TestService : ITestService
-    {
-        public string GetName()
-        {
-            return "test";
-        }
-    }
-
-    public interface ITestExcludeRegistrationService
-    {
-        string GetName();
-    }
-
-    [ExcludeFromRegistration]
-    public class TestExcludeRegistrationService : ITestExcludeRegistrationService
-    {
-        public string GetName()
-        {
-            return "test";
-        }
-    }
-
-    public class ClassWithInjectedDependency
-    {
-        public ClassWithInjectedDependency(ITestService testService)
-        {
-            Name = testService.GetName();
-        }
-
-        public string Name
-        {
-            get;
-            set;
-        }
-    }
-
-    public class TestBootstrapperPostRegistrationTask : IPostRegistrationTask
-    {
-        public void Run()
-        {
-            BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
-        }
-    }
-
-    public class TestBootstrapperPostRegistrationTaskWithDependency : IPostRegistrationTask
-    {
-        private readonly ITestService _testService;
-
-        public TestBootstrapperPostRegistrationTaskWithDependency(ITestService testService)
-        {
-            _testService = testService;
+            // assert
+            var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+            var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
+            var uowInterceptorIndex = interceptorTypes.IndexOf(typeof(UnitOfWorkInterceptor));
+			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
+			Assert.True(stopWatchInterceptorIndex != -1);
+            Assert.True(uowInterceptorIndex != -1);
+			Assert.True(cqrsInterceptorIndex == -1);
+			Assert.True(stopWatchInterceptorIndex < uowInterceptorIndex);
         }
 
-        public void Run()
+        [Fact]
+        public void GetService_BoltOnOptionsWithCqrsModule_ReturnsRegisteredInterceptorsInOrder()
         {
-            BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {GetType().Name}");
-            BootstrapperRegistrationTasksHelper.Tasks.Add($"Executed {_testService.GetName()} service");
-        }
-    }
+            // arrange
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.BoltOn(b => b.BoltOnCqrsModule());
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            serviceProvider.TightenBolts();
 
-    public class BootstrapperRegistrationTasksHelper
-    {
-        public static List<string> Tasks { get; set; } = new List<string>();
+            // act
+            var boltOnOptions = serviceProvider.GetService<BoltOnOptions>();
+
+            // assert
+            var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+            var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
+            var uowInterceptorIndex = interceptorTypes.IndexOf(typeof(UnitOfWorkInterceptor));
+            var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
+            Assert.True(stopWatchInterceptorIndex != -1);
+            Assert.True(uowInterceptorIndex != -1);
+            Assert.True(cqrsInterceptorIndex != -1);
+            Assert.True(cqrsInterceptorIndex < uowInterceptorIndex);
+            Assert.True(cqrsInterceptorIndex > stopWatchInterceptorIndex);
+        }
+
+		public void Dispose()
+        {
+        }
     }
 }

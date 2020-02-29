@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BoltOn.Bootstrapping;
 using BoltOn.Cqrs;
+using BoltOn.Mediator.Interceptors;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn
@@ -48,9 +49,48 @@ namespace BoltOn
 			boltOnOptions.IsCqrsEnabled = true;
 			var options = new CqrsOptions();
 			action?.Invoke(options);
+			boltOnOptions.AddInterceptor<CqrsInterceptor>().Before<UnitOfWorkInterceptor>();
 			boltOnOptions.ServiceCollection.AddSingleton(options);
 			boltOnOptions.ServiceCollection.AddTransient<IEventDispatcher, EventDispatcher>();
 			return boltOnOptions;
 		}
-    }
+
+		public static void After<TInterceptor>(this InterceptorOptions options)
+			where TInterceptor : IInterceptor
+		{
+			var boltOnOptions = options.BoltOnOptions;
+			var tempInterceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+			if (boltOnOptions.RecentlyAddedInterceptor != null)
+			{
+				var recentlyAddedInterceptor = boltOnOptions.RecentlyAddedInterceptor;
+				var tempIndex = tempInterceptorTypes.IndexOf(typeof(TInterceptor));
+				if (tempIndex >= 0)
+				{
+					tempInterceptorTypes.Remove(recentlyAddedInterceptor);
+					if (tempIndex == tempInterceptorTypes.Count)
+						tempIndex -= 1;
+					tempInterceptorTypes.Insert(tempIndex + 1, recentlyAddedInterceptor);
+					boltOnOptions.InterceptorTypes = new HashSet<Type>(tempInterceptorTypes);
+				}
+			}
+		}
+
+		public static void Before<TInterceptor>(this InterceptorOptions options)
+			where TInterceptor : IInterceptor
+		{
+			var boltOnOptions = options.BoltOnOptions;
+			var tempInterceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+			if (boltOnOptions.RecentlyAddedInterceptor != null)
+			{
+				var recentlyAddedInterceptor = boltOnOptions.RecentlyAddedInterceptor;
+				var tempIndex = tempInterceptorTypes.IndexOf(typeof(TInterceptor));
+				if (tempIndex >= 0)
+				{
+					tempInterceptorTypes.Remove(recentlyAddedInterceptor);
+					tempInterceptorTypes.Insert(tempIndex, recentlyAddedInterceptor);
+					boltOnOptions.InterceptorTypes = new HashSet<Type>(tempInterceptorTypes);
+				}
+			}
+		}
+	}
 }
