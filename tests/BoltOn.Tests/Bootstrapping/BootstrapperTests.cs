@@ -188,9 +188,11 @@ namespace BoltOn.Tests.Bootstrapping
             var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
             var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
             var uowInterceptorIndex = interceptorTypes.IndexOf(typeof(UnitOfWorkInterceptor));
-            Assert.True(stopWatchInterceptorIndex != -1);
+			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
+			Assert.True(stopWatchInterceptorIndex != -1);
             Assert.True(uowInterceptorIndex != -1);
-            Assert.True(stopWatchInterceptorIndex < uowInterceptorIndex);
+			Assert.True(cqrsInterceptorIndex == -1);
+			Assert.True(stopWatchInterceptorIndex < uowInterceptorIndex);
         }
 
         [Fact]
