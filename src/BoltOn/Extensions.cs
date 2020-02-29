@@ -64,9 +64,11 @@ namespace BoltOn
 			{
 				var recentlyAddedInterceptor = boltOnOptions.RecentlyAddedInterceptor;
 				var tempIndex = tempInterceptorTypes.IndexOf(typeof(TInterceptor));
-				if (tempIndex > -1)
+				if (tempIndex >= 0)
 				{
 					tempInterceptorTypes.Remove(recentlyAddedInterceptor);
+					if (tempIndex == tempInterceptorTypes.Count)
+						tempIndex -= 1;
 					tempInterceptorTypes.Insert(tempIndex + 1, recentlyAddedInterceptor);
 					boltOnOptions.InterceptorTypes = new HashSet<Type>(tempInterceptorTypes);
 				}
@@ -82,7 +84,7 @@ namespace BoltOn
 			{
 				var recentlyAddedInterceptor = boltOnOptions.RecentlyAddedInterceptor;
 				var tempIndex = tempInterceptorTypes.IndexOf(typeof(TInterceptor));
-				if (tempIndex > 0)
+				if (tempIndex >= 0)
 				{
 					tempInterceptorTypes.Remove(recentlyAddedInterceptor);
 					tempInterceptorTypes.Insert(tempIndex, recentlyAddedInterceptor);

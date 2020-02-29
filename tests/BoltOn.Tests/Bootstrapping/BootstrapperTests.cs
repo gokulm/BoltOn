@@ -217,7 +217,7 @@ namespace BoltOn.Tests.Bootstrapping
             Assert.True(cqrsInterceptorIndex > stopWatchInterceptorIndex);
         }
 
-        public void Dispose()
+		public void Dispose()
         {
         }
     }
