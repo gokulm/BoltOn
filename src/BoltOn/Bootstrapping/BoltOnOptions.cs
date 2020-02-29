@@ -44,7 +44,6 @@ namespace BoltOn.Bootstrapping
                 s.GetRequiredService<IUnitOfWorkFactory>()));
 			ServiceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
 			ServiceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
-//			ServiceCollection.AddSingleton<IEventDispatcher, DefaultDispatcher>();
 			ServiceCollection.AddScoped<EventBag>();
 			var options = new CqrsOptions();
 			ServiceCollection.AddSingleton(options);
