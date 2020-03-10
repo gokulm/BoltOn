@@ -15,7 +15,7 @@
         <Folder Include="Entities\" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="BoltOn" Version="0.18.0" />
+        <PackageReference Include="BoltOn" Version="0.18.1" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
         <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.9.3" />
     </ItemGroup>

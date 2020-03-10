@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BoltOn" Version="0.18.0" />
+    <PackageReference Include="BoltOn" Version="0.18.1" />
     <PackageReference Include="BoltOn.Data.EF" Version="0.11.0" />
     <PackageReference Include="BoltOn.Data.CosmosDb" Version="0.7.0" />
     <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.7.0" />
