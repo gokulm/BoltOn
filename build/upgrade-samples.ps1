@@ -18,7 +18,7 @@ function Main {
         }
         else {
             # Set-Location -Path .
-            # nukeeper update samples --include=^BoltOn --source=https://api.nuget.org/v3/index.json
+            nukeeper update samples --include=^BoltOn --source=https://api.nuget.org/v3/index.json
 
             $currentLocation = Get-Location
             $samplesDirPath = Join-Path $currentLocation "samples"
