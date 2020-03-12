@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Samples.Application.Handlers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BoltOn.Samples.WebApi.Controllers
 {
-	[Route("[controller]")]
 	[ApiController]
 	public class PingController : ControllerBase
 	{
@@ -14,14 +12,14 @@ namespace BoltOn.Samples.WebApi.Controllers
 
 		public PingController(IMediator mediator)
 		{
-			this._mediator = mediator;
+			_mediator = mediator;
 		}
 
-		[HttpGet]
-		public async Task<ActionResult<IEnumerable<string>>> Get()
+		[HttpGet, Route("[controller]")]
+		public async Task<ActionResult<string>> Get()
 		{
 			var response = await _mediator.ProcessAsync(new PingRequest());
-			return new string[] { response.Data };
+			return response.Data;
 		}
 	}
 }
