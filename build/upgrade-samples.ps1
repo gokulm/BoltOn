@@ -17,7 +17,7 @@ function Main {
                 --source=https://api.nuget.org/v3/index.json --include=^BoltOn --consolidate --targetBranch=master
         }
         else {
-            # Set-Location -Path .
+            Set-Location -Path .
             nukeeper update samples --include=^BoltOn --source=https://api.nuget.org/v3/index.json
 
             $currentLocation = Get-Location
