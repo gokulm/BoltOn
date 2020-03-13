@@ -19,12 +19,10 @@ function Main {
         else {
             Set-Location -Path .
             nukeeper update samples --include=^BoltOn --source=https://api.nuget.org/v3/index.json
-
             $currentLocation = Get-Location
             $samplesDirPath = Join-Path $currentLocation "samples"
             Set-Location $samplesDirPath
             docker-compose up -d --build
-
         }
         LogEndFunction "$($MyInvocation.MyCommand.Name)"
     }
@@ -37,3 +35,4 @@ function Main {
 }
 
 Main
+

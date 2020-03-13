@@ -1,0 +1,6 @@
+{
+    "solution": "NSwag.sln",
+    "mappings": {
+      "BoltOn": "../src/BoltOn/BoltOn.csproj"
+    }
+  }
