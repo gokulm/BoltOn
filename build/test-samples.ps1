@@ -6,10 +6,9 @@ function Main {
     try {
         Import-Module $_boltOnModulePath -Force
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
-        dotnet tool install -g dnt
-        Set-Location -Path .
-        $currentLocation = Get-Location
-        $samplesDirPath = Join-Path $currentLocation "samples"
+        dotnet tool install dnt --global --add-source=https://api.nuget.org/v3/index.json
+        $parentDirPath = Split-Path -parent $_scriptDirPath
+        $samplesDirPath = Join-Path $parentDirPath "samples"
         Set-Location $samplesDirPath
         dnt switch-to-projects switcher.json
         # docker-compose up -d --build
