@@ -1,6 +1,9 @@
 {
-    "solution": "NSwag.sln",
-    "mappings": {
-      "BoltOn": "../src/BoltOn/BoltOn.csproj"
-    }
+  "solution": "BoltOn.Samples.sln",
+  "mappings": {
+    "BoltOn": "../src/BoltOn/BoltOn.csproj",
+    "BoltOn.Data.EF": "../src/BoltOn.Data.EF/BoltOn.Data.EF.csproj",
+    "BoltOn.Data.CosmosDb": "../src/BoltOn.Data.CosmosDb/BoltOn.Data.CosmosDb.csproj",
+    "BoltOn.Bus.MassTransit": "../src/BoltOn.Bus.MassTransit/BoltOn.Bus.MassTransit.csproj"
   }
+}
