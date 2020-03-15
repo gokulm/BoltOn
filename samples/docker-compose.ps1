@@ -10,22 +10,7 @@ function Main {
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
         dotnet tool install dnt --global --add-source=https://api.nuget.org/v3/index.json
         dnt switch-to-projects switcher.json
-        
-        $rabbitmq = "bolton-samples-rabbitmq"
-        if(-Not(IsDockerContainerRunning $rabbitmq))
-        {
-            LogDebug "Starting $rabbitmq ..."
-            docker run -d --name $rabbitmq -p 15672:15672 -p 5672:5672 rabbitmq:3-management
-        } 
-
-        $sql = "bolton-samples-sql"
-        if(-Not(IsDockerContainerRunning $sql))
-        {
-            docker run --name $sql -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Password1' -p 6000:1433 -d microsoft/mssql-server-linux:latest        
-        } 
-
-        # RunProject 'BoltOn.Samples.Console'
-        # RunProject 'BoltOn.Samples.WebApi'
+        docker-compose up -d --build
         LogEndFunction "$($MyInvocation.MyCommand.Name)"
     }
     catch {

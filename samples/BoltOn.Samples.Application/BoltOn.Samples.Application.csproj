@@ -1,22 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
-        <LangVersion>latest</LangVersion>
-    </PropertyGroup>
-    <ItemGroup>
-      <Compile Remove="Abstractions\**" />
-      <EmbeddedResource Remove="Abstractions\**" />
-      <None Remove="Abstractions\**" />
-    </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Handlers\" />
-        <Folder Include="DTOs\" />
-        <Folder Include="Entities\" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="BoltOn" Version="0.18.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-        <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.9.3" />
-    </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Abstractions\**" />
+    <EmbeddedResource Remove="Abstractions\**" />
+    <None Remove="Abstractions\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Handlers\" />
+    <Folder Include="DTOs\" />
+    <Folder Include="Entities\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.9.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
+    <ProjectReference Include="..\..\src\BoltOn.Bus.MassTransit\BoltOn.Bus.MassTransit.csproj" />
+    <ProjectReference Include="..\..\src\BoltOn.Data.EF\BoltOn.Data.EF.csproj" />
+  </ItemGroup>
 </Project>
