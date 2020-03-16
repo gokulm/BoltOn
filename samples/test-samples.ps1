@@ -6,12 +6,20 @@ function Main {
         $parentDirPath = Split-Path -parent $_scriptDirPath
         $buildDirPath = Join-Path $parentDirPath "build"
         $_boltOnModulePath = Join-Path $buildDirPath "bolton.psm1"
+
         Import-Module $_boltOnModulePath -Force
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
+
         dotnet tool install dnt --global --add-source=https://api.nuget.org/v3/index.json
         dnt switch-to-projects switcher.json
+
         docker-compose down 
         docker-compose -f docker-compose-local.yml up -d
+        Start-Sleep -s 5
+
+        RunProject "BoltOn.Samples.Console"
+        RunProject "BoltOn.Samples.WebApi"
+        
         LogEndFunction "$($MyInvocation.MyCommand.Name)"
     }
     catch {
@@ -32,7 +40,8 @@ function RunProject()
     $projectDirPath = Join-Path $_scriptDirPath $projectName 
     $projectPath = Join-Path $projectDirPath "$projectName.csproj"
     $projectPath
-    dotnet run --project $projectPath
+    Start-Process -FilePath 'dotnet' -ArgumentList "run --project $projectPath"
+    # dotnet run --project $projectPath
     LogDebug "Started $projectName"
 }
 
