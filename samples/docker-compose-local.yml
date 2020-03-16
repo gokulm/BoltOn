@@ -15,8 +15,5 @@ services:
       - "5015:15672"
     container_name: bolton-rabbitmq-container
 
-# d detached mode or background mode
-# docker-compose up -f docker-compose-local -d
-
-# --rmi remove
-# docker-compose down -f docker-compose-local
+# docker-compose -f docker-compose-local up -d
+# docker-compose -f docker-compose-local down
