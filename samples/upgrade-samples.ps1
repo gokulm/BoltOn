@@ -17,11 +17,7 @@ function Main {
                 --source=https://api.nuget.org/v3/index.json --include=^BoltOn --consolidate --targetBranch=master
         }
         else {
-            Set-Location -Path .
-            nukeeper update samples --include=^BoltOn --source=https://api.nuget.org/v3/index.json
-            $currentLocation = Get-Location
-            $samplesDirPath = Join-Path $currentLocation "samples"
-            Set-Location $samplesDirPath
+            nukeeper update --include=^BoltOn --source=https://api.nuget.org/v3/index.json
             docker-compose up -d --build
         }
         LogEndFunction "$($MyInvocation.MyCommand.Name)"
