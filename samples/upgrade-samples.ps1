@@ -4,25 +4,30 @@ Param(
 )
 
 $_scriptDirPath = $PSScriptRoot
-$_boltOnModulePath = Join-Path $_scriptDirPath "bolton.psm1"
 $ErrorActionPreference = 'stop'
 
 function Main {
     try {
+        $parentDirPath = Split-Path -parent $_scriptDirPath
+        $buildDirPath = Join-Path $parentDirPath "build"
+        $_boltOnModulePath = Join-Path $buildDirPath "bolton.psm1"
+
         Import-Module $_boltOnModulePath -Force
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
+
         dotnet tool install nukeeper --global
-
         nukeeper update --include=^BoltOn --source=https://api.nuget.org/v3/index.json
+        docker-compose down 
         docker-compose up -d --build
-        Start-Sleep -s 10
+        Start-Sleep -s 60
 
-        $appSettingsPath = Join-Path $_scriptDirPath "BoltOn.Sample.WebApi"
+        $appSettingsPath = Join-Path $_scriptDirPath "BoltOn.Samples.Tests"
         $appSettingsPath = Join-Path $appSettingsPath "appsettings.json"
         $appSettingsFile = Get-Content $appSettingsPath -raw | ConvertFrom-Json
-        $appSettingsFile.update $_.IsIntegrationTestsEnabled="true"
-        $appSettingsFile | ConvertTo-Json -depth 32| set-content $appSettingsPath
+        $appSettingsFile.IsIntegrationTestsEnabled=$true
+        $appSettingsFile | ConvertTo-Json | Set-Content $appSettingsPath
 
+        Build
         Test
 
         if ($_branchName -eq "master") {
