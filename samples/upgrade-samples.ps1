@@ -36,8 +36,7 @@ function UpgradeBoltOnNuGetPackages
 {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     dotnet tool install nukeeper --global
-    nukeeper update --include=^BoltOn --source=https://api.nuget.org/v3/index.json --age 0 `
-        --maxpackageupdates 10
+    nukeeper update --include=BoltOn* --source=https://api.nuget.org/v3/index.json --age 0 --maxpackageupdates 100
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
@@ -66,7 +65,7 @@ function UpgradeSamplesAndCreatePR
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     if ($_branchName -eq "master") {
         nukeeper repo "https://github.com/gokulm/BoltOn/" $GITHUB_TOKEN --fork=SingleRepositoryOnly `
-            --source=https://api.nuget.org/v3/index.json --include=^BoltOn --consolidate --targetBranch=master
+            --source=https://api.nuget.org/v3/index.json --include=BoltOn* --consolidate --targetBranch=master  --age 0 --maxpackageupdates 100
     }
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
