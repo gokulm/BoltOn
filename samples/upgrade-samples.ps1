@@ -36,7 +36,8 @@ function UpgradeBoltOnNuGetPackages
 {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     dotnet tool install nukeeper --global
-    nukeeper update --include=^BoltOn --source=https://api.nuget.org/v3/index.json --age 0
+    nukeeper update --include=^BoltOn --source=https://api.nuget.org/v3/index.json --age 0 `
+        --maxpackageupdates 10
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
