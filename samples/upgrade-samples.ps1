@@ -4,14 +4,13 @@ Param(
 )
 
 $_scriptDirPath = $PSScriptRoot
+$parentDirPath = Split-Path -parent $_scriptDirPath
+$buildDirPath = Join-Path $parentDirPath "build"
+$_boltOnModulePath = Join-Path $buildDirPath "bolton.psm1"
 $ErrorActionPreference = 'stop'
 
 function Main {
     try {
-        $parentDirPath = Split-Path -parent $_scriptDirPath
-        $buildDirPath = Join-Path $parentDirPath "build"
-        $_boltOnModulePath = Join-Path $buildDirPath "bolton.psm1"
-
         Import-Module $_boltOnModulePath -Force
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
 
