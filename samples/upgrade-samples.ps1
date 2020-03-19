@@ -62,10 +62,8 @@ function EnableIntegrationTests
 function UpgradeSamplesAndCreatePR
 {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
-    if ($_branchName -eq "master") {
-        nukeeper repo "https://github.com/gokulm/BoltOn/" $GITHUB_TOKEN --fork=SingleRepositoryOnly `
-            --source=https://api.nuget.org/v3/index.json --include=BoltOn* --consolidate --targetBranch=master  --age 0 --maxpackageupdates 100
-    }
+    nukeeper repo "https://github.com/gokulm/BoltOn/" $GITHUB_TOKEN --fork=SingleRepositoryOnly `
+        --source=https://api.nuget.org/v3/index.json --include=BoltOn* --consolidate --targetBranch=master  --age 0 --maxpackageupdates 100
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
