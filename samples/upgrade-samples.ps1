@@ -1,5 +1,4 @@
 Param(
-    [string]$_branchName, 
     [string]$GITHUB_TOKEN
 )
 
@@ -19,7 +18,7 @@ function Main {
         EnableIntegrationTests
         Build
         Test
-        UpgradeSamplesAndCreatePR
+        # UpgradeSamplesAndCreatePR
      
         LogEndFunction "$($MyInvocation.MyCommand.Name)"
     }
@@ -34,8 +33,10 @@ function Main {
 function UpgradeBoltOnNuGetPackages
 {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
-    dotnet tool install nukeeper --global
-    nukeeper update --include=BoltOn* --source=https://api.nuget.org/v3/index.json --age 0 --maxpackageupdates 100
+    # dotnet tool install nukeeper --global
+    # nukeeper update --include="BoltOn*" --source=https://api.nuget.org/v3/index.json --age 0 --maxpackageupdates 100
+    dotnet tool install dnt --global --add-source=https://api.nuget.org/v3/index.json
+    dnt update-packages "BoltOn*"
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
@@ -62,8 +63,11 @@ function EnableIntegrationTests
 function UpgradeSamplesAndCreatePR
 {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
-    nukeeper repo "https://github.com/gokulm/BoltOn/" $GITHUB_TOKEN --fork=SingleRepositoryOnly `
-        --source=https://api.nuget.org/v3/index.json --include=BoltOn* --consolidate --targetBranch=master  --age 0 --maxpackageupdates 100
+    if ($null -ne $GITHUB_TOKEN) {
+        nukeeper repo "https://github.com/gokulm/BoltOn/" $GITHUB_TOKEN --fork=SingleRepositoryOnly `
+            --source=https://api.nuget.org/v3/index.json --include="BoltOn*" --consolidate `
+            --targetBranch=master  --age 0 --maxpackageupdates 100
+    }
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
