@@ -15,4 +15,4 @@ jobs:
       with:
         dotnet-version: 3.1.100
     - name: Run upgrade-samples.ps1
-      run: pwsh './samples/upgrade-samples.ps1' ${GITHUB_REF##*/} ${{ secrets.GITHUB_TOKEN }}
+      run: pwsh './samples/upgrade-samples.ps1' ${{ secrets.GITHUB_TOKEN }}
