@@ -1,16 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="appsettings.Development.json" />
     <None Remove="appsettings.Docker.json" />
     <None Remove="appsettings.json" />
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="appsettings.Development.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -28,7 +25,6 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="BoltOn" Version="0.18.0" />
     <PackageReference Include="BoltOn.Data.EF" Version="0.11.0" />

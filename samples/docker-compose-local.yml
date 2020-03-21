@@ -1,0 +1,19 @@
+version: '3'
+services:
+  sql:
+    image: microsoft/mssql-server-linux:latest
+    ports:
+      - "5005:1433"
+    environment:
+      SA_PASSWORD: "Password1"
+      ACCEPT_EULA: "Y"
+    container_name: bolton-sql-container
+  rabbitmq:
+    image: rabbitmq:3.8.2-management
+    ports:
+      - "5010:5672"
+      - "5015:15672"
+    container_name: bolton-rabbitmq-container
+
+# docker-compose -f docker-compose-local up -d
+# docker-compose -f docker-compose-local down

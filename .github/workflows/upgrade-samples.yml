@@ -1,9 +1,9 @@
 name: CI
 
-on: 
-  push:
-    branches:
-      - testnukeeper
+on:
+  schedule:
+    # everyday at 1 am
+    - cron:  '* 1 * * *'
 
 jobs:
   build:
@@ -15,4 +15,4 @@ jobs:
       with:
         dotnet-version: 3.1.100
     - name: Run upgrade-samples.ps1
-      run: pwsh './build/upgrade-samples.ps1'
+      run: pwsh './samples/upgrade-samples.ps1' ${{ secrets.GITHUB_TOKEN }}
