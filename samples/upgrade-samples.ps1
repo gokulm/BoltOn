@@ -13,6 +13,7 @@ function Main {
         Import-Module $_boltOnModulePath -Force
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
 
+        Set-Location $_scriptDirPath
         UpgradeBoltOnNuGetPackages
         DockerCompose
         EnableIntegrationTests
