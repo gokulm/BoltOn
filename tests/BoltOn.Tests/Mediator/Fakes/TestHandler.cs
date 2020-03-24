@@ -5,20 +5,20 @@ using BoltOn.Mediator.Pipeline;
 
 namespace BoltOn.Tests.Mediator.Fakes
 {
-	public class TestRequest : IRequest<bool>, IEnableStopwatchInterceptor
-	{
+	public class TestRequest : IRequest<bool>, IEnableInterceptor<StopwatchInterceptor>
+    {
 	}
 
 	public class TestCommand : ICommand<bool>
 	{
 	}
 
-	public class TestOneWayRequest : IRequest, IEnableStopwatchInterceptor
+	public class TestOneWayRequest : IRequest, IEnableInterceptor<StopwatchInterceptor>
 	{
 		public int Value { get; set; }
 	}
 
-	public class TestOneWayCommand : ICommand, IEnableStopwatchInterceptor
+	public class TestOneWayCommand : ICommand, IEnableInterceptor<StopwatchInterceptor>
 	{
 		public int Value { get; set; }
 	}

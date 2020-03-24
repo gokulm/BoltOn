@@ -70,7 +70,7 @@ namespace BoltOn.Tests.Mediator
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var logger = new Mock<IBoltOnLogger<TestInterceptor>>();
+			var logger = new Mock<IBoltOnLogger<TestRequestSpecificInterceptor>>();
 			var logger2 = new Mock<IBoltOnLogger<StopwatchInterceptor>>();
 			var boltOnClock = new Mock<IBoltOnClock>();
 			var currentDateTime = DateTime.Now;
