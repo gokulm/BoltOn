@@ -105,7 +105,7 @@ namespace BoltOn.Tests.Cqrs
 			serviceCollection.BoltOn(b =>
 			{
 				b.BoltOnEFModule();
-				b.BoltOnCqrsModule(b => b.PurgeEventsToBeProcessed = false);
+				b.BoltOnCqrsModule(p => p.PurgeEventsToBeProcessed = false);
 				b.BoltOnMassTransitBusModule();
                 b.RegisterCqrsFakes();
 			});
