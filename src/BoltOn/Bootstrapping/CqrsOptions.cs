@@ -2,6 +2,6 @@
 {
     public class CqrsOptions
     {
-        public virtual bool PurgeEventsToBeProcessed { get; set; }
+        public virtual bool PurgeEventsToBeProcessed { get; set; } = true;
     }
 }
