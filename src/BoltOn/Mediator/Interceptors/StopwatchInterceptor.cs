@@ -32,6 +32,7 @@ namespace BoltOn.Mediator.Interceptors
             _logger.Debug($"StopwatchInterceptor ended at {_boltOnClock.Now}. Time elapsed: {stopwatch.ElapsedMilliseconds}");
             return response;
 		}
+
         public void Dispose()
         {
         }
