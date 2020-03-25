@@ -32,8 +32,6 @@
     <Folder Include="Utilities\" />
     <Folder Include="UoW\" />
     <Folder Include="Other\" />
-    <Folder Include="Mediator\" />
-    <Folder Include="Mediator\Interceptors\" />
     <Folder Include="Mediator\Pipeline\" />
     <Folder Include="Data\" />
     <Folder Include="Bus\" />

@@ -2,11 +2,12 @@
 
 namespace BoltOn.Mediator.Pipeline
 {
-    public interface ICommand : IRequest, IEnableUnitOfWorkInterceptor
+    public interface ICommand : IRequest, IEnableInterceptor<UnitOfWorkInterceptor>
     {
 	}
 
-	public interface ICommand<out TResponse> : IRequest<TResponse>, IEnableUnitOfWorkInterceptor
+	public interface ICommand<out TResponse> : IRequest<TResponse>, 
+        IEnableInterceptor<UnitOfWorkInterceptor>
 	{
 	}
 }

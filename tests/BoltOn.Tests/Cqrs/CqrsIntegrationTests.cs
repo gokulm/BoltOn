@@ -105,7 +105,7 @@ namespace BoltOn.Tests.Cqrs
 			serviceCollection.BoltOn(b =>
 			{
 				b.BoltOnEFModule();
-				b.BoltOnCqrsModule();
+				b.BoltOnCqrsModule(p => p.PurgeEventsToBeProcessed = false);
 				b.BoltOnMassTransitBusModule();
                 b.RegisterCqrsFakes();
 			});
@@ -164,7 +164,7 @@ namespace BoltOn.Tests.Cqrs
 			serviceCollection.BoltOn(b =>
 			{
 				b.BoltOnEFModule();
-				b.BoltOnCqrsModule(o => o.PurgeEventsToBeProcessed = true);
+				b.BoltOnCqrsModule();
 				b.BoltOnMassTransitBusModule();
                 b.RegisterCqrsFakes();
 			});
@@ -230,7 +230,7 @@ namespace BoltOn.Tests.Cqrs
 			serviceCollection.BoltOn(b =>
 			{
 				b.BoltOnEFModule();
-				b.BoltOnCqrsModule(o => o.PurgeEventsToBeProcessed = true);
+				b.BoltOnCqrsModule();
 				b.BoltOnMassTransitBusModule();
                 b.RegisterCqrsFakes();
 			});
@@ -394,7 +394,7 @@ namespace BoltOn.Tests.Cqrs
 			serviceCollection.BoltOn(b =>
 			{
 				b.BoltOnEFModule();
-				b.BoltOnCqrsModule();
+				b.BoltOnCqrsModule(b => b.PurgeEventsToBeProcessed = false);
 				b.BoltOnMassTransitBusModule();
                 b.RegisterCqrsFakes();
 			});
