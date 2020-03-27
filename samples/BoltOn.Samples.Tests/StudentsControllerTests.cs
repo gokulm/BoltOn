@@ -1,6 +1,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -40,18 +41,31 @@ namespace BoltOn.Samples.Tests
             };
 
             // act
-            var response = await httpClient.PostAsync($"{_sampleWebApiBaseUrl}students",
-                new StringContent(JsonConvert.SerializeObject(createStudentRequest), System.Text.Encoding.UTF8, 
-                    "application/json"));
+            var response = await httpClient.PostAsJsonAsync($"{_sampleWebApiBaseUrl}students", createStudentRequest);
 
             // assert
             Assert.True(response.IsSuccessStatusCode);
             Assert.True(response.StatusCode == HttpStatusCode.OK);
-            var content = await response.Content.ReadAsStringAsync(); 
-            Assert.NotNull(content);
-            var student = JsonConvert.DeserializeObject<Student>(content);
+            var student = await response.Content.ReadAsJsonAsync<Student>();
             Assert.NotNull(student);
             Assert.Same("John", student.FirstName);
+        }
+    }
+
+    public static class HttpClientExtensions
+    {
+        public static async Task<HttpResponseMessage> PostAsJsonAsync<T>(
+            this HttpClient httpClient, string url, T data)
+        {
+            var dataAsString = JsonConvert.SerializeObject(data, Formatting.Indented);
+            var content = new StringContent(dataAsString, Encoding.UTF8, "application/json");
+            return await httpClient.PostAsync(url, content);
+        }
+
+        public static async Task<T> ReadAsJsonAsync<T>(this HttpContent content)
+        {
+            var dataAsString = await content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<T>(dataAsString);
         }
     }
 }

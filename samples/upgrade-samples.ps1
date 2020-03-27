@@ -15,10 +15,10 @@ function Main {
 
         Set-Location $_scriptDirPath
         UpgradeBoltOnNuGetPackages
-        # DockerCompose
-        # EnableIntegrationTests
-        # Build
-        # Test
+        DockerCompose
+        EnableIntegrationTests
+        Build
+        Test
         # UpgradeSamplesAndCreatePR
      
         LogEndFunction "$($MyInvocation.MyCommand.Name)"
