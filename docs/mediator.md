@@ -74,12 +74,15 @@ Interceptors
 Every request flows thru a set of built-in interceptors (mentioned below), and the execution of them can be controlled by implementing appropriate marker interfaces. 
 
 * `StopwatchInterceptor`
-<br> This interceptor logs the time that a request enters and exits the pipeline. This interceptor is enabled only if the request implements `IEnableStopwatchInterceptor` interface.
+<br> This interceptor logs the time that a request enters and exits the pipeline. This interceptor is enabled only if the request implements `IEnableInterceptor<StopwatchInterceptor>` interface.
 
 * `UnitOfWorkInterceptor`
-<br> This interceptor starts a transaction with an isolation level based on the interface like IQuery or ICommand etc., (mentioned above) that the request implements. This interceptor is enabled only if the request implements `IEnableUnitOfWorkInterceptor`
+<br> This interceptor starts a transaction with an isolation level based on the interface like IQuery or ICommand etc., (mentioned above) that the request implements. This interceptor is enabled only if the request implements `IEnableInterceptor<UnitOfWorkInterceptor>` interface
 
-You could create an interceptor by implementing `IInterceptor` interface, like [this](../optional/#interceptor). If you want to enable or disable an interceptor based on a marker interface implementation, you can inherit `BaseRequestSpecificInterceptor<T>`
+You could create an interceptor by implementing `IInterceptor` interface, like [this](../optional/#interceptor). If you want to control the execution of an interceptor based on the incoming request, you can make the request implement `IEnableInterceptor<TInterceptor>` and add a check something like this:
+
+	if (!(request is IEnableInterceptor<StopwatchInterceptor>))
+		return await next.Invoke(request, cancellationToken);
 
 **Note: **
 
@@ -96,7 +99,7 @@ You could create an interceptor by implementing `IInterceptor` interface, like [
 Unit of Work
 ------------
 
-* If you use Mediator and implement any of the interfaces like IQuery or ICommand, which in turn implements `IEnableUnitOfWorkInterceptor`, you need not worry about starting or committing unit of work, it will be done automatically using `UnitOfWorkInterceptor`. 
+* If you use Mediator and implement any of the interfaces like IQuery or ICommand, which in turn implements `IEnableInterceptor<UnitOfWorkInterceptor>`, you need not worry about starting or committing unit of work, it will be done automatically using `UnitOfWorkInterceptor`. 
 * If you're not using Mediator and if you want to start a unit of work, you could just used .NET's TransactionScope or call Get method in `IUnitOfWorkManager` by passing `UnitOfWorkOptions` based on your needs. All that it does is start a new transaction with `System.Transactions.TransactionScopeOption.RequiresNew`. The default transaction isolation level is `IsolationLevel.ReadCommitted`. 
 
 **Note:** Though it's possible to start a unit of work manually, please try to do avoid it, especially when there is already one, as having more than one unit of work isn't a proper way to build applications. This will be useful only when you want to query a database with an isolation level different from the one started by `UnitOfWorkInterceptor`.
