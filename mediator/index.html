@@ -212,14 +212,17 @@ public class StudentsController : Controller
 <ul>
 <li>
 <p><code>StopwatchInterceptor</code>
-<br> This interceptor logs the time that a request enters and exits the pipeline. This interceptor is enabled only if the request implements <code>IEnableStopwatchInterceptor</code> interface.</p>
+<br> This interceptor logs the time that a request enters and exits the pipeline. This interceptor is enabled only if the request implements <code>IEnableInterceptor&lt;StopwatchInterceptor&gt;</code> interface.</p>
 </li>
 <li>
 <p><code>UnitOfWorkInterceptor</code>
-<br> This interceptor starts a transaction with an isolation level based on the interface like IQuery or ICommand etc., (mentioned above) that the request implements. This interceptor is enabled only if the request implements <code>IEnableUnitOfWorkInterceptor</code></p>
+<br> This interceptor starts a transaction with an isolation level based on the interface like IQuery or ICommand etc., (mentioned above) that the request implements. This interceptor is enabled only if the request implements <code>IEnableInterceptor&lt;UnitOfWorkInterceptor&gt;</code> interface</p>
 </li>
 </ul>
-<p>You could create an interceptor by implementing <code>IInterceptor</code> interface, like <a href="../optional/#interceptor">this</a>. If you want to enable or disable an interceptor based on a marker interface implementation, you can inherit <code>BaseRequestSpecificInterceptor&lt;T&gt;</code></p>
+<p>You could create an interceptor by implementing <code>IInterceptor</code> interface, like <a href="../optional/#interceptor">this</a>. If you want to control the execution of an interceptor based on the incoming request, you can make the request implement <code>IEnableInterceptor&lt;TInterceptor&gt;</code> and add a check something like this:</p>
+<pre><code>if (!(request is IEnableInterceptor&lt;StopwatchInterceptor&gt;))
+    return await next.Invoke(request, cancellationToken);
+</code></pre>
 <p><strong>Note: </strong></p>
 <ul>
 <li>Interceptors from all the bolted modules and assemblies <strong>must be</strong> added explicitly  using <code>AddInterceptor&lt;TInterceptor&gt;</code> extension method.</li>
@@ -235,7 +238,7 @@ public class StudentsController : Controller
 </ul>
 <h2 id="unit-of-work">Unit of Work</h2>
 <ul>
-<li>If you use Mediator and implement any of the interfaces like IQuery or ICommand, which in turn implements <code>IEnableUnitOfWorkInterceptor</code>, you need not worry about starting or committing unit of work, it will be done automatically using <code>UnitOfWorkInterceptor</code>. </li>
+<li>If you use Mediator and implement any of the interfaces like IQuery or ICommand, which in turn implements <code>IEnableInterceptor&lt;UnitOfWorkInterceptor&gt;</code>, you need not worry about starting or committing unit of work, it will be done automatically using <code>UnitOfWorkInterceptor</code>. </li>
 <li>If you're not using Mediator and if you want to start a unit of work, you could just used .NET's TransactionScope or call Get method in <code>IUnitOfWorkManager</code> by passing <code>UnitOfWorkOptions</code> based on your needs. All that it does is start a new transaction with <code>System.Transactions.TransactionScopeOption.RequiresNew</code>. The default transaction isolation level is <code>IsolationLevel.ReadCommitted</code>. </li>
 </ul>
 <p><strong>Note:</strong> Though it's possible to start a unit of work manually, please try to do avoid it, especially when there is already one, as having more than one unit of work isn't a proper way to build applications. This will be useful only when you want to query a database with an isolation level different from the one started by <code>UnitOfWorkInterceptor</code>.</p>
