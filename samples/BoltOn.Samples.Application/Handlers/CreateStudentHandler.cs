@@ -8,7 +8,7 @@ using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class CreateStudentRequest : IRequest<Guid>
+	public class CreateStudentRequest : IRequest<Student>
 	{
 		public string FirstName { get; set; }
 
@@ -17,7 +17,7 @@ namespace BoltOn.Samples.Application.Handlers
 		public int StudentTypeId { get; set; }
 	}
 
-	public class CreateStudentHandler : IHandler<CreateStudentRequest, Guid>
+	public class CreateStudentHandler : IHandler<CreateStudentRequest, Student>
 	{
 		private readonly IRepository<Student> _studentRepository;
 		private readonly IBoltOnLogger<CreateStudentHandler> _logger;
@@ -32,12 +32,12 @@ namespace BoltOn.Samples.Application.Handlers
 			_studentTypeRepository = studentTypeRepository;
 		}
 
-		public async Task<Guid> HandleAsync(CreateStudentRequest request, CancellationToken cancellationToken)
+		public async Task<Student> HandleAsync(CreateStudentRequest request, CancellationToken cancellationToken)
 		{
 			_logger.Debug("Creating student...");
 			var studentType = await _studentTypeRepository.GetByIdAsync(request.StudentTypeId, cancellationToken: cancellationToken);
 			var student = await _studentRepository.AddAsync(new Student(request, studentType.Description), cancellationToken: cancellationToken);
-			return student.Id;
+			return student;
 		}
 	}
 }

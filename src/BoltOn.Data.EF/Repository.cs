@@ -17,8 +17,8 @@ namespace BoltOn.Data.EF
 		private readonly EventBag _eventBag;
 		private readonly IBoltOnClock _boltOnClock;
 
-		private TDbContext DbContext { get; set; }
-		protected DbSet<TEntity> DbSets { get; private set; }
+		protected TDbContext DbContext { get; set; }
+		protected DbSet<TEntity> DbSets { get; }
 
 		public Repository(IDbContextFactory dbContextFactory, EventBag eventBag,
 			IBoltOnClock boltOnClock)

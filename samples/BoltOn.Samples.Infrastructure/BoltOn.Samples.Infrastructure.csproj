@@ -19,10 +19,10 @@
     <Folder Include="Data\Mappings\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="BoltOn" Version="0.18.0" />
-    <PackageReference Include="BoltOn.Data.EF" Version="0.11.0" />
-    <PackageReference Include="BoltOn.Data.CosmosDb" Version="0.7.0" />
-    <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.7.0" />
+    <PackageReference Include="BoltOn" Version="0.18.4" />
+    <PackageReference Include="BoltOn.Data.EF" Version="0.11.1" />
+    <PackageReference Include="BoltOn.Data.CosmosDb" Version="0.7.1" />
+    <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.7.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.2" />
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.9.3" />

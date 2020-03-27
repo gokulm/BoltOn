@@ -34,7 +34,8 @@ namespace BoltOn.Bootstrapping
 
         public void BoltOnAssemblies(params Assembly[] assemblies)
         {
-            RegisterByConvention(assemblies);
+            var distinctAssemblies = assemblies.Distinct();
+            RegisterByConvention(distinctAssemblies);
         }
 
         private void RegisterCoreTypes()
