@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BoltOn.Mediator.Pipeline;
 using BoltOn.Samples.Application.DTOs;
+using BoltOn.Samples.Application.Entities;
 using BoltOn.Samples.Application.Handlers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +26,7 @@ namespace BoltOn.Samples.WebApi.Controllers
 		}
 
 		[HttpPost, Route("[controller]")]
-		public async Task<Guid> Post(CreateStudentRequest request)
+		public async Task<Student> Post(CreateStudentRequest request)
 		{
 			return await _mediator.ProcessAsync(request);
 		}

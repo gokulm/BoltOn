@@ -27,4 +27,9 @@
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />
+    <ProjectReference Include="..\BoltOn.Samples.Infrastructure\BoltOn.Samples.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
