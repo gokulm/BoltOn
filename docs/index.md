@@ -59,7 +59,7 @@ BoltOn()
 This method does the following:
 
 * Registers all the interfaces in the calling assembly and assemblies passed to BoltOnAssemblies() method with **single** implementation as trasient.
-* Registers all the [Mediator](mediator) handlers.
+* Registers all the [Requestor](requestor) handlers.
 
 **Note:** 
 

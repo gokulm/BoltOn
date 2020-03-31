@@ -18,7 +18,7 @@ namespace BoltOn.Tests.Bus
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<BoltOnMassTransitConsumer<CreateTestStudent>>();
-			var mediator = autoMocker.GetMock<IMediator>();
+			var requestor = autoMocker.GetMock<IRequestor>();
 			var logger = autoMocker.GetMock<IBoltOnLogger<BoltOnMassTransitConsumer<CreateTestStudent>>>();
 			var consumerContext = new Mock<ConsumeContext<CreateTestStudent>>();
 			var request = new CreateTestStudent();
@@ -29,9 +29,9 @@ namespace BoltOn.Tests.Bus
 
 			// assert 
 			logger.Verify(l => l.Debug($"Message of type {request.GetType().Name} consumer. " +
-				"Sending to mediator..."));
-			logger.Verify(l => l.Debug("Message sent to Mediator"));
-			mediator.Verify(m => m.ProcessAsync(request, It.IsAny<CancellationToken>()));
+				"Sending to requestor..."));
+			logger.Verify(l => l.Debug("Message sent to Requestor"));
+			requestor.Verify(m => m.ProcessAsync(request, It.IsAny<CancellationToken>()));
 		}
 	}
 }

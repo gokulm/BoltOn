@@ -12,7 +12,7 @@ To create a .NET Core WebAPI project with BoltOn package bolted:
 
 Handler
 -------
-To create a [Mediator](../mediator) handler without response:
+To create a [Requestor](../requestor) handler without response:
 
     dotnet new bohandler -n <request_name>
 
@@ -41,7 +41,7 @@ The request and the handler will be added in **GetStudentHandler.cs** file insid
 
 Handler (with response)
 -----------------------
-To create a [Mediator](../mediator) handler with response:
+To create a [Requestor](../requestor) handler with response:
 
     dotnet new bohanlder -n <request_name> -r <response_type>
 

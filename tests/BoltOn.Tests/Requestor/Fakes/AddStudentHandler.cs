@@ -4,7 +4,7 @@ using BoltOn.Data;
 using BoltOn.Requestor.Pipeline;
 using BoltOn.Tests.Other;
 
-namespace BoltOn.Tests.Mediator.Fakes
+namespace BoltOn.Tests.Requestor.Fakes
 {
 	public class AddStudentRequest : ICommand<Student>
 	{

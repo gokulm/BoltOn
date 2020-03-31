@@ -41,12 +41,4 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.1" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Requestor\Pipeline\MediatorResponse.cs" />
-    <Compile Remove="Context\ContextScope.cs" />
-    <Compile Remove="Requestor\Pipeline\StandardResponses.cs" />
-    <Compile Remove="Requestor\MediatorRegistrationTask.cs" />
-    <Compile Remove="Requestor\Extensions.cs" />
-    <Compile Remove="Requestor\Pipeline\IRequestHandler.cs" />
-  </ItemGroup>
 </Project>
