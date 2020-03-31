@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Transactions;
 using BoltOn.Logging;
-using BoltOn.Mediator.Pipeline;
-using BoltOn.Tests.Mediator.Fakes;
+using BoltOn.Requestor.Pipeline;
+using BoltOn.Tests.Requestor.Fakes;
 using BoltOn.UoW;
 
 namespace BoltOn.Tests.UoW

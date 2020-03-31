@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Transactions;
 using BoltOn.Logging;
-using BoltOn.Mediator.Pipeline;
+using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.UoW
 {

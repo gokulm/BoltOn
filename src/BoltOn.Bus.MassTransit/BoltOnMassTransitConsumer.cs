@@ -1,19 +1,19 @@
 ﻿using System.Threading.Tasks;
-using BoltOn.Mediator.Pipeline;
 using MassTransit;
 using BoltOn.Logging;
+using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Bus.MassTransit
 {
 	public class BoltOnMassTransitConsumer<TRequest> : IConsumer<TRequest> where TRequest : class, IRequest
 	{
-		private readonly IMediator _mediator;
+		private readonly IRequestor _requestor;
 		private readonly IBoltOnLogger<BoltOnMassTransitConsumer<TRequest>> _logger;
 
-		public BoltOnMassTransitConsumer(IMediator mediator,
+		public BoltOnMassTransitConsumer(IRequestor requestor,
 			IBoltOnLogger<BoltOnMassTransitConsumer<TRequest>> logger)
 		{
-			_mediator = mediator;
+			_requestor = requestor;
 			_logger = logger;
 		}
 
@@ -21,9 +21,9 @@ namespace BoltOn.Bus.MassTransit
 		{
 			var request = context.Message;
 			_logger.Debug($"Message of type {request.GetType().Name} consumer. " +
-				"Sending to mediator...");
-			await _mediator.ProcessAsync(request, context.CancellationToken);
-			_logger.Debug("Message sent to Mediator");
+				"Sending to requestor...");
+			await _requestor.ProcessAsync(request, context.CancellationToken);
+			_logger.Debug("Message sent to Requestor");
 		}
 	}
 }

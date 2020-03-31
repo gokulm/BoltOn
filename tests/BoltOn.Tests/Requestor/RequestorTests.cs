@@ -5,18 +5,18 @@ using System.Threading.Tasks;
 using System.Transactions;
 using BoltOn.Data.EF;
 using BoltOn.Logging;
-using BoltOn.Mediator.Interceptors;
-using BoltOn.Mediator.Pipeline;
-using BoltOn.Tests.Mediator.Fakes;
+using BoltOn.Requestor.Interceptors;
+using BoltOn.Requestor.Pipeline;
+using BoltOn.Tests.Requestor.Fakes;
 using BoltOn.UoW;
 using BoltOn.Utilities;
 using Moq;
 using Moq.AutoMock;
 using Xunit;
 
-namespace BoltOn.Tests.Mediator
+namespace BoltOn.Tests.Requestor
 {
-    public class MediatorTests : IDisposable
+    public class RequestorTests : IDisposable
 	{
 		[Fact]
 		public async Task Process_RegisteredHandlerThatReturnsBool_ReturnsSuccessfulResult()
@@ -28,7 +28,7 @@ namespace BoltOn.Tests.Mediator
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
 						  .Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>());
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			var request = new TestRequest();
 			testHandler.Setup( s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
 
@@ -40,7 +40,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public async Task Process_MediatorWithInterceptor_ExecutesInterceptor()
+		public async Task Process_RequestorWithInterceptor_ExecutesInterceptor()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -50,7 +50,7 @@ namespace BoltOn.Tests.Mediator
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
 						  .Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor> { new TestInterceptor(logger.Object) });
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
 
@@ -64,7 +64,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public async Task Process_MediatorWithRequestSpecificInterceptor_ExecutesInterceptor()
+		public async Task Process_RequestorWithRequestSpecificInterceptor_ExecutesInterceptor()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -79,7 +79,7 @@ namespace BoltOn.Tests.Mediator
 				.Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor> { new TestRequestSpecificInterceptor(logger.Object),
 				new StopwatchInterceptor(logger2.Object, boltOnClock.Object) });
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
 
@@ -94,7 +94,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public async Task Process_MediatorWithCommandRequest_ExecutesUoWInterceptorAndStartsTransactionsWithDefaultCommandIsolationLevel()
+		public async Task Process_RequestorWithCommandRequest_ExecutesUoWInterceptorAndStartsTransactionsWithDefaultCommandIsolationLevel()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -115,7 +115,7 @@ namespace BoltOn.Tests.Mediator
 			{
 				new UnitOfWorkInterceptor(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
 			});
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
 
 			// act
@@ -130,7 +130,7 @@ namespace BoltOn.Tests.Mediator
    		}
 
 		[Fact]
-		public async Task Process_MediatorWithCommandRequestAndHandlerThrowsException_ExecutesUoWInterceptorAndStartsTransactionsButNotCommit()
+		public async Task Process_RequestorWithCommandRequestAndHandlerThrowsException_ExecutesUoWInterceptorAndStartsTransactionsButNotCommit()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -151,7 +151,7 @@ namespace BoltOn.Tests.Mediator
 			{
 				new UnitOfWorkInterceptor(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
 			});
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Throws<Exception>();
 
 			// act & assert 
@@ -163,7 +163,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public async Task Process_MediatorWithAsyncHandlerThrowsException_ExecutesUoWInterceptorAndStartsTransactionsButNotCommit()
+		public async Task Process_RequestorWithAsyncHandlerThrowsException_ExecutesUoWInterceptorAndStartsTransactionsButNotCommit()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -184,7 +184,7 @@ namespace BoltOn.Tests.Mediator
 			{
 				new UnitOfWorkInterceptor(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
 			});
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			testHandler.Setup(s => s.HandleAsync(request, default)).Throws<Exception>();
 
             // act 
@@ -208,7 +208,7 @@ namespace BoltOn.Tests.Mediator
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
 						   .Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>());
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Throws(new Exception("handler failed"));
 
@@ -231,7 +231,7 @@ namespace BoltOn.Tests.Mediator
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
 						   .Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>());
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.HandleAsync(request, default)).Throws(new Exception("handler failed"));
 
@@ -252,7 +252,7 @@ namespace BoltOn.Tests.Mediator
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
 						  .Returns(null);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>());
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			var request = new TestRequest();
 
 			// act
@@ -265,7 +265,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public async Task Get_MediatorWithQueryRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndDisablesTracking()
+		public async Task Get_RequestorWithQueryRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndDisablesTracking()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -280,7 +280,7 @@ namespace BoltOn.Tests.Mediator
 			{
 				new ChangeTrackerInterceptor(logger.Object, changeTrackerContext)
 			});
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
 
 			// act
@@ -294,7 +294,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public async Task Get_MediatorWithQueryUncommittedRequest_ExecutesChangeTrackerContextInterceptorAndDisablesTracking()
+		public async Task Get_RequestorWithQueryUncommittedRequest_ExecutesChangeTrackerContextInterceptorAndDisablesTracking()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -309,7 +309,7 @@ namespace BoltOn.Tests.Mediator
 			{
 				new CustomChangeTrackerInterceptor(logger.Object, changeTrackerContext)
 			});
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
 
 			// act
@@ -323,7 +323,7 @@ namespace BoltOn.Tests.Mediator
 		}
 
 		[Fact]
-		public async Task Get_MediatorWithCommandRequest_ExecutesChangeTrackerContextInterceptorAndEnablesTracking()
+		public async Task Get_RequestorWithCommandRequest_ExecutesChangeTrackerContextInterceptorAndEnablesTracking()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -338,7 +338,7 @@ namespace BoltOn.Tests.Mediator
 			{
 				new ChangeTrackerInterceptor(logger.Object, changeTrackerContext)
 			});
-			var sut = autoMocker.CreateInstance<BoltOn.Mediator.Pipeline.Mediator>();
+			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
 
 			// act

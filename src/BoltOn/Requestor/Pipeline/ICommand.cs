@@ -1,6 +1,6 @@
-﻿using BoltOn.Mediator.Interceptors;
+﻿using BoltOn.Requestor.Interceptors;
 
-namespace BoltOn.Mediator.Pipeline
+namespace BoltOn.Requestor.Pipeline
 {
     public interface ICommand : IRequest, IEnableInterceptor<UnitOfWorkInterceptor>
     {

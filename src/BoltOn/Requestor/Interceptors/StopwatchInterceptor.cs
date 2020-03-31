@@ -3,10 +3,10 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Logging;
-using BoltOn.Mediator.Pipeline;
+using BoltOn.Requestor.Pipeline;
 using BoltOn.Utilities;
 
-namespace BoltOn.Mediator.Interceptors
+namespace BoltOn.Requestor.Interceptors
 {
 	public class StopwatchInterceptor : IInterceptor
 	{

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 using BoltOn.Cqrs;
 using BoltOn.Logging;
-using BoltOn.Mediator.Interceptors;
-using BoltOn.Mediator.Pipeline;
 using BoltOn.Other;
+using BoltOn.Requestor.Interceptors;
+using BoltOn.Requestor.Pipeline;
 using BoltOn.UoW;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,7 +29,7 @@ namespace BoltOn.Bootstrapping
             InterceptorOptions = new InterceptorOptions(this);
             RegisterByConvention(GetType().Assembly);
             RegisterCoreTypes();
-            RegisterMediator();
+            RegisterRequestor();
         }
 
         public void BoltOnAssemblies(params Assembly[] assemblies)
@@ -51,9 +51,9 @@ namespace BoltOn.Bootstrapping
             ServiceCollection.AddSingleton(options);
         }
 
-        private void RegisterMediator()
+        private void RegisterRequestor()
         {
-            ServiceCollection.AddTransient<IMediator, Mediator.Pipeline.Mediator>();
+            ServiceCollection.AddTransient<IRequestor, Requestor.Pipeline.Requestor>();
             ServiceCollection.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
             AddInterceptor<StopwatchInterceptor>();
             AddInterceptor<UnitOfWorkInterceptor>();

@@ -1,7 +1,7 @@
 site_name: BoltOn
 nav:
     - Introduction: index.md
-    - Mediator: mediator.md
+    - Requestor: requestor.md
     - Data: data.md
     - Bus: bus.md
     - CQRS: cqrs.md

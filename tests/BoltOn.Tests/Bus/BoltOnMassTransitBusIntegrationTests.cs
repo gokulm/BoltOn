@@ -8,8 +8,8 @@ using BoltOn.Logging;
 using Moq;
 using BoltOn.Tests.Other;
 using System.Linq;
+using BoltOn.Tests.Requestor.Fakes;
 using MassTransit;
-using BoltOn.Tests.Mediator.Fakes;
 
 namespace BoltOn.Tests.Bus
 {
@@ -40,7 +40,7 @@ namespace BoltOn.Tests.Bus
 
 			var logger = new Mock<IBoltOnLogger<CreateTestStudentHandler>>();
 			logger.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
+								.Callback<string>(st => RequestorTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -53,7 +53,7 @@ namespace BoltOn.Tests.Bus
 			Thread.Sleep(1000);
 
 			// assert
-			var result = MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+			var result = RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(CreateTestStudentHandler)} invoked");
 			Assert.NotNull(result);
 		}
@@ -90,7 +90,7 @@ namespace BoltOn.Tests.Bus
 
 			var logger = new Mock<IBoltOnLogger<CreateTestStudentHandler>>();
 			logger.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => MediatorTestHelper.LoggerStatements.Add(st));
+								.Callback<string>(st => RequestorTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -103,14 +103,14 @@ namespace BoltOn.Tests.Bus
 			Thread.Sleep(1000);
 
 			// assert
-			var result = MediatorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+			var result = RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
 										$"{nameof(CreateTestStudentHandler)} invoked");
 			Assert.NotNull(result);
 		}
 
 		public void Dispose()
 		{
-			MediatorTestHelper.LoggerStatements.Clear();
+			RequestorTestHelper.LoggerStatements.Clear();
 		}
 	}
 }

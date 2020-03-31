@@ -4,23 +4,23 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Logging;
-using BoltOn.Mediator.Interceptors;
+using BoltOn.Requestor.Interceptors;
 
-namespace BoltOn.Mediator.Pipeline
+namespace BoltOn.Requestor.Pipeline
 {
-	public interface IMediator
+	public interface IRequestor
 	{
 		Task<TResponse> ProcessAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default);
 		Task ProcessAsync(IRequest request, CancellationToken cancellationToken = default);
 	}
 
-	public class Mediator : IMediator
+	public class Requestor : IRequestor
 	{
-		private readonly IBoltOnLogger<Mediator> _logger;
+		private readonly IBoltOnLogger<Requestor> _logger;
 		private readonly IServiceProvider _serviceProvider;
 		private readonly IEnumerable<IInterceptor> _interceptors;
 
-		public Mediator(IBoltOnLogger<Mediator> logger, IServiceProvider serviceProvider,
+		public Requestor(IBoltOnLogger<Requestor> logger, IServiceProvider serviceProvider,
 						IEnumerable<IInterceptor> interceptors)
 		{
 			_logger = logger;

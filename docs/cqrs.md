@@ -55,8 +55,8 @@ Like this:
 * Configure EF DbContext (if you're using SQL) and MassTransit Bus.
 * Create your domain entity class and inherit [`BaseCqrsEntity`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/BaseCqrsEntity.cs), which will force your entity's Id property to be of type Guid. 
 * Create EF mapping configuration class by inheriting [`BaseCqrsEntityMapping`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseCqrsEntityMapping.cs). This takes care of serializing/deserializing EventsToBeProcessed and ProcessedEvents collections. This is done using EF's [Value Conversions](https://docs.microsoft.com/en-us/ef/core/modeling/value-conversions). Events get triggered from `RaiseEvent<TEvent>(TEvent @event)` method in the `BaseCqrsEntity` and they get processed in `ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action)`.
-* Create your events and inherit `CqrsEvent`, which implements `ICqrsEvent`, and which inturn implements Mediator's `IRequest`, and thus the events can be handled using `Mediator`.
-* Create your request and handlers, and then use the `Mediator` to process your request. Please refer to [Mediator](../mediator) documentation to create handlers.
+* Create your events and inherit `CqrsEvent`, which implements `ICqrsEvent`, and which inturn implements Requestor's `IRequest`, and thus the events can be handled using `Requestor`.
+* Create your request and handlers, and then use the `Requestor` to process your request. Please refer to [Requestor](../requestor) documentation to create handlers.
 * Register `IRepository<TEntity>` to [EF Repository](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs) or [CosmosDb Repository](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.CosmosDb/Repository.cs).
 
 How does it work?
@@ -66,7 +66,7 @@ The best way to understand the implementation is by looking into [BoltOn.Samples
 In this sample we have used only two tables - Student and StudentFlattened in  BoltOnSamplesWrite and BoltOnSamplesRead databases respectively.
 
 * The events that get raised from your entities (that inherit BaseCqrsEntity) get added to EventsToBeProcessed collection. Two entities [`Student`](https://github.com/gokulm/BoltOn/blob/master/samples/BoltOn.Samples.Application/Entities/Student.cs) and [`StudentFlattened`](https://github.com/gokulm/BoltOn/blob/master/samples/BoltOn.Samples.Application/Entities/StudentFlattened.cs) inherit `BaseCqrsEntity`. Student entity is saved in Student table with foreign-key constraint to StudentType table. Commands (aka writes) go to this table. StudentFlattened entity is saved in StudentFlattened table, which is denormalized without any foreign-key constraints. Queries (aka reads) go to this table. Private and internal constructors are added to both the entities. The private constructor is to support EF and the internal constructor is to allow instantiation of the entity with appropriate request object as parameter.
-* Student's internal ctor is called from `CreateStudentHandler`, which gets invoked by `Mediator` from StudentController's POST call.
+* Student's internal ctor is called from `CreateStudentHandler`, which gets invoked by `Requestor` from StudentController's POST call.
 * `StudentCreatedEvent` event inherits `CqrsEvent`. Other properties that are required to create StudentFlattened entity are added. 
 * `StudentCreatedEvent` event is triggered in the ctor by calling the base class' `RaiseEvent` method. The RaiseEvent method takes care of populating other properties like Id, SourceId, SourceTypeName and CreatedDate. 
 
@@ -105,7 +105,7 @@ Here is the Student entity:
 
 * `IRepository<Student>` injected in the `CreateStudentHandler` is registered to use `Repository<Student>`. Please look into the Startup class in the BoltOn.Samples.WebApi project for all the other registrations.
 * When `AddAsync` of the repository is called in the handler, the repository adds the entity and on while saving changes, the events marked for processing are added to a request scoped object called `EventBag`.
-* If CQRS is enabled in the Startup's BoltOn method, [`CqrsInterceptor`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/CqrsInterceptor.cs) is added to the `Mediator` pipeline. 
+* If CQRS is enabled in the Startup's BoltOn method, [`CqrsInterceptor`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/CqrsInterceptor.cs) is added to the `Requestor` pipeline. 
 * The intercepor calls [EventDispatcher](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/EventDispatcher.cs) to dispatch events that need to be processed, which inturn publishes events using `IBus`. You could write your own implementation of `IEventDispatcher` or `IBus` if the built-in classes do not satisfy your needs.
 * Even if the dispatcher or the bus fails, the events to be processed will be persisted along with the entity, as the `CqrsIntercepor` is outside the `UnitOfWorkIntercepor`, which takes care of committing the transaction.
 * If there are more than one event to be processed and if one fails, all the subsequent events dispatching get aborted, so that the order of the events could be maintained.
@@ -130,7 +130,7 @@ Here is the registration:
         }));
     });
 
-* StudentFlattened's internal ctor is called from `StudentCreatedHandler`, which gets invoked by `Mediator` from `BoltOnMassTransitConsumer<StudentCreatedEvent>`
+* StudentFlattened's internal ctor is called from `StudentCreatedHandler`, which gets invoked by `Requestor` from `BoltOnMassTransitConsumer<StudentCreatedEvent>`
 * `StudentCreatedEvent` event is processed in the ctor by calling the base class' `ProcessEvent` method. The action delegate passed as a parameter to the method is invoked only if the event is not already processed. After invoking the action delegate, the DestinationId and the DestinationTypeName properties are populated and the event is added to the ProcessedEvents collection. 
 * The ProcessedEvents get persisted along with the entity and thus the collection prevents events getting re-processed. 
 

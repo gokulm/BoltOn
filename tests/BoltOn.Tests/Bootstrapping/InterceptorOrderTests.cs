@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using BoltOn.Bootstrapping;
 using BoltOn.Cqrs;
-using BoltOn.Mediator.Interceptors;
+using BoltOn.Requestor.Interceptors;
 using BoltOn.Tests.Bootstrapping.Fakes;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;

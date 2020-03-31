@@ -1,21 +1,21 @@
 using System;
 using System.Threading.Tasks;
 using BoltOn.Data.EF;
-using BoltOn.Mediator.Pipeline;
+using BoltOn.Requestor.Pipeline;
 using BoltOn.Tests.Common;
-using BoltOn.Tests.Mediator.Fakes;
 using BoltOn.Tests.Other;
+using BoltOn.Tests.Requestor.Fakes;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace BoltOn.Tests.Mediator
+namespace BoltOn.Tests.Requestor
 {
 	[Collection("IntegrationTests")]
-	public class MediatorSqlServerIntegrationTests : IDisposable
+	public class RequestorSqlServerIntegrationTests : IDisposable
 	{
 		[Fact]
 		[TestPriority(1)]
-		public async Task Process_MediatorWithCommandRequestInSqlServer_AddsRecordInDbWithUoW()
+		public async Task Process_RequestorWithCommandRequestInSqlServer_AddsRecordInDbWithUoW()
 		{
 			if (!IntegrationTestHelper.IsSqlRunning)
 				return;
@@ -33,7 +33,7 @@ namespace BoltOn.Tests.Mediator
 				.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var sut = serviceProvider.GetService<IMediator>();
+			var sut = serviceProvider.GetService<IRequestor>();
 
 			// act
 			var result = await sut.ProcessAsync(new AddStudentRequest { Id = 30, FirstName = "first", LastName = "last" });
@@ -47,7 +47,7 @@ namespace BoltOn.Tests.Mediator
 
 		[Fact]
 		[TestPriority(2)]
-		public async Task Process_MediatorWithQueryRequestInSqlServer_GetsRecord()
+		public async Task Process_RequestorWithQueryRequestInSqlServer_GetsRecord()
 		{
 			if (!IntegrationTestHelper.IsSqlRunning)
 				return;
@@ -65,7 +65,7 @@ namespace BoltOn.Tests.Mediator
 				.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var sut = serviceProvider.GetService<IMediator>();
+			var sut = serviceProvider.GetService<IRequestor>();
 
 			// act
 			var result = await sut.ProcessAsync(new GetStudentRequest { StudentId = 1 });
@@ -76,7 +76,7 @@ namespace BoltOn.Tests.Mediator
 
 		public void Dispose()
 		{
-			MediatorTestHelper.LoggerStatements.Clear();
+			RequestorTestHelper.LoggerStatements.Clear();
 		}
 	}
 }

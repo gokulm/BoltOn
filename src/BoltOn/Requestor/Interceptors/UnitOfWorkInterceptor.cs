@@ -1,11 +1,11 @@
 ﻿using System;
 using BoltOn.UoW;
 using BoltOn.Logging;
-using BoltOn.Mediator.Pipeline;
+using BoltOn.Requestor.Pipeline;
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace BoltOn.Mediator.Interceptors
+namespace BoltOn.Requestor.Interceptors
 {
 	public class UnitOfWorkInterceptor : IInterceptor
 	{

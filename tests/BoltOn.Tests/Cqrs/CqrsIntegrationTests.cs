@@ -7,10 +7,10 @@ using BoltOn.Logging;
 using Moq;
 using System.Linq;
 using MassTransit;
-using BoltOn.Mediator.Pipeline;
 using BoltOn.Cqrs;
 using BoltOn.Data.EF;
 using BoltOn.Data;
+using BoltOn.Requestor.Pipeline;
 using BoltOn.Tests.Cqrs.Fakes;
 using AddStudentRequest = BoltOn.Tests.Cqrs.Fakes.AddStudentRequest;
 
@@ -20,7 +20,7 @@ namespace BoltOn.Tests.Cqrs
 	public class CqrsIntegrationTests : IDisposable
 	{
 		[Fact]
-		public async Task MediatorProcessAsync_WithCqrs_ReturnsResult()
+		public async Task RequestorProcessAsync_WithCqrs_ReturnsResult()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -69,10 +69,10 @@ namespace BoltOn.Tests.Cqrs
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts(); 
-			var mediator = serviceProvider.GetService<IMediator>();
+			var requestor = serviceProvider.GetService<IRequestor>();
 
 			// act
-			await mediator.ProcessAsync(new UpdateStudentRequest { Input = "test input" });
+			await requestor.ProcessAsync(new UpdateStudentRequest { Input = "test input" });
 
 			// assert
 			// as assert not working after async method, added sleep
@@ -99,7 +99,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 
 		[Fact]
-		public async Task MediatorProcessAsync_WithCqrsAndPurgeEventsToBeProcessedDisabled_DoesNotRemoveEventsToBeProcessed()
+		public async Task RequestorProcessAsync_WithCqrsAndPurgeEventsToBeProcessedDisabled_DoesNotRemoveEventsToBeProcessed()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -133,11 +133,11 @@ namespace BoltOn.Tests.Cqrs
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var mediator = serviceProvider.GetService<IMediator>();
+			var requestor = serviceProvider.GetService<IRequestor>();
 			var studentId = Guid.NewGuid();
 
 			// act
-			await mediator.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input" });
+			await requestor.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input" });
 
 			// assert
 			await Task.Delay(100);
@@ -158,7 +158,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 
 		[Fact]
-		public async Task MediatorProcessAsync_WithCqrsAndPurgeEventsToBeProcessedEnabled_RemovesEventsToBeProcessed()
+		public async Task RequestorProcessAsync_WithCqrsAndPurgeEventsToBeProcessedEnabled_RemovesEventsToBeProcessed()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -192,11 +192,11 @@ namespace BoltOn.Tests.Cqrs
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var mediator = serviceProvider.GetService<IMediator>();
+			var requestor = serviceProvider.GetService<IRequestor>();
 			var studentId = Guid.NewGuid();
 
 			// act
-			await mediator.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input", RaiseAnotherCreateEvent = false });
+			await requestor.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input", RaiseAnotherCreateEvent = false });
 
 			// assert
 			await Task.Delay(100);
@@ -224,7 +224,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 
 		[Fact]
-		public async Task MediatorProcessAsync_WithPurgeEventsToBeProcessedEnabledAndFailedEventPurger_DoesNotRemoveEventsToBeProcessed()
+		public async Task RequestorProcessAsync_WithPurgeEventsToBeProcessedEnabledAndFailedEventPurger_DoesNotRemoveEventsToBeProcessed()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -262,11 +262,11 @@ namespace BoltOn.Tests.Cqrs
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var mediator = serviceProvider.GetService<IMediator>();
+			var requestor = serviceProvider.GetService<IRequestor>();
 			var studentId = Guid.NewGuid();
 
 			// act
-			await mediator.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input" });
+			await requestor.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input" });
 
 			// assert
 			await Task.Delay(300);
@@ -287,7 +287,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 		
 		[Fact]
-		public async Task MediatorProcessAsync_WithCqrsAndFailedBus_EventsDoNotGetProcessed()
+		public async Task RequestorProcessAsync_WithCqrsAndFailedBus_EventsDoNotGetProcessed()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -308,10 +308,10 @@ namespace BoltOn.Tests.Cqrs
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var mediator = serviceProvider.GetService<IMediator>();
+			var requestor = serviceProvider.GetService<IRequestor>();
 
 			// act
-			await mediator.ProcessAsync(new UpdateStudentRequest { Input = "test" });
+			await requestor.ProcessAsync(new UpdateStudentRequest { Input = "test" });
 
 			// assert
 			// as assert not working after async method, added sleep
@@ -337,7 +337,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 
 		[Fact]
-		public async Task MediatorProcessAsync_WithCqrsAndFailedBusFor1stEventOutOf2_BothEventsDoNotGetProcessed()
+		public async Task RequestorProcessAsync_WithCqrsAndFailedBusFor1stEventOutOf2_BothEventsDoNotGetProcessed()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -358,10 +358,10 @@ namespace BoltOn.Tests.Cqrs
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var mediator = serviceProvider.GetService<IMediator>();
+			var requestor = serviceProvider.GetService<IRequestor>();
 
 			// act
-			await mediator.ProcessAsync(new UpdateStudentRequest { Input = "test" });
+			await requestor.ProcessAsync(new UpdateStudentRequest { Input = "test" });
 
 			// assert
 			// as assert not working after async method, added sleep
@@ -388,7 +388,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 
 		[Fact]
-		public async Task MediatorProcessAsync_WithCqrsAndFailedBusFor2ndEventOutOf2Events_FirstEventGetProcessed()
+		public async Task RequestorProcessAsync_WithCqrsAndFailedBusFor2ndEventOutOf2Events_FirstEventGetProcessed()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -409,10 +409,10 @@ namespace BoltOn.Tests.Cqrs
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var mediator = serviceProvider.GetService<IMediator>();
+			var requestor = serviceProvider.GetService<IRequestor>();
 
 			// act
-			await mediator.ProcessAsync(new UpdateStudentRequest { Input = "test" });
+			await requestor.ProcessAsync(new UpdateStudentRequest { Input = "test" });
 
 			// assert
 			// as assert not working after async method, added sleep
@@ -441,7 +441,7 @@ namespace BoltOn.Tests.Cqrs
 		}
 
 		[Fact]
-		public async Task MediatorProcessAsync_ProcessAlreadyProcessedEvent_EventDoNotGetProcessed()
+		public async Task RequestorProcessAsync_ProcessAlreadyProcessedEvent_EventDoNotGetProcessed()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -461,10 +461,10 @@ namespace BoltOn.Tests.Cqrs
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var mediator = serviceProvider.GetService<IMediator>();
+			var requestor = serviceProvider.GetService<IRequestor>();
 
 			// act
-			await mediator.ProcessAsync(new StudentUpdatedEvent
+			await requestor.ProcessAsync(new StudentUpdatedEvent
 			{
 				Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId),
 				SourceId = CqrsConstants.EntityId
