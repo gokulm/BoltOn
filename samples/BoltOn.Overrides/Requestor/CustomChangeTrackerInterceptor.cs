@@ -6,7 +6,7 @@ using BoltOn.Logging;
 using BoltOn.Requestor.Interceptors;
 using BoltOn.Requestor.Pipeline;
 
-namespace BoltOn.Overrides.Mediator
+namespace BoltOn.Overrides.Requestor
 {
 	public class CustomChangeTrackerInterceptor : IInterceptor
 	{

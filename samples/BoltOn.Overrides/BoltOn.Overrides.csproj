@@ -5,7 +5,7 @@
   <ItemGroup>
     <PackageReference Include="BoltOn" Version="0.19.0" />
     <PackageReference Include="BoltOn.Data.EF" Version="0.12.0" />
-    <Folder Include="Mediator\" />
+    <Folder Include="Requestor\" />
     <Folder Include="UoW\" />
   </ItemGroup>
 </Project>

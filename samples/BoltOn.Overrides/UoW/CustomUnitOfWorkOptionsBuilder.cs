@@ -2,7 +2,7 @@
 using System.Transactions;
 using BoltOn.Logging;
 using BoltOn.Requestor.Pipeline;
-using BoltOn.Overrides.Mediator;
+using BoltOn.Overrides.Requestor;
 using BoltOn.UoW;
 
 namespace BoltOn.Overrides.UoW
