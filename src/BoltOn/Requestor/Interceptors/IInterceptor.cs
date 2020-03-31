@@ -1,9 +1,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Mediator.Pipeline;
+using BoltOn.Requestor.Pipeline;
 
-namespace BoltOn.Mediator.Interceptors
+namespace BoltOn.Requestor.Interceptors
 {
 	public interface IInterceptor : IDisposable
 	{

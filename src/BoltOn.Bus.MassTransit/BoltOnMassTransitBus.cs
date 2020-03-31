@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using BoltOn.Logging;
-using BoltOn.Mediator.Pipeline;
 using MassTransit;
 using System.Threading;
+using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Bus.MassTransit
 {

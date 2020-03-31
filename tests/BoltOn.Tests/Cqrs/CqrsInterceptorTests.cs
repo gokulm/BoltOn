@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using BoltOn.Bootstrapping;
 using BoltOn.Cqrs;
 using BoltOn.Logging;
-using BoltOn.Mediator.Pipeline;
+using BoltOn.Requestor.Pipeline;
 using BoltOn.Tests.Cqrs.Fakes;
 using Moq;
 using Moq.AutoMock;

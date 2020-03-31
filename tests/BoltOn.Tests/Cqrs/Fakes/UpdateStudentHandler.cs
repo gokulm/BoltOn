@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Logging;
-using BoltOn.Mediator.Pipeline;
 using BoltOn.Data;
+using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Tests.Cqrs.Fakes
 {

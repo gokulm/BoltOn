@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BoltOn.Bootstrapping;
 using BoltOn.Cqrs;
-using BoltOn.Mediator.Interceptors;
+using BoltOn.Requestor.Interceptors;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn

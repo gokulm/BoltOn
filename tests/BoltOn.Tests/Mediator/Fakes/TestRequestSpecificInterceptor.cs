@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Logging;
-using BoltOn.Mediator.Interceptors;
-using BoltOn.Mediator.Pipeline;
+using BoltOn.Requestor.Interceptors;
+using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Tests.Mediator.Fakes
 {

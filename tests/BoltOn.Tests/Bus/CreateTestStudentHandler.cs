@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Mediator.Pipeline;
 using BoltOn.Logging;
+using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Tests.Bus
 {

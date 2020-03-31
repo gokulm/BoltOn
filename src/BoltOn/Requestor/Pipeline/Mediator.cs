@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Logging;
-using BoltOn.Mediator.Interceptors;
+using BoltOn.Requestor.Interceptors;
 
-namespace BoltOn.Mediator.Pipeline
+namespace BoltOn.Requestor.Pipeline
 {
 	public interface IMediator
 	{

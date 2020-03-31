@@ -1,12 +1,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Bus.MassTransit;
-using BoltOn.Mediator.Pipeline;
 using MassTransit;
 using Moq;
 using Moq.AutoMock;
 using Xunit;
 using BoltOn.Logging;
+using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Tests.Bus
 {

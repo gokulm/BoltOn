@@ -1,5 +1,5 @@
 ﻿using System;
-using BoltOn.Mediator.Pipeline;
+using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Cqrs
 {

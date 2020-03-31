@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace BoltOn.Mediator.Pipeline
+namespace BoltOn.Requestor.Pipeline
 {
 	internal class HandlerDecorator<TRequest, TResponse>
 		where TRequest : IRequest<TResponse>

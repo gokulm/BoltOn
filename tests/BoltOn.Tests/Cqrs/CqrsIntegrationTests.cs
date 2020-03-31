@@ -7,10 +7,10 @@ using BoltOn.Logging;
 using Moq;
 using System.Linq;
 using MassTransit;
-using BoltOn.Mediator.Pipeline;
 using BoltOn.Cqrs;
 using BoltOn.Data.EF;
 using BoltOn.Data;
+using BoltOn.Requestor.Pipeline;
 using BoltOn.Tests.Cqrs.Fakes;
 using AddStudentRequest = BoltOn.Tests.Cqrs.Fakes.AddStudentRequest;
 

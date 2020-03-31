@@ -2,7 +2,7 @@
 using BoltOn.Bootstrapping;
 using BoltOn.Data.EF;
 using BoltOn.Logging;
-using BoltOn.Mediator.Interceptors;
+using BoltOn.Requestor.Interceptors;
 using BoltOn.Tests.UoW;
 using BoltOn.UoW;
 using BoltOn.Utilities;

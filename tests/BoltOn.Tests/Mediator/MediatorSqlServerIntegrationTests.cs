@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using BoltOn.Data.EF;
-using BoltOn.Mediator.Pipeline;
+using BoltOn.Requestor.Pipeline;
 using BoltOn.Tests.Common;
 using BoltOn.Tests.Mediator.Fakes;
 using BoltOn.Tests.Other;
