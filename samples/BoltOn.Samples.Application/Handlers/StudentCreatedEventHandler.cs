@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Cqrs;
 using BoltOn.Data;
-using BoltOn.Mediator.Pipeline;
+using BoltOn.Requestor.Pipeline;
 using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers

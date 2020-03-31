@@ -1,5 +1,5 @@
 ﻿using System;
-using BoltOn.Mediator.Pipeline;
+using BoltOn.Requestor.Pipeline;
 using BoltOn.Samples.Application.Handlers;
 using BoltOn.Bootstrapping;
 using BoltOn.Samples.Infrastructure.Data;
@@ -9,12 +9,12 @@ namespace BoltOn.Samples.Console
 {
     public class PostRegistrationTask : IPostRegistrationTask
     {
-        private readonly IMediator _mediator;
+        private readonly IRequestor _requestor;
         private readonly IServiceProvider _serviceProvider;
 
-        public PostRegistrationTask(IMediator mediator, IServiceProvider serviceProvider)
+        public PostRegistrationTask(IRequestor requestor, IServiceProvider serviceProvider)
         {
-            _mediator = mediator;
+            _requestor = requestor;
             _serviceProvider = serviceProvider;
         }
 
@@ -27,7 +27,7 @@ namespace BoltOn.Samples.Console
                 schoolReadDbContext.Database.EnsureCreated();
             }
 
-            var response = _mediator.ProcessAsync(new PingRequest()).GetAwaiter().GetResult();
+            var response = _requestor.ProcessAsync(new PingRequest()).GetAwaiter().GetResult();
             System.Console.WriteLine(response.Data);
         }
     }

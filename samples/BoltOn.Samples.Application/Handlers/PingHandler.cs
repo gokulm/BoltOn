@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Mediator.Pipeline;
+using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Samples.Application.Handlers
 {

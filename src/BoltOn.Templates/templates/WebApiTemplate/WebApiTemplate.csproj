@@ -3,6 +3,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BoltOn" Version="0.18.3" />
+    <PackageReference Include="BoltOn" Version="0.19.0" />
   </ItemGroup>
 </Project>

@@ -3,9 +3,9 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BoltOn" Version="0.18.4" />
-    <PackageReference Include="BoltOn.Data.EF" Version="0.11.1" />
-    <Folder Include="Mediator\" />
+    <PackageReference Include="BoltOn" Version="0.19.0" />
+    <PackageReference Include="BoltOn.Data.EF" Version="0.12.0" />
+    <Folder Include="Requestor\" />
     <Folder Include="UoW\" />
   </ItemGroup>
 </Project>
