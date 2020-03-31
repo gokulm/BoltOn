@@ -55,7 +55,7 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../mediator/">Mediator</a>
+    <a class="" href="../requestor/">Requestor</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -189,8 +189,8 @@ serviceCollection.BoltOn(b =&gt;
 <li>Configure EF DbContext (if you're using SQL) and MassTransit Bus.</li>
 <li>Create your domain entity class and inherit <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/BaseCqrsEntity.cs"><code>BaseCqrsEntity</code></a>, which will force your entity's Id property to be of type Guid. </li>
 <li>Create EF mapping configuration class by inheriting <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseCqrsEntityMapping.cs"><code>BaseCqrsEntityMapping</code></a>. This takes care of serializing/deserializing EventsToBeProcessed and ProcessedEvents collections. This is done using EF's <a href="https://docs.microsoft.com/en-us/ef/core/modeling/value-conversions">Value Conversions</a>. Events get triggered from <code>RaiseEvent&lt;TEvent&gt;(TEvent @event)</code> method in the <code>BaseCqrsEntity</code> and they get processed in <code>ProcessEvent&lt;TEvent&gt;(TEvent @event, Action&lt;TEvent&gt; action)</code>.</li>
-<li>Create your events and inherit <code>CqrsEvent</code>, which implements <code>ICqrsEvent</code>, and which inturn implements Mediator's <code>IRequest</code>, and thus the events can be handled using <code>Mediator</code>.</li>
-<li>Create your request and handlers, and then use the <code>Mediator</code> to process your request. Please refer to <a href="../mediator">Mediator</a> documentation to create handlers.</li>
+<li>Create your events and inherit <code>CqrsEvent</code>, which implements <code>ICqrsEvent</code>, and which inturn implements Requestor's <code>IRequest</code>, and thus the events can be handled using <code>Requestor</code>.</li>
+<li>Create your request and handlers, and then use the <code>Requestor</code> to process your request. Please refer to <a href="../requestor">Requestor</a> documentation to create handlers.</li>
 <li>Register <code>IRepository&lt;TEntity&gt;</code> to <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs">EF Repository</a> or <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.CosmosDb/Repository.cs">CosmosDb Repository</a>.</li>
 </ul>
 <h2 id="how-does-it-work">How does it work?</h2>
@@ -198,7 +198,7 @@ serviceCollection.BoltOn(b =&gt;
 <p>In this sample we have used only two tables - Student and StudentFlattened in  BoltOnSamplesWrite and BoltOnSamplesRead databases respectively.</p>
 <ul>
 <li>The events that get raised from your entities (that inherit BaseCqrsEntity) get added to EventsToBeProcessed collection. Two entities <a href="https://github.com/gokulm/BoltOn/blob/master/samples/BoltOn.Samples.Application/Entities/Student.cs"><code>Student</code></a> and <a href="https://github.com/gokulm/BoltOn/blob/master/samples/BoltOn.Samples.Application/Entities/StudentFlattened.cs"><code>StudentFlattened</code></a> inherit <code>BaseCqrsEntity</code>. Student entity is saved in Student table with foreign-key constraint to StudentType table. Commands (aka writes) go to this table. StudentFlattened entity is saved in StudentFlattened table, which is denormalized without any foreign-key constraints. Queries (aka reads) go to this table. Private and internal constructors are added to both the entities. The private constructor is to support EF and the internal constructor is to allow instantiation of the entity with appropriate request object as parameter.</li>
-<li>Student's internal ctor is called from <code>CreateStudentHandler</code>, which gets invoked by <code>Mediator</code> from StudentController's POST call.</li>
+<li>Student's internal ctor is called from <code>CreateStudentHandler</code>, which gets invoked by <code>Requestor</code> from StudentController's POST call.</li>
 <li><code>StudentCreatedEvent</code> event inherits <code>CqrsEvent</code>. Other properties that are required to create StudentFlattened entity are added. </li>
 <li><code>StudentCreatedEvent</code> event is triggered in the ctor by calling the base class' <code>RaiseEvent</code> method. The RaiseEvent method takes care of populating other properties like Id, SourceId, SourceTypeName and CreatedDate. </li>
 </ul>
@@ -235,7 +235,7 @@ serviceCollection.BoltOn(b =&gt;
 <ul>
 <li><code>IRepository&lt;Student&gt;</code> injected in the <code>CreateStudentHandler</code> is registered to use <code>Repository&lt;Student&gt;</code>. Please look into the Startup class in the BoltOn.Samples.WebApi project for all the other registrations.</li>
 <li>When <code>AddAsync</code> of the repository is called in the handler, the repository adds the entity and on while saving changes, the events marked for processing are added to a request scoped object called <code>EventBag</code>.</li>
-<li>If CQRS is enabled in the Startup's BoltOn method, <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/CqrsInterceptor.cs"><code>CqrsInterceptor</code></a> is added to the <code>Mediator</code> pipeline. </li>
+<li>If CQRS is enabled in the Startup's BoltOn method, <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/CqrsInterceptor.cs"><code>CqrsInterceptor</code></a> is added to the <code>Requestor</code> pipeline. </li>
 <li>The intercepor calls <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/EventDispatcher.cs">EventDispatcher</a> to dispatch events that need to be processed, which inturn publishes events using <code>IBus</code>. You could write your own implementation of <code>IEventDispatcher</code> or <code>IBus</code> if the built-in classes do not satisfy your needs.</li>
 <li>Even if the dispatcher or the bus fails, the events to be processed will be persisted along with the entity, as the <code>CqrsIntercepor</code> is outside the <code>UnitOfWorkIntercepor</code>, which takes care of committing the transaction.</li>
 <li>If there are more than one event to be processed and if one fails, all the subsequent events dispatching get aborted, so that the order of the events could be maintained.</li>
@@ -260,7 +260,7 @@ serviceCollection.BoltOn(b =&gt;
 });
 </code></pre>
 <ul>
-<li>StudentFlattened's internal ctor is called from <code>StudentCreatedHandler</code>, which gets invoked by <code>Mediator</code> from <code>BoltOnMassTransitConsumer&lt;StudentCreatedEvent&gt;</code></li>
+<li>StudentFlattened's internal ctor is called from <code>StudentCreatedHandler</code>, which gets invoked by <code>Requestor</code> from <code>BoltOnMassTransitConsumer&lt;StudentCreatedEvent&gt;</code></li>
 <li><code>StudentCreatedEvent</code> event is processed in the ctor by calling the base class' <code>ProcessEvent</code> method. The action delegate passed as a parameter to the method is invoked only if the event is not already processed. After invoking the action delegate, the DestinationId and the DestinationTypeName properties are populated and the event is added to the ProcessedEvents collection. </li>
 <li>The ProcessedEvents get persisted along with the entity and thus the collection prevents events getting re-processed. </li>
 </ul>

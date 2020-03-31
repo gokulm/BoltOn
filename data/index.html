@@ -55,7 +55,7 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../mediator/">Mediator</a>
+    <a class="" href="../requestor/">Requestor</a>
 	    </li>
           
             <li class="toctree-l1 current">
@@ -220,7 +220,7 @@ public class StudentRepository : Repository&lt;Student, SchoolDbContext&gt;, ISt
 </code></pre>
 <p><strong>Note:</strong> Create your own repository like StudentRepository only if you want to override the Repository class' methods or if you want to add methods, else just register <code>IRepository&lt;Student&gt;</code> to <code>Repository&lt;Student, SchoolDbContext&gt;</code></p>
 <h2 id="dbcontextfactory">DbContextFactory</h2>
-<p>This factory uses IServiceProvider to resolve DbContexts, and if the request implements <code>IQuery&lt;&gt;</code>, it sets the DbContexts' <code>ChangeTracker.QueryTrackingBehavior</code> to <code>QueryTrackingBehavior.NoTracking</code> and <code>ChangeTracker.AutoDetectChangesEnabled</code> to false with the help of <code>MediatorContextInterceptor</code>. </p>
+<p>This factory uses IServiceProvider to resolve DbContexts, and if the request implements <code>IQuery&lt;&gt;</code>, it sets the DbContexts' <code>ChangeTracker.QueryTrackingBehavior</code> to <code>QueryTrackingBehavior.NoTracking</code> and <code>ChangeTracker.AutoDetectChangesEnabled</code> to false with the help of <code>ChangeTrackerInterceptor</code>. </p>
 <p><strong>Note:</strong> You could disable this behavior by removing the interceptor from the pipeline using <code>RemoveInterceptor&lt;TInterceptor&gt;</code> extension method.</p>
 <h2 id="cosmosdb">CosmosDb</h2>
 <p>In order to use CosmosDb, you need do the following:</p>
@@ -288,7 +288,7 @@ public class StudentRepository : Repository&lt;Student, SchoolCosmosDbOptions&gt
         <a href="../bus/" class="btn btn-neutral float-right" title="Bus">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../mediator/" class="btn btn-neutral" title="Mediator"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../requestor/" class="btn btn-neutral" title="Requestor"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -314,7 +314,7 @@ public class StudentRepository : Repository&lt;Student, SchoolCosmosDbOptions&gt
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../mediator/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../requestor/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../bus/" style="color: #fcfcfc">Next &raquo;</a></span>

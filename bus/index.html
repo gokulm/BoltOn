@@ -55,7 +55,7 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../mediator/">Mediator</a>
+    <a class="" href="../requestor/">Requestor</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -193,9 +193,9 @@ services.AddMassTransit(x =&gt;
 <p>and then call <code>BoltOnConsumer&lt;CreateStudent&gt;(provider, host)</code></p>
 <p><strong>Note:</strong></p>
 <ul>
-<li>As MassTransit had abstracted out the transport like RabbitMq, Azure Service Bus etc., and all the other things very well BoltOn just adds a minor add-on <code>BoltOnMassTransitConsumer&lt;TMessage&gt;</code> to it, which injects <code>IMediator</code> for processing the message of type <code>TMessage</code>.</li>
-<li>As the consumer injects <code>IMediator</code> and uses it for processing the messages, all the messages should implement any of the interfaces mentioned <a href="../mediator/#request-response-and-handler">here</a>. 
-Please refer to <a href="../mediator">Mediator</a> documentation to know how to add handlers and its internals.</li>
+<li>As MassTransit had abstracted out the transport like RabbitMq, Azure Service Bus etc., and all the other things very well BoltOn just adds a minor add-on <code>BoltOnMassTransitConsumer&lt;TMessage&gt;</code> to it, which injects <code>IRequestor</code> for processing the message of type <code>TMessage</code>.</li>
+<li>As the consumer injects <code>IRequestor</code> and uses it for processing the messages, all the messages should implement any of the interfaces mentioned <a href="../Requestor/#request-response-and-handler">here</a>. 
+Please refer to <a href="../requestor">Requestor</a> documentation to know how to add handlers and its internals.</li>
 <li>Starting and stopping bus gets taken care by <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Bus.MassTransit/PostRegistrationTask.cs">PostRegistrationTask</a> and <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Bus.MassTransit/CleanupTask.cs">CleanupTask</a> respectively. </li>
 </ul>
               
