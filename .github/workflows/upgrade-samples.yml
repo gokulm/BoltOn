@@ -3,7 +3,7 @@ name: UpgradeSamples
 on:
   schedule:
     # everyday at 1 am
-    - cron:  '0 0 1 * *'
+    - cron:  '0 0 1 * * ?'
 
 jobs:
   build:
