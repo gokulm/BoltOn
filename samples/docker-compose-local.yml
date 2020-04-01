@@ -15,5 +15,5 @@ services:
       - "5015:15672"
     container_name: bolton-rabbitmq-container
 
-# docker-compose -f docker-compose-local up -d
-# docker-compose -f docker-compose-local down
+# docker-compose -f docker-compose-local.yml up -d
+# docker-compose -f docker-compose-local.yml down
