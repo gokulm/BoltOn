@@ -50,6 +50,7 @@ namespace BoltOn.Samples.Tests
 			var student = await response.Content.ReadAsJsonAsync<StudentDto>();
 			Assert.NotNull(student);
 			Assert.Equal("John", student.FirstName);
+            await Task.Delay(1000);
             await TestGetAllStudents(httpClient);
 		}
         
