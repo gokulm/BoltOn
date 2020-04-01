@@ -15,7 +15,7 @@ function Main {
         ExecuteApp "BoltOn.Samples.WebApi"
         EnableIntegrationTests
         Build
-        Start-Sleep -s 30
+        Start-Sleep -s 60
         Test
         
         LogEndFunction "$($MyInvocation.MyCommand.Name)"

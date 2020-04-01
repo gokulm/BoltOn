@@ -50,16 +50,11 @@ namespace BoltOn.Samples.Tests
 			var student = await response.Content.ReadAsJsonAsync<StudentDto>();
 			Assert.NotNull(student);
 			Assert.Equal("John", student.FirstName);
+            await TestGetAllStudents(httpClient);
 		}
-
-        [Fact]
-        public async Task Get_GetAllStudents_GetsAllStudents()
+        
+        private async Task TestGetAllStudents(HttpClient httpClient)
         {
-            // arrange
-            if (!_isIntegrationTestsEnabled)
-                return;
-            var httpClient = new HttpClient();
-
             // act
             var response = await httpClient.GetAsync($"{_sampleWebApiBaseUrl}students");
 
