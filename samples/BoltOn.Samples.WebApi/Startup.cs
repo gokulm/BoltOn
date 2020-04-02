@@ -12,6 +12,7 @@ using System;
 using Microsoft.Extensions.Hosting;
 using BoltOn.Data;
 using BoltOn.Samples.Application.Entities;
+using Microsoft.AspNetCore.Hosting;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -26,7 +27,6 @@ namespace BoltOn.Samples.WebApi
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 			services.BoltOn(options =>
 			{
 				options.BoltOnEFModule();
@@ -34,7 +34,7 @@ namespace BoltOn.Samples.WebApi
 				options.BoltOnCqrsModule();
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolWriteDbContext).Assembly);
 			});
-			
+
 			var writeDbConnectionString = Configuration.GetValue<string>("SqlWriteDbConnectionString");
             var readDbConnectionString = Configuration.GetValue<string>("SqlReadDbConnectionString");
             var rabbitmqUri = Configuration.GetValue<string>("RabbitMqUri");
@@ -61,20 +61,25 @@ namespace BoltOn.Samples.WebApi
             {
                 options.UseSqlServer(readDbConnectionString);
             });
+			services.AddControllers();
 
 			services.AddTransient<IRepository<Student>, Repository<Student, SchoolWriteDbContext>>();
 			services.AddTransient<IRepository<StudentType>, Repository<StudentType, SchoolWriteDbContext>>();
 			services.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, SchoolReadDbContext>>();
 		}
 
-		public void Configure(IApplicationBuilder app, IHostApplicationLifetime appLifetime)
+		public void Configure(IApplicationBuilder app, IHostApplicationLifetime appLifetime, IWebHostEnvironment env)
 		{
-			app.UseRouting(); 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
             app.ApplicationServices.TightenBolts();
+			if (env.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+			}
+			app.UseRouting();
+			app.UseEndpoints(endpoints =>
+			{
+				endpoints.MapControllers();
+			});
 			appLifetime.ApplicationStopping.Register(() => app.ApplicationServices.LoosenBolts());
 		}
 	}
