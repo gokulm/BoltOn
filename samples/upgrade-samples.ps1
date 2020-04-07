@@ -19,7 +19,7 @@ function Main {
         EnableIntegrationTests
         Build
         Test
-        # UpgradeSamplesAndCreatePR
+        UpgradeSamplesAndCreatePR
      
         LogEndFunction "$($MyInvocation.MyCommand.Name)"
     }
