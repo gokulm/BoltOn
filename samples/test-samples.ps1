@@ -41,7 +41,7 @@ function DockerCompose
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     docker-compose down 
     docker-compose -f docker-compose-local.yml up -d
-    Start-Sleep -s 15
+    Start-Sleep -s 60
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
