@@ -64,6 +64,8 @@ function EnableIntegrationTests
 function UpgradeSamplesAndCreatePR
 {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
+    dotnet tool install nukeeper --global
+
     if ($null -ne $GITHUB_TOKEN) {
         nukeeper repo "https://github.com/gokulm/BoltOn/" $GITHUB_TOKEN --fork=SingleRepositoryOnly `
             --source=https://api.nuget.org/v3/index.json --include="BoltOn*" --consolidate `
