@@ -99,10 +99,9 @@ You could create an interceptor by implementing `IInterceptor` interface, like [
 Unit of Work
 ------------
 
-* If you use Requestor and implement any of the interfaces like IQuery or ICommand, which in turn implements `IEnableInterceptor<UnitOfWorkInterceptor>`, you need not worry about starting or committing unit of work, it will be done automatically using `UnitOfWorkInterceptor`. 
-* If you're not using Requestor and if you want to start a unit of work, you could just used .NET's TransactionScope or call Get method in `IUnitOfWorkManager` by passing `UnitOfWorkOptions` based on your needs. All that it does is start a new transaction with `System.Transactions.TransactionScopeOption.RequiresNew`. The default transaction isolation level is `IsolationLevel.ReadCommitted`. 
-
-**Note:** Though it's possible to start a unit of work manually, please try to do avoid it, especially when there is already one, as having more than one unit of work isn't a proper way to build applications. This will be useful only when you want to query a database with an isolation level different from the one started by `UnitOfWorkInterceptor`.
+* If you use Requestor and implement any of the interfaces like IQuery or ICommand, starting or committing unit of work will be done automatically using `UnitOfWorkInterceptor`, as both IQuery and ICommand implement `IEnableInterceptor<UnitOfWorkInterceptor>`.
+* If you're not using Requestor and if you want to start a unit of work, you could just use .NET's TransactionScope or call Get method in `IUnitOfWorkManager` by passing `UnitOfWorkOptions` based on your needs. 
+* All that `UnitOfWorkManager` does is start a new transaction with `System.Transactions.TransactionScopeOption.RequiresNew`. The default transaction isolation level is `IsolationLevel.ReadCommitted`. The `Get` method of `UnitOfWorkManager` can be called only once, an exception will be thrown if it's called again.
 
 In case if you want to change the default transaction isolation level for all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement `IUnitOfWorkOptionsBuilder` like [this](../optional/#unitofworkoptionsbuilder) or inherit `UnitOfWorkOptionsBuilder` and override the Build method.
 
