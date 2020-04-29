@@ -104,10 +104,9 @@ namespace BoltOn.Tests.UoW
 			var uowProviderLoggerStmt = $"About to start UoW. IsolationLevel: {IsolationLevel.ReadCommitted} " +
                                         $"TransactionTimeOut: {TransactionManager.DefaultTimeout}" +
                                         $"TransactionScopeOption: {TransactionScopeOption.RequiresNew}";
-            var uowProviderLoggerStmt2 = $"Returning already started UoW";
             uowManagerLogger.Verify(l => l.Debug(uowProviderLoggerStmt));
 			Assert.NotNull(result2);
-			Assert.Equal("Unit of Work already started", result2.Message);
+			Assert.Equal(UnitOfWorkManager.ALREADY_STARTED, result2.Message); ;
 
 			// cleanup
 			result.Dispose();
