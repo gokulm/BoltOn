@@ -15,6 +15,8 @@ namespace BoltOn.UoW
 	{
 		private readonly IBoltOnLogger<UnitOfWorkManager> _logger;
 		private readonly IUnitOfWorkFactory _unitOfWorkFactory;
+		private bool _isStarted;
+		internal const string ALREADY_STARTED = "Unit of Work has been already started";
 
 		internal UnitOfWorkManager(IBoltOnLogger<UnitOfWorkManager> logger, IUnitOfWorkFactory unitOfWorkFactory)
 		{
@@ -24,12 +26,18 @@ namespace BoltOn.UoW
 
 		public IUnitOfWork Get(UnitOfWorkOptions unitOfWorkOptions = null)
 		{
+			if (_isStarted)
+				throw new Exception(ALREADY_STARTED);
+
 			if (unitOfWorkOptions == null)
 				unitOfWorkOptions = new UnitOfWorkOptions();
+
 			_logger.Debug($"About to start UoW. IsolationLevel: {unitOfWorkOptions.IsolationLevel} " +
 						  $"TransactionTimeOut: {unitOfWorkOptions.TransactionTimeout}" +
 						  $"TransactionScopeOption: {unitOfWorkOptions.TransactionScopeOption}");
 			var unitOfWork = _unitOfWorkFactory.Create(unitOfWorkOptions);
+			_isStarted = true;
+
 			return unitOfWork;
 		}
 
