@@ -100,8 +100,7 @@ Unit of Work
 ------------
 
 * If you use Requestor and implement any of the interfaces like IQuery or ICommand, starting or committing unit of work will be done automatically using `UnitOfWorkInterceptor`, as both IQuery and ICommand implement `IEnableInterceptor<UnitOfWorkInterceptor>`.
-* If you're not using Requestor and if you want to start a unit of work, you could just use .NET's TransactionScope or call Get method in `IUnitOfWorkManager` by passing `UnitOfWorkOptions` based on your needs. 
-* All that `UnitOfWorkManager` does is start a new transaction with `System.Transactions.TransactionScopeOption.RequiresNew`. The default transaction isolation level is `IsolationLevel.ReadCommitted`. The `Get` method of `UnitOfWorkManager` can be called only once, an exception will be thrown if it's called again.
-
-In case if you want to change the default transaction isolation level for all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement `IUnitOfWorkOptionsBuilder` like [this](../optional/#unitofworkoptionsbuilder) or inherit `UnitOfWorkOptionsBuilder` and override the Build method.
+* If you're not using Requestor and if you want to start a unit of work, you could just use .NET's TransactionScope or call Get method in `IUnitOfWorkManager` by passing `UnitOfWorkOptions` with TransactionScopeOption, IsolationLevel and TransactionTimeout set based on your needs. The default transaction isolation level is `IsolationLevel.ReadCommitted`. 
+* The `Get` method of `UnitOfWorkManager` can be called only once, an exception will be thrown if it's called again. 
+* In case if you want to change the default transaction isolation level for all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement `IUnitOfWorkOptionsBuilder` like [this](../optional/#unitofworkoptionsbuilder) or inherit `UnitOfWorkOptionsBuilder` and override the Build method.
 
