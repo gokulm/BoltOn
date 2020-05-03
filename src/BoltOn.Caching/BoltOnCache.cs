@@ -27,20 +27,20 @@ namespace BoltOn.Caching
 			var byteArray = await _distributedCache.GetAsync(key, cancellationToken);
 			var cacheValue = FromByteArray<T>(byteArray);
 
-			if (cacheValue != default(T))
+			if (cacheValue == default(T) && valueGetter != null)
 			{
-				if (valueGetter != null)
-				{
-					_logger.Debug("Invoking valueGetter...");
-					cacheValue = await valueGetter();
-					await SetAsync(key, cacheValue, cancellationToken, slidingExpiration);
-				}
-				else if(slidingExpiration.HasValue)
-				{
-					_logger.Debug("Sliding cache expiration...");
-					await SetAsync(key, cacheValue, cancellationToken, slidingExpiration);
-				}
+				_logger.Debug("Invoking valueGetter...");
+				cacheValue = await valueGetter();
+				await SetAsync(key, cacheValue, cancellationToken, slidingExpiration);
+				return cacheValue;
 			}
+
+			if (slidingExpiration.HasValue)
+			{
+				_logger.Debug("Sliding cache expiration...");
+				await SetAsync(key, cacheValue, cancellationToken, slidingExpiration);
+			}
+
 			return cacheValue;
 		}
 
@@ -76,7 +76,7 @@ namespace BoltOn.Caching
 		private T FromByteArray<T>(byte[] byteArray) where T : class
 		{
 			_logger.Debug("Getting object from byteArray...");
-			if (byteArray == null)
+			if (byteArray == null || byteArray.Length == 0)
 				return default;
 
 			var binaryFormatter = new BinaryFormatter();
