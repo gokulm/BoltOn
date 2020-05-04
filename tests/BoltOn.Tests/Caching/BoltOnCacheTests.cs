@@ -1,10 +1,9 @@
 using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Caching;
 using BoltOn.Logging;
+using BoltOn.Tests.Caching.Fakes;
 using Microsoft.Extensions.Caching.Distributed;
 using Moq;
 using Moq.AutoMock;
@@ -34,13 +33,32 @@ namespace BoltOn.Tests.Caching
 		}
 
 		[Fact]
+		public async Task SetAsync_SetObject_SetsObjectInTheCache()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var distributedCache = new Mock<IDistributedCache>();
+			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var sut = new BoltOnCache(distributedCache.Object, logger.Object);
+
+			// act
+			await sut.SetAsync("StudentId", new Student());
+
+			// assert
+			logger.Verify(l => l.Debug("Setting value in cache... Key: StudentId"));
+			distributedCache.Verify(l =>
+				l.SetAsync("StudentId", It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(),
+				It.IsAny<CancellationToken>()), Times.Once);
+		}
+
+		[Fact]
 		public async Task GetAsync_GetString_GetsExpectedStringFromTheCache()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
 			var distributedCache = new Mock<IDistributedCache>();
 			distributedCache.Setup(s => s.GetAsync("TestKey", It.IsAny<CancellationToken>()))
-				.Returns(Task.FromResult(ToByteArray("TestValue")));
+				.Returns(Task.FromResult(CacheTestHelper.ToByteArray("TestValue")));
 			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
 			var sut = new BoltOnCache(distributedCache.Object, logger.Object);
 
@@ -61,7 +79,7 @@ namespace BoltOn.Tests.Caching
 			var autoMocker = new AutoMocker();
 			var distributedCache = new Mock<IDistributedCache>();
 			distributedCache.Setup(s => s.GetAsync("TestKey", It.IsAny<CancellationToken>()))
-				.Returns(Task.FromResult(ToByteArray(null)));
+				.Returns(Task.FromResult(CacheTestHelper.ToByteArray(null)));
 			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
 			var valueGetter = new Func<Task<string>>(() => Task.FromResult("TestValue"));
 			var sut = new BoltOnCache(distributedCache.Object, logger.Object);
@@ -105,27 +123,24 @@ namespace BoltOn.Tests.Caching
 				It.IsAny<CancellationToken>()), Times.Once);
 		}
 
-		private byte[] ToByteArray(object obj)
+		[Fact]
+		public async Task RemoveAsync_Key_RemovesValueFromCache()
 		{
-			if (obj == null)
-			{
-				return null;
-			}
+			// arrange
+			var autoMocker = new AutoMocker();
+			var distributedCache = new Mock<IDistributedCache>();
+			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var sut = new BoltOnCache(distributedCache.Object, logger.Object);
 
-			var binaryFormatter = new BinaryFormatter();
-			using var memoryStream = new MemoryStream();
-			binaryFormatter.Serialize(memoryStream, obj);
-			return memoryStream.ToArray();
+			// act
+			await sut.RemoveAsync("TestKey");
+
+			// assert
+			logger.Verify(l => l.Debug("Removing from cache... Key: TestKey"));
+			distributedCache.Verify(l =>
+				l.RemoveAsync("TestKey", It.IsAny<CancellationToken>()), Times.Once);
 		}
 
-		private T FromByteArray<T>(byte[] byteArray) where T : class
-		{
-			if (byteArray == null)
-				return default;
-
-			var binaryFormatter = new BinaryFormatter();
-			using var memoryStream = new MemoryStream(byteArray);
-			return binaryFormatter.Deserialize(memoryStream) as T;
-		}
+		
 	}
 }

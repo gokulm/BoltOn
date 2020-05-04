@@ -41,6 +41,7 @@
         <Folder Include="Cqrs\Fakes\" />
         <Folder Include="Bootstrapping\Fakes\" />
         <Folder Include="Caching\" />
+        <Folder Include="Caching\Fakes\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />

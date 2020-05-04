@@ -59,13 +59,12 @@ namespace BoltOn.Caching
 			await _distributedCache.RemoveAsync(key, cancellationToken);
 		}
 
-		private byte[] ToByteArray(object obj)
+		// specified internal to support testing
+		internal byte[] ToByteArray(object obj)
 		{
 			_logger.Debug("Converting object to byteArray...");
 			if (obj == null)
-			{
 				return null;
-			}
 
 			var binaryFormatter = new BinaryFormatter();
 			using var memoryStream = new MemoryStream();
@@ -73,7 +72,8 @@ namespace BoltOn.Caching
 			return memoryStream.ToArray();
 		}
 
-		private T FromByteArray<T>(byte[] byteArray) where T : class
+		// specified internal to support testing
+		internal T FromByteArray<T>(byte[] byteArray) where T : class
 		{
 			_logger.Debug("Getting object from byteArray...");
 			if (byteArray == null || byteArray.Length == 0)
