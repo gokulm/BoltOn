@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Logging;
@@ -12,12 +10,15 @@ namespace BoltOn.Caching
 	{
 		private readonly IDistributedCache _distributedCache;
 		private readonly IBoltOnLogger<BoltOnCache> _logger;
+		private readonly IBoltOnCacheSerializer _serializer;
 
 		public BoltOnCache(IDistributedCache distributedCache,
-			IBoltOnLogger<BoltOnCache> logger)
+			IBoltOnLogger<BoltOnCache> logger,
+			IBoltOnCacheSerializer serializer)
 		{
 			_distributedCache = distributedCache;
 			_logger = logger;
+			_serializer = serializer;
 		}
 
 		public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default,
@@ -25,7 +26,7 @@ namespace BoltOn.Caching
 		{
 			_logger.Debug($"Getting from cache... Key: {key}");
 			var byteArray = await _distributedCache.GetAsync(key, cancellationToken);
-			var cacheValue = FromByteArray<T>(byteArray);
+			var cacheValue = _serializer.FromByteArray<T>(byteArray);
 
 			if (cacheValue == default(T) && valueGetter != null)
 			{
@@ -48,7 +49,7 @@ namespace BoltOn.Caching
 			TimeSpan? slidingExpiration = default) where T : class
 		{
 			_logger.Debug($"Setting value in cache... Key: {key}");
-			var byteArray = ToByteArray(value);
+			var byteArray = _serializer.ToByteArray(value);
 			var options = new DistributedCacheEntryOptions { SlidingExpiration = slidingExpiration };
 			await _distributedCache.SetAsync(key, byteArray, options, cancellationToken);
 		}
@@ -57,31 +58,6 @@ namespace BoltOn.Caching
 		{
 			_logger.Debug($"Removing from cache... Key: {key}");
 			await _distributedCache.RemoveAsync(key, cancellationToken);
-		}
-
-		// specified internal to support testing
-		internal byte[] ToByteArray(object obj)
-		{
-			_logger.Debug("Converting object to byteArray...");
-			if (obj == null)
-				return null;
-
-			var binaryFormatter = new BinaryFormatter();
-			using var memoryStream = new MemoryStream();
-			binaryFormatter.Serialize(memoryStream, obj);
-			return memoryStream.ToArray();
-		}
-
-		// specified internal to support testing
-		internal T FromByteArray<T>(byte[] byteArray) where T : class
-		{
-			_logger.Debug("Getting object from byteArray...");
-			if (byteArray == null || byteArray.Length == 0)
-				return default;
-
-			var binaryFormatter = new BinaryFormatter();
-			using var memoryStream = new MemoryStream(byteArray);
-			return binaryFormatter.Deserialize(memoryStream) as T;
 		}
 	}
 }

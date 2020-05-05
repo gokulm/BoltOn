@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text.Json;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace BoltOn.Tests.Caching.Fakes
@@ -12,10 +13,7 @@ namespace BoltOn.Tests.Caching.Fakes
 				return null;
 			}
 
-			var binaryFormatter = new BinaryFormatter();
-			using var memoryStream = new MemoryStream();
-			binaryFormatter.Serialize(memoryStream, obj);
-			return memoryStream.ToArray();
+			return JsonSerializer.SerializeToUtf8Bytes(obj);
 		}
 
 		public static T FromByteArray<T>(byte[] byteArray) where T : class
