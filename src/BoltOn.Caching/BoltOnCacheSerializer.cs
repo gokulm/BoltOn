@@ -12,7 +12,7 @@ namespace BoltOn.Caching
     {
         public T FromByteArray<T>(byte[] byteArray) where T : class
         {
-            if (byteArray == null || byteArray.Length == 0)
+            if (byteArray == default || byteArray.Length == 0)
                 return default;
 
             return JsonSerializer.Deserialize<T>(byteArray);
