@@ -20,9 +20,6 @@ namespace BoltOn.Caching
 
         public byte[] ToByteArray(object obj)
         {
-            if (obj == null)
-                return null;
-
             return JsonSerializer.SerializeToUtf8Bytes(obj);
         }
     }
