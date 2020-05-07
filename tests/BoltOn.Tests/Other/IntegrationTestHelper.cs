@@ -8,5 +8,6 @@ namespace BoltOn.Tests.Other
 		public static bool IsCosmosDbServer { get; set; }
 		public static bool IsSeedData { get; set; }
 		public static bool IsSeedCosmosDbData { get; set; }
+		public static bool IsRedisCache { get; set; }
 	}
 }

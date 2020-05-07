@@ -54,6 +54,26 @@ namespace BoltOn.Tests.Caching
 		}
 
 		[Fact]
+		public async Task SetAsync_SetNull_DoesNotCallUnderlyingDistributedCache()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var distributedCache = autoMocker.GetMock<IDistributedCache>();
+			var logger = autoMocker.GetMock<IBoltOnLogger<BoltOnCache>>();
+			var serializer = autoMocker.GetMock<IBoltOnCacheSerializer>();
+			var sut = autoMocker.CreateInstance<BoltOnCache>();
+
+			// act
+			await sut.SetAsync<string>("TestKey", null);
+
+			// assert
+			logger.Verify(l => l.Debug("Setting value in cache... Key: TestKey"));
+			distributedCache.Verify(l =>
+				l.SetAsync("TestKey", It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(),
+				It.IsAny<CancellationToken>()), Times.Never);
+		}
+
+		[Fact]
 		public async Task GetAsync_GetString_GetsExpectedStringFromTheCache()
 		{
 			// arrange
@@ -95,6 +115,30 @@ namespace BoltOn.Tests.Caching
 			logger.Verify(l => l.Debug("Getting from cache... Key: TestKey"));
 			distributedCache.Verify(l =>
 				l.GetAsync("TestKey", It.IsAny<CancellationToken>()), Times.Once);
+			logger.Verify(l => l.Debug("Invoking valueGetter..."), Times.Never);
+		}
+
+		[Fact]
+		public async Task GetAsync_GetStringWithValueInCacheAndValueGetter_GetsExpectedStringFromTheCache()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var distributedCache = autoMocker.GetMock<IDistributedCache>();
+			var logger = autoMocker.GetMock<IBoltOnLogger<BoltOnCache>>();
+			var serializer = autoMocker.GetMock<IBoltOnCacheSerializer>();
+			serializer.Setup(s => s.FromByteArray<string>(It.IsAny<byte[]>())).Returns("TestValue");
+			var valueGetter = new Func<Task<string>>(() => Task.FromResult("value getter string"));
+			var sut = autoMocker.CreateInstance<BoltOnCache>();
+
+			// act
+			var result = await sut.GetAsync("TestKey", valueGetter: valueGetter);
+
+			// assert
+			Assert.Equal("TestValue", result);
+			logger.Verify(l => l.Debug("Getting from cache... Key: TestKey"));
+			distributedCache.Verify(l =>
+				l.GetAsync("TestKey", It.IsAny<CancellationToken>()), Times.Once);
+			logger.Verify(l => l.Debug("Invoking valueGetter..."), Times.Never);
 		}
 
 		[Fact]
