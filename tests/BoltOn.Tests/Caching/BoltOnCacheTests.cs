@@ -169,6 +169,29 @@ namespace BoltOn.Tests.Caching
 		}
 
 		[Fact]
+		public async Task GetAsync_EmptyCacheButWithValueGetterThrowingException_ThrowsException()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var distributedCache = autoMocker.GetMock<IDistributedCache>();
+			distributedCache.Setup(s => s.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+				.Returns(Task.FromResult((byte[])null));
+			var logger = autoMocker.GetMock<IBoltOnLogger<BoltOnCache>>();
+			var valueGetter = new Func<Task<string>>(() => { throw new Exception("test exception"); });
+			var sut = autoMocker.CreateInstance<BoltOnCache>();
+
+			// act
+			var result = await Record.ExceptionAsync(async () =>
+				await sut.GetAsync<string>("TestKey", valueGetter: valueGetter));
+
+			// assert
+			Assert.NotNull(result);
+			Assert.Equal("test exception", result.Message);
+			logger.Verify(l => l.Debug("Getting from cache... Key: TestKey"));
+			logger.Verify(l => l.Debug("Invoking valueGetter..."));
+		}
+
+		[Fact]
 		public async Task GetAsync_NonEmptyCacheWithSlidingExpiration_SlidesCacheValue()
 		{
 			// arrange

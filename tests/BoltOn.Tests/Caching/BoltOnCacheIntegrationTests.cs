@@ -38,6 +38,9 @@ namespace BoltOn.Tests.Caching
 			distributedCache.Verify(l =>
 				l.SetAsync("TestKey", It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(),
 				It.IsAny<CancellationToken>()), Times.Never);
+
+			// cleanup
+			await sut.RemoveAsync("TestKey");
 		}
 
 		[Fact]
@@ -45,22 +48,7 @@ namespace BoltOn.Tests.Caching
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(b =>
-			{
-				b.BoltOnCaching();
-			});
-
-			if (!IntegrationTestHelper.IsRedisCache)
-			{
-				serviceCollection.AddDistributedMemoryCache();
-			}
-			else
-			{
-				serviceCollection.AddStackExchangeRedisCache(options =>
-				{
-					options.Configuration = "localhost:6379";
-				});
-			}
+			Setup(serviceCollection);
 
 			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
@@ -76,6 +64,9 @@ namespace BoltOn.Tests.Caching
 			// assert
 			Assert.Equal("TestValue", result);
 			logger.Verify(l => l.Debug("Setting value in cache... Key: TestKey"));
+
+			// cleanup
+			await sut.RemoveAsync("TestKey");
 		}
 
 		[Fact]
@@ -83,11 +74,7 @@ namespace BoltOn.Tests.Caching
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(b =>
-			{
-				b.BoltOnCaching();
-			});
-			serviceCollection.AddDistributedMemoryCache();
+			Setup(serviceCollection);
 			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
@@ -105,6 +92,36 @@ namespace BoltOn.Tests.Caching
 			Assert.Equal(student.Id, result.Id);
 			Assert.Equal(student.FirstName, result.FirstName);
 			logger.Verify(l => l.Debug("Setting value in cache... Key: StudentId"));
+
+			// cleanup
+			await sut.RemoveAsync("StudentId");
+		}
+
+		[Fact]
+		public async Task SetAndGetAsync_SetAndGetByteArray_SetsObjectAndReturnsExpectedResult()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			Setup(serviceCollection);
+			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			serviceCollection.AddTransient(s => logger.Object);
+
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var sut = serviceProvider.GetService<IBoltOnCache>();
+			var byteArray = System.Text.Encoding.Default.GetBytes("Test Value");
+
+			// act
+			await sut.SetAsync("TestKey", byteArray);
+			var result = await sut.GetAsync<byte[]>("TestKey");
+
+			// assert
+			Assert.NotNull(result);
+			Assert.Equal(byteArray.Length, result.Length);
+			logger.Verify(l => l.Debug("Setting value in cache... Key: TestKey"));
+
+			// cleanup
+			await sut.RemoveAsync("TestKey");
 		}
 
 		[Fact]
@@ -112,11 +129,7 @@ namespace BoltOn.Tests.Caching
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(b =>
-			{
-				b.BoltOnCaching();
-			});
-			serviceCollection.AddDistributedMemoryCache();
+			Setup(serviceCollection);
 			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
@@ -134,6 +147,9 @@ namespace BoltOn.Tests.Caching
 			Assert.Equal(student.Id, result.Id);
 			Assert.Equal(student.FirstName, result.FirstName);
 			logger.Verify(l => l.Debug("Setting value in cache... Key: StudentId"));
+
+			// cleanup
+			await sut.RemoveAsync("StudentId");
 		}
 
 		[Fact]
@@ -141,11 +157,7 @@ namespace BoltOn.Tests.Caching
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(b =>
-			{
-				b.BoltOnCaching();
-			});
-			serviceCollection.AddDistributedMemoryCache();
+			Setup(serviceCollection);
 			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
@@ -153,19 +165,98 @@ namespace BoltOn.Tests.Caching
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IBoltOnCache>();
 			var student = new Fakes.Student { FirstName = "first", Id = Guid.NewGuid() };
-			const int expirationInterval = 500;
+			const int expirationInterval = 1000;
 
 			// act
-			await sut.SetAsync("StudentId", student, slidingExpiration: TimeSpan.FromMilliseconds(expirationInterval));
-			var result = await sut.GetAsync<Fakes.Student>("StudentId");
+			await sut.SetAsync("Student", student, slidingExpiration: TimeSpan.FromMilliseconds(expirationInterval));
+			var result = await sut.GetAsync<Fakes.Student>("Student");
 
 			// assert
 			Assert.NotNull(result);
 			Assert.Equal(student.Id, result.Id);
-			logger.Verify(l => l.Debug("Setting value in cache... Key: StudentId"));
-			Thread.Sleep(expirationInterval + 200);
-			var result2 = await sut.GetAsync<Fakes.Student>("StudentId");
+			logger.Verify(l => l.Debug("Setting value in cache... Key: Student"));
+			await Task.Delay(expirationInterval + 200);
+			var result2 = await sut.GetAsync<Fakes.Student>("Student");
 			Assert.Null(result2);
+
+			// cleanup
+			await sut.RemoveAsync("Student");
+		}
+
+		[Fact]
+		public async Task SetAndRemoveAndGetAsync_SetAndRemoveAndGetString_SetsRemovesGetsNull()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			Setup(serviceCollection);
+
+			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			serviceCollection.AddTransient(s => logger.Object);
+
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var sut = serviceProvider.GetService<IBoltOnCache>();
+
+			// act
+			await sut.SetAsync("TestKey", "TestValue");
+			await sut.RemoveAsync("TestKey");
+			var result = await sut.GetAsync<string>("TestKey");
+
+			// assert
+			Assert.Null(result);
+			logger.Verify(l => l.Debug("Setting value in cache... Key: TestKey"));
+			logger.Verify(l => l.Debug("Removing from cache... Key: TestKey"));
+			logger.Verify(l => l.Debug("Getting from cache... Key: TestKey"));
+
+			// cleanup
+			await sut.RemoveAsync("TestKey");
+		}
+
+		[Fact]
+		public async Task RemoveAndGetAsync_RemoveKeyNotInCache_ReturnsNull()
+		{
+			// arrange
+			var serviceCollection = new ServiceCollection();
+			Setup(serviceCollection);
+
+			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			serviceCollection.AddTransient(s => logger.Object);
+
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var sut = serviceProvider.GetService<IBoltOnCache>();
+
+			// act
+			await sut.RemoveAsync("TestKey");
+			var result = await sut.GetAsync<string>("TestKey");
+
+			// assert
+			Assert.Null(result);
+			logger.Verify(l => l.Debug("Removing from cache... Key: TestKey"));
+			logger.Verify(l => l.Debug("Getting from cache... Key: TestKey"));
+
+			// cleanup
+			await sut.RemoveAsync("TestKey");
+		}
+
+		private static void Setup(ServiceCollection serviceCollection)
+		{
+			serviceCollection.BoltOn(b =>
+			{
+				b.BoltOnCaching();
+			});
+
+			if (!IntegrationTestHelper.IsRedisCache)
+			{
+				serviceCollection.AddDistributedMemoryCache();
+			}
+			else
+			{
+				serviceCollection.AddStackExchangeRedisCache(options =>
+				{
+					options.Configuration = "localhost:6379";
+				});
+			}
 		}
 	}
 }
