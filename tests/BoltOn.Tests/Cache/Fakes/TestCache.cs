@@ -1,6 +1,6 @@
 using System;
 
-namespace BoltOn.Tests.Caching.Fakes
+namespace BoltOn.Tests.Cache.Fakes
 {
 	public class Student
 	{

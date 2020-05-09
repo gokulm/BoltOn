@@ -35,7 +35,7 @@
     <Folder Include="Data\" />
     <Folder Include="Bus\" />
     <Folder Include="Cqrs\" />
-    <Folder Include="Caching\" />
+    <Folder Include="Cache\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />

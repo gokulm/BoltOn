@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BoltOn.Caching
+namespace BoltOn.Cache
 {
 	public interface IBoltOnCache
 	{

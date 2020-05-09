@@ -1,16 +1,16 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Caching;
+using BoltOn.Cache;
 using BoltOn.Logging;
-using BoltOn.Tests.Caching.Fakes;
+using BoltOn.Tests.Cache.Fakes;
 using BoltOn.Tests.Other;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
-namespace BoltOn.Tests.Caching
+namespace BoltOn.Tests.Cache
 {
 	public class BoltOnCacheIntegrationTests
 	{
@@ -21,7 +21,7 @@ namespace BoltOn.Tests.Caching
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
 			{
-				b.BoltOnCaching();
+				b.BoltOnCache();
 			});
 
 			var distributedCache = new Mock<IDistributedCache>();
@@ -243,7 +243,7 @@ namespace BoltOn.Tests.Caching
 		{
 			serviceCollection.BoltOn(b =>
 			{
-				b.BoltOnCaching();
+				b.BoltOnCache();
 			});
 
 			if (!IntegrationTestHelper.IsRedisCache)
