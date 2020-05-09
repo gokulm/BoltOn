@@ -48,7 +48,16 @@ function GetNugetPackageLatestVersion() {
     param(
         [parameter(Mandatory)]$packageName
     )
-    return Find-Package $packageName | Select-Object -ExpandProperty Version -first 1
+
+    try {
+        return Find-Package $packageName | Select-Object -ExpandProperty Version -first 1
+    }
+    catch {
+        # as the new packages will not be found in nuget, we return 0.1.0
+        # if an error occurs due to n/w glitch, 0.1.0 will be returned, but pkg 
+        # cannot be publised due to conflict
+       return "0.0.0" 
+    }
 }
 
 function UpdateAssemblyVersion() {
