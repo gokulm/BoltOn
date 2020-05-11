@@ -20,5 +20,6 @@
     <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.9.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.10.1" />
+    <PackageReference Include="BoltOn.Cache" Version="0.1.0" />
   </ItemGroup>
 </Project>
