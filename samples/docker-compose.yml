@@ -18,6 +18,13 @@ services:
     container_name: bolton-rabbitmq-container
     networks:
       - bolton-network
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    container_name: bolton-redis-container
+    networks:
+      - bolton-network
   console:
     depends_on:
       - rabbitmq
@@ -43,6 +50,7 @@ services:
       - rabbitmq
       - sql
       - console
+      - redis
     networks:
       - bolton-network
 
