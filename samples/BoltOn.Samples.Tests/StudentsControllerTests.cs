@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Xunit;
-using BoltOn.Samples.Application.Entities;
 using BoltOn.Samples.Application.Handlers;
 using System.Collections.Generic;
 using System.Linq;
