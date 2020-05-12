@@ -1,4 +1,4 @@
-In order to run the Samples projects, SQL server and RabbitMq should be configured. If you already have SQL server and RabbitMq installed, please change the appsettings in the BoltOn.Samples.WebApi and BoltOn.Samples.Console projects. If you do not have them installed, you could use [docker-compose](#docker-compose), or run SQL Server and RabbitMq separately in docker using the commands mentioned below and change the appsettings.
+In order to run the Samples projects, SQL server, RabbitMq and Redis should be configured. If you already have SQL server, RabbitMq and Redis installed, please change the appsettings in the BoltOn.Samples.WebApi and BoltOn.Samples.Console projects. If you do not have them installed, you could use [docker-compose](#docker-compose), or run SQL Server, RabbitMq and Redis separately in docker using the commands mentioned below and change the appsettings. 
 
 docker-compose
 --------------
@@ -21,3 +21,14 @@ To run SQL Server separately:
 To run RabbitMq separately:
 
 `docker run -d --name bolton-rabbitmq -p 15672:15672 -p 5672:5672 rabbitmq:3-management`
+
+To run Redis separately:
+
+`docker run -d -p 6379:6379 --name redis-local redis`
+
+**OR**
+
+To run all the above containers:
+
+`docker-compose -f docker-compose-local.yml up -d`
+

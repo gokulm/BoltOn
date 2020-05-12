@@ -14,6 +14,8 @@ function Main {
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
 
         Set-Location $_scriptDirPath
+        # UpgradeBoltOnNuGetPackages can be commented to test the integration tests
+        # without NuGet upgrades
         UpgradeBoltOnNuGetPackages
         DockerCompose
         EnableIntegrationTests

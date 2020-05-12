@@ -10,7 +10,7 @@ function Main {
         LogBeginFunction "$($MyInvocation.MyCommand.Name)"
 
         SwitchPackagesToProjects
-        DockerCompose
+        DockerComposeLocal
         ExecuteApp "BoltOn.Samples.Console"
         ExecuteApp "BoltOn.Samples.WebApi"
         EnableIntegrationTests
@@ -36,7 +36,7 @@ function SwitchPackagesToProjects
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 
-function DockerCompose
+function DockerComposeLocal
 {
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     docker-compose down 

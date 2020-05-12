@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using BoltOn.Data;
 using BoltOn.Samples.Application.Entities;
 using Microsoft.AspNetCore.Hosting;
+using BoltOn.Cache;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -32,6 +33,7 @@ namespace BoltOn.Samples.WebApi
 				options.BoltOnEFModule();
 				options.BoltOnMassTransitBusModule();
 				options.BoltOnCqrsModule();
+				options.BoltOnCache();
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolWriteDbContext).Assembly);
 			});
 
@@ -40,7 +42,8 @@ namespace BoltOn.Samples.WebApi
             var rabbitmqUri = Configuration.GetValue<string>("RabbitMqUri");
 			var rabbitmqUsername = Configuration.GetValue<string>("RabbitMqUsername");
 			var rabbitmqPassword = Configuration.GetValue<string>("RabbitMqPassword");
-            services.AddMassTransit(x =>
+			var redisUrl = Configuration.GetValue<string>("RedisUrl");
+			services.AddMassTransit(x =>
             {
                 x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
@@ -61,6 +64,12 @@ namespace BoltOn.Samples.WebApi
             {
                 options.UseSqlServer(readDbConnectionString);
             });
+
+			services.AddStackExchangeRedisCache(options =>
+			{
+				options.Configuration = redisUrl;
+			});
+
 			services.AddControllers();
 
 			services.AddTransient<IRepository<Student>, Repository<Student, SchoolWriteDbContext>>();

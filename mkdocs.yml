@@ -4,6 +4,7 @@ nav:
     - Requestor: requestor.md
     - Data: data.md
     - Bus: bus.md
+    - Cache: cache.md
     - CQRS: cqrs.md
     - Utilities: utilities.md
     - Optional: optional.md

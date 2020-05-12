@@ -14,6 +14,11 @@ services:
       - "5010:5672"
       - "5015:15672"
     container_name: bolton-rabbitmq-container
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    container_name: bolton-redis-container
 
 # docker-compose -f docker-compose-local.yml up -d
 # docker-compose -f docker-compose-local.yml down

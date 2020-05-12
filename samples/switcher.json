@@ -4,6 +4,7 @@
     "BoltOn": "../src/BoltOn/BoltOn.csproj",
     "BoltOn.Data.EF": "../src/BoltOn.Data.EF/BoltOn.Data.EF.csproj",
     "BoltOn.Data.CosmosDb": "../src/BoltOn.Data.CosmosDb/BoltOn.Data.CosmosDb.csproj",
-    "BoltOn.Bus.MassTransit": "../src/BoltOn.Bus.MassTransit/BoltOn.Bus.MassTransit.csproj"
+    "BoltOn.Bus.MassTransit": "../src/BoltOn.Bus.MassTransit/BoltOn.Bus.MassTransit.csproj",
+    "BoltOn.Cache": "../src/BoltOn.Cache/BoltOn.Cache.csproj"
   }
 }
