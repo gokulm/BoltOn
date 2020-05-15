@@ -5,12 +5,12 @@ namespace BoltOn.Cache
     public interface IBoltOnCacheSerializer
     {
         byte[] ToByteArray(object obj);
-        T FromByteArray<T>(byte[] byteArray) where T : class;
+        T FromByteArray<T>(byte[] byteArray);
     }
 
     public class BoltOnCacheSerializer : IBoltOnCacheSerializer
     {
-        public T FromByteArray<T>(byte[] byteArray) where T : class
+        public T FromByteArray<T>(byte[] byteArray)
         {
             if (byteArray == default || byteArray.Length == 0)
                 return default;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Logging;
@@ -22,13 +23,13 @@ namespace BoltOn.Cache
 		}
 
 		public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default,
-			Func<Task<T>> valueGetter = default, TimeSpan? slidingExpiration = default) where T : class
+			Func<Task<T>> valueGetter = default, TimeSpan? slidingExpiration = default)
 		{
 			_logger.Debug($"Getting from cache... Key: {key}");
 			var byteArray = await _distributedCache.GetAsync(key, cancellationToken);
 			var cacheValue = _serializer.FromByteArray<T>(byteArray);
 
-			if (cacheValue == default(T) && valueGetter != null)
+			if (EqualityComparer<T>.Default.Equals(cacheValue) && valueGetter != null)
 			{
 				_logger.Debug("Invoking valueGetter...");
 				cacheValue = await valueGetter();
@@ -46,7 +47,7 @@ namespace BoltOn.Cache
 		}
 
 		public async Task SetAsync<T>(string key, T value, CancellationToken cancellationToken = default,
-			TimeSpan? slidingExpiration = default) where T : class
+			TimeSpan? slidingExpiration = default)
 		{
 			_logger.Debug($"Setting value in cache... Key: {key}");
 			if(value == null)
