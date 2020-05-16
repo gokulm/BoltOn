@@ -27,17 +27,18 @@ namespace BoltOn.Cache
             if (!(request is IEnableInterceptor<CacheResponseInterceptor>))
                 return await next.Invoke(request, cancellationToken);
 
-            _logger.Debug($"CacheResponseInterceptor started");
+            _logger.Debug("CacheResponseInterceptor started");
             var cacheRequest = request as ICacheResponse;
             if (cacheRequest != null)
             {
                 _logger.Debug($"Retrieving response from cache. Key: {cacheRequest.CacheKey}");
                 var responseFromCache = await _boltOnCache.GetAsync<TResponse>(cacheRequest.CacheKey,
-                    cancellationToken, slidingExpiration: cacheRequest.SlidingExpiration);
+                    cancellationToken, null, cacheRequest.SlidingExpiration);
 
-                if (!EqualityComparer<TResponse>.Default.Equals(responseFromCache))
+                if (!EqualityComparer<TResponse>.Default.Equals(responseFromCache, default))
                 {
                     _logger.Debug("Returning response from cache");
+                    _logger.Debug("CacheResponseInterceptor ended");
                     return responseFromCache;
                 }
             }
@@ -57,7 +58,7 @@ namespace BoltOn.Cache
                 await _boltOnCache.RemoveAsync(cacheRequest.CacheKey, cancellationToken);
             }
 
-            _logger.Debug($"CacheResponseInterceptor ended ");
+            _logger.Debug("CacheResponseInterceptor ended");
             return response;
         }
 

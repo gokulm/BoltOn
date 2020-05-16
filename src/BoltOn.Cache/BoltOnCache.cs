@@ -29,7 +29,7 @@ namespace BoltOn.Cache
 			var byteArray = await _distributedCache.GetAsync(key, cancellationToken);
 			var cacheValue = _serializer.FromByteArray<T>(byteArray);
 
-			if (EqualityComparer<T>.Default.Equals(cacheValue) && valueGetter != null)
+			if (EqualityComparer<T>.Default.Equals(cacheValue, default) && valueGetter != null)
 			{
 				_logger.Debug("Invoking valueGetter...");
 				cacheValue = await valueGetter();
