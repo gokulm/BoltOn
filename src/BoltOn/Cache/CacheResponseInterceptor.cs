@@ -33,7 +33,7 @@ namespace BoltOn.Cache
             {
                 _logger.Debug($"Retrieving response from cache. Key: {cacheRequest.CacheKey}");
                 var responseFromCache = await _boltOnCache.GetAsync<TResponse>(cacheRequest.CacheKey,
-                    cancellationToken, null, cacheRequest.SlidingExpiration);
+                    cancellationToken, slidingExpiration: cacheRequest.SlidingExpiration);
 
                 if (!EqualityComparer<TResponse>.Default.Equals(responseFromCache, default))
                 {

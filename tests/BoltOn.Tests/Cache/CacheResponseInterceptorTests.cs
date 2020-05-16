@@ -41,7 +41,7 @@ namespace BoltOn.Tests.Cache
 
 			var boltOnCache = autoMocker.GetMock<IBoltOnCache>();
 			boltOnCache.Setup(b => b.GetAsync<string>("TestKey", It.IsAny<CancellationToken>(),
-				null, It.IsAny<TimeSpan>())).Returns(Task.FromResult("TestValue"));
+				null, It.IsAny<TimeSpan?>())).Returns(Task.FromResult("TestValue"));
 			Func<TestRequest, CancellationToken, Task<string>> nextDelegate =
 				(r, c) => new Mock<IHandler<TestRequest, string>>().Object.HandleAsync(r, c);
 			var sut = autoMocker.CreateInstance<CacheResponseInterceptor>();
@@ -54,7 +54,7 @@ namespace BoltOn.Tests.Cache
 			logger.Verify(l => l.Debug("Retrieving response from cache. Key: TestKey"));
 			logger.Verify(l => l.Debug("Returning response from cache"));
 			boltOnCache.Verify(b => b.GetAsync<string>("TestKey", It.IsAny<CancellationToken>(),
-				null, It.IsAny<TimeSpan>()));
+				null, It.IsAny<TimeSpan?>()));
 		}
 	}
 }
