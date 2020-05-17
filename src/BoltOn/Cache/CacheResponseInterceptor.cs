@@ -55,7 +55,7 @@ namespace BoltOn.Cache
             if (request is IClearCachedResponse clearCacheRequest)
             {
                 _logger.Debug($"Removing response from cache. Key: {clearCacheRequest.CacheKey}");
-                await _boltOnCache.RemoveAsync(cacheRequest.CacheKey, cancellationToken);
+                await _boltOnCache.RemoveAsync(clearCacheRequest.CacheKey, cancellationToken);
             }
 
             _logger.Debug("CacheResponseInterceptor ended");

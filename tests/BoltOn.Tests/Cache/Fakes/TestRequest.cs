@@ -10,4 +10,9 @@ namespace BoltOn.Tests.Cache.Fakes
 
 		public TimeSpan? SlidingExpiration => null;
 	}
+
+	public class TestClearCacheRequest : IRequest<string>, IClearCachedResponse
+	{
+		public string CacheKey => "TestKey";
+	}
 }
