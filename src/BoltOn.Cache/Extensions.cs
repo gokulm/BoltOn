@@ -6,7 +6,7 @@ namespace BoltOn.Cache
 {
 	public static class Extensions
 	{
-		public static BoltOnOptions BoltOnCache(this BoltOnOptions boltOnOptions)
+		public static BoltOnOptions BoltOnCacheModule(this BoltOnOptions boltOnOptions)
 		{
 			boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
 			boltOnOptions.ServiceCollection.AddTransient<IBoltOnCache, BoltOnCache>();
