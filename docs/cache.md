@@ -3,7 +3,7 @@ BoltOn Cache is just an adapter for .NET Core's `IDistributedCache`.
 In order to use it, you have to do the following:
 
 * Install **BoltOn.Cache** NuGet package in the host project.
-* Call `BoltOnCache()` in your startup's BoltOn() method. 
+* Call `BoltOnCacheModule()` in your startup's BoltOn() method. 
 * Install the appropriate NuGet package depending on the `IDistributedCache` implementations that .NET Core provides - Memory, Redis and SQL Server. Use the appropriate extension methods like `AddDistributedMemoryCache` or `AddDistributedSqlServerCache` or `AddStackExchangeRedisCache` to configure the underlying cache. 
 * Finally, inject [IBoltOnCache](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/IBoltOnCache.cs) whereever you want in your application.
 
@@ -12,7 +12,7 @@ Example:
     var serviceCollection = new ServiceCollection();
     serviceCollection.BoltOn(b =>
     {
-        b.BoltOnCache();
+        b.BoltOnCacheModule();
     });
 
     serviceCollection.AddStackExchangeRedisCache(options =>

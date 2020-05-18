@@ -21,7 +21,7 @@ namespace BoltOn.Tests.Cache
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
 			{
-				b.BoltOnCache();
+				b.BoltOnCacheModule();
 			});
 
 			var distributedCache = new Mock<IDistributedCache>();
@@ -243,7 +243,7 @@ namespace BoltOn.Tests.Cache
 		{
 			serviceCollection.BoltOn(b =>
 			{
-				b.BoltOnCache();
+				b.BoltOnCacheModule();
 			});
 
 			if (!IntegrationTestHelper.IsRedisCache)
