@@ -98,11 +98,6 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../cli/">CLI</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
     <a class="" href="../build/">CI & CD</a>
 	    </li>
           
@@ -142,7 +137,7 @@
 <p>In order to use it, you have to do the following:</p>
 <ul>
 <li>Install <strong>BoltOn.Cache</strong> NuGet package in the host project.</li>
-<li>Call <code>BoltOnCache()</code> in your startup's BoltOn() method. </li>
+<li>Call <code>BoltOnCacheModule()</code> in your startup's BoltOn() method. </li>
 <li>Install the appropriate NuGet package depending on the <code>IDistributedCache</code> implementations that .NET Core provides - Memory, Redis and SQL Server. Use the appropriate extension methods like <code>AddDistributedMemoryCache</code> or <code>AddDistributedSqlServerCache</code> or <code>AddStackExchangeRedisCache</code> to configure the underlying cache. </li>
 <li>Finally, inject <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/IBoltOnCache.cs">IBoltOnCache</a> whereever you want in your application.</li>
 </ul>
@@ -150,7 +145,7 @@
 <pre><code>var serviceCollection = new ServiceCollection();
 serviceCollection.BoltOn(b =&gt;
 {
-    b.BoltOnCache();
+    b.BoltOnCacheModule();
 });
 
 serviceCollection.AddStackExchangeRedisCache(options =&gt;
