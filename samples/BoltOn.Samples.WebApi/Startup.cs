@@ -33,7 +33,7 @@ namespace BoltOn.Samples.WebApi
 				options.BoltOnEFModule();
 				options.BoltOnMassTransitBusModule();
 				options.BoltOnCqrsModule();
-				options.BoltOnCache();
+				options.BoltOnCacheModule();
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolWriteDbContext).Assembly);
 			});
 
