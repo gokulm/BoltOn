@@ -1,5 +1,6 @@
 using System.Reflection;
 using BoltOn.Bootstrapping;
+using BoltOn.Requestor.Interceptors;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Cache
@@ -10,6 +11,7 @@ namespace BoltOn.Cache
 		{
 			boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
 			boltOnOptions.ServiceCollection.AddTransient<IBoltOnCache, BoltOnCache>();
+			boltOnOptions.AddInterceptor<CacheResponseInterceptor>().After<StopwatchInterceptor>();
 			return boltOnOptions;
 		}
 	}

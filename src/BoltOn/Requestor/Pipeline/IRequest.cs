@@ -1,7 +1,8 @@
-﻿namespace BoltOn.Requestor.Pipeline
+﻿using BoltOn.Requestor.Interceptors;
+
+namespace BoltOn.Requestor.Pipeline
 {
-    // ReSharper disable once UnusedTypeParameter
-    public interface IRequest<out TResponse>
+    public interface IRequest<out TResponse> : IEnableInterceptor<StopwatchInterceptor>
 	{
 	}
 

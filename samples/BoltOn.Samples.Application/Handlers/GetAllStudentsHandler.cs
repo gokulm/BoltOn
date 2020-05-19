@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -10,11 +11,14 @@ using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class GetAllStudentsRequest : IQuery<IEnumerable<StudentDto>>
-    {
-    }
+	public class GetAllStudentsRequest : IQuery<IEnumerable<StudentDto>>, ICacheResponse
+	{
+		public string CacheKey => "Students";
 
-    public class GetAllStudentsHandler : IHandler<GetAllStudentsRequest, IEnumerable<StudentDto>>
+		public TimeSpan? SlidingExpiration => TimeSpan.FromHours(2);
+	}
+
+	public class GetAllStudentsHandler : IHandler<GetAllStudentsRequest, IEnumerable<StudentDto>>
     {
         private readonly IRepository<StudentFlattened> _studentRepository;
 		private readonly IBoltOnCache _boltOnCache;
