@@ -8,13 +8,15 @@ using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class CreateStudentRequest : IRequest<Student>
+	public class CreateStudentRequest : IRequest<Student>, IClearCachedResponse
 	{
 		public string FirstName { get; set; }
 
 		public string LastName { get; set; }
 
 		public int StudentTypeId { get; set; }
+
+		public string CacheKey => "Students";
 	}
 
 	public class CreateStudentHandler : IHandler<CreateStudentRequest, Student>
