@@ -42,7 +42,6 @@ namespace BoltOn.Samples.Application.Handlers
 			_logger.Debug("Creating student...");
 			var studentType = await _studentTypeRepository.GetByIdAsync(request.StudentTypeId, cancellationToken: cancellationToken);
 			var student = await _studentRepository.AddAsync(new Student(request, studentType.Description), cancellationToken: cancellationToken);
-			await _boltOnCache.RemoveAsync("Students");
 			return student;
 		}
 	}
