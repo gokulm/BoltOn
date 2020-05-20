@@ -24,17 +24,14 @@ namespace BoltOn.Samples.Application.Handlers
 		private readonly IRepository<Student> _studentRepository;
 		private readonly IBoltOnLogger<CreateStudentHandler> _logger;
 		private readonly IRepository<StudentType> _studentTypeRepository;
-		private readonly IBoltOnCache _boltOnCache;
 
 		public CreateStudentHandler(IRepository<Student> studentRepository,
 			IBoltOnLogger<CreateStudentHandler> logger,
-			IRepository<StudentType> studentTypeRepository,
-			IBoltOnCache boltOnCache)
+			IRepository<StudentType> studentTypeRepository)
 		{
 			_studentRepository = studentRepository;
 			_logger = logger;
 			_studentTypeRepository = studentTypeRepository;
-			_boltOnCache = boltOnCache;
 		}
 
 		public async Task<Student> HandleAsync(CreateStudentRequest request, CancellationToken cancellationToken)
