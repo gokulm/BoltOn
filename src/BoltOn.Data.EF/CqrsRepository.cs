@@ -11,7 +11,7 @@ namespace BoltOn.Data.EF
 {
 	public class CqrsRepository<TEntity, TDbContext> : Repository<TEntity, TDbContext>
 		where TDbContext : DbContext
-		where TEntity : class
+		where TEntity : BaseCqrsEntity
 	{
 		private readonly EventBag _eventBag;
 		private readonly CqrsOptions _cqrsOptions;

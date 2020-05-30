@@ -185,23 +185,6 @@ namespace BoltOn.Tests.Cqrs
             var autoMocker = new AutoMocker();
             var failedId = Guid.NewGuid();
             var failedId2 = Guid.NewGuid();
-            var eventBag = autoMocker.GetMock<EventBag>();
-            eventBag.Setup(s => s.ProcessedEvents)
-                .Returns(new HashSet<ICqrsEvent>
-                {
-                    new StudentCreatedEvent
-                    {
-                        Id = failedId,
-                        SourceTypeName = typeof(Student).Name,
-                        DestinationTypeName = typeof(Student).Name
-                    },
-                    new StudentUpdatedEvent
-                    {
-                        Id = failedId2,
-                        SourceTypeName = typeof(Student).Name,
-                        DestinationTypeName = typeof(Student).Name
-                    },
-                });
             var logger = autoMocker.GetMock<IBoltOnLogger<CqrsInterceptor>>();
             logger.Setup(s => s.Debug(It.IsAny<string>()))
                 .Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
@@ -221,7 +204,6 @@ namespace BoltOn.Tests.Cqrs
                                         "About to dispatch EventsToBeProcessed..."));
             Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
                                         "About to dispatch ProcessedEvents..."));
-            Assert.True(eventBag.Object.ProcessedEvents.Count == 2);
         }
 
         public void Dispose()

@@ -70,6 +70,7 @@ namespace BoltOn.Tests.Cqrs
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts(); 
 			var requestor = serviceProvider.GetService<IRequestor>();
+			var cqrsDbContext = serviceProvider.GetService<CqrsDbContext>();
 
 			// act
 			await requestor.ProcessAsync(new UpdateStudentRequest { Input = "test input" });
@@ -95,7 +96,9 @@ namespace BoltOn.Tests.Cqrs
 										$"{nameof(StudentFlattened)} updated. Input1: test input Input2Property1: prop1 Input2Propert2: 10"));
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
-			Assert.True(eventBag.ProcessedEvents.Count > 0);
+			var studentFlattened = cqrsDbContext.Set<StudentFlattened>().Find(CqrsConstants.EntityId);
+			Assert.True(studentFlattened.EventsToBeProcessed.Count() == 0);
+			Assert.True(studentFlattened.ProcessedEvents.Count() > 0);
 		}
 
 		[Fact]
@@ -146,7 +149,6 @@ namespace BoltOn.Tests.Cqrs
 
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
-			Assert.True(eventBag.ProcessedEvents.Count > 0);
 
 			var cqrsDbContext = serviceProvider.GetService<CqrsDbContext>();
 			var student = cqrsDbContext.Set<Student>().Find(studentId);
@@ -212,7 +214,6 @@ namespace BoltOn.Tests.Cqrs
 
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
-			Assert.True(eventBag.ProcessedEvents.Count > 0);
 
 			var cqrsDbContext = serviceProvider.GetService<CqrsDbContext>();
 			var student = cqrsDbContext.Set<Student>().Find(studentId);
@@ -275,7 +276,6 @@ namespace BoltOn.Tests.Cqrs
 
 			var eventBag = serviceProvider.GetService<EventBag>();
 			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
-			Assert.True(eventBag.ProcessedEvents.Count > 0);
 
 			var cqrsDbContext = serviceProvider.GetService<CqrsDbContext>();
 			var student = cqrsDbContext.Set<Student>().Find(studentId);
