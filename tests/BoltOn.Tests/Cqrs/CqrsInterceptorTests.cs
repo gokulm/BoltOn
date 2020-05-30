@@ -25,7 +25,7 @@ namespace BoltOn.Tests.Cqrs
 			var successId2 = Guid.NewGuid();
 			var eventBag = autoMocker.GetMock<EventBag>();
 			eventBag.Setup(s => s.EventsToBeProcessed)
-				.Returns(new List<ICqrsEvent>
+				.Returns(new HashSet<ICqrsEvent>
 				{
 					new StudentCreatedEvent
 					{
@@ -78,7 +78,7 @@ namespace BoltOn.Tests.Cqrs
             var failedId2 = Guid.NewGuid();
             var eventBag = autoMocker.GetMock<EventBag>();
             eventBag.Setup(s => s.EventsToBeProcessed)
-                .Returns(new List<ICqrsEvent>
+                .Returns(new HashSet<ICqrsEvent>
                 {
                     new StudentCreatedEvent
                     {
@@ -132,7 +132,7 @@ namespace BoltOn.Tests.Cqrs
             var failedId2 = Guid.NewGuid();
             var eventBag = autoMocker.GetMock<EventBag>();
             eventBag.Setup(s => s.EventsToBeProcessed)
-                .Returns(new List<ICqrsEvent>
+                .Returns(new HashSet<ICqrsEvent>
                 {
                     new StudentCreatedEvent
                     {
@@ -187,7 +187,7 @@ namespace BoltOn.Tests.Cqrs
             var failedId2 = Guid.NewGuid();
             var eventBag = autoMocker.GetMock<EventBag>();
             eventBag.Setup(s => s.ProcessedEvents)
-                .Returns(new List<ICqrsEvent>
+                .Returns(new HashSet<ICqrsEvent>
                 {
                     new StudentCreatedEvent
                     {

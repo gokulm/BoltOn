@@ -4,7 +4,7 @@ namespace BoltOn.Cqrs
 {
     public class EventBag
     {
-        public virtual List<ICqrsEvent> EventsToBeProcessed { get; set; } = new List<ICqrsEvent>();
-		public virtual List<ICqrsEvent> ProcessedEvents { get; set; } = new List<ICqrsEvent>();
+        public virtual HashSet<ICqrsEvent> EventsToBeProcessed { get; set; } = new HashSet<ICqrsEvent>();
+		public virtual HashSet<ICqrsEvent> ProcessedEvents { get; set; } = new HashSet<ICqrsEvent>();
 	}
 }

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Logging;
-using BoltOn.UoW;
 
 namespace BoltOn.Cqrs
 {
@@ -16,15 +15,12 @@ namespace BoltOn.Cqrs
 	{
 		private readonly IBoltOnLogger<IEventPurger> _logger;
 		private readonly ICqrsRepositoryFactory _cqrsRepositoryFactory;
-		private readonly IUnitOfWorkManager _unitOfWorkManager;
 
 		public EventPurger(IBoltOnLogger<IEventPurger> logger,
-			ICqrsRepositoryFactory cqrsRepositoryFactory,
-			IUnitOfWorkManager unitOfWorkManager)
+			ICqrsRepositoryFactory cqrsRepositoryFactory)
 		{
 			_logger = logger;
 			_cqrsRepositoryFactory = cqrsRepositoryFactory;
-			_unitOfWorkManager = unitOfWorkManager;
 		}
 
 		public async Task PurgeAsync(ICqrsEvent cqrsEvent, CancellationToken cancellationToken)
@@ -38,7 +34,6 @@ namespace BoltOn.Cqrs
                 dynamic sourceEntityRepository = genericMethodForSourceEntity.Invoke(_cqrsRepositoryFactory, null);
                 _logger.Debug($"Built {nameof(CqrsRepositoryFactory)}");
                 _logger.Debug($"Fetching entity by Id. Id: {cqrsEvent.SourceId}");
-                using var uow = _unitOfWorkManager.Get();
                 var cqrsEntity = await sourceEntityRepository.GetByIdAsync(cqrsEvent.SourceId, cancellationToken);
                 var baseCqrsEntity = cqrsEntity as BaseCqrsEntity;
                 _logger.Debug($"Fetched entity. Id: {cqrsEvent.SourceId}");
@@ -50,7 +45,6 @@ namespace BoltOn.Cqrs
                     await sourceEntityRepository.UpdateAsync(cqrsEntity, cancellationToken);
                     _logger.Debug("Removed event");
                 }
-                uow.Commit();
             }
         }
 	}
