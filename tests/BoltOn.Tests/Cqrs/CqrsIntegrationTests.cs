@@ -225,6 +225,128 @@ namespace BoltOn.Tests.Cqrs
 		}
 
 		[Fact]
+		public async Task RequestorProcessAsync_WithPurgeProcessedEvents_RemovesProcessedEvents()
+		{
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn(b =>
+			{
+				b.BoltOnEFModule();
+				b.BoltOnCqrsModule(c => c.PurgeEventsProcessedBefore = TimeSpan.FromSeconds(1));
+				b.BoltOnMassTransitBusModule();
+				b.RegisterCqrsFakes();
+			});
+
+			serviceCollection.AddMassTransit(x =>
+			{
+				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
+				{
+					cfg.ReceiveEndpoint($"{nameof(StudentCreatedEvent)}_queue", ep =>
+					{
+						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<StudentCreatedEvent>>());
+					});
+				}));
+			});
+
+			var logger = new Mock<IBoltOnLogger<StudentCreatedEventHandler>>();
+			logger.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddTransient((s) => logger.Object);
+
+			var logger2 = new Mock<IBoltOnLogger<IEventPurger>>();
+			logger2.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddSingleton((s) => logger2.Object);
+
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var requestor = serviceProvider.GetService<IRequestor>();
+			var studentId = Guid.NewGuid();
+
+			// act
+			await requestor.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input", RaiseAnotherCreateEvent = false });
+
+			// assert
+			await Task.Delay(100);
+			logger.Verify(v => v.Debug($"{nameof(StudentCreatedEventHandler)} invoked"));
+			logger2.Verify(v => v.Debug($"Getting entity repository. TypeName: {typeof(Student).AssemblyQualifiedName}"));
+			logger2.Verify(v => v.Debug($"Fetching entity by Id. Id: {studentId}"));
+			logger2.Verify(v => v.Debug($"Fetched entity. Id: {studentId}"));
+			logger2.Verify(v => v.Debug("Removed event"));
+
+			var eventBag = serviceProvider.GetService<EventBag>();
+			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
+
+			var cqrsDbContext = serviceProvider.GetService<CqrsDbContext>();
+			var student = cqrsDbContext.Set<Student>().Find(studentId);
+			Assert.True(student.EventsToBeProcessed.Count() == 0);
+			Assert.True(student.ProcessedEvents.Count() == 0);
+			var studentFlattened = cqrsDbContext.Set<StudentFlattened>().Find(studentId);
+			Assert.True(studentFlattened.EventsToBeProcessed.Count() == 0);
+			Assert.True(studentFlattened.ProcessedEvents.Count() == 0);
+		}
+
+		[Fact]
+		public async Task RequestorProcessAsync_WithPurgeProcessedEventsBefore10Seconds_DoesNotRemoveProcessedEvents()
+		{
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn(b =>
+			{
+				b.BoltOnEFModule();
+				b.BoltOnCqrsModule(c => c.PurgeEventsProcessedBefore = TimeSpan.FromSeconds(10));
+				b.BoltOnMassTransitBusModule();
+				b.RegisterCqrsFakes();
+			});
+
+			serviceCollection.AddMassTransit(x =>
+			{
+				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
+				{
+					cfg.ReceiveEndpoint($"{nameof(StudentCreatedEvent)}_queue", ep =>
+					{
+						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<StudentCreatedEvent>>());
+					});
+				}));
+			});
+
+			var logger = new Mock<IBoltOnLogger<StudentCreatedEventHandler>>();
+			logger.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddTransient((s) => logger.Object);
+
+			var logger2 = new Mock<IBoltOnLogger<IEventPurger>>();
+			logger2.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddSingleton((s) => logger2.Object);
+
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var requestor = serviceProvider.GetService<IRequestor>();
+			var studentId = Guid.NewGuid();
+
+			// act
+			await requestor.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input", RaiseAnotherCreateEvent = false });
+
+			// assert
+			await Task.Delay(100);
+			logger.Verify(v => v.Debug($"{nameof(StudentCreatedEventHandler)} invoked"));
+			logger2.Verify(v => v.Debug($"Getting entity repository. TypeName: {typeof(Student).AssemblyQualifiedName}"));
+			logger2.Verify(v => v.Debug($"Fetching entity by Id. Id: {studentId}"));
+			logger2.Verify(v => v.Debug($"Fetched entity. Id: {studentId}"));
+			logger2.Verify(v => v.Debug("Removed event"));
+
+			var eventBag = serviceProvider.GetService<EventBag>();
+			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
+
+			var cqrsDbContext = serviceProvider.GetService<CqrsDbContext>();
+			var student = cqrsDbContext.Set<Student>().Find(studentId);
+			Assert.True(student.EventsToBeProcessed.Count() == 0);
+			Assert.True(student.ProcessedEvents.Count() == 0);
+			var studentFlattened = cqrsDbContext.Set<StudentFlattened>().Find(studentId);
+			Assert.True(studentFlattened.EventsToBeProcessed.Count() == 0);
+			Assert.True(studentFlattened.ProcessedEvents.Count() > 0);
+		}
+
+		[Fact]
 		public async Task RequestorProcessAsync_WithPurgeEventsToBeProcessedEnabledAndFailedEventPurger_DoesNotRemoveEventsToBeProcessed()
 		{
 			var serviceCollection = new ServiceCollection();

@@ -38,18 +38,15 @@ namespace BoltOn.Data.EF
 			await DbContext.SaveChangesAsync(cancellationToken);
 		}
 
-		private void PublishEvents(TEntity entity)
+		protected virtual void PublishEvents(TEntity entity)
 		{
-			if (entity is BaseCqrsEntity baseCqrsEntity)
-			{
-				baseCqrsEntity.EventsToBeProcessed.ToList().ForEach(e => _eventBag.EventsToBeProcessed.Add(e));
+			entity.EventsToBeProcessed.ToList().ForEach(e => _eventBag.EventsToBeProcessed.Add(e));
 
-				if(baseCqrsEntity.ProcessedEvents.Any() && _cqrsOptions.PurgeEventsProcessedBefore.HasValue)
-				{
-					var timeStamp = DateTime.UtcNow.Add(-1 * _cqrsOptions.PurgeEventsProcessedBefore.Value);
-					var processedEventsToBeRemoved = baseCqrsEntity.ProcessedEvents.Where(w => w.ProcessedDate < timeStamp).ToList();
-					processedEventsToBeRemoved.ForEach(e => baseCqrsEntity.RemoveProcessedEvent(e));
-				}
+			if (entity.ProcessedEvents.Any() && _cqrsOptions.PurgeEventsProcessedBefore.HasValue)
+			{
+				var timeStamp = DateTime.UtcNow.Add(-1 * _cqrsOptions.PurgeEventsProcessedBefore.Value);
+				var processedEventsToBeRemoved = entity.ProcessedEvents.Where(w => w.ProcessedDate < timeStamp).ToList();
+				processedEventsToBeRemoved.ForEach(e => entity.RemoveProcessedEvent(e));
 			}
 		}
 	}
