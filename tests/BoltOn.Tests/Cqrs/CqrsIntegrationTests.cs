@@ -68,7 +68,7 @@ namespace BoltOn.Tests.Cqrs
 			serviceCollection.AddTransient((s) => logger4.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts(); 
+			serviceProvider.TightenBolts();
 			var requestor = serviceProvider.GetService<IRequestor>();
 			var cqrsDbContext = serviceProvider.GetService<CqrsDbContext>();
 
@@ -110,7 +110,7 @@ namespace BoltOn.Tests.Cqrs
 				b.BoltOnEFModule();
 				b.BoltOnCqrsModule(p => p.PurgeEventsToBeProcessed = false);
 				b.BoltOnMassTransitBusModule();
-                b.RegisterCqrsFakes();
+				b.RegisterCqrsFakes();
 			});
 
 			serviceCollection.AddMassTransit(x =>
@@ -168,7 +168,7 @@ namespace BoltOn.Tests.Cqrs
 				b.BoltOnEFModule();
 				b.BoltOnCqrsModule();
 				b.BoltOnMassTransitBusModule();
-                b.RegisterCqrsFakes();
+				b.RegisterCqrsFakes();
 			});
 
 			serviceCollection.AddMassTransit(x =>
@@ -224,14 +224,16 @@ namespace BoltOn.Tests.Cqrs
 			Assert.True(studentFlattened.ProcessedEvents.Count() > 0);
 		}
 
-		[Fact]
-		public async Task RequestorProcessAsync_WithPurgeProcessedEvents_RemovesProcessedEvents()
+		[Theory]
+		[InlineData(1)]
+		[InlineData(10)]
+		public async Task RequestorProcessAsync_WithPurgeProcessedEvents_RemovesOrNotRemovesProcessedEvents(int purgeEventsProcessedBefore)
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
 			{
 				b.BoltOnEFModule();
-				b.BoltOnCqrsModule(c => c.PurgeEventsProcessedBefore = TimeSpan.FromSeconds(1));
+				b.BoltOnCqrsModule(c => c.PurgeEventsProcessedBefore = TimeSpan.FromSeconds(purgeEventsProcessedBefore));
 				b.BoltOnMassTransitBusModule();
 				b.RegisterCqrsFakes();
 			});
@@ -282,68 +284,10 @@ namespace BoltOn.Tests.Cqrs
 			Assert.True(student.ProcessedEvents.Count() == 0);
 			var studentFlattened = cqrsDbContext.Set<StudentFlattened>().Find(studentId);
 			Assert.True(studentFlattened.EventsToBeProcessed.Count() == 0);
-			Assert.True(studentFlattened.ProcessedEvents.Count() == 0);
-		}
-
-		[Fact]
-		public async Task RequestorProcessAsync_WithPurgeProcessedEventsBefore10Seconds_DoesNotRemoveProcessedEvents()
-		{
-			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn(b =>
-			{
-				b.BoltOnEFModule();
-				b.BoltOnCqrsModule(c => c.PurgeEventsProcessedBefore = TimeSpan.FromSeconds(10));
-				b.BoltOnMassTransitBusModule();
-				b.RegisterCqrsFakes();
-			});
-
-			serviceCollection.AddMassTransit(x =>
-			{
-				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
-				{
-					cfg.ReceiveEndpoint($"{nameof(StudentCreatedEvent)}_queue", ep =>
-					{
-						ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<StudentCreatedEvent>>());
-					});
-				}));
-			});
-
-			var logger = new Mock<IBoltOnLogger<StudentCreatedEventHandler>>();
-			logger.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			serviceCollection.AddTransient((s) => logger.Object);
-
-			var logger2 = new Mock<IBoltOnLogger<IEventPurger>>();
-			logger2.Setup(s => s.Debug(It.IsAny<string>()))
-								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			serviceCollection.AddSingleton((s) => logger2.Object);
-
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-			var requestor = serviceProvider.GetService<IRequestor>();
-			var studentId = Guid.NewGuid();
-
-			// act
-			await requestor.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input", RaiseAnotherCreateEvent = false });
-
-			// assert
-			await Task.Delay(100);
-			logger.Verify(v => v.Debug($"{nameof(StudentCreatedEventHandler)} invoked"));
-			logger2.Verify(v => v.Debug($"Getting entity repository. TypeName: {typeof(Student).AssemblyQualifiedName}"));
-			logger2.Verify(v => v.Debug($"Fetching entity by Id. Id: {studentId}"));
-			logger2.Verify(v => v.Debug($"Fetched entity. Id: {studentId}"));
-			logger2.Verify(v => v.Debug("Removed event"));
-
-			var eventBag = serviceProvider.GetService<EventBag>();
-			Assert.True(eventBag.EventsToBeProcessed.Count == 0);
-
-			var cqrsDbContext = serviceProvider.GetService<CqrsDbContext>();
-			var student = cqrsDbContext.Set<Student>().Find(studentId);
-			Assert.True(student.EventsToBeProcessed.Count() == 0);
-			Assert.True(student.ProcessedEvents.Count() == 0);
-			var studentFlattened = cqrsDbContext.Set<StudentFlattened>().Find(studentId);
-			Assert.True(studentFlattened.EventsToBeProcessed.Count() == 0);
-			Assert.True(studentFlattened.ProcessedEvents.Count() > 0);
+			if (purgeEventsProcessedBefore == 1)
+				Assert.True(studentFlattened.ProcessedEvents.Count() == 0);
+			else
+				Assert.True(studentFlattened.ProcessedEvents.Count() > 0);
 		}
 
 		[Fact]
@@ -355,7 +299,7 @@ namespace BoltOn.Tests.Cqrs
 				b.BoltOnEFModule();
 				b.BoltOnCqrsModule();
 				b.BoltOnMassTransitBusModule();
-                b.RegisterCqrsFakes();
+				b.RegisterCqrsFakes();
 			});
 
 			serviceCollection.AddMassTransit(x =>
@@ -407,7 +351,7 @@ namespace BoltOn.Tests.Cqrs
 			Assert.True(studentFlattened.EventsToBeProcessed.Count() == 0);
 			Assert.True(studentFlattened.ProcessedEvents.Count() > 0);
 		}
-		
+
 		[Fact]
 		public async Task RequestorProcessAsync_WithCqrsAndFailedBus_EventsDoNotGetProcessed()
 		{
@@ -417,7 +361,7 @@ namespace BoltOn.Tests.Cqrs
 				b.BoltOnEFModule();
 				b.BoltOnCqrsModule();
 				b.BoltOnMassTransitBusModule();
-                b.RegisterCqrsFakes();
+				b.RegisterCqrsFakes();
 			});
 
 			var cqrsInterceptorLogger = MockForFailedBus(serviceCollection);
@@ -467,7 +411,7 @@ namespace BoltOn.Tests.Cqrs
 				b.BoltOnEFModule();
 				b.BoltOnCqrsModule();
 				b.BoltOnMassTransitBusModule();
-                b.RegisterCqrsFakes();
+				b.RegisterCqrsFakes();
 			});
 
 			var cqrsInterceptorLogger = MockForFailedBus(serviceCollection);
@@ -518,7 +462,7 @@ namespace BoltOn.Tests.Cqrs
 				b.BoltOnEFModule();
 				b.BoltOnCqrsModule(b => b.PurgeEventsToBeProcessed = false);
 				b.BoltOnMassTransitBusModule();
-                b.RegisterCqrsFakes();
+				b.RegisterCqrsFakes();
 			});
 
 			var cqrsInterceptorLogger = MockForFailedBus(serviceCollection);
@@ -569,8 +513,8 @@ namespace BoltOn.Tests.Cqrs
 			serviceCollection.BoltOn(b =>
 			{
 				b.BoltOnEFModule();
-                b.BoltOnCqrsModule();
-                b.RegisterCqrsFakes();
+				b.BoltOnCqrsModule();
+				b.RegisterCqrsFakes();
 			});
 
 			var logger2 = new Mock<IBoltOnLogger<StudentUpdatedEventHandler>>();
