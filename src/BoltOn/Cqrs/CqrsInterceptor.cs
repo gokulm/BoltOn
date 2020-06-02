@@ -43,15 +43,32 @@ namespace BoltOn.Cqrs
 			try
 			{
 				_logger.Debug("About to dispatch EventsToBeProcessed...");
-				foreach (var @event in _eventBag.EventsToBeProcessed.ToList())
+				//foreach (var @event in _eventBag.EventsToBeProcessed.ToList())
+				//{
+				//	eventId = @event.Id;
+				//	_logger.Debug($"Publishing event. Id: {@event.Id} SourceType: {@event.SourceTypeName}");
+				//	await _eventDispatcher.DispatchAsync(@event, cancellationToken);
+				//	_eventBag.EventsToBeProcessed.Remove(@event);
+
+				//	if (_cqrsOptions.PurgeEventsToBeProcessed)
+				//	{
+				//		//await PurgeEvent(@event, cancellationToken);
+				//		_eventBag.RemovedEventToBeProcessed(@event);
+				//	}
+				//}
+
+				foreach (var @event in _eventBag.EventsToBeProcessed.Keys)
 				{
 					eventId = @event.Id;
 					_logger.Debug($"Publishing event. Id: {@event.Id} SourceType: {@event.SourceTypeName}");
 					await _eventDispatcher.DispatchAsync(@event, cancellationToken);
-					_eventBag.EventsToBeProcessed.Remove(@event);
+					//_eventBag.EventsToBeProcessed.Remove(@event);
 
 					if (_cqrsOptions.PurgeEventsToBeProcessed)
-						await PurgeEvent(@event, cancellationToken);
+					{
+						var removeProcessedEventHandle = _eventBag.EventsToBeProcessed[@event];
+						await removeProcessedEventHandle(@event);
+					}
 				}
 			}
 			catch (Exception ex)

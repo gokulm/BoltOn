@@ -59,7 +59,7 @@ namespace BoltOn.Cqrs
 			return true;
 		}
 
-		internal void RemoveEventToBeProcessed<TEvent>(TEvent @event)
+		public void RemoveEventToBeProcessed<TEvent>(TEvent @event)
 			where TEvent : ICqrsEvent
 		{
 			_eventsToBeProcessed.Remove(@event);

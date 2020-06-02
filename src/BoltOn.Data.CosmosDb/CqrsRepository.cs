@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using BoltOn.Bootstrapping;
 using BoltOn.Cqrs;
 
@@ -21,7 +22,10 @@ namespace BoltOn.Data.CosmosDb
 
 		protected override void PublishEvents(TEntity entity)
 		{
-			entity.EventsToBeProcessed.ToList().ForEach(e => _eventBag.EventsToBeProcessed.Add(e));
+			entity.EventsToBeProcessed.ToList().ForEach(e =>
+			{
+				_eventBag.AddEventToBeProcessed(e, async (e) => await RemoveEventToBeProcessed(e));
+			});
 
 			if (entity.ProcessedEvents.Any() && _cqrsOptions.PurgeEventsProcessedBefore.HasValue)
 			{
@@ -29,6 +33,13 @@ namespace BoltOn.Data.CosmosDb
 				var processedEventsToBeRemoved = entity.ProcessedEvents.Where(w => w.ProcessedDate < timeStamp).ToList();
 				processedEventsToBeRemoved.ForEach(e => entity.RemoveProcessedEvent(e));
 			}
+		}
+
+		private async Task RemoveEventToBeProcessed(ICqrsEvent @event)
+		{
+			var entity = await GetByIdAsync(@event.SourceId);
+			entity.RemoveEventToBeProcessed(@event);
+			await UpdateAsync(entity);
 		}
 	}
 }
