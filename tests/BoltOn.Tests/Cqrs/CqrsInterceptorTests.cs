@@ -62,14 +62,13 @@ namespace BoltOn.Tests.Cqrs
 			await sut.RunAsync(new Mock<IRequest<string>>().Object, default, nextDelegate);
 
 			// assert
-			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										"About to dispatch EventsToBeProcessed..."));
-			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing event. Id: {successId} " +
+			logger.Verify(v => v.Debug("About to dispatch EventsToBeProcessed..."));
+			logger.Verify(v => v.Debug($"Publishing event. Id: {successId} " +
 				$"SourceType: {typeof(Student).Name}"));
-			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing event. Id: {successId2} " +
+			logger.Verify(v => v.Debug($"Publishing event. Id: {successId2} " +
 				$"SourceType: {typeof(Student).Name}"));
-			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Dispatching failed. Id: {successId}"));
-			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Dispatching failed. Id: {successId2}"));
+			logger.Verify(v => v.Debug($"Dispatching failed. Id: {successId}"), Times.Never);
+			logger.Verify(v => v.Debug($"Dispatching failed. Id: {successId2}"), Times.Never);
 			eventBag.Verify(v => v.RemoveEventToBeProcessed(It.IsAny<ICqrsEvent>()), Times.Exactly(2));
 		}
 
@@ -122,13 +121,12 @@ namespace BoltOn.Tests.Cqrs
 			await sut.RunAsync(new Mock<IRequest<string>>().Object, default, nextDelegate);
 
 			// assert
-			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										"About to dispatch EventsToBeProcessed..."));
-			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing event. Id: {failedId} " +
+			logger.Verify(v => v.Debug("About to dispatch EventsToBeProcessed..."));
+			logger.Verify(v => v.Debug($"Publishing event. Id: {failedId} " +
 				$"SourceType: {typeof(Student).Name}"));
-			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Dispatching failed. Id: {failedId}"));
-			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing event. Id: {failedId2} " +
-					$"SourceType: {typeof(Student).Name}"));
+			logger.Verify(v => v.Error($"Dispatching failed. Id: {failedId}"));
+			logger.Verify(v => v.Debug($"Publishing event. Id: {failedId2} " +
+				$"SourceType: {typeof(Student).Name}"), Times.Never);
 			Assert.True(eventBag.Object.EventsToBeProcessed.Count == 2);
 		}
 
@@ -179,14 +177,13 @@ namespace BoltOn.Tests.Cqrs
 			await sut.RunAsync(new Mock<IRequest<string>>().Object, default, nextDelegate);
 
 			// assert
-			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										"About to dispatch EventsToBeProcessed..."));
-			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing event. Id: {failedId} " +
+			logger.Verify(v => v.Debug("About to dispatch EventsToBeProcessed..."));
+			logger.Verify(v => v.Debug($"Publishing event. Id: {failedId} " +
 				$"SourceType: {typeof(Student).Name}"));
-			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Dispatching failed. Id: {failedId}"));
-			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing event. Id: {failedId2} " +
-					$"SourceType: {typeof(Student).Name}"));
-			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Dispatching failed. Id: {failedId2}"));
+			logger.Verify(v => v.Error($"Dispatching failed. Id: {failedId}"), Times.Never);
+			logger.Verify(v => v.Debug($"Publishing event. Id: {failedId2} " +
+				$"SourceType: {typeof(Student).Name}"));
+			logger.Verify(v => v.Error($"Dispatching failed. Id: {failedId2}"));
 			eventBag.Verify(v => v.RemoveEventToBeProcessed(It.IsAny<ICqrsEvent>()), Times.Once);
 		}
 
@@ -212,10 +209,10 @@ namespace BoltOn.Tests.Cqrs
 			await sut.RunAsync(new Mock<IRequest<string>>().Object, default, nextDelegate);
 
 			// assert
-			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										"About to dispatch EventsToBeProcessed..."));
-			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-										"About to dispatch ProcessedEvents..."));
+			logger.Verify(v => v.Debug("About to dispatch EventsToBeProcessed..."));
+			logger.Verify(v => v.Debug(It.Is<string>(s => s.StartsWith("Removing event. Id: "))), Times.Never);
+			//Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+			//							"About to dispatch ProcessedEvents..."));
 		}
 
 		public void Dispose()
