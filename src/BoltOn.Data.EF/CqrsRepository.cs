@@ -57,7 +57,7 @@ namespace BoltOn.Data.EF
 		{
 			var entity = await GetByIdAsync(@event.SourceId);
 			entity.RemoveEventToBeProcessed(@event);
-			await UpdateAsync(entity);
+			//await UpdateAsync(entity);
 			await DbContext.SaveChangesAsync();
 		}
 	}

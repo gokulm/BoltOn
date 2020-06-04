@@ -14,8 +14,8 @@ using Xunit;
 
 namespace BoltOn.Tests.Cqrs
 {
-    public class CqrsInterceptorTests : IDisposable
-    {
+	public class CqrsInterceptorTests : IDisposable
+	{
 		[Fact]
 		public async Task RunAsync_PurgeEventsToBeProcessed_BothEventsGetProcessed()
 		{
@@ -24,22 +24,26 @@ namespace BoltOn.Tests.Cqrs
 			var successId = Guid.NewGuid();
 			var successId2 = Guid.NewGuid();
 			var eventBag = autoMocker.GetMock<EventBag>();
-			//eventBag.Setup(s => s.EventsToBeProcessed)
-			//	.Returns(new HashSet<ICqrsEvent>
-			//	{
-			//		new StudentCreatedEvent
-			//		{
-			//			Id = successId,
-			//			SourceTypeName = typeof(Student).Name,
-			//			DestinationTypeName = typeof(Student).Name
-			//		},
-			//		new StudentUpdatedEvent
-			//		{
-			//			Id = successId2,
-			//			SourceTypeName = typeof(Student).Name,
-			//			DestinationTypeName = typeof(Student).Name
-			//		},
-			//	});
+			var removeEventToBeProcessedHandle = new Mock<Func<ICqrsEvent, Task>>();
+			var studentCreatedEvent = new StudentCreatedEvent
+			{
+				Id = successId,
+				SourceTypeName = typeof(Student).Name,
+				DestinationTypeName = typeof(Student).Name
+			};
+			var studentUpdatedEvent = new StudentUpdatedEvent
+			{
+				Id = successId2,
+				SourceTypeName = typeof(Student).Name,
+				DestinationTypeName = typeof(Student).Name
+			};
+			var eventsToBeProcessed = new Dictionary<ICqrsEvent, Func<ICqrsEvent, Task>>
+			{
+				{ studentCreatedEvent,  removeEventToBeProcessedHandle.Object },
+				{ studentUpdatedEvent,  removeEventToBeProcessedHandle.Object }
+			};
+			eventBag.Setup(s => s.EventsToBeProcessed).Returns(eventsToBeProcessed);
+
 			var logger = autoMocker.GetMock<IBoltOnLogger<CqrsInterceptor>>();
 			logger.Setup(s => s.Debug(It.IsAny<string>()))
 				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
@@ -66,149 +70,157 @@ namespace BoltOn.Tests.Cqrs
 				$"SourceType: {typeof(Student).Name}"));
 			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Dispatching failed. Id: {successId}"));
 			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Dispatching failed. Id: {successId2}"));
-			Assert.True(eventBag.Object.EventsToBeProcessed.Count == 0);
+			eventBag.Verify(v => v.RemoveEventToBeProcessed(It.IsAny<ICqrsEvent>()), Times.Exactly(2));
 		}
 
 		[Fact]
-        public async Task RunAsync_Failed1stEventsToBeProcessedOutOf2Events_BothEventsDoNotGetProcessed()
-        {
-            // arrange
-            var autoMocker = new AutoMocker();
-            var failedId = Guid.NewGuid();
-            var failedId2 = Guid.NewGuid();
-            var eventBag = autoMocker.GetMock<EventBag>();
-            //eventBag.Setup(s => s.EventsToBeProcessed)
-            //    .Returns(new HashSet<ICqrsEvent>
-            //    {
-            //        new StudentCreatedEvent
-            //        {
-            //            Id = failedId,
-            //            SourceTypeName = typeof(Student).Name,
-            //            DestinationTypeName = typeof(Student).Name
-            //        },
-            //        new StudentUpdatedEvent
-            //        {
-            //            Id = failedId2,
-            //            SourceTypeName = typeof(Student).Name,
-            //            DestinationTypeName = typeof(Student).Name
-            //        },
-            //    });
-            var logger = autoMocker.GetMock<IBoltOnLogger<CqrsInterceptor>>();
-            logger.Setup(s => s.Debug(It.IsAny<string>()))
-                .Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-            logger.Setup(s => s.Error(It.IsAny<string>()))
-                .Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-            var eventDispatcher = autoMocker.GetMock<IEventDispatcher>();
-            eventDispatcher.Setup(d => d.DispatchAsync(It.Is<ICqrsEvent>(t => t.Id == failedId), default))
-                .Throws(new Exception());
+		public async Task RunAsync_Failed1stEventsToBeProcessedOutOf2Events_BothEventsDoNotGetProcessed()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var failedId = Guid.NewGuid();
+			var failedId2 = Guid.NewGuid();
+			var eventBag = autoMocker.GetMock<EventBag>();
+			var removeEventToBeProcessedHandle = new Mock<Func<ICqrsEvent, Task>>();
 
-            var cqrsOptions = autoMocker.GetMock<CqrsOptions>();
-            cqrsOptions.Setup(s => s.PurgeEventsToBeProcessed).Returns(true);
+			var studentCreatedEvent = new StudentCreatedEvent
+			{
+				Id = failedId,
+				SourceTypeName = typeof(Student).Name,
+				DestinationTypeName = typeof(Student).Name
+			};
+			var studentUpdatedEvent = new StudentUpdatedEvent
+			{
+				Id = failedId2,
+				SourceTypeName = typeof(Student).Name,
+				DestinationTypeName = typeof(Student).Name
+			};
+			var eventsToBeProcessed = new Dictionary<ICqrsEvent, Func<ICqrsEvent, Task>>
+			{
+				{ studentCreatedEvent,  removeEventToBeProcessedHandle.Object },
+				{ studentUpdatedEvent,  removeEventToBeProcessedHandle.Object }
+			};
+			eventBag.Setup(s => s.EventsToBeProcessed).Returns(eventsToBeProcessed);
 
-            Func<IRequest<string>, CancellationToken, Task<string>> nextDelegate =
-                (r, c) => new Mock<IHandler<IRequest<string>, string>>().Object.HandleAsync(r, c);
-            var sut = autoMocker.CreateInstance<CqrsInterceptor>();
+			var logger = autoMocker.GetMock<IBoltOnLogger<CqrsInterceptor>>();
+			logger.Setup(s => s.Debug(It.IsAny<string>()))
+				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			logger.Setup(s => s.Error(It.IsAny<string>()))
+				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			var eventDispatcher = autoMocker.GetMock<IEventDispatcher>();
+			eventDispatcher.Setup(d => d.DispatchAsync(It.Is<ICqrsEvent>(t => t.Id == failedId), default))
+				.Throws(new Exception());
 
-            // act
-            await sut.RunAsync(new Mock<IRequest<string>>().Object, default, nextDelegate);
+			var cqrsOptions = autoMocker.GetMock<CqrsOptions>();
+			cqrsOptions.Setup(s => s.PurgeEventsToBeProcessed).Returns(true);
 
-            // assert
-            Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-                                        "About to dispatch EventsToBeProcessed..."));
-            Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing event. Id: {failedId} " +
-                $"SourceType: {typeof(Student).Name}"));
-            Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Dispatching failed. Id: {failedId}"));
-            Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing event. Id: {failedId2} " +
-                    $"SourceType: {typeof(Student).Name}"));
-            Assert.True(eventBag.Object.EventsToBeProcessed.Count == 2);
-        }
+			Func<IRequest<string>, CancellationToken, Task<string>> nextDelegate =
+				(r, c) => new Mock<IHandler<IRequest<string>, string>>().Object.HandleAsync(r, c);
+			var sut = autoMocker.CreateInstance<CqrsInterceptor>();
 
-        [Fact]
-        public async Task RunAsync_Failed2ndEventToBeProcessedOutOf2Events_2ndEventDoesNotGetProcessed()
-        {
-            // arrange
-            var autoMocker = new AutoMocker();
-            var failedId = Guid.NewGuid();
-            var failedId2 = Guid.NewGuid();
-            var eventBag = autoMocker.GetMock<EventBag>();
-            //eventBag.Setup(s => s.EventsToBeProcessed)
-            //    .Returns(new HashSet<ICqrsEvent>
-            //    {
-            //        new StudentCreatedEvent
-            //        {
-            //            Id = failedId,
-            //            SourceTypeName = typeof(Student).Name,
-            //            DestinationTypeName = typeof(Student).Name
-            //        },
-            //        new StudentUpdatedEvent
-            //        {
-            //            Id = failedId2,
-            //            SourceTypeName = typeof(Student).Name,
-            //            DestinationTypeName = typeof(Student).Name
-            //        },
-            //    });
-            var logger = autoMocker.GetMock<IBoltOnLogger<CqrsInterceptor>>();
-            logger.Setup(s => s.Debug(It.IsAny<string>()))
-                .Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-            logger.Setup(s => s.Error(It.IsAny<string>()))
-                .Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-            var eventDispatcher = autoMocker.GetMock<IEventDispatcher>();
-            eventDispatcher.Setup(d => d.DispatchAsync(It.Is<ICqrsEvent>(t => t.Id == failedId2), default))
-                .Throws(new Exception());
+			// act
+			await sut.RunAsync(new Mock<IRequest<string>>().Object, default, nextDelegate);
 
-            var cqrsOptions = autoMocker.GetMock<CqrsOptions>();
-            cqrsOptions.Setup(s => s.PurgeEventsToBeProcessed).Returns(true);
+			// assert
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										"About to dispatch EventsToBeProcessed..."));
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing event. Id: {failedId} " +
+				$"SourceType: {typeof(Student).Name}"));
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Dispatching failed. Id: {failedId}"));
+			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing event. Id: {failedId2} " +
+					$"SourceType: {typeof(Student).Name}"));
+			Assert.True(eventBag.Object.EventsToBeProcessed.Count == 2);
+		}
 
-            Func<IRequest<string>, CancellationToken, Task<string>> nextDelegate =
-                (r, c) => new Mock<IHandler<IRequest<string>, string>>().Object.HandleAsync(r, c);
-            var sut = autoMocker.CreateInstance<CqrsInterceptor>();
+		[Fact]
+		public async Task RunAsync_Failed2ndEventToBeProcessedOutOf2Events_2ndEventDoesNotGetProcessed()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var failedId = Guid.NewGuid();
+			var failedId2 = Guid.NewGuid();
+			var eventBag = autoMocker.GetMock<EventBag>();
+			var removeEventToBeProcessedHandle = new Mock<Func<ICqrsEvent, Task>>();
+			var studentCreatedEvent = new StudentCreatedEvent
+			{
+				Id = failedId,
+				SourceTypeName = typeof(Student).Name,
+				DestinationTypeName = typeof(Student).Name
+			};
+			var studentUpdatedEvent = new StudentUpdatedEvent
+			{
+				Id = failedId2,
+				SourceTypeName = typeof(Student).Name,
+				DestinationTypeName = typeof(Student).Name
+			};
+			var eventsToBeProcessed = new Dictionary<ICqrsEvent, Func<ICqrsEvent, Task>>
+			{
+				{ studentCreatedEvent,  removeEventToBeProcessedHandle.Object },
+				{ studentUpdatedEvent,  removeEventToBeProcessedHandle.Object }
+			};
+			eventBag.Setup(s => s.EventsToBeProcessed).Returns(eventsToBeProcessed);
+			var logger = autoMocker.GetMock<IBoltOnLogger<CqrsInterceptor>>();
+			logger.Setup(s => s.Debug(It.IsAny<string>()))
+				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			logger.Setup(s => s.Error(It.IsAny<string>()))
+				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			var eventDispatcher = autoMocker.GetMock<IEventDispatcher>();
+			eventDispatcher.Setup(d => d.DispatchAsync(It.Is<ICqrsEvent>(t => t.Id == failedId2), default))
+				.Throws(new Exception());
 
-            // act
-            await sut.RunAsync(new Mock<IRequest<string>>().Object, default, nextDelegate);
+			var cqrsOptions = autoMocker.GetMock<CqrsOptions>();
+			cqrsOptions.Setup(s => s.PurgeEventsToBeProcessed).Returns(true);
 
-            // assert
-            Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-                                        "About to dispatch EventsToBeProcessed..."));
-            Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing event. Id: {failedId} " +
-                $"SourceType: {typeof(Student).Name}"));
-            Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Dispatching failed. Id: {failedId}"));
-            Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing event. Id: {failedId2} " +
-                    $"SourceType: {typeof(Student).Name}"));
-            Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Dispatching failed. Id: {failedId2}"));
-            Assert.True(eventBag.Object.EventsToBeProcessed.Count == 1);
-        }
+			Func<IRequest<string>, CancellationToken, Task<string>> nextDelegate =
+				(r, c) => new Mock<IHandler<IRequest<string>, string>>().Object.HandleAsync(r, c);
+			var sut = autoMocker.CreateInstance<CqrsInterceptor>();
 
-        [Fact]
-        public async Task RunAsync_PurgeEventsToBeProcessedNotEnabled_EventsToBeProcessedDoNotGetPurged()
-        {
-            // arrange
-            var autoMocker = new AutoMocker();
-            var failedId = Guid.NewGuid();
-            var failedId2 = Guid.NewGuid();
-            var logger = autoMocker.GetMock<IBoltOnLogger<CqrsInterceptor>>();
-            logger.Setup(s => s.Debug(It.IsAny<string>()))
-                .Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
+			// act
+			await sut.RunAsync(new Mock<IRequest<string>>().Object, default, nextDelegate);
 
-            var cqrsOptions = autoMocker.GetMock<CqrsOptions>();
-            cqrsOptions.Setup(s => s.PurgeEventsToBeProcessed).Returns(false);
+			// assert
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										"About to dispatch EventsToBeProcessed..."));
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing event. Id: {failedId} " +
+				$"SourceType: {typeof(Student).Name}"));
+			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Dispatching failed. Id: {failedId}"));
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Publishing event. Id: {failedId2} " +
+					$"SourceType: {typeof(Student).Name}"));
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Dispatching failed. Id: {failedId2}"));
+			eventBag.Verify(v => v.RemoveEventToBeProcessed(It.IsAny<ICqrsEvent>()), Times.Once);
+		}
 
-            Func<IRequest<string>, CancellationToken, Task<string>> nextDelegate =
-                (r, c) => new Mock<IHandler<IRequest<string>, string>>().Object.HandleAsync(r, c);
-            var sut = autoMocker.CreateInstance<CqrsInterceptor>();
+		[Fact]
+		public async Task RunAsync_PurgeEventsToBeProcessedNotEnabled_EventsToBeProcessedDoNotGetPurged()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var failedId = Guid.NewGuid();
+			var failedId2 = Guid.NewGuid();
+			var logger = autoMocker.GetMock<IBoltOnLogger<CqrsInterceptor>>();
+			logger.Setup(s => s.Debug(It.IsAny<string>()))
+				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 
-            // act
-            await sut.RunAsync(new Mock<IRequest<string>>().Object, default, nextDelegate);
+			var cqrsOptions = autoMocker.GetMock<CqrsOptions>();
+			cqrsOptions.Setup(s => s.PurgeEventsToBeProcessed).Returns(false);
 
-            // assert
-            Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-                                        "About to dispatch EventsToBeProcessed..."));
-            Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
-                                        "About to dispatch ProcessedEvents..."));
-        }
+			Func<IRequest<string>, CancellationToken, Task<string>> nextDelegate =
+				(r, c) => new Mock<IHandler<IRequest<string>, string>>().Object.HandleAsync(r, c);
+			var sut = autoMocker.CreateInstance<CqrsInterceptor>();
 
-        public void Dispose()
-        {
-            CqrsTestHelper.LoggerStatements.Clear();
-        }
-    }
+			// act
+			await sut.RunAsync(new Mock<IRequest<string>>().Object, default, nextDelegate);
+
+			// assert
+			Assert.NotNull(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										"About to dispatch EventsToBeProcessed..."));
+			Assert.Null(CqrsTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										"About to dispatch ProcessedEvents..."));
+		}
+
+		public void Dispose()
+		{
+			CqrsTestHelper.LoggerStatements.Clear();
+		}
+	}
 }
