@@ -58,7 +58,7 @@ namespace BoltOn.Cqrs
 			}
 			catch (Exception ex)
 			{
-				_logger.Error($"Dispatching failed. Id: {eventId}");
+				_logger.Error($"Dispatching or purging failed. Event Id: {eventId}");
 				_logger.Error(ex);
 			}
 		}
