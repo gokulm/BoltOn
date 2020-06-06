@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Cqrs;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Data.EF
