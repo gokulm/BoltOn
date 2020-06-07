@@ -4,8 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Cqrs;
-using BoltOn.Utilities;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
@@ -17,20 +15,14 @@ namespace BoltOn.Data.CosmosDb
         where TEntity : class
         where TCosmosDbOptions : BaseCosmosDbOptions
     {
-        private readonly EventBag _eventBag;
-        private readonly IBoltOnClock _boltOnClock;
-
         protected string DatabaseName { get; }
         protected string CollectionName { get; }
         protected DocumentClient DocumentClient { get; }
         protected Uri DocumentCollectionUri { get; }
 
-        public Repository(TCosmosDbOptions options, EventBag eventBag,
-            IBoltOnClock boltOnClock, string collectionName = null)
+        public Repository(TCosmosDbOptions options, string collectionName = null)
         {
             DatabaseName = options.DatabaseName;
-            _eventBag = eventBag;
-            _boltOnClock = boltOnClock;
             CollectionName = collectionName ?? typeof(TEntity).Name.Pluralize();
             DocumentClient = new DocumentClient(new Uri(options.Uri), options.AuthorizationKey,
 				new JsonSerializerSettings
@@ -148,25 +140,8 @@ namespace BoltOn.Data.CosmosDb
             return results;
         }
 
-        private void PublishEvents(TEntity entity)
+        protected virtual void PublishEvents(TEntity entity)
         {
-            if (entity is BaseCqrsEntity baseCqrsEntity)
-            {
-                var eventsToBeProcessed = baseCqrsEntity.EventsToBeProcessed.ToList()
-                    .Where(w => !w.CreatedDate.HasValue);
-                foreach (var @event in eventsToBeProcessed)
-                {
-                    @event.CreatedDate = _boltOnClock.Now;
-                    _eventBag.EventsToBeProcessed.Add(@event);
-                }
-
-                var processedEvents = baseCqrsEntity.ProcessedEvents.ToList()
-                    .Where(w => !w.ProcessedDate.HasValue);
-                foreach (var @event in processedEvents)
-                {
-                    @event.ProcessedDate = _boltOnClock.Now;
-                }
-            }
         }        
     }
 }

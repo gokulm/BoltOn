@@ -38,9 +38,8 @@ namespace BoltOn.Cqrs
 
 			@event.SourceId = Id;
 			@event.SourceTypeName = GetType().AssemblyQualifiedName;
-			// events with CreatedDate == null are filtered in the repository. this is used 
-			// to differentiate events that were added in the current request and the existing events
-			@event.CreatedDate = null;
+			if (!@event.CreatedDate.HasValue)
+				@event.CreatedDate = DateTime.Now;
 			_eventsToBeProcessed.Add(@event);
 			return true;
 		}
@@ -54,20 +53,19 @@ namespace BoltOn.Cqrs
 			action(@event);
 			@event.DestinationId = Id;
 			@event.DestinationTypeName = GetType().AssemblyQualifiedName;
-			// events with ProcessedDate == null are filtered in the repository. this is used 
-			// to differentiate events that were added in the current request and the existing events
-			@event.ProcessedDate = null;
+			if (!@event.ProcessedDate.HasValue)
+				@event.ProcessedDate = DateTime.Now;
 			_processedEvents.Add(@event);
 			return true;
 		}
 
-		internal void RemoveEventToBeProcessed<TEvent>(TEvent @event)
+		public void RemoveEventToBeProcessed<TEvent>(TEvent @event)
 			where TEvent : ICqrsEvent
 		{
 			_eventsToBeProcessed.Remove(@event);
 		}
 
-		internal void RemoveProcessedEvent<TEvent>(TEvent @event)
+		public void RemoveProcessedEvent<TEvent>(TEvent @event)
 			where TEvent : ICqrsEvent
 		{
 			_processedEvents.Remove(@event);

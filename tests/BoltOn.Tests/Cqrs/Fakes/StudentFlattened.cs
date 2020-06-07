@@ -1,4 +1,5 @@
-﻿using BoltOn.Cqrs;
+﻿using System;
+using BoltOn.Cqrs;
 
 namespace BoltOn.Tests.Cqrs.Fakes
 {
@@ -18,6 +19,7 @@ namespace BoltOn.Tests.Cqrs.Fakes
 
 		public StudentFlattened(StudentCreatedEvent @event)
 		{
+			@event.ProcessedDate = DateTime.UtcNow.AddSeconds(-3);
 			ProcessEvent(@event, e =>
 			{
 				Id = @event.SourceId;

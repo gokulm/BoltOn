@@ -4,8 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Cqrs;
-using BoltOn.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Data.EF
@@ -14,19 +12,13 @@ namespace BoltOn.Data.EF
 		where TDbContext : DbContext
 		where TEntity : class
 	{
-		private readonly EventBag _eventBag;
-		private readonly IBoltOnClock _boltOnClock;
-
 		protected TDbContext DbContext { get; set; }
 		protected DbSet<TEntity> DbSets { get; }
 
-		public Repository(IDbContextFactory dbContextFactory, EventBag eventBag,
-			IBoltOnClock boltOnClock)
+		public Repository(IDbContextFactory dbContextFactory)
 		{
 			DbContext = dbContextFactory.Get<TDbContext>();
 			DbSets = DbContext.Set<TEntity>();
-			_eventBag = eventBag;
-			_boltOnClock = boltOnClock;
 		}
 
 		public virtual async Task<IEnumerable<TEntity>> GetAllAsync(object options = null, CancellationToken cancellationToken = default)
@@ -74,7 +66,8 @@ namespace BoltOn.Data.EF
 			await SaveChangesAsync(entity, cancellationToken);
 		}
 
-		public virtual async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null, CancellationToken cancellationToken = default)
+		public virtual async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null,
+			CancellationToken cancellationToken = default)
 		{
 			await DbSets.AddRangeAsync(entities);
 			await SaveChangesAsync(entities, cancellationToken);
@@ -83,39 +76,12 @@ namespace BoltOn.Data.EF
 
 		protected virtual async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
-			PublishEvents(entity);
 			await DbContext.SaveChangesAsync(cancellationToken);
 		}
 
 		protected virtual async Task SaveChangesAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
 		{
-			foreach (var entity in entities)
-			{
-				PublishEvents(entity);
-			}
 			await DbContext.SaveChangesAsync(cancellationToken);
-		}
-
-		private void PublishEvents(TEntity entity)
-		{
-			if (entity is BaseCqrsEntity baseCqrsEntity)
-			{
-				var eventsToBeProcessed = baseCqrsEntity.EventsToBeProcessed.ToList()
-					.Where(w => !w.CreatedDate.HasValue);
-				foreach (var @event in eventsToBeProcessed)
-				{
-					@event.CreatedDate = _boltOnClock.Now;
-					_eventBag.EventsToBeProcessed.Add(@event);
-				}
-
-				var processedEvents = baseCqrsEntity.ProcessedEvents.ToList()
-					.Where(w => !w.ProcessedDate.HasValue);
-				foreach (var @event in processedEvents)
-				{
-					@event.ProcessedDate = _boltOnClock.Now;
-					_eventBag.ProcessedEvents.Add(@event);
-				}
-			}
 		}				
 	}
 }

@@ -18,9 +18,9 @@ namespace BoltOn.Tests.Cqrs.Fakes
             });
 
             boltOnOptions.ServiceCollection.AddTransient<IRepository<Student>, 
-                Repository<Student, CqrsDbContext>>();
-            boltOnOptions.ServiceCollection.AddTransient<IRepository<StudentFlattened>, 
-                Repository<StudentFlattened, CqrsDbContext>>();
+                CqrsRepository<Student, CqrsDbContext>>();
+            boltOnOptions.ServiceCollection.AddTransient<IRepository<StudentFlattened>,
+                CqrsRepository<StudentFlattened, CqrsDbContext>>();
         }
     }
 }
