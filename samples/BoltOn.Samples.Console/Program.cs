@@ -72,7 +72,7 @@ namespace BoltOn.Samples.Console
                 options.UseSqlServer(readDbConnectionString);
             });
 
-			serviceCollection.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, SchoolReadDbContext>>();
+			serviceCollection.AddTransient<IRepository<StudentFlattened>, CqrsRepository<StudentFlattened, SchoolReadDbContext>>();
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();

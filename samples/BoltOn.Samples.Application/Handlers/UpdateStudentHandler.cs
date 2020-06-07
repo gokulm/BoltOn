@@ -8,7 +8,7 @@ using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class UpdateStudentRequest : IRequest
+	public class UpdateStudentRequest : ICommand
 	{
 		public Guid StudentId { get; set; }
 
