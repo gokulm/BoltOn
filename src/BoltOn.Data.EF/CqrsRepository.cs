@@ -25,8 +25,7 @@ namespace BoltOn.Data.EF
 
 		protected override async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
-			PublishEvents(entity);
-			await DbContext.SaveChangesAsync(cancellationToken);
+			await SaveChangesAsync(new[] { entity }, cancellationToken);
 		}
 
 		protected override async Task SaveChangesAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
@@ -61,4 +60,4 @@ namespace BoltOn.Data.EF
 			await DbContext.SaveChangesAsync();
 		}
 	}
-} 
+}
