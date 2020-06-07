@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Bootstrapping;
@@ -14,10 +13,10 @@ using Xunit;
 
 namespace BoltOn.Tests.Cqrs
 {
-	public class CqrsInterceptorTests : IDisposable
+	public class CqrsInterceptorTests 
 	{
 		[Fact]
-		public async Task RunAsync_PurgeEventsToBeProcessed_BothEventsGetProcessed()
+		public async Task RunAsync_PurgeEventsToBeProcessed_BothEventsGetProcessedAndPurged()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -45,10 +44,6 @@ namespace BoltOn.Tests.Cqrs
 			eventBag.Setup(s => s.EventsToBeProcessed).Returns(eventsToBeProcessed);
 
 			var logger = autoMocker.GetMock<IBoltOnLogger<CqrsInterceptor>>();
-			logger.Setup(s => s.Debug(It.IsAny<string>()))
-				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			logger.Setup(s => s.Error(It.IsAny<string>()))
-				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			autoMocker.GetMock<IEventDispatcher>();
 
 			var cqrsOptions = autoMocker.GetMock<CqrsOptions>();
@@ -102,10 +97,6 @@ namespace BoltOn.Tests.Cqrs
 			eventBag.Setup(s => s.EventsToBeProcessed).Returns(eventsToBeProcessed);
 
 			var logger = autoMocker.GetMock<IBoltOnLogger<CqrsInterceptor>>();
-			logger.Setup(s => s.Debug(It.IsAny<string>()))
-				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			logger.Setup(s => s.Error(It.IsAny<string>()))
-				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			var eventDispatcher = autoMocker.GetMock<IEventDispatcher>();
 			eventDispatcher.Setup(d => d.DispatchAsync(It.Is<ICqrsEvent>(t => t.Id == failedId), default))
 				.Throws(new Exception());
@@ -158,10 +149,6 @@ namespace BoltOn.Tests.Cqrs
 			};
 			eventBag.Setup(s => s.EventsToBeProcessed).Returns(eventsToBeProcessed);
 			var logger = autoMocker.GetMock<IBoltOnLogger<CqrsInterceptor>>();
-			logger.Setup(s => s.Debug(It.IsAny<string>()))
-				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
-			logger.Setup(s => s.Error(It.IsAny<string>()))
-				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			var eventDispatcher = autoMocker.GetMock<IEventDispatcher>();
 			eventDispatcher.Setup(d => d.DispatchAsync(It.Is<ICqrsEvent>(t => t.Id == failedId2), default))
 				.Throws(new Exception());
@@ -207,8 +194,6 @@ namespace BoltOn.Tests.Cqrs
 			};
 			eventBag.Setup(s => s.EventsToBeProcessed).Returns(eventsToBeProcessed);
 			var logger = autoMocker.GetMock<IBoltOnLogger<CqrsInterceptor>>();
-			logger.Setup(s => s.Debug(It.IsAny<string>()))
-				.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 
 			var cqrsOptions = autoMocker.GetMock<CqrsOptions>();
 			cqrsOptions.Setup(s => s.PurgeEventsToBeProcessed).Returns(false);
@@ -226,11 +211,6 @@ namespace BoltOn.Tests.Cqrs
 				$"SourceType: {typeof(Student).Name}"));
 			logger.Verify(v => v.Debug(It.Is<string>(s => s.StartsWith("Removing event. Id: "))), Times.Never);
 			eventBag.Verify(v => v.RemoveEventToBeProcessed(It.IsAny<ICqrsEvent>()), Times.Once);
-		}
-
-		public void Dispose()
-		{
-			CqrsTestHelper.LoggerStatements.Clear();
 		}
 	}
 }
