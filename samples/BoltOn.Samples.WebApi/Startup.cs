@@ -72,9 +72,9 @@ namespace BoltOn.Samples.WebApi
 
 			services.AddControllers();
 
-			services.AddTransient<IRepository<Student>, Repository<Student, SchoolWriteDbContext>>();
+			services.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolWriteDbContext>>();
 			services.AddTransient<IRepository<StudentType>, Repository<StudentType, SchoolWriteDbContext>>();
-			services.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, SchoolReadDbContext>>();
+			services.AddTransient<IRepository<StudentFlattened>, CqrsRepository<StudentFlattened, SchoolReadDbContext>>();
 		}
 
 		public void Configure(IApplicationBuilder app, IHostApplicationLifetime appLifetime, IWebHostEnvironment env)
