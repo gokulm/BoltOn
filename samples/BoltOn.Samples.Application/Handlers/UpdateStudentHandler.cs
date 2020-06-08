@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BoltOn.Cache;
 using BoltOn.Data;
 using BoltOn.Logging;
 using BoltOn.Requestor.Pipeline;
@@ -8,7 +9,7 @@ using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class UpdateStudentRequest : ICommand
+	public class UpdateStudentRequest : ICommand, IClearCachedResponse
 	{
 		public Guid StudentId { get; set; }
 
@@ -17,6 +18,8 @@ namespace BoltOn.Samples.Application.Handlers
 		public string LastName { get; set; }
 
 		public int StudentTypeId { get; set; }
+
+		public string CacheKey => "Students";
 	}
 
 	public class UpdateStudentHandler : IHandler<UpdateStudentRequest>

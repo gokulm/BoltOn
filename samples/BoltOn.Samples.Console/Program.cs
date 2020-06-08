@@ -36,7 +36,7 @@ namespace BoltOn.Samples.Console
 			{
 				o.BoltOnAssemblies(typeof(GetAllStudentsRequest).Assembly);
 				o.BoltOnMassTransitBusModule();
-				o.BoltOnCqrsModule();
+				o.BoltOnCqrsModule(b => b.PurgeEventsProcessedBefore = TimeSpan.FromHours(12));
 				o.BoltOnEFModule();
 			});
 
