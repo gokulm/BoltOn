@@ -37,7 +37,7 @@ BoltOn synchronizes data using pub/sub, but without using transactions, it's a s
 
 In order to implement CQRS using BoltOn, you need to do the following:
 
-* Install **BoltOn.Data.EF** or **BoltOn.Data.CosmosDb** NuGet package depending on your read/write data store.
+* Install **BoltOn.Data.EF** NuGet package depending on your read/write data store (currently CQRS is supported only for SQL using EF).
 * Install **BoltOn.Bus.MassTransit** NuGet package. Refer to [Data](../data) and [Bus](../bus) documentation to enable the corresponding modules.
 * Enable CQRS by calling BoltOnCqrsModule() in BoltOn() method.
 
@@ -57,7 +57,7 @@ Like this:
 * Create EF mapping configuration class by inheriting [`BaseCqrsEntityMapping`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseCqrsEntityMapping.cs). This takes care of serializing/deserializing EventsToBeProcessed and ProcessedEvents collections. This is done using EF's [Value Conversions](https://docs.microsoft.com/en-us/ef/core/modeling/value-conversions). Events get triggered from `RaiseEvent<TEvent>(TEvent @event)` method in the `BaseCqrsEntity` and they get processed in `ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action)`.
 * Create your events and inherit `CqrsEvent`, which implements `ICqrsEvent`, and which inturn implements Requestor's `IRequest`, and thus the events can be handled using `Requestor`.
 * Create your request and handlers, and then use the `Requestor` to process your request. Please refer to [Requestor](../requestor) documentation to create handlers.
-* Register `IRepository<TEntity>` to [EF Repository](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs) or [CosmosDb Repository](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.CosmosDb/Repository.cs).
+* Register `IRepository<TEntity>` to [EF CQRS Repository](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/CqrsRepository.cs).
 
 How does it work?
 -----------------
@@ -70,7 +70,7 @@ In this sample we have used only two tables - Student and StudentFlattened in  B
 * `StudentCreatedEvent` event inherits `CqrsEvent`. Other properties that are required to create StudentFlattened entity are added. 
 * `StudentCreatedEvent` event is triggered in the ctor by calling the base class' `RaiseEvent` method. The RaiseEvent method takes care of populating other properties like Id, SourceId, SourceTypeName and CreatedDate. 
 
-**Note:** Id property will be initialized only if we don't initialize it, whereas all the other properties listed above will be overridden by the framework. The triggered event gets marked for processing by setting the CreatedDate property to null, and it gets added to EventsToBeProcessed property only if it's not already present. 
+**Note:** Id, CreatedDate and ProcessedDate properties will be initialized only if we don't initialize them, whereas all the other properties listed above will be overridden by the framework. The triggered events get added to EventsToBeProcessed property only if they're not already present. 
 
 Here is the Student entity:
 
@@ -103,8 +103,8 @@ Here is the Student entity:
 	}
 
 
-* `IRepository<Student>` injected in the `CreateStudentHandler` is registered to use `Repository<Student>`. Please look into the Startup class in the BoltOn.Samples.WebApi project for all the other registrations.
-* When `AddAsync` of the repository is called in the handler, the repository adds the entity and on while saving changes, the events marked for processing are added to a request scoped object called `EventBag`.
+* `IRepository<Student>` injected in the `CreateStudentHandler` is registered to use `CqrsRepository<Student>`. Please look into the Startup class in the BoltOn.Samples.WebApi project for all the other registrations.
+* When `AddAsync` of the repository is called in the handler, the repository adds the entity and  while saving changes, the events marked for processing are added to a request scoped object called `EventBag`.
 * If CQRS is enabled in the Startup's BoltOn method, [`CqrsInterceptor`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/CqrsInterceptor.cs) is added to the `Requestor` pipeline. 
 * The intercepor calls [EventDispatcher](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/EventDispatcher.cs) to dispatch events that need to be processed, which inturn publishes events using `IBus`. You could write your own implementation of `IEventDispatcher` or `IBus` if the built-in classes do not satisfy your needs.
 * Even if the dispatcher or the bus fails, the events to be processed will be persisted along with the entity, as the `CqrsIntercepor` is outside the `UnitOfWorkIntercepor`, which takes care of committing the transaction.
@@ -159,13 +159,12 @@ Here is the StudentFlattened entity:
         }
 	}
 
-* `IRepository<StudentFlattened>` injected in the `StudentCreatedEventHandler` is registered to use `Repository<StudentFlattened>`. 
-* When `AddAsync` of the repository is called in the handler, the repository adds the entity and on while saving changes using the `SaveChanges` method, the processed events' ProcessedDate is populated and persisted.
-* If `IRepository<StudentFlattened>` is registered to inject CosmosDb `Repository` and appropriate CosmosDb configurations are added, data can be synced to CosmosDb.
+* `IRepository<StudentFlattened>` injected in the `StudentCreatedEventHandler` is registered to use `CqrsRepository<StudentFlattened>`. 
+* When `AddAsync` of the repository is called in the handler, the repository adds the entity and while saving changes using the `SaveChanges` method, the processed events get persisted along with the entity.
 
 **Note:**
 
-* To purge the events to be processed right after dispatching them, set CqrsOptions' **PurgeEventsToBeProcessed** property to true while bootstraping the app. 
+* By default the events to be processed get purged right after dispatching them, in case if you do not want them to be purged, set CqrsOptions' **PurgeEventsToBeProcessed** property to false while bootstraping the app. 
 
     Like this:
 
@@ -175,10 +174,23 @@ Here is the StudentFlattened entity:
             b.BoltOnAssemblies(GetType().Assembly);
             b.BoltOnEFModule();
             b.BoltOnMassTransitBusModule();
-            b.BoltOnCqrsModule(o => o.PurgeEventsToBeProcessed = true);
+            b.BoltOnCqrsModule(o => o.PurgeEventsToBeProcessed = false);
         });
 
-    It's handled using [`EventPurger`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cqrs/EventPurger.cs). You could write your own implementation of `IEventPurger` if the built-in purger do not satisfy your needs.
+    Purging is done in the `CqrsInterceptor` using a delegate that gets initialized in the `CqrsRepository`.
 
-* In case if the RabbitMq is down, EventsToBeProcessed will get persisted along with the entity, but dispatching will fail, so it's better to write an utility to go over the write store periodically and dispatch all the unprocessed events in the EventsToBeProcessed collection of every entity. Or, implement some sort of [outbox pattern](https://microservices.io/patterns/data/transactional-outbox.html). 
-* Over a period of time, **ProcessedEvents** collection could bloat the read entity, so it's better to write an utility to clear them periodically.
+* The processed events get persisted along with the read entity to mainly maintain *idempotency* i.e., the events that get dispatched more than once due to queue failure or events to processed purging failure may reach read side consumer more than once, so to prevent it, processed events get persisted so that before processing an event the collection can be checked.
+*  But, over a period of time, **ProcessedEvents** collection could bloat the read entity, so you could set CqrsOptions' **PurgeEventsProcessedBefore** to a TimeSpan while bootstrapping the application. Say you set it to TimeSpan.FromHours(12), all the events that were persisted before 12 hours will be purged.
+
+    Like this:
+
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.BoltOn(b =>
+        {
+            b.BoltOnAssemblies(GetType().Assembly);
+            b.BoltOnEFModule();
+            b.BoltOnMassTransitBusModule();
+            b.BoltOnCqrsModule(c => c.PurgeEventsProcessedBefore = TimeSpan.FromHours(12));
+        });
+
+* In case if the RabbitMq is down, dispatching will fail but EventsToBeProcessed will get persisted along with the entity; the next time when an event gets raised within the same entity, the failed events will be dispached.
