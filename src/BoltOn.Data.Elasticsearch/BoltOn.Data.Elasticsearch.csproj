@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Version>0.1.0</Version>
+    <Copyright>BoltOn</Copyright>
+    <Authors>Gokulnath Murugesan</Authors>
+    <Owners>Gokulnath Murugesan</Owners>
+    <PackageProjectUrl>https://github.com/gokulm/BoltOn</PackageProjectUrl>
+    <PackageTags>C#, .NET</PackageTags>
+    <Title>BoltOn.Data.Elasticsearch</Title>
+    <PackageId>BoltOn.Data.Elasticsearch</PackageId>
+    <Description>This is an add-on to BoltOn NuGet package to support Elasticsearch</Description>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="NEST" Version="7.6.0" />
+    <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
+  </ItemGroup>
+</Project>

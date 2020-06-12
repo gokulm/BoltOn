@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Samples.Tests", "sam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Cache", "src\BoltOn.Cache\BoltOn.Cache.csproj", "{8B264D68-CAB4-445C-AF8B-1FC028F67CD4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Data.Elasticsearch", "src\BoltOn.Data.Elasticsearch\BoltOn.Data.Elasticsearch.csproj", "{66CD2FDF-7E5C-4CDE-A0FF-74F8EDA12818}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -92,6 +94,10 @@ Global
 		{8B264D68-CAB4-445C-AF8B-1FC028F67CD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B264D68-CAB4-445C-AF8B-1FC028F67CD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B264D68-CAB4-445C-AF8B-1FC028F67CD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66CD2FDF-7E5C-4CDE-A0FF-74F8EDA12818}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66CD2FDF-7E5C-4CDE-A0FF-74F8EDA12818}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66CD2FDF-7E5C-4CDE-A0FF-74F8EDA12818}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66CD2FDF-7E5C-4CDE-A0FF-74F8EDA12818}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -110,6 +116,7 @@ Global
 		{25489C69-E070-4792-8F2D-E2870240B784} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 		{43D3ED5A-9BEB-439B-ACE3-ED011224FE7C} = {15E5CCAC-85EB-4C98-B1FA-B5DEFD213FCD}
 		{8B264D68-CAB4-445C-AF8B-1FC028F67CD4} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
+		{66CD2FDF-7E5C-4CDE-A0FF-74F8EDA12818} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {530F371A-8A38-41FE-9A1E-A03ACCDE867B}
