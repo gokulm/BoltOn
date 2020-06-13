@@ -19,6 +19,11 @@ namespace BoltOn.Data.Elasticsearch
         public Repository(TElasticsearchOptions elasticsearchOptions)
         {
             Client = new ElasticClient(elasticsearchOptions.ConnectionSettings);
+            InitializeIndexName();
+        }
+
+		public virtual void InitializeIndexName()
+        {
             IndexName = typeof(TEntity).Name.Pluralize().ToLower();
         }
 
@@ -49,10 +54,10 @@ namespace BoltOn.Data.Elasticsearch
         {
             var result = await Client.GetAsync<TEntity>(id.ToString(), idx => idx.Index(IndexName),
                 cancellationToken);
-            if (!result.IsValid)
-            {
-                throw result.OriginalException;
-            }
+            //if (!result.IsValid)
+            //{
+            //    throw result.OriginalException;
+            //}
             return result.Source;
         }
 

@@ -9,7 +9,7 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
 {
 	public static class ElasticsearchRegistrationTask
 	{
-		public static void RegisterElasticsearchFakes(this BoltOnOptions boltOnOptions)
+		public static void SetupFakes(this BoltOnOptions boltOnOptions)
 		{
 			if (IntegrationTestHelper.IsElasticsearchServer)
 			{
@@ -19,7 +19,7 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
 					e.ConnectionSettings = new Nest.ConnectionSettings(uri);
 				});
 
-				boltOnOptions.ServiceCollection.AddTransient<IRepository<Employee>, Repository<Employee, TestElasticsearchOptions>>();
+				boltOnOptions.ServiceCollection.AddTransient<BoltOn.Data.IRepository<Person>, Repository<Person, TestElasticsearchOptions>>();
 			}
 		}
 	}
