@@ -29,7 +29,7 @@ Most of the CQRS implementations found on the internet mention only about separa
 **Data store synchronization could be handled by the following ways:**
 
 
-1. Using a feature like database mirroring (if SQL server), if both the read and writes stores use the same database technology and schemas
+1. Using a feature like database mirroring (if SQL server), if both the read and writes stores use the same database technology and schemas.
 2. By persisting data in the write store and publishing an event to an enterprise bus; updating the read store could be handled by a subscriber to the event. But, this will be consistent only if persisting to the write store and publishing are part of a single transaction. As most of the buses do not support transactions, if write store persistence is successful and publishing to bus fails, the read store would be out of sync. Or, the other way, by publishing event to an enterprise bus and then persisting data in the write store. But, this also relies on transaction, else write store could be out of sync. BoltOn overcomes it using [outbox pattern](https://microservices.io/patterns/data/transactional-outbox.html).
 3. Event sourcing - there are many libraries supporting event sourcing with CQRS.
 
