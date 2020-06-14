@@ -4,7 +4,7 @@ You could create an entity by inheriting `BaseEntity<TIdType>` where TIdType is 
 
 Entity Framework Repository
 ---------------------------
-The core BoltOn package has only the [`IRepository`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs) interface, which could be used in your domain layer if you're into Domain Driven Design. 
+[`IRepository`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs) interface in the core BoltOn package is abstracted out to keep it agnostic of any particular database, so that the implementation could be changed easily while bootstrapping the application when we switch databases (which rarely happens though). The disadvantage of this abstraction is, we lose certain native features of the underlying database specific features.
 
 In order to use Entity Framework implementation of the repository, you need to do the following:
 
@@ -82,7 +82,7 @@ DbContextFactory
 ----------------
 This factory uses IServiceProvider to resolve DbContexts, and if the request implements `IQuery<>`, it sets the DbContexts' `ChangeTracker.QueryTrackingBehavior` to `QueryTrackingBehavior.NoTracking` and `ChangeTracker.AutoDetectChangesEnabled` to false with the help of `ChangeTrackerInterceptor`. 
 
-**Note:** You could disable this behavior by removing the interceptor from the pipeline using `RemoveInterceptor<TInterceptor>` extension method.
+**Note:** You could disable this behavior by removing the interceptor from the pipeline using `RemoveInterceptor<ChangeTrackerInterceptor>` extension method.
 
 CosmosDb
 --------

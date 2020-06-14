@@ -1,4 +1,4 @@
-[**BoltOn**](https://github.com/gokulm/BoltOn) is an open source application framework which can be used to build any type of .NET applications like Console, MVC, WebAPI, Windows Service etc. The components are written in such a way that they're [modular](https://en.wikipedia.org/wiki/Modular_programming), thus they can be bolted on with other components and interchanged easily, and hence the name Bolt-On. 
+[**BoltOn**](https://github.com/gokulm/BoltOn) is an open source application framework to help develop simple/modular/extensible/unit-testable .NET applications (Console, MVC, WebAPI, Windows Service etc.,) with reduced boilerplate code. The components are written in such a way that they're [modular](https://en.wikipedia.org/wiki/Modular_programming), thus they can be bolted on with other components and interchanged easily, and hence the name Bolt-On. 
 
 Installation
 ------------
@@ -63,13 +63,13 @@ This method does the following:
 
 **Note:** 
 
-* The order of the methods called is important though. If BoltOnEFModule() is called after BoltOnAssemblies(), the assemblies passed to the latter method will override the registrations.
+* The order of the methods called is important. If BoltOnEFModule() is called after BoltOnAssemblies(), the assemblies passed to the latter will override the registrations.
 * To exclude classes from registration, decorate them with `[ExcludeFromRegistration]` attribute.
 * Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other modules. Each and every module calls other extension methods to attach their own dependent modules. 
 
 TightenBolts()
 --------------
-This extension method scans all the `IPostRegistrationTask` in the assembly collection formed by BoltOn() and executes them. The post registration tasks support ctor injection.
+This extension method scans all the implementations of `IPostRegistrationTask` interface in the assemblies passed to BoltOnAssemblies() and executes them. The post registration tasks support constructor injection.
 
 To run any task that involves resolving dependencies, like seeding data using any of the registered DbContexts, implement `IPostRegistrationTask`. 
 
@@ -77,17 +77,30 @@ Example:
 
     public class CustomPostRegistrationTask : IPostRegistrationTask
     {
+        private readonly SchoolDbContext _schoolDbContext;
+
+        public CustomPostRegistrationTask(SchoolDbContext schoolDbContext)
+        {
+            _schoolDbContext = schoolDbContext;
+        }
+
         public void Run()
         {
-            var serviceProvider = context.ServiceProvider;
-            var schoolDbContext = serviceProvider.GetService<TestDbContext>();
-            testDbContext.Database.EnsureCreated();
+            _schoolDbContext.Database.EnsureCreated();
+            _schoolDbContext.Set<Student>().Add(new Student
+            {
+                Id = 1,
+                FirstName = "a",
+                LastName = "b"
+            });
+            _schoolDbContext.SaveChanges();
+            _schoolDbContext.Dispose();
         }
     }
 
 LoosenBolts()
 -------------
-This extension method scans the classes that implement `ICleanupTask` in all the bolted assemblies and execute them. This is mainly used to dispose and perform other clean-up tasks.
+This extension method scans all the implementations of `ICleanupTask` interface in the assemblies passed to BoltOnAssemblies() and executes them. This is mainly used to dispose and perform other clean-up tasks.
 
 Example:
 
