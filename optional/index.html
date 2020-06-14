@@ -146,7 +146,7 @@
             <div class="section">
               
                 <h2 id="logging">Logging</h2>
-<p>BoltOn uses .NET Core's logger internally, with just a custom adapter to help in unit testing. You could use any logging provider as you wish, or you could inherit <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Logging/BoltOnLogger.cs"><code>BoltOnLogger&lt;TType&gt;</code></a> and override the logging methods.</p>
+<p>BoltOn uses .NET Core's logger internally, with just a custom adapter to mainly support unit testing, as .NET Core's ILogger has only one method and all the other methods are extension methods. You could use any logging provider as you wish, or you could inherit <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Logging/BoltOnLogger.cs"><code>BoltOnLogger&lt;TType&gt;</code></a> and override the logging methods.</p>
 <h2 id="iqueryuncommitted">IQueryUncommitted</h2>
 <p>In case if you want a custom request type which is completely different from IQuery or ICommand in terms of the transaction isolation level or transaction timeout, you could create one something like this:</p>
 <pre><code>public interface IQueryUncommitted&lt;out TResponse&gt; : IRequest&lt;TResponse&gt;, IEnableUnitOfWorkInterceptor

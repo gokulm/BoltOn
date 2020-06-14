@@ -148,7 +148,7 @@
           <div role="main">
             <div class="section">
               
-                <p><a href="https://github.com/gokulm/BoltOn"><strong>BoltOn</strong></a> is an open source application framework which can be used to build any type of .NET applications like Console, MVC, WebAPI, Windows Service etc. The components are written in such a way that they're <a href="https://en.wikipedia.org/wiki/Modular_programming">modular</a>, thus they can be bolted on with other components and interchanged easily, and hence the name Bolt-On. </p>
+                <p><a href="https://github.com/gokulm/BoltOn"><strong>BoltOn</strong></a> is an open source application framework to help develop simple/modular/extensible/unit-testable .NET applications (Console, MVC, WebAPI, Windows Service etc.,) with reduced boilerplate code. The components are written in such a way that they're <a href="https://en.wikipedia.org/wiki/Modular_programming">modular</a>, thus they can be bolted on with other components and interchanged easily, and hence the name Bolt-On. </p>
 <h2 id="installation">Installation</h2>
 <p>To install BoltOn in your .NET application, type the following command in the Package Manager Console window:</p>
 <pre><code>PM&gt; Install-Package BoltOn
@@ -203,26 +203,39 @@
 </ul>
 <p><strong>Note:</strong> </p>
 <ul>
-<li>The order of the methods called is important though. If BoltOnEFModule() is called after BoltOnAssemblies(), the assemblies passed to the latter method will override the registrations.</li>
+<li>The order of the methods called is important. If BoltOnEFModule() is called after BoltOnAssemblies(), the assemblies passed to the latter will override the registrations.</li>
 <li>To exclude classes from registration, decorate them with <code>[ExcludeFromRegistration]</code> attribute.</li>
 <li>Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other modules. Each and every module calls other extension methods to attach their own dependent modules. </li>
 </ul>
 <h2 id="tightenbolts">TightenBolts()</h2>
-<p>This extension method scans all the <code>IPostRegistrationTask</code> in the assembly collection formed by BoltOn() and executes them. The post registration tasks support ctor injection.</p>
+<p>This extension method scans all the implementations of <code>IPostRegistrationTask</code> interface in the assemblies passed to BoltOnAssemblies() and executes them. The post registration tasks support constructor injection.</p>
 <p>To run any task that involves resolving dependencies, like seeding data using any of the registered DbContexts, implement <code>IPostRegistrationTask</code>. </p>
 <p>Example:</p>
 <pre><code>public class CustomPostRegistrationTask : IPostRegistrationTask
 {
+    private readonly SchoolDbContext _schoolDbContext;
+
+    public CustomPostRegistrationTask(SchoolDbContext schoolDbContext)
+    {
+        _schoolDbContext = schoolDbContext;
+    }
+
     public void Run()
     {
-        var serviceProvider = context.ServiceProvider;
-        var schoolDbContext = serviceProvider.GetService&lt;TestDbContext&gt;();
-        testDbContext.Database.EnsureCreated();
+        _schoolDbContext.Database.EnsureCreated();
+        _schoolDbContext.Set&lt;Student&gt;().Add(new Student
+        {
+            Id = 1,
+            FirstName = "a",
+            LastName = "b"
+        });
+        _schoolDbContext.SaveChanges();
+        _schoolDbContext.Dispose();
     }
 }
 </code></pre>
 <h2 id="loosenbolts">LoosenBolts()</h2>
-<p>This extension method scans the classes that implement <code>ICleanupTask</code> in all the bolted assemblies and execute them. This is mainly used to dispose and perform other clean-up tasks.</p>
+<p>This extension method scans all the implementations of <code>ICleanupTask</code> interface in the assemblies passed to BoltOnAssemblies() and executes them. This is mainly used to dispose and perform other clean-up tasks.</p>
 <p>Example:</p>
 <pre><code>public class CleanupTask : ICleanupTask
 {
@@ -288,5 +301,5 @@
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2020-06-09 10:23:02
+Build Date UTC : 2020-06-14 23:39:48
 -->

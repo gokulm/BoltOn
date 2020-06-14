@@ -148,7 +148,7 @@
                 <h2 id="entity">Entity</h2>
 <p>You could create an entity by inheriting <code>BaseEntity&lt;TIdType&gt;</code> where TIdType is the type of the Id property.</p>
 <h2 id="entity-framework-repository">Entity Framework Repository</h2>
-<p>The core BoltOn package has only the <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs"><code>IRepository</code></a> interface, which could be used in your domain layer if you're into Domain Driven Design. </p>
+<p><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs"><code>IRepository</code></a> interface in the core BoltOn package is abstracted out to keep it agnostic of any particular database, so that the implementation could be changed easily while bootstrapping the application when we switch databases (which rarely happens though). The disadvantage of this abstraction is, we lose certain native features of the underlying database specific features.</p>
 <p>In order to use Entity Framework implementation of the repository, you need to do the following:</p>
 <ul>
 <li>Install <strong>BoltOn.Data.EF</strong> NuGet package.</li>
@@ -221,7 +221,7 @@ public class StudentRepository : Repository&lt;Student, SchoolDbContext&gt;, ISt
 <p><strong>Note:</strong> Create your own repository like StudentRepository only if you want to override the Repository class' methods or if you want to add methods, else just register <code>IRepository&lt;Student&gt;</code> to <code>Repository&lt;Student, SchoolDbContext&gt;</code></p>
 <h2 id="dbcontextfactory">DbContextFactory</h2>
 <p>This factory uses IServiceProvider to resolve DbContexts, and if the request implements <code>IQuery&lt;&gt;</code>, it sets the DbContexts' <code>ChangeTracker.QueryTrackingBehavior</code> to <code>QueryTrackingBehavior.NoTracking</code> and <code>ChangeTracker.AutoDetectChangesEnabled</code> to false with the help of <code>ChangeTrackerInterceptor</code>. </p>
-<p><strong>Note:</strong> You could disable this behavior by removing the interceptor from the pipeline using <code>RemoveInterceptor&lt;TInterceptor&gt;</code> extension method.</p>
+<p><strong>Note:</strong> You could disable this behavior by removing the interceptor from the pipeline using <code>RemoveInterceptor&lt;ChangeTrackerInterceptor&gt;</code> extension method.</p>
 <h2 id="cosmosdb">CosmosDb</h2>
 <p>In order to use CosmosDb, you need do the following:</p>
 <ul>
