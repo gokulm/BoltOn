@@ -23,6 +23,13 @@ namespace BoltOn.Data.EF
 			_cqrsOptions = cqrsOptions;
 		}
 
+		public async override Task DeleteAsync(object id, object options = null, CancellationToken cancellationToken = default)
+		{
+			var entity = await GetByIdAsync(id, cancellationToken);
+			DbSets.Remove(entity);
+			await SaveChangesAsync(entity, cancellationToken);
+		}
+
 		protected override async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
 			await SaveChangesAsync(new[] { entity }, cancellationToken);

@@ -100,14 +100,12 @@ namespace BoltOn.Data.CosmosDb
                 await DocumentClient.UpsertDocumentAsync(DocumentCollectionUri, entity, cancellationToken: cancellationToken);
 		}
 
-		public virtual async Task DeleteAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
+		public virtual async Task DeleteAsync(object id, object options = null, CancellationToken cancellationToken = default)
 		{
-			PublishEvents(entity);
-			dynamic entityWithId = entity;
 			if (options is RequestOptions requestOptions)
-				await DocumentClient.DeleteDocumentAsync(GetDocumentUri(entityWithId.Id.ToString()), requestOptions);
+				await DocumentClient.DeleteDocumentAsync(GetDocumentUri(id.ToString()), requestOptions);
 			else
-				await DocumentClient.DeleteDocumentAsync(GetDocumentUri(entityWithId.Id.ToString()));
+				await DocumentClient.DeleteDocumentAsync(GetDocumentUri(id.ToString()));
 		}
 
         public virtual async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null, CancellationToken cancellationToken = default)

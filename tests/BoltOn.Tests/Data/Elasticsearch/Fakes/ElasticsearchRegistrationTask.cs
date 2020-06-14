@@ -19,7 +19,7 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
 					e.ConnectionSettings = new Nest.ConnectionSettings(uri);
 				});
 
-				boltOnOptions.ServiceCollection.AddTransient<BoltOn.Data.IRepository<Person>, Repository<Person, TestElasticsearchOptions>>();
+				boltOnOptions.ServiceCollection.AddTransient<IRepository<Student>, Repository<Student, TestElasticsearchOptions>>();
 			}
 		}
 	}

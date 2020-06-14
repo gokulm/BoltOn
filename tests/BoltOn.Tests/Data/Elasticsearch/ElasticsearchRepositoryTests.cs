@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using BoltOn.Data;
 using BoltOn.Data.Elasticsearch;
@@ -12,9 +13,10 @@ namespace BoltOn.Tests.Data.Elasticsearch
 	[Collection("IntegrationTests")]
 	public class ElasticsearchRepositoryTests : IDisposable
 	{
-		private readonly IRepository<Person> _sut;
+		private static readonly IRepository<Student> _sut;
+		private static readonly IServiceProvider _serviceProvider;
 
-		public ElasticsearchRepositoryTests()
+		static ElasticsearchRepositoryTests()
 		{
 			IntegrationTestHelper.IsElasticsearchServer = true;
 			IntegrationTestHelper.IsSeedElasticsearch = true;
@@ -29,13 +31,13 @@ namespace BoltOn.Tests.Data.Elasticsearch
 
 			serviceCollection.AddElasticsearch<TestElasticsearchOptions>(
 				t => t.ConnectionSettings = new Nest.ConnectionSettings(new Uri("http://127.0.0.1:9200")));
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
+			_serviceProvider = serviceCollection.BuildServiceProvider();
+			_serviceProvider.TightenBolts();
 
 			if (!IntegrationTestHelper.IsElasticsearchServer)
 				return;
 
-			_sut = serviceProvider.GetService<IRepository<Person>>();
+			_sut = _serviceProvider.GetService<IRepository<Student>>();
 		}
 
 		[Fact]
@@ -44,46 +46,45 @@ namespace BoltOn.Tests.Data.Elasticsearch
 			// arrange
 			if (!IntegrationTestHelper.IsElasticsearchServer)
 				return;
-			var id = Guid.Parse("84d19d30-a395-4983-b0fa-4caff052eacb");
-			var person = new Person { Id = id };
+			var id = 10;
 
 			// act
-		   await _sut.DeleteAsync(person);
+			await _sut.DeleteAsync(10);
 
 			// assert
 			var queryResult = await _sut.GetByIdAsync(id);
 			Assert.Null(queryResult);
 		}
 
-		//[Fact]
-		//public async Task GetByIdAsync_WhenRecordExists_ReturnsRecord()
-		//{
-		//	// arrange
-		//	if (!IntegrationTestHelper.IsElasticsearchServer)
-		//		return;
-		//	var id = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
+		[Fact]
+		public async Task GetByIdAsync_WhenRecordExists_ReturnsRecord()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsElasticsearchServer)
+				return;
+			var id = 3;
 
-		//	// act
-		//	//var result = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(1) });
+			// act
+			var result = await _sut.GetByIdAsync(id);
 
-		//	//// assert
-		//	//Assert.NotNull(result);
-		//	//Assert.Equal("john", result.FirstName);
-		//}
+			// assert
+			Assert.NotNull(result);
+			Assert.Equal("john", result.FirstName);
+		}
 
-		//[Fact]
-		//public async Task GetAllAsync_WhenRecordsExist_ReturnsAllTheRecords()
-		//{
-		//	// arrange
-		//	if (!IntegrationTestHelper.IsElasticsearchServer)
-		//		return;
+		[Fact]
+		public async Task GetAllAsync_WhenRecordsExist_ReturnsAllTheRecords()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsElasticsearchServer)
+				return;
 
-		//	// act
-		//	var result = await _sut.GetAllAsync();
+			// act
+			var result = await _sut.GetAllAsync();
 
-		//	// assert
-		//	//Assert.True(result.Count() > 1);
-		//}
+			// assert
+			Assert.True(result.Count() > 1);
+		}
 
 		//[Fact]
 		//public async Task FindByAsync_WhenRecordDoesNotExist_ReturnsNull()
@@ -172,12 +173,10 @@ namespace BoltOn.Tests.Data.Elasticsearch
 
 		public void Dispose()
 		{
-			if (IntegrationTestHelper.IsElasticsearchServer)
-			{
-				var id = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
-				//var student = new StudentFlattened { Id = id };
-				//_sut.DeleteAsync(student, new RequestOptions { PartitionKey = new PartitionKey(1) }).GetAwaiter().GetResult();
-			}
+			//if (IntegrationTestHelper.IsElasticsearchServer && IntegrationTestHelper.IsSeedElasticsearch)
+			//{
+			//	_serviceProvider.LoosenBolts();
+			//}
 		}
 	}
 }
