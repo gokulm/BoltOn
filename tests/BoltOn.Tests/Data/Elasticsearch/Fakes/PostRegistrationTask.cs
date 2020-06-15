@@ -20,8 +20,8 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
 				_ = client.IndexDocument(new Student
 				{
 					Id = 1,
-					FirstName = "a",
-					LastName = "b",
+					FirstName = "John",
+					LastName = "Smith",
 				});
 				_ = client.IndexDocument(new Student
 				{
@@ -42,18 +42,6 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
 					LastName = "b"
 				});
 			}
-		}
-	}
-
-	public class CleanupTask : ICleanupTask
-	{
-		public void Run()
-		{
-			var settings = new ConnectionSettings(new Uri("http://127.0.0.1:9200"))
-					   .DefaultIndex("students");
-
-			var client = new ElasticClient(settings);
-			client.Indices.Delete("students");
 		}
 	}
 }

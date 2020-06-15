@@ -257,7 +257,7 @@ namespace BoltOn.Tests.Data.EF
 			var student = await _sut.GetByIdAsync(10);
 
 			// act
-			await _sut.DeleteAsync(student);
+			await _sut.DeleteAsync(10);
 
 			// assert
 			var queryResult = await _sut.GetByIdAsync(10);

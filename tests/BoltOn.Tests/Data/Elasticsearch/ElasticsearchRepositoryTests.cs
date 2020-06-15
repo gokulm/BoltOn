@@ -1,8 +1,6 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using BoltOn.Data;
-using BoltOn.Data.Elasticsearch;
 using BoltOn.Tests.Data.Elasticsearch.Fakes;
 using BoltOn.Tests.Other;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,33 +9,13 @@ using Xunit;
 namespace BoltOn.Tests.Data.Elasticsearch
 {
 	[Collection("IntegrationTests")]
-	public class ElasticsearchRepositoryTests : IDisposable
+	public class ElasticsearchRepositoryTests : IClassFixture<ElasticDbFixture>
 	{
-		private static readonly IRepository<Student> _sut;
-		private static readonly IServiceProvider _serviceProvider;
+		private readonly ElasticDbFixture _elasticDbFixture;
 
-		static ElasticsearchRepositoryTests()
+		public ElasticsearchRepositoryTests(ElasticDbFixture elasticDbFixture)
 		{
-			IntegrationTestHelper.IsElasticsearchServer = true;
-			IntegrationTestHelper.IsSeedElasticsearch = true;
-
-			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn(options =>
-				{
-					options.BoltOnElasticsearchModule();
-					options.SetupFakes();
-				});
-
-			serviceCollection.AddElasticsearch<TestElasticsearchOptions>(
-				t => t.ConnectionSettings = new Nest.ConnectionSettings(new Uri("http://127.0.0.1:9200")));
-			_serviceProvider = serviceCollection.BuildServiceProvider();
-			_serviceProvider.TightenBolts();
-
-			if (!IntegrationTestHelper.IsElasticsearchServer)
-				return;
-
-			_sut = _serviceProvider.GetService<IRepository<Student>>();
+			_elasticDbFixture = elasticDbFixture;
 		}
 
 		[Fact]
@@ -47,12 +25,13 @@ namespace BoltOn.Tests.Data.Elasticsearch
 			if (!IntegrationTestHelper.IsElasticsearchServer)
 				return;
 			var id = 10;
+			var sut = _elasticDbFixture.ServiceProvider.GetService<IRepository<Student>>();
 
 			// act
-			await _sut.DeleteAsync(10);
+			await sut.DeleteAsync(10);
 
 			// assert
-			var queryResult = await _sut.GetByIdAsync(id);
+			var queryResult = await sut.GetByIdAsync(id);
 			Assert.Null(queryResult);
 		}
 
@@ -62,28 +41,47 @@ namespace BoltOn.Tests.Data.Elasticsearch
 			// arrange
 			if (!IntegrationTestHelper.IsElasticsearchServer)
 				return;
-			var id = 3;
+			var id = 1;
+			var sut = _elasticDbFixture.ServiceProvider.GetService<IRepository<Student>>();
 
 			// act
-			var result = await _sut.GetByIdAsync(id);
+			var result = await sut.GetByIdAsync(id);
 
 			// assert
 			Assert.NotNull(result);
-			Assert.Equal("john", result.FirstName);
+			Assert.Equal("John", result.FirstName);
 		}
 
 		[Fact]
-		public async Task GetAllAsync_WhenRecordsExist_ReturnsAllTheRecords()
+		public async Task GetByIdAsync_WhenRecordDoesNotExist_ReturnsNull()
 		{
 			// arrange
 			if (!IntegrationTestHelper.IsElasticsearchServer)
 				return;
+			var id = 3;
+			var sut = _elasticDbFixture.ServiceProvider.GetService<IRepository<Student>>();
 
 			// act
-			var result = await _sut.GetAllAsync();
+			var result = await sut.GetByIdAsync(id);
 
 			// assert
-			Assert.True(result.Count() > 1);
+			Assert.Null(result);
+		}
+
+		[Fact]
+		public async Task GetAllAsync_WhenRecordsExist_ReturnsRecords()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsElasticsearchServer)
+				return;
+			var sut = _elasticDbFixture.ServiceProvider.GetService<IRepository<Student>>();
+
+			// act
+			System.Threading.Thread.Sleep(1000);
+			var result = await sut.GetAllAsync();
+
+			// assert
+			Assert.True(result.Count() > 2);
 		}
 
 		//[Fact]
@@ -170,13 +168,5 @@ namespace BoltOn.Tests.Data.Elasticsearch
 		//	//Assert.NotNull(actualResult);
 		//	//Assert.Equal(expectedResult, actualResult);
 		//}
-
-		public void Dispose()
-		{
-			//if (IntegrationTestHelper.IsElasticsearchServer && IntegrationTestHelper.IsSeedElasticsearch)
-			//{
-			//	_serviceProvider.LoosenBolts();
-			//}
-		}
 	}
 }

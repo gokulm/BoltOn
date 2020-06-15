@@ -100,7 +100,7 @@ namespace BoltOn.Data.Elasticsearch
 		}
 
 		/// <summary>
-		/// Elasticsearch NEST library does not support search by predicate, so use NEST's SearchRequest
+		/// Elasticsearch NEST library does not support search by predicate, so pass NEST's SearchRequest
 		/// object for options parameter and null for predicate parameter
 		/// </summary>
 		public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
