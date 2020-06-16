@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Tests.Data.Elasticsearch.Fakes
 {
-	public static class ElasticsearchRegistrationTask
+	public static class Extensions
 	{
 		public static void SetupFakes(this BoltOnOptions boltOnOptions)
 		{

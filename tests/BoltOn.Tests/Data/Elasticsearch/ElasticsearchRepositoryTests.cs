@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BoltOn.Data;
 using BoltOn.Tests.Data.Elasticsearch.Fakes;
 using BoltOn.Tests.Other;
 using Microsoft.Extensions.DependencyInjection;
+using Nest;
 using Xunit;
 
 namespace BoltOn.Tests.Data.Elasticsearch
@@ -25,13 +27,12 @@ namespace BoltOn.Tests.Data.Elasticsearch
 			if (!IntegrationTestHelper.IsElasticsearchServer)
 				return;
 			var id = 10;
-			var sut = _elasticDbFixture.ServiceProvider.GetService<IRepository<Student>>();
 
 			// act
-			await sut.DeleteAsync(10);
+			await _elasticDbFixture.SubjectUnderTest.DeleteAsync(10);
 
 			// assert
-			var queryResult = await sut.GetByIdAsync(id);
+			var queryResult = await _elasticDbFixture.SubjectUnderTest.GetByIdAsync(id);
 			Assert.Null(queryResult);
 		}
 
@@ -42,10 +43,9 @@ namespace BoltOn.Tests.Data.Elasticsearch
 			if (!IntegrationTestHelper.IsElasticsearchServer)
 				return;
 			var id = 1;
-			var sut = _elasticDbFixture.ServiceProvider.GetService<IRepository<Student>>();
 
 			// act
-			var result = await sut.GetByIdAsync(id);
+			var result = await _elasticDbFixture.SubjectUnderTest.GetByIdAsync(id);
 
 			// assert
 			Assert.NotNull(result);
@@ -59,10 +59,9 @@ namespace BoltOn.Tests.Data.Elasticsearch
 			if (!IntegrationTestHelper.IsElasticsearchServer)
 				return;
 			var id = 3;
-			var sut = _elasticDbFixture.ServiceProvider.GetService<IRepository<Student>>();
 
 			// act
-			var result = await sut.GetByIdAsync(id);
+			var result = await _elasticDbFixture.SubjectUnderTest.GetByIdAsync(id);
 
 			// assert
 			Assert.Null(result);
@@ -74,11 +73,10 @@ namespace BoltOn.Tests.Data.Elasticsearch
 			// arrange
 			if (!IntegrationTestHelper.IsElasticsearchServer)
 				return;
-			var sut = _elasticDbFixture.ServiceProvider.GetService<IRepository<Student>>();
 
 			// act
 			System.Threading.Thread.Sleep(1000);
-			var result = await sut.GetAllAsync();
+			var result = await _elasticDbFixture.SubjectUnderTest.GetAllAsync();
 
 			// assert
 			Assert.True(result.Count() > 2);
@@ -90,12 +88,21 @@ namespace BoltOn.Tests.Data.Elasticsearch
 		//	// arrange
 		//	if (!IntegrationTestHelper.IsElasticsearchServer)
 		//		return;
+		//	var sut = _elasticDbFixture.ServiceProvider.GetService<BoltOn.Data.IRepository<Student>>();
+		//	var searchRequest = new SearchRequest<Student>
+		//	{
+		//		Query = new TermQuery
+		//		{
+		//			Field = "firstName",
+		//			Value = "John"
+		//		}
+		//	};
 
 		//	// act
-		//	//var result = (await _sut.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "johnny")).FirstOrDefault();
+		//	var result = (await sut.FindByAsync(null, searchRequest)).FirstOrDefault();
 
-		//	//// assert
-		//	//Assert.Null(result);
+		//	// assert
+		//	Assert.Null(result);
 		//}
 
 		//[Fact]
@@ -130,43 +137,45 @@ namespace BoltOn.Tests.Data.Elasticsearch
 		//	//Assert.Equal("smith jr", result.LastName);
 		//}
 
-		//[Fact]
-		//public async Task AddAsync_AddNewEntity_ReturnsAddedEntity()
-		//{
-		//	// arrange
-		//	if (!IntegrationTestHelper.IsElasticsearchServer)
-		//		return;
-		//	var id = Guid.NewGuid();
-		//	var employee = new Employee { Id = id, FirstName = "meghan", LastName = "doe" };
+		[Fact]
+		public async Task AddAsync_AddNewEntity_ReturnsAddedEntity()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsElasticsearchServer)
+				return;
+			var id = 4;
+			var student = new Student { Id = id, FirstName = "meghan", LastName = "doe" };
 
-		//	//// act
-		//	await _sut.AddAsync(employee);
+			// act
+			await _elasticDbFixture.SubjectUnderTest.AddAsync(student);
 
-		//	// assert
-		//	var result = await _sut.GetByIdAsync(id);
-		//	Assert.NotNull(result);
-		//	Assert.Equal("meghan", result.FirstName);
-		//}
+			// assert
+			var result = await _elasticDbFixture.SubjectUnderTest.GetByIdAsync(id);
+			Assert.NotNull(result);
+			Assert.Equal("meghan", result.FirstName);
+		}
 
-		//[Fact]
-		//public async Task AddAsync_AddNewEntities_ReturnsAddedEntities()
-		//{
-		//	// arrange
-		//	if (!IntegrationTestHelper.IsElasticsearchServer)
-		//		return;
-		//	var id1 = Guid.NewGuid();
-		//	var employee1 = new Employee { Id = id1, FirstName = "will", LastName = "smith" };
-		//	var id2 = Guid.NewGuid();
-		//	var employee2 = new Employee { Id = id2, FirstName = "john", LastName = "smith" };
-		//	//var employees = new List<Employee> { employee1, employee2 };
+		[Fact]
+		public async Task AddAsync_AddNewEntities_ReturnsAddedEntities()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsElasticsearchServer)
+				return;
+			var id1 = 5;
+			var student1 = new Student { Id = id1, FirstName = "will", LastName = "smith" };
+			var id2 = 6;
+			var student2 = new Student { Id = id2, FirstName = "brad", LastName = "pitt" };
+			var employees = new List<Student> { student1, student2 };
 
-		//	//// act
-		//	//var actualResult = await _sut.AddAsync(employees);
+			// act
+			var actualResult = await _elasticDbFixture.SubjectUnderTest.AddAsync(employees);
 
-		//	//// assert
-		//	//var expectedResult = await _sut.GetAllAsync();
-		//	//Assert.NotNull(actualResult);
-		//	//Assert.Equal(expectedResult, actualResult);
-		//}
+			// assert
+			System.Threading.Thread.Sleep(1000);
+			var expectedResult = await _elasticDbFixture.SubjectUnderTest.GetAllAsync();
+			Assert.NotNull(actualResult);
+			Assert.True(expectedResult.Any(a => a.FirstName == "will" && a.LastName == "smith"));
+			Assert.True(expectedResult.Any(a => a.FirstName == "brad" && a.LastName == "pitt"));
+		}
 	}
 }

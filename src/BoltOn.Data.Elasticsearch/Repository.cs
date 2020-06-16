@@ -64,17 +64,9 @@ namespace BoltOn.Data.Elasticsearch
 		public virtual async Task<IEnumerable<TEntity>> GetAllAsync(object options = null,
 			CancellationToken cancellationToken = default)
 		{
-			if (options != null && options is SearchRequest searchRequest)
-			{
-				var result = await Client.SearchAsync<TEntity>(searchRequest, cancellationToken);
-				return result.Documents;
-			}
-			else
-			{
-				var result = await Client.SearchAsync<TEntity>(search =>
-					search.MatchAll().Index(IndexName), cancellationToken);
-				return result.Documents;
-			}
+			var result = await Client.SearchAsync<TEntity>(search =>
+				search.MatchAll().Index(IndexName), cancellationToken);
+			return result.Documents;
 		}
 
 		public virtual async Task UpdateAsync(TEntity entity, object options = null,
@@ -107,11 +99,12 @@ namespace BoltOn.Data.Elasticsearch
 			object options = null, CancellationToken cancellationToken = default)
 		{
 			if (predicate != null)
-				throw new NotImplementedException("Bolton Elasticsearch does not support search by predicate. " +
-					"Pass null to the predicate param and NEST'S SearchRequest object for the options param");
+				throw new NotImplementedException("BoltOnn Elasticsearch does not support search by predicate. " +
+					"Pass null for predicate param and NEST'S SearchRequest object for the options param");
 
 			if (options != null && options is SearchRequest searchRequest)
 			{
+				//var result = await Client.SearchAsync<TEntity>(s => s.Index(IndexName).Query(searchRequest.Query), cancellationToken);
 				var result = await Client.SearchAsync<TEntity>(searchRequest, cancellationToken);
 				if (!result.IsValid)
 				{

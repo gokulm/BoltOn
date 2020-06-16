@@ -27,6 +27,7 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
                 t => t.ConnectionSettings = new Nest.ConnectionSettings(new Uri("http://127.0.0.1:9200")));
             ServiceProvider = serviceCollection.BuildServiceProvider();
             ServiceProvider.TightenBolts();
+            SubjectUnderTest = ServiceProvider.GetService<IRepository<Student>>();
         }
 
         public void Dispose()
@@ -35,5 +36,7 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
         }
 
         public IServiceProvider ServiceProvider { get; set; }
+
+        public IRepository<Student> SubjectUnderTest { get; set; }
     }
 }
