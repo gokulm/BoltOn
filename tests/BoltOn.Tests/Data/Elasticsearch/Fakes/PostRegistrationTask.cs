@@ -38,7 +38,7 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
 				_ = client.IndexDocument(new Student
 				{
 					Id = 11,
-					FirstName = "record to be deleted",
+					FirstName = "record to be updated",
 					LastName = "b"
 				});
 			}

@@ -12,19 +12,19 @@ namespace BoltOn.Data.Elasticsearch
 		where TEntity : class
 		where TElasticsearchOptions : BaseElasticsearchOptions
 	{
-		protected string IndexName { get; set; }
+		protected virtual string IndexName
+		{
+			get
+			{
+				return typeof(TEntity).Name.Pluralize().ToLower();
+			}
+		}
 
 		public ElasticClient Client { get; }
 
 		public Repository(TElasticsearchOptions elasticsearchOptions)
 		{
 			Client = new ElasticClient(elasticsearchOptions.ConnectionSettings);
-			InitializeIndexName();
-		}
-
-		public virtual void InitializeIndexName()
-		{
-			IndexName = typeof(TEntity).Name.Pluralize().ToLower();
 		}
 
 		public virtual async Task<TEntity> AddAsync(TEntity entity, object options = null,
@@ -104,13 +104,12 @@ namespace BoltOn.Data.Elasticsearch
 
 			if (options != null && options is SearchRequest searchRequest)
 			{
-				//var result = await Client.SearchAsync<TEntity>(s => s.Index(IndexName).Query(searchRequest.Query), cancellationToken);
-				var result = await Client.SearchAsync<TEntity>(searchRequest, cancellationToken);
+				Func<QueryContainerDescriptor<TEntity>, QueryContainer> func = (q) => searchRequest.Query;
+				var result = await Client.SearchAsync<TEntity>(s => s.Index(IndexName).Query(func), cancellationToken);
 				if (!result.IsValid)
 				{
 					throw result.OriginalException;
 				}
-
 				return result.Documents;
 			}
 			return null;

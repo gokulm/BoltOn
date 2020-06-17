@@ -1,5 +1,6 @@
 ﻿using System;
 using BoltOn.Bootstrapping;
+using BoltOn.Tests.Other;
 using Nest;
 
 namespace BoltOn.Tests.Data.Elasticsearch.Fakes
@@ -8,11 +9,14 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
     {
         public void Run()
         {
-            var settings = new ConnectionSettings(new Uri("http://127.0.0.1:9200"))
+            if (IntegrationTestHelper.IsElasticsearchServer && IntegrationTestHelper.IsSeedElasticsearch)
+            {
+                var settings = new ConnectionSettings(new Uri("http://127.0.0.1:9200"))
                        .DefaultIndex("students");
 
-            var client = new ElasticClient(settings);
-            client.Indices.Delete("students");
+                var client = new ElasticClient(settings);
+                client.Indices.Delete("students");
+            }
         }
     }
 }

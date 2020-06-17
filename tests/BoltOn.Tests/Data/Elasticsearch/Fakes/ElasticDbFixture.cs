@@ -32,8 +32,8 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
 
         public void Dispose()
         {
-            ServiceProvider.LoosenBolts();
-        }
+			//ServiceProvider.LoosenBolts();
+		}
 
         public IServiceProvider ServiceProvider { get; set; }
 
