@@ -99,7 +99,8 @@ namespace BoltOn.Tests.Data.Elasticsearch
 
 			// assert
 			Assert.NotNull(result);
-			Assert.Equal("John", result.FirstName);
+			Assert.True(result.Count() == 1);
+			Assert.Equal("John", result.First().FirstName);
 		}
 
 		[Fact]
@@ -114,11 +115,14 @@ namespace BoltOn.Tests.Data.Elasticsearch
 			};
 
 			// act
+			System.Threading.Thread.Sleep(300);
 			var result = await Search(searchRequest);
 
 			// assert
+			System.Threading.Thread.Sleep(300);
 			Assert.NotNull(result);
-			Assert.Equal("John", result.FirstName);
+			Assert.True(result.Count() > 0);
+			Assert.Equal("John", result.First().FirstName);
 		}
 
 		[Fact]
@@ -137,7 +141,28 @@ namespace BoltOn.Tests.Data.Elasticsearch
 
 			// assert
 			Assert.NotNull(result);
-			Assert.Equal("John", result.FirstName);
+			Assert.True(result.Count() == 1);
+			Assert.Equal("John", result.First().FirstName);
+		}
+
+		[Fact]
+		public async Task FindByAsync_AndSearch_ReturnRecord()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsElasticsearchServer)
+				return;
+			var searchRequest = new SearchRequest
+			{
+				Query = new MatchQuery { Field = "firstName", Query = "John" } &&
+				new MatchQuery { Field = "lastName", Query = "Smith" }
+			};
+
+			// act
+			var result = await Search(searchRequest);
+
+			// assert
+			Assert.NotNull(result);
+			Assert.True(result.Count() == 1);
 		}
 
 		[Fact]
@@ -155,7 +180,8 @@ namespace BoltOn.Tests.Data.Elasticsearch
 			var result = await Search(searchRequest);
 
 			// assert
-			Assert.Null(result);
+			Assert.NotNull(result);
+			Assert.True(result.Count() == 0);
 		}
 
 		[Fact]
@@ -233,14 +259,13 @@ namespace BoltOn.Tests.Data.Elasticsearch
 			Assert.Null(queryResult);
 		}
 
-		public async Task<Student> Search(SearchRequest searchRequest)
+		public async Task<IEnumerable<Student>> Search(SearchRequest searchRequest)
 		{
 			// arrange
 			var sut = _elasticDbFixture.ServiceProvider.GetService<BoltOn.Data.IRepository<Student>>();
 
 			// act
-			var result = (await sut.FindByAsync(null, searchRequest)).FirstOrDefault();
-			return result;
+			return await sut.FindByAsync(null, searchRequest);
 		}
 	}
 }

@@ -31,6 +31,12 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
 				});
 				_ = client.IndexDocument(new Student
 				{
+					Id = 9,
+					FirstName = "Jaden",
+					LastName = "Smith",
+				});
+				_ = client.IndexDocument(new Student
+				{
 					Id = 10,
 					FirstName = "record to be deleted",
 					LastName = "b"
