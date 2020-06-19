@@ -60,8 +60,10 @@ namespace BoltOn.Data.EF
 
 		public virtual async Task DeleteAsync(object id, object options = null, CancellationToken cancellationToken = default)
 		{
-			DbSets.Remove(await GetByIdAsync(id, cancellationToken));
-			await DbContext.SaveChangesAsync(cancellationToken);
+			// todo: delete without loading
+			var entity = await GetByIdAsync(id, cancellationToken);
+			DbSets.Remove(entity);
+			await SaveChangesAsync(entity, cancellationToken);
 		}
 
 		public virtual async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null,
