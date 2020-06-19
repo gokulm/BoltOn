@@ -10,8 +10,8 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
     {
         public ElasticDbFixture()
         {
-            IntegrationTestHelper.IsElasticsearchServer = true;
-            IntegrationTestHelper.IsSeedElasticsearch = true;
+            IntegrationTestHelper.IsElasticsearchServer = false;
+            IntegrationTestHelper.IsSeedElasticsearch = false;
             var serviceCollection = new ServiceCollection();
             serviceCollection
                 .BoltOn(options =>
@@ -19,9 +19,6 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
                     options.BoltOnElasticsearchModule();
                     options.SetupFakes();
                 });
-
-            if (!IntegrationTestHelper.IsElasticsearchServer)
-                return;
 
             serviceCollection.AddElasticsearch<TestElasticsearchOptions>(
                 t => t.ConnectionSettings = new Nest.ConnectionSettings(new Uri("http://127.0.0.1:9200")));
@@ -32,7 +29,7 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
 
         public void Dispose()
         {
-			//ServiceProvider.LoosenBolts();
+			ServiceProvider.LoosenBolts();
 		}
 
         public IServiceProvider ServiceProvider { get; set; }
