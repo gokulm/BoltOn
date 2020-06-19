@@ -14,6 +14,6 @@ namespace BoltOn.Data
 		Task<TEntity> AddAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default);
 		Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null, CancellationToken cancellationToken = default);
 		Task UpdateAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default);
-		Task DeleteAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default);
+		Task DeleteAsync(object id, object options = null, CancellationToken cancellationToken = default);
 	}
 }

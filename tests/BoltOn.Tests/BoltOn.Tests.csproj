@@ -44,6 +44,8 @@
         <Folder Include="Bootstrapping\Fakes\" />
         <Folder Include="Cache\" />
         <Folder Include="Cache\Fakes\" />
+        <Folder Include="Data\Elasticsearch\" />
+        <Folder Include="Data\Elasticsearch\Fakes\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
@@ -51,5 +53,6 @@
         <ProjectReference Include="..\..\src\BoltOn.Bus.MassTransit\BoltOn.Bus.MassTransit.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Data.CosmosDb\BoltOn.Data.CosmosDb.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Cache\BoltOn.Cache.csproj" />
+        <ProjectReference Include="..\..\src\BoltOn.Data.Elasticsearch\BoltOn.Data.Elasticsearch.csproj" />
     </ItemGroup>
 </Project>
