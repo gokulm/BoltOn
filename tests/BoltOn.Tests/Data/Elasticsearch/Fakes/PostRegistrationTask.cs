@@ -1,7 +1,6 @@
 ﻿using System;
 using BoltOn.Bootstrapping;
 using BoltOn.Tests.Other;
-using Elasticsearch.Net;
 using Nest;
 
 namespace BoltOn.Tests.Data.Elasticsearch.Fakes
@@ -34,6 +33,10 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
 					Id = 9,
 					FirstName = "Jaden",
 					LastName = "Smith",
+					Addresses = new System.Collections.Generic.List<Address>
+					{
+						new Address { Street = "12 Sparkman Drive", City = "Battle Creek"}
+					}
 				});
 				_ = client.IndexDocument(new Student
 				{

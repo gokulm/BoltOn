@@ -104,6 +104,26 @@ namespace BoltOn.Tests.Data.Elasticsearch
 		}
 
 		[Fact]
+		public async Task FindByAsync_ChildNodeSearch_ReturnsRecord()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsElasticsearchServer)
+				return;
+			var searchRequest = new SearchRequest
+			{
+				Query = new MatchQuery { Field = "addresses.street", Query = "sparkman" }
+			};
+
+			// act
+			var result = await Search(searchRequest);
+
+			// assert
+			Assert.NotNull(result);
+			Assert.True(result.Count() == 1);
+			Assert.Equal("Jaden", result.First().FirstName);
+		}
+
+		[Fact]
 		public async Task FindByAsync_CaseInsensitive_ReturnsRecord()
 		{
 			// arrange
