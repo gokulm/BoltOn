@@ -1,9 +1,9 @@
-Requestor is the backbone of BoltOn. It follows the [Request/Response](https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html) and [Command Message](https://www.enterpriseintegrationpatterns.com/patterns/messaging/CommandMessage.html) patterns. 
+Requestor is the backbone of BoltOn. It follows the [Request/Response](https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html) and [Command Message](https://www.enterpriseintegrationpatterns.com/patterns/messaging/CommandMessage.html) patterns. Since it doesn't depend on any particular framework like WebAPI, MVC etc., and comprises of pure C# classes, its handlers could be added to application/service layer and could be invoked from any .NET application.
 
 The main source of inspiration for the Requestor was [Agatha](https://github.com/davybrion/Agatha), and various other projects like [Brighter](https://github.com/BrighterCommand/Brighter) and [MediatR](https://github.com/jbogard/MediatR).
 
 Request, Response and Handler
-------------------------------------
+-
 In order to use the Requestor, you need to create a request by implementing any of these interfaces:
 
 * `IRequest`
@@ -47,7 +47,7 @@ Example:
 		}
 	}
 
-* Finally, inject `IRequestor` anywhere in your application, like a controller in WebAPI or a MVC application, and call `ProcessAsync` method. Check out the implemenation [Requestor](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/Requestor.cs) to know the internals.
+* To invoke the handler, you need to inject `IRequestor` anywhere in your application, like a controller in WebAPI or a MVC application, and call `ProcessAsync` method. Check out the implemenation [Requestor](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/Requestor.cs) to know the internals.
 
 Example:
 
@@ -74,10 +74,10 @@ Interceptors
 Every request flows thru a set of built-in interceptors (mentioned below), and the execution of them can be controlled by implementing appropriate marker interfaces. 
 
 * `StopwatchInterceptor`
-<br> This interceptor logs the time that a request enters and exits the pipeline. This interceptor is enabled only if the request implements `IEnableInterceptor<StopwatchInterceptor>` interface.
+<br> This interceptor logs the time that a request enters and exits the pipeline. This interceptor is enabled by default as `IRequest` implements `IEnableInterceptor<StopwatchInterceptor>` interface.
 
 * `UnitOfWorkInterceptor`
-<br> This interceptor starts a transaction with an isolation level based on the interface like IQuery or ICommand etc., (mentioned above) that the request implements. This interceptor is enabled only if the request implements `IEnableInterceptor<UnitOfWorkInterceptor>` interface
+<br> This interceptor starts a transaction with an isolation level based on the interface like IQuery or ICommand etc., (mentioned above) that the request implements. This interceptor is enabled only if the request implements `IEnableInterceptor<UnitOfWorkInterceptor>` interface. `ICommand` and `IQuery` interfaces implement `IEnableInterceptor<UnitOfWorkInterceptor>`.
 
 You could create an interceptor by implementing `IInterceptor` interface, like [this](../optional/#interceptor). If you want to control the execution of an interceptor based on the incoming request, you can make the request implement `IEnableInterceptor<TInterceptor>` and add a check something like this:
 
@@ -99,8 +99,8 @@ You could create an interceptor by implementing `IInterceptor` interface, like [
 Unit of Work
 ------------
 
-* If you use Requestor and implement any of the interfaces like IQuery or ICommand, starting or committing unit of work will be done automatically using `UnitOfWorkInterceptor`, as both IQuery and ICommand implement `IEnableInterceptor<UnitOfWorkInterceptor>`.
+* If you use Requestor and implement any of the interfaces like IQuery or ICommand, starting or committing unit of work will be done automatically using `UnitOfWorkInterceptor`, as both `IQuery` and `ICommand` implement `IEnableInterceptor<UnitOfWorkInterceptor>`.
 * If you're not using Requestor and if you want to start a unit of work, you could just use .NET's TransactionScope or call Get method in `IUnitOfWorkManager` by passing `UnitOfWorkOptions` with TransactionScopeOption, IsolationLevel and TransactionTimeout set based on your needs. The default transaction isolation level is `IsolationLevel.ReadCommitted`. 
 * The `Get` method of `UnitOfWorkManager` can be called only once, an exception will be thrown if it's called again. 
-* In case if you want to change the default transaction isolation level for all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement `IUnitOfWorkOptionsBuilder` like [this](../optional/#unitofworkoptionsbuilder) or inherit `UnitOfWorkOptionsBuilder` and override the Build method.
+* In case if you want to change the default transaction isolation level of all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement `IUnitOfWorkOptionsBuilder` like [this](../optional/#unitofworkoptionsbuilder) or inherit `UnitOfWorkOptionsBuilder` and override the Build method.
 

@@ -1,6 +1,6 @@
 Logging
 -------
-BoltOn uses .NET Core's logger internally, with just a custom adapter to help in unit testing. You could use any logging provider as you wish, or you could inherit [`BoltOnLogger<TType>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Logging/BoltOnLogger.cs) and override the logging methods.
+BoltOn uses .NET Core's logger internally, with just a custom adapter to mainly support unit testing, as .NET Core's ILogger has only one method and all the other methods are extension methods. You could use any logging provider as you wish, or you could inherit [`BoltOnLogger<TType>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Logging/BoltOnLogger.cs) and override the logging methods.
 
 IQueryUncommitted
 -----------------
