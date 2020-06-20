@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BoltOn.Data;
 using BoltOn.Tests.Data.CosmosDb.Fakes;
 using BoltOn.Tests.Other;
 using Microsoft.Azure.Documents;
@@ -151,16 +150,8 @@ namespace BoltOn.Tests.Data.CosmosDb
 			// assert
 			var expectedResult = await _cosmosDbFixture.SubjectUnderTest.GetAllAsync(new RequestOptions { PartitionKey = new PartitionKey(2) });
 			Assert.NotNull(actualResult);
-			Assert.Equal(expectedResult, actualResult);
-		}
-
-		public void Dispose()
-		{
-			//if (IntegrationTestHelper.IsCosmosDbServer)
-			//{
-			//	var id = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
-			//	_sut.DeleteAsync(id, new RequestOptions { PartitionKey = new PartitionKey(1) }).GetAwaiter().GetResult();
-			//}
+			Assert.NotNull(expectedResult.FirstOrDefault(f => f.FirstName == "meghan" && f.LastName == "doe"));
+			Assert.NotNull(expectedResult.FirstOrDefault(f => f.FirstName == "john" && f.LastName == "smith"));
 		}
 	}
 }
