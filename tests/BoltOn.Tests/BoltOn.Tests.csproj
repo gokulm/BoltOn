@@ -46,6 +46,7 @@
         <Folder Include="Cache\Fakes\" />
         <Folder Include="Data\Elasticsearch\" />
         <Folder Include="Data\Elasticsearch\Fakes\" />
+        <Folder Include="Data\CosmosDb\Fakes\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />

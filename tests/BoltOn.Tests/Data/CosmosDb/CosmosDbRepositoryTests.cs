@@ -3,40 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BoltOn.Data;
-using BoltOn.Data.CosmosDb;
+using BoltOn.Tests.Data.CosmosDb.Fakes;
 using BoltOn.Tests.Other;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace BoltOn.Tests.Data.CosmosDb
 {
+
 	[Collection("IntegrationTests")]
-	public class CosmosDbRepositoryTests : IDisposable
+	public class CosmosDbRepositoryTests : IClassFixture<CosmosDbFixture>
 	{
-		private readonly IRepository<StudentFlattened> _sut;
+		private readonly CosmosDbFixture _cosmosDbFixture;
 
-		public CosmosDbRepositoryTests()
+		public CosmosDbRepositoryTests(CosmosDbFixture cosmosDbFixture)
 		{
-			// this flag can be set to true for [few] tests. Running all the tests with this set to true might slow down.
-			IntegrationTestHelper.IsCosmosDbServer = false;
-			IntegrationTestHelper.IsSeedCosmosDbData = true;
-
-			var serviceCollection = new ServiceCollection();
-			serviceCollection
-				.BoltOn(options =>
-				{
-					options.BoltOnCosmosDbModule();
-					options.RegisterCosmosdbFakes();
-				});
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-
-			if (!IntegrationTestHelper.IsCosmosDbServer)
-				return;
-
-			_sut = serviceProvider.GetService<IRepository<StudentFlattened>>();
+			_cosmosDbFixture = cosmosDbFixture;
 		}
 
 		[Fact]
@@ -46,13 +29,13 @@ namespace BoltOn.Tests.Data.CosmosDb
 			if (!IntegrationTestHelper.IsCosmosDbServer)
 				return;
 			var id = Guid.Parse("ff96d626-3911-4c78-b337-00d7ecd2eadd");
-			var studentFlattened = new StudentFlattened { Id = id };
 
 			// act
-			await _sut.DeleteAsync(studentFlattened, new RequestOptions { PartitionKey = new PartitionKey(1) });
+			await _cosmosDbFixture.SubjectUnderTest.DeleteAsync(id,
+				new RequestOptions { PartitionKey = new PartitionKey(1) });
 
 			// assert
-			var queryResult = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(1) });
+			var queryResult = await _cosmosDbFixture.SubjectUnderTest.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(1) });
 			Assert.Null(queryResult);
 		}
 
@@ -65,7 +48,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			var id = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
 
 			// act
-			var result = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(1) });
+			var result = await _cosmosDbFixture.SubjectUnderTest.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(1) });
 
 			// assert
 			Assert.NotNull(result);
@@ -80,7 +63,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 				return;
 
 			// act
-			var result = await _sut.GetAllAsync();
+			var result = await _cosmosDbFixture.SubjectUnderTest.GetAllAsync();
 
 			// assert
 			Assert.True(result.Count() > 1);
@@ -94,7 +77,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 				return;
 
 			// act
-			var result = (await _sut.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "johnny")).FirstOrDefault();
+			var result = (await _cosmosDbFixture.SubjectUnderTest.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "johnny")).FirstOrDefault();
 
 			// assert
 			Assert.Null(result);
@@ -108,7 +91,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 				return;
 
 			// act
-			var result = (await _sut.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "john")).FirstOrDefault();
+			var result = (await _cosmosDbFixture.SubjectUnderTest.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "john")).FirstOrDefault();
 
 			// assert
 			Assert.NotNull(result);
@@ -124,10 +107,10 @@ namespace BoltOn.Tests.Data.CosmosDb
 			var student = new StudentFlattened { Id = id, LastName = "smith jr", FirstName = "john", StudentTypeId = 1 };
 
 			// act
-			await _sut.UpdateAsync(student, new RequestOptions { PartitionKey = new PartitionKey(1) });
+			await _cosmosDbFixture.SubjectUnderTest.UpdateAsync(student, new RequestOptions { PartitionKey = new PartitionKey(1) });
 
 			// assert
-			var result = (await _sut.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "john")).FirstOrDefault();
+			var result = (await _cosmosDbFixture.SubjectUnderTest.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "john")).FirstOrDefault();
 			Assert.NotNull(result);
 			Assert.Equal("smith jr", result.LastName);
 		}
@@ -142,10 +125,10 @@ namespace BoltOn.Tests.Data.CosmosDb
 			var studentFlattened = new StudentFlattened { Id = id, StudentTypeId = 2, FirstName = "meghan", LastName = "doe" };
 
 			// act
-			await _sut.AddAsync(studentFlattened);
+			await _cosmosDbFixture.SubjectUnderTest.AddAsync(studentFlattened);
 
 			// assert
-			var result = await _sut.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(2) });
+			var result = await _cosmosDbFixture.SubjectUnderTest.GetByIdAsync(id, new RequestOptions { PartitionKey = new PartitionKey(2) });
 			Assert.NotNull(result);
 			Assert.Equal("meghan", result.FirstName);
 		}
@@ -163,22 +146,21 @@ namespace BoltOn.Tests.Data.CosmosDb
 			var studentsFlattened = new List<StudentFlattened> { student1Flattened, student2Flattened };
 
 			// act
-			var actualResult = await _sut.AddAsync(studentsFlattened);
+			var actualResult = await _cosmosDbFixture.SubjectUnderTest.AddAsync(studentsFlattened, new RequestOptions { PartitionKey = new PartitionKey(2) });
 
 			// assert
-			var expectedResult = await _sut.GetAllAsync(new RequestOptions { PartitionKey = new PartitionKey(2) });
+			var expectedResult = await _cosmosDbFixture.SubjectUnderTest.GetAllAsync(new RequestOptions { PartitionKey = new PartitionKey(2) });
 			Assert.NotNull(actualResult);
 			Assert.Equal(expectedResult, actualResult);
 		}
 
 		public void Dispose()
 		{
-			if (IntegrationTestHelper.IsCosmosDbServer)
-			{
-				var id = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
-				var student = new StudentFlattened { Id = id };
-				_sut.DeleteAsync(student, new RequestOptions { PartitionKey = new PartitionKey(1) }).GetAwaiter().GetResult();
-			}
+			//if (IntegrationTestHelper.IsCosmosDbServer)
+			//{
+			//	var id = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
+			//	_sut.DeleteAsync(id, new RequestOptions { PartitionKey = new PartitionKey(1) }).GetAwaiter().GetResult();
+			//}
 		}
 	}
 }

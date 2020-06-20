@@ -7,9 +7,9 @@ using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BoltOn.Tests.Data.CosmosDb
+namespace BoltOn.Tests.Data.CosmosDb.Fakes
 {
-	public static class CosmosDbRegistrationTask 
+	public static class Extensions 
 	{
 		public static void RegisterCosmosdbFakes(this BoltOnOptions boltOnOptions)
 		{
@@ -17,9 +17,9 @@ namespace BoltOn.Tests.Data.CosmosDb
 			{
 				var cosmosDbOptions = new TestSchoolCosmosDbOptions
 				{
-					Uri = "",
-					AuthorizationKey = "",
-					DatabaseName = ""
+					Uri = "https://bolton-cosmosdb.documents.azure.com:443/",
+					AuthorizationKey = "55Ta2AiEedmWAR69AwvVlwbnGbKJAj93AXXSNehOsi7pBGlFPjSp3xDf0d7GfO9mb47Xfj4fWhaDUks4xFvkuw==",
+					DatabaseName = "studentsdb"
 				};
 				boltOnOptions.ServiceCollection.AddCosmosDb<TestSchoolCosmosDbOptions>(options =>
 				{
@@ -27,6 +27,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 					options.AuthorizationKey = cosmosDbOptions.AuthorizationKey;
 					options.DatabaseName = cosmosDbOptions.DatabaseName;
 				});
+				boltOnOptions.ServiceCollection.AddSingleton(cosmosDbOptions);
 
                 using var client = new DocumentClient(new Uri(cosmosDbOptions.Uri), cosmosDbOptions.AuthorizationKey);
                 client.CreateDatabaseIfNotExistsAsync(new Database { Id = cosmosDbOptions.DatabaseName }).GetAwaiter().GetResult();

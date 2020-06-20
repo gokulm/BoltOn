@@ -4,7 +4,7 @@ using BoltOn.Data;
 using BoltOn.Tests.Other;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BoltOn.Tests.Data.CosmosDb
+namespace BoltOn.Tests.Data.CosmosDb.Fakes
 {
 	public class PostRegistrationTask : IPostRegistrationTask
 	{
