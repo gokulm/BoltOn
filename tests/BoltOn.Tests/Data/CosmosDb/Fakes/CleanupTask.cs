@@ -3,24 +3,26 @@ using BoltOn.Bootstrapping;
 using BoltOn.Tests.Other;
 using Microsoft.Azure.Documents.Client;
 using BoltOn.Data.CosmosDb;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Tests.Data.CosmosDb.Fakes
 {
 	public class CleanupTask : ICleanupTask
     {
-		private readonly TestSchoolCosmosDbOptions _cosmosDbOptions;
+		private readonly IServiceProvider _serviceProvider;
 
-		public CleanupTask(TestSchoolCosmosDbOptions cosmosDbOptions)
+		public CleanupTask(IServiceProvider serviceProvider)
 		{
-			_cosmosDbOptions = cosmosDbOptions;
+			_serviceProvider = serviceProvider;
 		}
 
         public void Run()
         {
             if (IntegrationTestHelper.IsCosmosDbServer && IntegrationTestHelper.IsSeedCosmosDbData)
             {
-                using var client = new DocumentClient(new Uri(_cosmosDbOptions.Uri), _cosmosDbOptions.AuthorizationKey);
-                client.DeleteDocumentCollectionAsync(UriFactory.CreateDocumentCollectionUri(_cosmosDbOptions.DatabaseName, nameof(StudentFlattened).Pluralize())).GetAwaiter().GetResult();
+                var cosmosDbOptions = _serviceProvider.GetService<TestSchoolCosmosDbOptions>();
+                using var client = new DocumentClient(new Uri(cosmosDbOptions.Uri), cosmosDbOptions.AuthorizationKey);
+                client.DeleteDocumentCollectionAsync(UriFactory.CreateDocumentCollectionUri(cosmosDbOptions.DatabaseName, nameof(StudentFlattened).Pluralize())).GetAwaiter().GetResult();
             }
         }
     }
