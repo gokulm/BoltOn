@@ -66,6 +66,9 @@
     <li class="toctree-l2"><a href="#entity">Entity</a></li>
     
 
+    <li class="toctree-l2"><a href="#irepository">IRepository</a></li>
+    
+
     <li class="toctree-l2"><a href="#entity-framework-repository">Entity Framework Repository</a></li>
     
 
@@ -73,6 +76,9 @@
     
 
     <li class="toctree-l2"><a href="#cosmosdb">CosmosDb</a></li>
+    
+
+    <li class="toctree-l2"><a href="#elasticsearch">Elasticsearch</a></li>
     
 
     </ul>
@@ -147,8 +153,10 @@
               
                 <h2 id="entity">Entity</h2>
 <p>You could create an entity by inheriting <code>BaseEntity&lt;TIdType&gt;</code> where TIdType is the type of the Id property.</p>
+<h2 id="irepository">IRepository</h2>
+<p><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs"><code>IRepository</code></a> interface in the core BoltOn package is abstracted out to keep it agnostic of any particular database, so that the implementation could be changed easily while bootstrapping the application when we switch databases (which rarely happens though). </p>
+<p>The disadvantage of this abstraction is, we lose certain native features of the underlying database specific features, as it isn't easy to come up with a common IRepository interface to support all the databases. So, please feel free to override the existing implementation or come up with your own implemenation for some of the missing methods.</p>
 <h2 id="entity-framework-repository">Entity Framework Repository</h2>
-<p><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs"><code>IRepository</code></a> interface in the core BoltOn package is abstracted out to keep it agnostic of any particular database, so that the implementation could be changed easily while bootstrapping the application when we switch databases (which rarely happens though). The disadvantage of this abstraction is, we lose certain native features of the underlying database specific features.</p>
 <p>In order to use Entity Framework implementation of the repository, you need to do the following:</p>
 <ul>
 <li>Install <strong>BoltOn.Data.EF</strong> NuGet package.</li>
@@ -204,8 +212,12 @@ public class StudentMapping : IEntityTypeConfiguration&lt;Student&gt;
             .WithOne(p =&gt; p.Student);
     }
 }
-
-// Repository
+</code></pre>
+<p>and register like this:</p>
+<pre><code>serviceCollection.AddTransient&lt;IRepository&lt;Student&gt;, Repository&lt;Student, SchoolDbContext&gt;&gt;();
+</code></pre>
+<p>If you want to override the Repository class' methods or if you want to add methods, create your own repository, like this:</p>
+<pre><code>// Repository
 public interface IStudentRepository : IRepository&lt;Student&gt;
 {
 }
@@ -218,7 +230,6 @@ public class StudentRepository : Repository&lt;Student, SchoolDbContext&gt;, ISt
     }
 }
 </code></pre>
-<p><strong>Note:</strong> Create your own repository like StudentRepository only if you want to override the Repository class' methods or if you want to add methods, else just register <code>IRepository&lt;Student&gt;</code> to <code>Repository&lt;Student, SchoolDbContext&gt;</code></p>
 <h2 id="dbcontextfactory">DbContextFactory</h2>
 <p>This factory uses IServiceProvider to resolve DbContexts, and if the request implements <code>IQuery&lt;&gt;</code>, it sets the DbContexts' <code>ChangeTracker.QueryTrackingBehavior</code> to <code>QueryTrackingBehavior.NoTracking</code> and <code>ChangeTracker.AutoDetectChangesEnabled</code> to false with the help of <code>ChangeTrackerInterceptor</code>. </p>
 <p><strong>Note:</strong> You could disable this behavior by removing the interceptor from the pipeline using <code>RemoveInterceptor&lt;ChangeTrackerInterceptor&gt;</code> extension method.</p>
@@ -259,8 +270,12 @@ public class Student : BaseEntity&lt;string&gt;
     public int StudentId { get; set; }
     public string FirstName { get; set; }
 }
-
-// Repository
+</code></pre>
+<p>and register like this:</p>
+<pre><code>serviceCollection.AddTransient&lt;IRepository&lt;Student&gt;, Repository&lt;Student, SchoolCosmosDbOptions&gt;&gt;();
+</code></pre>
+<p>If you want to override the Repository class' methods or if you want to add methods, create your own repository, like this:</p>
+<pre><code>// Repository
 public interface IStudentRepository : IRepository&lt;Student&gt;
 {
 }
@@ -275,9 +290,55 @@ public class StudentRepository : Repository&lt;Student, SchoolCosmosDbOptions&gt
 </code></pre>
 <p><strong>Note:</strong> </p>
 <ul>
-<li>Create your own repository like StudentRepository only if you want to override the Repository class' methods or if you want to add methods, else just register <code>IRepository&lt;Student&gt;</code> to <code>Repository&lt;Student, SchoolCosmosDbOptions&gt;</code></li>
 <li>While using any property in CosmosDb query, make sure property name matches exactly as it is in stored in the document collection.</li>
+<li>Since EF 3.0+ supports CosmosDb, feel free to use EF directly instead of BoltOn.Data.CosmosDb</li>
 </ul>
+<h2 id="elasticsearch">Elasticsearch</h2>
+<p>BoltOn.Data.Elasticsearch uses <a href="https://www.nuget.org/packages/NEST/">NEST</a> library internally.</p>
+<p>In order to use Elasticsearch, you need do the following:</p>
+<ul>
+<li>Install <strong>BoltOn.Data.Elasticsearch</strong> NuGet package.</li>
+<li>Call <code>BoltOnElasticsearchModule()</code> in your startup's BoltOn() method.</li>
+<li>Create an entity by inheriting <code>BaseEntity&lt;TIdType&gt;</code>. The inheritance is not mandatory though.</li>
+<li>Create an options class by inheriting <code>BaseElasticsearchOptions</code> class. </li>
+<li>Use AddElasticsearch extension method to initialize NEST library's ConnectionSettings.</li>
+<li>Inherit <code>Repository&lt;TEntity, TElasticsearchOptions&gt;</code> to create a repository for your entity.</li>
+<li>Here is the implementation <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.Elasticsearch/Repository.cs"><code>Repository&lt;TEntity, TElasticsearchOptions&gt;</code></a>.</li>
+</ul>
+<p>Example:</p>
+<pre><code>services.BoltOn(options =&gt;
+{
+    options.BoltOnElasticsearchModule();
+});
+
+services.AddElasticsearch&lt;SchoolElasticDbOptions&gt;(options =&gt;
+{
+    options.ConnectionSettings = new Nest.ConnectionSettings(new Uri("http://127.0.0.1:9200"));
+});
+
+public class SchoolElasticDbOptions : BaseElasticsearchOptions
+{
+}
+
+// Entity
+public class Student : BaseEntity&lt;int&gt;
+{
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+}
+</code></pre>
+<p>and register like this:</p>
+<pre><code>serviceCollection.AddTransient&lt;IRepository&lt;Student&gt;, Repository&lt;Student, SchoolElasticDbOptions&gt;&gt;()
+</code></pre>
+<p><strong>Note:</strong> The existing FindByAsync doesn't support find by expression, so pass null for the predicate param and NEST's <code>SearchRequest</code> for the options param.  </p>
+<p>Example:</p>
+<pre><code>var searchRequest = new SearchRequest
+{
+    Query = new MatchQuery { Field = "firstName", Query = "John" }
+};
+
+repository.FindByAsync(null, searchRequest)
+</code></pre>
               
             </div>
           </div>
