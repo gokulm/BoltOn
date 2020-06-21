@@ -1,26 +1,27 @@
 ﻿using System;
 using BoltOn.Bootstrapping;
-using BoltOn.Data;
 using BoltOn.Data.CosmosDb;
 using BoltOn.Tests.Other;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BoltOn.Tests.Data.CosmosDb
+namespace BoltOn.Tests.Data.CosmosDb.Fakes
 {
-	public static class CosmosDbRegistrationTask 
+	public static class Extensions 
 	{
 		public static void RegisterCosmosdbFakes(this BoltOnOptions boltOnOptions)
 		{
+			var cosmosDbOptions = new TestSchoolCosmosDbOptions
+			{
+				Uri = "",
+				AuthorizationKey = "==",
+				DatabaseName = "studentsdb"
+			};
+			boltOnOptions.ServiceCollection.AddSingleton(cosmosDbOptions);
+
 			if (IntegrationTestHelper.IsCosmosDbServer)
 			{
-				var cosmosDbOptions = new TestSchoolCosmosDbOptions
-				{
-					Uri = "",
-					AuthorizationKey = "",
-					DatabaseName = ""
-				};
 				boltOnOptions.ServiceCollection.AddCosmosDb<TestSchoolCosmosDbOptions>(options =>
 				{
 					options.Uri = cosmosDbOptions.Uri;
@@ -35,9 +36,7 @@ namespace BoltOn.Tests.Data.CosmosDb
                 documentCollection.PartitionKey.Paths.Add("/studentTypeId");
                 client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(cosmosDbOptions.DatabaseName),
                     documentCollection).GetAwaiter().GetResult();
-            }
-
-			boltOnOptions.ServiceCollection.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, TestSchoolCosmosDbOptions>>();
+			}
 		}
 	}
 }

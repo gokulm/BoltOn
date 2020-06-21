@@ -32,14 +32,25 @@ namespace BoltOn.Data.CosmosDb
             DocumentCollectionUri = UriFactory.CreateDocumentCollectionUri(DatabaseName, CollectionName);
         }
 
-        public virtual async Task<TEntity> AddAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity> GetByIdAsync(object id, object options = null, CancellationToken cancellationToken = default)
         {
-            PublishEvents(entity);
-            if (options is RequestOptions requestOptions)
-                await DocumentClient.CreateDocumentAsync(DocumentCollectionUri, entity, requestOptions, cancellationToken: cancellationToken);
-            else
-                await DocumentClient.CreateDocumentAsync(DocumentCollectionUri, entity, cancellationToken: cancellationToken);
-            return entity;
+            try
+            {
+                if (options is RequestOptions requestOptions)
+                {
+                    return await DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()),
+                        requestOptions, cancellationToken);
+                }
+                return await DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()), cancellationToken: cancellationToken);
+            }
+            catch (DocumentClientException e)
+            {
+                if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return null;
+                }
+                throw;
+            }
         }
 
         public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
@@ -70,25 +81,24 @@ namespace BoltOn.Data.CosmosDb
             return await GetResultsFromDocumentQuery(orderedQueryable.AsDocumentQuery(), cancellationToken);
         }
 
-        public virtual async Task<TEntity> GetByIdAsync(object id, object options = null, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity> AddAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
         {
-            try
+            PublishEvents(entity);
+            if (options is RequestOptions requestOptions)
+                await DocumentClient.CreateDocumentAsync(DocumentCollectionUri, entity, requestOptions, cancellationToken: cancellationToken);
+            else
+                await DocumentClient.CreateDocumentAsync(DocumentCollectionUri, entity, cancellationToken: cancellationToken);
+            return entity;
+        }
+
+        public virtual async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null, CancellationToken cancellationToken = default)
+        {
+			// todo: find a way to add entities as a collection instead of iterating every entity
+            foreach (var entity in entities)
             {
-                if (options is RequestOptions requestOptions)
-                {
-                    return await DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()),
-                        requestOptions, cancellationToken);
-                }
-                return await DocumentClient.ReadDocumentAsync<TEntity>(GetDocumentUri(id.ToString()), cancellationToken: cancellationToken);
+                await AddAsync(entity, options, cancellationToken);
             }
-            catch (DocumentClientException e)
-            {
-                if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    return null;
-                }
-                throw;
-            }
+            return entities;
         }
 
         public virtual async Task UpdateAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
@@ -106,21 +116,6 @@ namespace BoltOn.Data.CosmosDb
 				await DocumentClient.DeleteDocumentAsync(GetDocumentUri(id.ToString()), requestOptions);
 			else
 				await DocumentClient.DeleteDocumentAsync(GetDocumentUri(id.ToString()));
-		}
-
-        public virtual async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null, CancellationToken cancellationToken = default)
-        {
-            foreach (var entity in entities)
-            {
-                PublishEvents(entity);
-            }
-
-            if (options is RequestOptions requestOptions)
-                await DocumentClient.CreateDocumentCollectionAsync(DocumentCollectionUri, entities as DocumentCollection, requestOptions);
-            else
-                await DocumentClient.CreateDocumentCollectionAsync(DocumentCollectionUri, entities as DocumentCollection);
-
-            return entities;
         }
 
         protected Uri GetDocumentUri(string id)

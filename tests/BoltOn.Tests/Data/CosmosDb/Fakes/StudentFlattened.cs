@@ -2,7 +2,7 @@
 using BoltOn.Cqrs;
 using Newtonsoft.Json;
 
-namespace BoltOn.Tests.Data.CosmosDb
+namespace BoltOn.Tests.Data.CosmosDb.Fakes
 {
     public class StudentFlattened : BaseCqrsEntity
     {
