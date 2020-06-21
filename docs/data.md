@@ -67,6 +67,12 @@ Example:
 		}
 	}
 
+and register like this:
+
+	serviceCollection.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
+
+If you want to override the Repository class' methods or if you want to add methods, create your own repository, like this:
+
     // Repository
     public interface IStudentRepository : IRepository<Student>
 	{
@@ -79,8 +85,6 @@ Example:
 		{
 		}
 	}
-
-**Note:** Create your own repository like StudentRepository only if you want to override the Repository class' methods or if you want to add methods, else just register `IRepository<Student>` to `Repository<Student, SchoolDbContext>`
 
 DbContextFactory
 ----------------
@@ -128,6 +132,12 @@ Example:
         public string FirstName { get; set; }
     }
 
+and register like this:
+
+	serviceCollection.AddTransient<IRepository<Student>, Repository<Student, SchoolCosmosDbOptions>>();
+
+If you want to override the Repository class' methods or if you want to add methods, create your own repository, like this:
+
 	// Repository
     public interface IStudentRepository : IRepository<Student>
 	{
@@ -143,7 +153,6 @@ Example:
 
 **Note:** 
 
-* Create your own repository like StudentRepository only if you want to override the Repository class' methods or if you want to add methods, else just register `IRepository<Student>` to `Repository<Student, SchoolCosmosDbOptions>`
 * While using any property in CosmosDb query, make sure property name matches exactly as it is in stored in the document collection.
 * Since EF 3.0+ supports CosmosDb, feel free to use EF directly instead of BoltOn.Data.CosmosDb
 
@@ -176,6 +185,17 @@ Example:
 	public class SchoolElasticDbOptions : BaseElasticsearchOptions
     {
     }
+
+	// Entity
+    public class Student : BaseEntity<int>
+	{
+		public string FirstName { get; set; }
+		public string LastName { get; set; }
+	}
+
+and register like this:
+
+	serviceCollection.AddTransient<IRepository<Student>, Repository<Student, SchoolElasticDbOptions>>()
 
 **Note:** The existing FindByAsync doesn't support find by expression, so pass null for the predicate param and NEST's `SearchRequest` for the options param.  
 
