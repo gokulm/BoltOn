@@ -2,10 +2,14 @@ Entity
 ------
 You could create an entity by inheriting `BaseEntity<TIdType>` where TIdType is the type of the Id property.
 
+IRepository
+-----------
+[`IRepository`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs) interface in the core BoltOn package is abstracted out to keep it agnostic of any particular database, so that the implementation could be changed easily while bootstrapping the application when we switch databases (which rarely happens though). 
+
+The disadvantage of this abstraction is, we lose certain native features of the underlying database specific features, as it isn't easy to come up with a common IRepository interface to support all the databases. So, please feel free to override the existing implementation or come up with your own implemenation for some of the missing methods.
+
 Entity Framework Repository
 ---------------------------
-[`IRepository`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs) interface in the core BoltOn package is abstracted out to keep it agnostic of any particular database, so that the implementation could be changed easily while bootstrapping the application when we switch databases (which rarely happens though). The disadvantage of this abstraction is, we lose certain native features of the underlying database specific features.
-
 In order to use Entity Framework implementation of the repository, you need to do the following:
 
 * Install **BoltOn.Data.EF** NuGet package.
@@ -141,3 +145,45 @@ Example:
 
 * Create your own repository like StudentRepository only if you want to override the Repository class' methods or if you want to add methods, else just register `IRepository<Student>` to `Repository<Student, SchoolCosmosDbOptions>`
 * While using any property in CosmosDb query, make sure property name matches exactly as it is in stored in the document collection.
+* Since EF 3.0+ supports CosmosDb, feel free to use EF directly instead of BoltOn.Data.CosmosDb
+
+Elasticsearch
+-------------
+BoltOn.Data.Elasticsearch uses [NEST](https://www.nuget.org/packages/NEST/) library internally.
+
+In order to use Elasticsearch, you need do the following:
+
+* Install **BoltOn.Data.Elasticsearch** NuGet package.
+* Call `BoltOnElasticsearchModule()` in your startup's BoltOn() method.
+* Create an entity by inheriting `BaseEntity<TIdType>`. The inheritance is not mandatory though.
+* Create an options class by inheriting `BaseElasticsearchOptions` class. 
+* Use AddElasticsearch extension method to initialize NEST library's ConnectionSettings.
+* Inherit `Repository<TEntity, TElasticsearchOptions>` to create a repository for your entity.
+* Here is the implementation [`Repository<TEntity, TElasticsearchOptions>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.Elasticsearch/Repository.cs).
+
+Example:
+
+	services.BoltOn(options =>
+	{
+		options.BoltOnElasticsearchModule();
+	});
+
+	services.AddElasticsearch<SchoolElasticDbOptions>(options =>
+	{
+		options.ConnectionSettings = new Nest.ConnectionSettings(new Uri("http://127.0.0.1:9200"));
+	});
+
+	public class SchoolElasticDbOptions : BaseElasticsearchOptions
+    {
+    }
+
+**Note:** The existing FindByAsync doesn't support find by expression, so pass null for the predicate param and NEST's `SearchRequest` for the options param.  
+
+Example:
+
+	var searchRequest = new SearchRequest
+	{
+		Query = new MatchQuery { Field = "firstName", Query = "John" }
+	};
+
+	repository.FindByAsync(null, searchRequest)
