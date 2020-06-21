@@ -11,7 +11,6 @@ namespace BoltOn.Tests.Data.CosmosDb.Fakes
         public CosmosDbFixture()
         {
 			IntegrationTestHelper.IsCosmosDbServer = false;
-			IntegrationTestHelper.IsSeedCosmosDbData = false;
 
 			var serviceCollection = new ServiceCollection();
 			serviceCollection
@@ -21,7 +20,7 @@ namespace BoltOn.Tests.Data.CosmosDb.Fakes
 					options.RegisterCosmosdbFakes();
 				});
 
-			if (IntegrationTestHelper.IsCosmosDbServer)
+			if(IntegrationTestHelper.IsCosmosDbServer)
 			{
 				serviceCollection.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, TestSchoolCosmosDbOptions>>();
 			}

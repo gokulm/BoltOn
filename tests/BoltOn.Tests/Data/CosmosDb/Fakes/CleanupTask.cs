@@ -15,14 +15,17 @@ namespace BoltOn.Tests.Data.CosmosDb.Fakes
 		{
 			_serviceProvider = serviceProvider;
 		}
-
+		
         public void Run()
         {
-            if (IntegrationTestHelper.IsCosmosDbServer && IntegrationTestHelper.IsSeedCosmosDbData)
+            if (IntegrationTestHelper.IsCosmosDbServer)
             {
                 var cosmosDbOptions = _serviceProvider.GetService<TestSchoolCosmosDbOptions>();
-                using var client = new DocumentClient(new Uri(cosmosDbOptions.Uri), cosmosDbOptions.AuthorizationKey);
-                client.DeleteDocumentCollectionAsync(UriFactory.CreateDocumentCollectionUri(cosmosDbOptions.DatabaseName, nameof(StudentFlattened).Pluralize())).GetAwaiter().GetResult();
+                if (cosmosDbOptions != null)
+                {
+                    using var client = new DocumentClient(new Uri(cosmosDbOptions.Uri), cosmosDbOptions.AuthorizationKey);
+                    client.DeleteDocumentCollectionAsync(UriFactory.CreateDocumentCollectionUri(cosmosDbOptions.DatabaseName, nameof(StudentFlattened).Pluralize())).GetAwaiter().GetResult();
+                }
             }
         }
     }

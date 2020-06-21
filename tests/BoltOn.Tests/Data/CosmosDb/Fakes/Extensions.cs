@@ -15,7 +15,7 @@ namespace BoltOn.Tests.Data.CosmosDb.Fakes
 			var cosmosDbOptions = new TestSchoolCosmosDbOptions
 			{
 				Uri = "",
-				AuthorizationKey = "",
+				AuthorizationKey = "==",
 				DatabaseName = "studentsdb"
 			};
 			boltOnOptions.ServiceCollection.AddSingleton(cosmosDbOptions);

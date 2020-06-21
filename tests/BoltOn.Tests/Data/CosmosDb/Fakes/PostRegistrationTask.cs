@@ -17,7 +17,7 @@ namespace BoltOn.Tests.Data.CosmosDb.Fakes
 
 		public void Run()
 		{
-			if (IntegrationTestHelper.IsCosmosDbServer && IntegrationTestHelper.IsSeedCosmosDbData)
+			if (IntegrationTestHelper.IsCosmosDbServer)
             {
                 using var scope = _serviceProvider.CreateScope();
                 var guid = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
@@ -40,8 +40,8 @@ namespace BoltOn.Tests.Data.CosmosDb.Fakes
                 };
 
                 var repository = scope.ServiceProvider.GetService<IRepository<StudentFlattened>>();
-                repository.AddAsync(studentFlattened).GetAwaiter().GetResult();
-                repository.AddAsync(recordToBeDeleted).GetAwaiter().GetResult();
+                repository?.AddAsync(studentFlattened).GetAwaiter().GetResult();
+                repository?.AddAsync(recordToBeDeleted).GetAwaiter().GetResult();
             }
 		}
 	}

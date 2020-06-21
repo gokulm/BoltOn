@@ -93,6 +93,7 @@ namespace BoltOn.Data.CosmosDb
 
         public virtual async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null, CancellationToken cancellationToken = default)
         {
+			// todo: find a way to add entities as a collection instead of iterating every entity
             foreach (var entity in entities)
             {
                 await AddAsync(entity, options, cancellationToken);
