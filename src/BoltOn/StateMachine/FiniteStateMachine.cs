@@ -6,21 +6,17 @@ using System.Text;
 namespace BoltOn.StateMachine
 {
     public interface IFiniteStateMachine<TState, TEvent>
-       where TState : struct
-       where TEvent : struct
     {
         string Transition { get; }
         TState Trigger(TEvent @event);
         TState Trigger<T0>(TEvent @event, T0 t0);
         FiniteStateMachine<TState, TEvent>.InState In(TState state);
         FiniteStateMachine<TState, TEvent>.InStates In(params TState[] states);
-        FiniteStateMachine<TState, TEvent> Init(TState initialState);
+        FiniteStateMachine<TState, TEvent> SetCurrentState(TState initialState);
         string GetDotData();
     }
 
     public partial class FiniteStateMachine<TState, TEvent> : IFiniteStateMachine<TState, TEvent>
-        where TState : struct
-        where TEvent : struct
     {
         private TState _currentState;
         protected readonly List<InState> _allowedStates = new List<InState>();
@@ -68,7 +64,7 @@ namespace BoltOn.StateMachine
             return inStates;
         }
 
-        public FiniteStateMachine<TState, TEvent> Init(TState initialState)
+        public FiniteStateMachine<TState, TEvent> SetCurrentState(TState initialState)
         {
             _currentState = initialState;
             return this;
