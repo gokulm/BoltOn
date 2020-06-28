@@ -74,12 +74,12 @@ namespace BoltOn.StateMachine
         {
             var state = _allowedStates.FirstOrDefault(s => s.CurrentState.Equals(_currentState));
             if (state == null)
-                throw new Exception($"State not found {_currentState}");
+                throw new Exception($"State not found: {_currentState}");
 
             _transition.Append($"[{_currentState}] -> ");
             var allowedEvent = state.Events.FirstOrDefault(e => e.CurrentEvent.Equals(@event));
             if (allowedEvent == null)
-                throw new Exception($"State: {_currentState} Event not allowed: {@event}");
+                throw new Exception($"Current State: {_currentState}. Event not allowed: {@event}");
 
             _transition.Append($"({@event}) -> ");
 

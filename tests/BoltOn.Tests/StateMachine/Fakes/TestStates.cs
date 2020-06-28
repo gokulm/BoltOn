@@ -4,9 +4,9 @@ namespace BoltOn.Tests.StateMachine.Fakes
 {
 	public enum MusicPlayerState
 	{
+		Stopped,
 		Playing,
-		Paused,
-		Stopped
+		Paused
 	}
 
 	public enum MusicPlayerEvent
