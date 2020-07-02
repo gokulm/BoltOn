@@ -12,7 +12,7 @@ namespace BoltOn.StateMachine
         TState Trigger<T0>(TEvent @event, T0 t0);
         FiniteStateMachine<TState, TEvent>.InState In(TState state);
         FiniteStateMachine<TState, TEvent>.InStates In(params TState[] states);
-        FiniteStateMachine<TState, TEvent> SetCurrentState(TState initialState);
+        FiniteStateMachine<TState, TEvent> InitCurrentState(TState initialState);
         string GetDotData();
     }
 
@@ -64,7 +64,7 @@ namespace BoltOn.StateMachine
             return inStates;
         }
 
-        public FiniteStateMachine<TState, TEvent> SetCurrentState(TState initialState)
+        public FiniteStateMachine<TState, TEvent> InitCurrentState(TState initialState)
         {
             _currentState = initialState;
             return this;

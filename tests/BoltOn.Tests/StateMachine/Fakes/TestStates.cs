@@ -15,7 +15,8 @@ namespace BoltOn.Tests.StateMachine.Fakes
 		Stop,
 		Pause,
 		Previous,
-		Next
+		Next,
+		Eject
 	}
 
 	public class MusicPlayerWorkflow
