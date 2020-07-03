@@ -202,5 +202,29 @@ namespace BoltOn.Tests.StateMachine
 			else
 				Assert.Equal(9, currentSongIndex);
 		}
+
+		[Fact]
+		public void GetDotData_WithoutConditions_ReturnsExpectedData()
+		{
+			// arrange
+			var sut = new FiniteStateMachine<MusicPlayerState, MusicPlayerEvent>();
+			sut.In(MusicPlayerState.Stopped, MusicPlayerState.Paused)
+					.On(MusicPlayerEvent.Play)
+					.Then(MusicPlayerState.Playing);
+			sut.In(MusicPlayerState.Playing, MusicPlayerState.Stopped, MusicPlayerState.Paused)
+					.On(MusicPlayerEvent.Eject)
+					.Then(MusicPlayerState.Stopped);
+			sut.In(MusicPlayerState.Playing, MusicPlayerState.Paused)
+					.On(MusicPlayerEvent.Stop)
+					.Then(MusicPlayerState.Stopped);
+
+			// act
+			var dotData = sut.GetDotData();
+
+			// assert
+			Assert.NotNull(dotData);
+		}
+
+		// todo: trigger with param
 	}
 }
