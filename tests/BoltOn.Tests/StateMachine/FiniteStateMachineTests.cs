@@ -6,26 +6,13 @@ namespace BoltOn.Tests.StateMachine
 {
 	public class FiniteStateMachineTests
 	{
-		private readonly IFiniteStateMachine<MusicPlayerState, MusicPlayerEvent> _sut;
-
-		public FiniteStateMachineTests()
-		{
-			_sut = new FiniteStateMachine<MusicPlayerState, MusicPlayerEvent>(MusicPlayerState.Stopped);
-
-			_sut.In(MusicPlayerState.Stopped, MusicPlayerState.Paused)
-					.On(MusicPlayerEvent.Play)
-					.Then(MusicPlayerState.Playing);
-
-			_sut.In(MusicPlayerState.Playing, MusicPlayerState.Paused)
-					.On(MusicPlayerEvent.Stop)
-					.Then(MusicPlayerState.Stopped);
-		}
-
-		[Fact]
-		public void Trigger_AvailableEvent_ReturnsExpectedState()
+		[Theory]
+		[InlineData(MusicPlayerState.Stopped)]
+		[InlineData(MusicPlayerState.Paused)]
+		public void Trigger_AvailableEvent_ReturnsExpectedState(MusicPlayerState currentState)
 		{
 			// arrange
-			var sut = new FiniteStateMachine<MusicPlayerState, MusicPlayerEvent>(MusicPlayerState.Stopped);
+			var sut = new FiniteStateMachine<MusicPlayerState, MusicPlayerEvent>(currentState);
 			sut.In(MusicPlayerState.Stopped, MusicPlayerState.Paused)
 					.On(MusicPlayerEvent.Play)
 					.Then(MusicPlayerState.Playing);
@@ -202,7 +189,6 @@ namespace BoltOn.Tests.StateMachine
 					.On(MusicPlayerEvent.Next, () => currentSongIndex + 1 <= numberOfSongsInDvd)
 					.Then(MusicPlayerState.Playing, () => currentSongIndex += 1)
 					.Else(MusicPlayerState.Playing, () => currentSongIndex = 1);
-
 
 			// act
 			var nextState = sut.Trigger(MusicPlayerEvent.Next);
