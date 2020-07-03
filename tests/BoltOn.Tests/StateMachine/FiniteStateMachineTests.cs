@@ -135,6 +135,8 @@ namespace BoltOn.Tests.StateMachine
 			var nextState2 = sut.Trigger(MusicPlayerEvent.Eject);
 			var nextState3 = sut.Trigger(MusicPlayerEvent.Play);
 
+			var test = sut.GetDotData();
+
 			// assert
 			Assert.Equal(MusicPlayerState.Playing, nextState1);
 			Assert.Equal(MusicPlayerState.Stopped, nextState2);
