@@ -225,6 +225,50 @@ namespace BoltOn.Tests.StateMachine
 			Assert.NotNull(dotData);
 		}
 
-		// todo: trigger with param
+		[Theory]
+		[InlineData(8)]
+		[InlineData(10)]
+		public void Trigger_WithParams_ReturnsExpectedState(int currentSongIndex)
+		{
+			// arrange
+			var inputCurrentSongIndex = currentSongIndex;
+			var sut = new FiniteStateMachine<MusicPlayerState, MusicPlayerEvent>(MusicPlayerState.Playing);
+			var numberOfSongsInDvd = 10;
+
+			sut.In(MusicPlayerState.Playing)
+					.On<(int, int)>(MusicPlayerEvent.Next, (c) => c.Item1 + 1 <= c.Item2)
+					.Then(MusicPlayerState.Playing, () => currentSongIndex += 1)
+					.Else(MusicPlayerState.Playing, () => currentSongIndex = 1);
+
+			// act
+			var nextState = sut.Trigger(MusicPlayerEvent.Next, (inputCurrentSongIndex, numberOfSongsInDvd));
+
+			// assert
+			Assert.Equal(MusicPlayerState.Playing, nextState);
+			if (inputCurrentSongIndex == numberOfSongsInDvd)
+				Assert.Equal(1, currentSongIndex);
+			else
+				Assert.Equal(9, currentSongIndex);
+		}
+
+		[Theory]
+		[InlineData(8)]
+		[InlineData(10)]
+		public void WorkflowPlayNext_WithParams_ReturnsExpectedState(int currentSongIndex)
+		{
+			// arrange
+			var numberOfSongsInDvd = 10;
+			var musicPlayerWorkflow = new MusicPlayerWorkflow(numberOfSongsInDvd, currentSongIndex);
+
+			// act
+			var result = musicPlayerWorkflow.PlayNext(currentSongIndex);
+
+			// assert
+			Assert.Equal(MusicPlayerState.Playing, result.Item1);
+			if (currentSongIndex == numberOfSongsInDvd)
+				Assert.Equal(1, result.Item2);
+			else
+				Assert.Equal(9, result.Item2);
+		}
 	}
 }

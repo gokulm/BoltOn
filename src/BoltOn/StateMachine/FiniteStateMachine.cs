@@ -23,12 +23,15 @@ namespace BoltOn.StateMachine
         private readonly StringBuilder _transition = new StringBuilder();
         private readonly StringBuilder _dotData = new StringBuilder();
 
-        public FiniteStateMachine()
+        public Dictionary<string, object> Context { get; set; }
+
+		public FiniteStateMachine()
         {
             _transition.AppendLine("[State] (Event) {Guard}");
+            Context = new Dictionary<string, object>();
         }
 
-        public FiniteStateMachine(TState currentState)
+        public FiniteStateMachine(TState currentState) : this()
         {
             _currentState = currentState;
         }
