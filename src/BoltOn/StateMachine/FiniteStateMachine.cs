@@ -7,13 +7,11 @@ namespace BoltOn.StateMachine
 {
     public interface IFiniteStateMachine<TState, TEvent>
     {
-        string Transition { get; }
         TState Trigger(TEvent @event);
         TState Trigger<T0>(TEvent @event, T0 t0);
         FiniteStateMachine<TState, TEvent>.InState In(TState state);
         FiniteStateMachine<TState, TEvent>.InStates In(params TState[] states);
         FiniteStateMachine<TState, TEvent> InitCurrentState(TState initialState);
-        string GetDotData();
     }
 
     public partial class FiniteStateMachine<TState, TEvent> : IFiniteStateMachine<TState, TEvent>
@@ -21,7 +19,6 @@ namespace BoltOn.StateMachine
         private TState _currentState;
         protected readonly List<InState> _allowedStates = new List<InState>();
         private readonly StringBuilder _transition = new StringBuilder();
-        private readonly StringBuilder _dotData = new StringBuilder();
 
         public Dictionary<string, object> Context { get; set; }
 
@@ -129,31 +126,6 @@ namespace BoltOn.StateMachine
             }
             _transition.Append($"[{_currentState}]");
             return _currentState;
-        }
-
-        public string GetDotData()
-        {
-            _dotData.AppendLine("digraph finite_state_machine {");
-            _dotData.AppendLine($"node[shape=doublecircle,  color=black]; {_currentState}");
-            _dotData.AppendLine("node[shape=circle, color=blue]");
-
-            foreach (var allowedState in _allowedStates)
-            {
-                foreach (var e in allowedState.Events)
-                {
-                    if (!e.ToIfState.Equals(default(TState)))
-                    {
-                        _dotData.AppendLine($"{allowedState.CurrentState} -> {e.ToIfState} [label=\"{e.CurrentEvent} (Yes)\", color=green ]");
-                    }
-
-                    if (!e.ToElseState.Equals(default(TEvent)))
-                    {
-                        _dotData.AppendLine($"{allowedState.CurrentState} -> {e.ToElseState} [label=\"{e.CurrentEvent} (No)\", color=red]");
-                    }
-                }
-            }
-            _dotData.AppendLine("}");
-            return _dotData.ToString();
         }
 
         private void TriggerIfStateEntryEvent(OnEvent @event)
