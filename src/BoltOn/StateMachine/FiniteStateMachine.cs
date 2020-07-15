@@ -12,19 +12,20 @@ namespace BoltOn.StateMachine
         FiniteStateMachine<TState, TEvent>.InState In(TState state);
         FiniteStateMachine<TState, TEvent>.InStates In(params TState[] states);
         FiniteStateMachine<TState, TEvent> InitCurrentState(TState initialState);
+		string Log { get; }
     }
 
     public partial class FiniteStateMachine<TState, TEvent> : IFiniteStateMachine<TState, TEvent>
     {
         private TState _currentState;
         protected readonly List<InState> _allowedStates = new List<InState>();
-        private readonly StringBuilder _transition = new StringBuilder();
+        private readonly StringBuilder _log = new StringBuilder();
 
         public Dictionary<string, object> Context { get; set; }
 
 		public FiniteStateMachine()
         {
-            _transition.AppendLine("[State] (Event) {Guard}");
+            _log.AppendLine("[State] (Event) {Guard}");
             Context = new Dictionary<string, object>();
         }
 
@@ -33,7 +34,7 @@ namespace BoltOn.StateMachine
             _currentState = currentState;
         }
 
-        public string Transition => _transition.ToString();
+        public string Log => _log.ToString();
 
         public InState In(TState state)
         {
@@ -76,14 +77,14 @@ namespace BoltOn.StateMachine
             if (state == null)
                 throw new Exception($"State not found: {_currentState}");
 
-            _transition.Append($"[{_currentState}] -> ");
+            _log.Append($"[{_currentState}] -> ");
             var allowedEvent = state.Events.FirstOrDefault(e => e.CurrentEvent.Equals(@event));
             if (allowedEvent == null)
                 throw new Exception($"Current State: {_currentState}. Event not allowed: {@event}");
 
-            _transition.Append($"({@event}) -> ");
+            _log.Append($"({@event}) -> ");
 
-            if (allowedEvent.Guard != default(Func<bool>))
+            if (allowedEvent.Guard != default)
             {
                 if (allowedEvent.Guard())
                 {
@@ -98,7 +99,7 @@ namespace BoltOn.StateMachine
             {
                 _currentState = allowedEvent.ToIfState;
                 TriggerIfStateEntryEvent(allowedEvent);
-                _transition.Append($"[{_currentState}]");
+                _log.Append($"[{_currentState}]");
             }
 
             return _currentState;
@@ -109,12 +110,12 @@ namespace BoltOn.StateMachine
             var state = _allowedStates.FirstOrDefault(s => s.CurrentState.Equals(_currentState));
             if (state == null)
                 throw new Exception("State not found");
-            _transition.Append($"[{_currentState}] -> ");
+            _log.Append($"[{_currentState}] -> ");
             var allowedEvent = state.Events.FirstOrDefault(e => e.CurrentEvent.Equals(@event));
             if (allowedEvent == null)
                 throw new Exception($"{_currentState} Event not allowed: {@event}");
 
-            _transition.Append($"({@event}) -> ");
+            _log.Append($"({@event}) -> ");
             var castedEvent = allowedEvent as OnEvent<T0>;
             if (castedEvent.Guard(t0))
             {
@@ -124,20 +125,20 @@ namespace BoltOn.StateMachine
             {
                 TriggerElseStateEntryEvent(allowedEvent);
             }
-            _transition.Append($"[{_currentState}]");
+            _log.Append($"[{_currentState}]");
             return _currentState;
         }
 
         private void TriggerIfStateEntryEvent(OnEvent @event)
         {
-            _transition.Append("{Yes} -> ");
+            _log.Append("{Yes} -> ");
             _currentState = @event.ToIfState;
             @event.ThenAction?.Invoke();
         }
 
         private void TriggerElseStateEntryEvent(OnEvent @event)
         {
-            _transition.Append("{No} -> ");
+            _log.Append("{No} -> ");
             _currentState = @event.ToElseState;
             if (@event.ElseAction != default)
                 @event.ElseAction();
