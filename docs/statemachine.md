@@ -108,15 +108,52 @@ In order to use BoltOn's [`FiniteStateMachine`](https://github.com/gokulm/BoltOn
                     _stateMachine.Context["CurrentSongIndex"] = 1;
                 })
 
+    * **Trigger**
+    <br />
+    It is used to trigger events. It also supports a parameter, which gets passed to `On` and which inturn gets passed to the Func<bool> delegate.
 
+        Like this:
 
-**Sample**
+            _stateMachine.Trigger(MusicPlayerEvent.Play);
+
+        OR
+
+            _stateMachine
+                .In(MusicPlayerState.Playing)
+                .On<(int, int)>(MusicPlayerEvent.Next, (c) => c.Item1 + 1 <= c.Item2)
+                .Then(MusicPlayerState.Playing, () => currentSongIndex += 1)
+                .Else(MusicPlayerState.Playing, () => currentSongIndex = 1);
+
+            _stateMachine.Trigger(MusicPlayerEvent.Next, (inputCurrentSongIndex, numberOfSongsInDvd));
+
+    * **InitCurrentState**
+    <br />
+    If the current state is maintained in the class that encompasses the state machine or in database, it can be retrieved and initialized using this method before triggering the events. Initial state could also be initialized using the constructor of `FiniteStateMachine`. If the states are of type enum, the first enum will be initialized as the initial state.
+
+        Like this:
+
+            _stateMachine
+                .InitCurrentState(MusicPlayerState.Paused)
+                .Trigger(MusicPlayerEvent.Stop);
+
+        OR
+
+            new FiniteStateMachine<MusicPlayerState, MusicPlayerEvent>(MusicPlayerState.Playing);
+
+**Note:**
+
+* FiniteStateMachine's `Context` property which is of type `Dictionary<string, object>` could be used to store temporary values. Anything that gets saved in the context stays as long as the FiniteStateMachine object is alive.  
+* FiniteStateMachine is stateful, and hence you must instantiate it or the encompassing class on every request.
+
+Sample
+--
 
 Here is our sample music player workflow with all the states, events and transitions defined.
 
     public class MusicPlayerWorkflow
     {
         private FiniteStateMachine<MusicPlayerState, MusicPlayerEvent> _stateMachine;
+
         public MusicPlayerWorkflow(int numberOfSongsInDvd)
         {
             _numberOfSongsInDvd = numberOfSongsInDvd;
@@ -146,13 +183,12 @@ Here is our sample music player workflow with all the states, events and transit
 
         public MusicPlayerState Stop()
 		{
-			var nextState = _stateMachine.Trigger(MusicPlayerEvent.Stop);
+			var nextState = _stateMachine
+                                .InitCurrentState(MusicPlayerState.Playing)
+                                .Trigger(MusicPlayerEvent.Stop);
 			return nextState;
 		}
     }
-
-
-
 
 
 Here is the **state diagram** of our sample state machine:
