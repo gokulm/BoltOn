@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>State Machine - BoltOn</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "State Machine";
+    var mkdocs_page_input_path = "statemachine.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> BoltOn</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Introduction</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../requestor/">Requestor</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../data/">Data</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../bus/">Bus</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../cache/">Cache</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../cqrs/">CQRS</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">State Machine</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#finite-state-machine">Finite State Machine</a></li>
+    
+
+    <li class="toctree-l2"><a href="#sample">Sample</a></li>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../utilities/">Utilities</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../optional/">Optional</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../samples/">Samples</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../build/">CI & CD</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">BoltOn</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>State Machine</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h2 id="finite-state-machine">Finite State Machine</h2>
+<p><blockquote>
+A finite-state machine (FSM) or finite-state automaton (FSA, plural: automata), finite automaton, or simply a state machine, is a mathematical model of computation. It is an abstract machine that can be in exactly one of a finite number of states at any given time. The FSM can change from one state to another in response to some inputs; the change from one state to another is called a transition.[1] An FSM is defined by a list of its states, its initial state, and the inputs that trigger each transition.</p>
+<p>– <cite><a href="https://en.wikipedia.org/wiki/Finite-state_machine">Wikipedia</a></cite></p>
+
+</blockquote>
+
+<p>To develop a <a href="https://en.wikipedia.org/wiki/Workflow">workflow</a>, we might end up wrting too many if/else and/or switch conditions, which might affect code readability and maintainability when there are too many states, events and transitions, which is where a <a href="https://en.wikipedia.org/wiki/Finite-state_machine">State Machine</a> will be quite useful.</p>
+<p>In order to use BoltOn's <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/StateMachine/FiniteStateMachine.cs"><code>FiniteStateMachine</code></a>, you have to do the following:</p>
+<ul>
+<li>Install <strong>BoltOn</strong> NuGet package.</li>
+<li>
+<p>Declare states and events. Enums will be better (classes can be used too, but see to that you override Equals and GetHashCode methods).</p>
+<p>Like this:</p>
+<pre><code>public enum MusicPlayerState
+{
+    Stopped,
+    Playing,
+    Paused
+}
+
+public enum MusicPlayerEvent
+{
+    Play,
+    Stop,
+    Pause,
+    Previous,
+    Next,
+    Eject
+}
+</code></pre>
+</li>
+<li>
+<p>Create a class encompassing the state machine with all the state transitions.</p>
+<p>Like this:</p>
+<pre><code>public class MusicPlayerWorkflow
+{
+    private FiniteStateMachine&lt;MusicPlayerState, MusicPlayerEvent&gt; _stateMachine;
+    public MusicPlayerWorkflow()
+    {
+        _numberOfSongsInDvd = numberOfSongsInDvd;
+        _stateMachine = new FiniteStateMachine&lt;MusicPlayerState, MusicPlayerEvent&gt;()
+
+        _stateMachine
+            .In(MusicPlayerState.Stopped, MusicPlayerState.Paused)
+            .On(MusicPlayerEvent.Play)
+            .Then(MusicPlayerState.Playing);
+    }
+}
+</code></pre>
+</li>
+<li>
+<p>Use the following methods to define the state transitions:</p>
+<ul>
+<li><strong>In</strong>
+<br />
+It is used to declare the state(s). More than one state could be declared.</li>
+<li>
+<p><strong>On</strong>
+<br />
+It is used to declare the events that can be triggered in the <code>In</code> state(s). <code>On</code> can be combined with a boolean condition (<code>Func&lt;bool&gt;</code> delegate) to enable transition only when the condition is satisfied; when the condition is satisfied, the current state gets set to the one defined in the <code>Then</code> state; and if not satisfied, the current state gets set to the one defined in the <code>Else</code> state. </p>
+<p>Like this:</p>
+<pre><code>_stateMachine
+    .In(MusicPlayerState.Stopped, MusicPlayerState.Paused)
+    .On(MusicPlayerEvent.Play, () =&gt; IsDvdInserted())
+    .Then(MusicPlayerState.Playing)
+    .Else(MusicPlayerState.Stopped);
+</code></pre>
+</li>
+<li>
+<p><code>On</code> also supports a parameter, which gets passed to the <code>Func&lt;bool&gt;</code> delegate. </p>
+<p>Like this:</p>
+<pre><code>_stateMachine
+    .In(MusicPlayerState.Playing)
+    .On&lt;int&gt;(MusicPlayerEvent.Next, (currentSongIndex) =&gt; currentSongIndex + 1 &lt;= 10)
+    .Then(MusicPlayerState.Playing)
+    .Else(MusicPlayerState.Stopped);
+</code></pre>
+</li>
+<li>
+<p><strong>Then</strong>
+<br />
+It is used to declare the state that the current state should be set to when an event gets triggered. This should be declared even when <code>Func&lt;bool&gt;</code> is not declared in the <code>On</code> method. <code>Then</code> can be combined with an <code>Action</code> delegate, which gets triggered after the state transition. </p>
+<p>Like this:</p>
+<pre><code>_stateMachine.In(MusicPlayerState.Playing)
+    .On&lt;int&gt;(MusicPlayerEvent.Next, (currentSongIndex) =&gt; currentSongIndex + 1 &lt;= 10)
+    .Then(MusicPlayerState.Playing, () =&gt;
+    {
+        _stateMachine.Context["CurrentSongIndex"] = (int)_stateMachine.Context["CurrentSongIndex"] + 1;
+    })
+    .Else(MusicPlayerState.Stopped);
+</code></pre>
+</li>
+<li>
+<p><strong>Else</strong>
+<br />
+It is used to declare the state that the current state should be set to when an event gets triggered and the <code>Func&lt;bool&gt;</code> delegate in the <code>On</code> method returns false. <code>Else</code> can be combined with an <code>Action</code> delegate, which gets triggered after the state transition. </p>
+<p>Like this:</p>
+<pre><code>_stateMachine.In(MusicPlayerState.Playing)
+    .On&lt;int&gt;(MusicPlayerEvent.Next, (currentSongIndex) =&gt; currentSongIndex + 1 &lt;= 10)
+    .Then(MusicPlayerState.Playing, () =&gt;
+    {
+        _stateMachine.Context["CurrentSongIndex"] = (int)_stateMachine.Context["CurrentSongIndex"] + 1;
+    })
+    .Else(MusicPlayerState.Stopped, () =&gt;
+    {
+        _stateMachine.Context["CurrentSongIndex"] = 1;
+    })
+</code></pre>
+</li>
+<li>
+<p><strong>Trigger</strong>
+<br />
+It is used to trigger events. It also supports a parameter, which gets passed to <code>On</code> and which inturn gets passed to the Func<bool> delegate.</p>
+<p>Like this:</p>
+<pre><code>_stateMachine.Trigger(MusicPlayerEvent.Play);
+</code></pre>
+<p>OR</p>
+<pre><code>_stateMachine
+    .In(MusicPlayerState.Playing)
+    .On&lt;(int, int)&gt;(MusicPlayerEvent.Next, (c) =&gt; c.Item1 + 1 &lt;= c.Item2)
+    .Then(MusicPlayerState.Playing, () =&gt; currentSongIndex += 1)
+    .Else(MusicPlayerState.Playing, () =&gt; currentSongIndex = 1);
+
+_stateMachine.Trigger(MusicPlayerEvent.Next, (inputCurrentSongIndex, numberOfSongsInDvd));
+</code></pre>
+</li>
+<li>
+<p><strong>InitCurrentState</strong>
+<br />
+If the current state is maintained in the class that encompasses the state machine or in database, it can be retrieved and initialized using this method before triggering the events. Initial state could also be initialized using the constructor of <code>FiniteStateMachine</code>. If the states are of type enum, the first enum will be initialized as the initial state.</p>
+<p>Like this:</p>
+<pre><code>_stateMachine
+    .InitCurrentState(MusicPlayerState.Paused)
+    .Trigger(MusicPlayerEvent.Stop);
+</code></pre>
+<p>OR</p>
+<pre><code>new FiniteStateMachine&lt;MusicPlayerState, MusicPlayerEvent&gt;(MusicPlayerState.Playing);
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Note:</strong></p>
+<ul>
+<li>FiniteStateMachine's <code>Context</code> property which is of type <code>Dictionary&lt;string, object&gt;</code> could be used to store temporary values. Anything that gets saved in the context stays as long as the FiniteStateMachine object is alive.  </li>
+<li>FiniteStateMachine is stateful, and hence you must instantiate it or the encompassing class on every request.</li>
+</ul>
+<h2 id="sample">Sample</h2>
+<p>Here is our sample music player workflow with all the states, events and transitions defined.</p>
+<pre><code>public class MusicPlayerWorkflow
+{
+    private FiniteStateMachine&lt;MusicPlayerState, MusicPlayerEvent&gt; _stateMachine;
+
+    public MusicPlayerWorkflow(int numberOfSongsInDvd)
+    {
+        _numberOfSongsInDvd = numberOfSongsInDvd;
+        _stateMachine = new FiniteStateMachine&lt;MusicPlayerState, MusicPlayerEvent&gt;()
+
+        _stateMachine
+            .In(MusicPlayerState.Stopped, MusicPlayerState.Paused)
+            .On(MusicPlayerEvent.Play)
+            .Then(MusicPlayerState.Playing);
+
+        _stateMachine
+            .In(MusicPlayerState.Playing, MusicPlayerState.Paused)
+            .On(MusicPlayerEvent.Stop)
+            .Then(MusicPlayerState.Stopped);
+
+        _stateMachine
+            .In(MusicPlayerState.Stopped, MusicPlayerState.Paused, MusicPlayerState.Playing)
+            .On(MusicPlayerEvent.Eject)
+            .Then(MusicPlayerState.Stopped);
+    }
+
+    public MusicPlayerState Play()
+    {
+        var nextState = _stateMachine.Trigger(MusicPlayerEvent.Play);
+        return nextState;
+    }
+
+    public MusicPlayerState Stop()
+    {
+        var nextState = _stateMachine
+                            .InitCurrentState(MusicPlayerState.Playing)
+                            .Trigger(MusicPlayerEvent.Stop);
+        return nextState;
+    }
+}
+</code></pre>
+<p>Here is the <strong>state diagram</strong> of our sample state machine:</p>
+<p><img alt="Music Player" src="../assets/musicplayer.svg" /></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../utilities/" class="btn btn-neutral float-right" title="Utilities">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../cqrs/" class="btn btn-neutral" title="CQRS"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../cqrs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../utilities/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>
