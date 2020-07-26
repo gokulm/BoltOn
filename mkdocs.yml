@@ -6,6 +6,7 @@ nav:
     - Bus: bus.md
     - Cache: cache.md
     - CQRS: cqrs.md
+    - State Machine: statemachine.md
     - Utilities: utilities.md
     - Optional: optional.md
     - Samples: samples.md
