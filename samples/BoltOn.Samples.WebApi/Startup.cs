@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using BoltOn.Data.EF;
@@ -17,7 +16,7 @@ using BoltOn.Cache;
 
 namespace BoltOn.Samples.WebApi
 {
-    public class Startup
+	public class Startup
 	{
 		public Startup(IConfiguration configuration)
 		{
@@ -47,7 +46,7 @@ namespace BoltOn.Samples.WebApi
             {
                 x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
-                    var host = cfg.Host(new Uri(rabbitmqUri), hostConfigurator =>
+                    cfg.Host(new Uri(rabbitmqUri), hostConfigurator =>
                     {
                         hostConfigurator.Username(rabbitmqUsername);
                         hostConfigurator.Password(rabbitmqPassword);
