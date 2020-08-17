@@ -49,7 +49,7 @@ namespace BoltOn.Samples.Console
             {
                 x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
-                    var host = cfg.Host(new Uri(rabbitmqUri), hostConfigurator =>
+                    cfg.Host(new Uri(rabbitmqUri), hostConfigurator =>
                     {
                         hostConfigurator.Username(rabbitmqUsername);
                         hostConfigurator.Password(rabbitmqPassword);
