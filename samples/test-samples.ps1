@@ -33,6 +33,8 @@ function SwitchPackagesToProjects
     LogBeginFunction "$($MyInvocation.MyCommand.Name)"
     dotnet tool install dnt --global --add-source=https://api.nuget.org/v3/index.json
     dnt switch-to-projects switcher.json
+    # to switch back to packages
+    # dnt switch-to-packages switcher.json
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
 

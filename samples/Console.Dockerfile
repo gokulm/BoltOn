@@ -12,5 +12,7 @@ COPY --from=build /publish .
 
 ENTRYPOINT ["dotnet", "BoltOn.Samples.Console.dll"]
 
-# docker build -f Dockerfile.Console -t gokulm/bolton:bolton.samples.console .
+# docker build -f Console.Dockerfile -t gokulm/bolton:bolton.samples.console .
 # docker run --rm -it gokulm/bolton:bolton.samples.console
+# if not the previous stop works
+# docker run --rm --net=host  -it gokulm/bolton:bolton.samples.console
