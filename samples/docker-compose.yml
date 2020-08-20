@@ -26,17 +26,20 @@ services:
     networks:
       - bolton-network
   console:
-    depends_on:
-      - rabbitmq
-      - sql
     environment:
       - CONSOLE_ENVIRONMENT=Docker
     build:
       context: ./
       dockerfile: Console.Dockerfile
     container_name: bolton-console-container
+    depends_on:
+      - rabbitmq
+      - sql
     networks:
       - bolton-network
+    # 2 lines below are equivalent to docker run -it, to keep the console running 
+    stdin_open: true 
+    tty: true        
   api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
