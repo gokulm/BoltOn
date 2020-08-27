@@ -13,6 +13,9 @@
     <PackageReference Include="MassTransit.RabbitMQ" Version="7.0.3" />
     <PackageReference Include="BoltOn.Cache" Version="0.3.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="3.1.7" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.12" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.7.12" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.12" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />

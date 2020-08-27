@@ -13,6 +13,8 @@ using BoltOn.Data;
 using BoltOn.Samples.Application.Entities;
 using Microsoft.AspNetCore.Hosting;
 using BoltOn.Cache;
+using Hangfire;
+using Hangfire.SqlServer;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -71,6 +73,20 @@ namespace BoltOn.Samples.WebApi
 
 			services.AddControllers();
 
+			services.AddHangfire(configuration => configuration
+				.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+				.UseSimpleAssemblyNameTypeSerializer()
+				.UseRecommendedSerializerSettings()
+				.UseSqlServerStorage("Data Source=127.0.0.1,5005;initial catalog=HangfireTest;persist security info=True;User ID=sa;Password=Password1;", new SqlServerStorageOptions
+				{
+					CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+					SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+					QueuePollInterval = TimeSpan.Zero,
+					UseRecommendedIsolationLevel = true,
+					DisableGlobalLocks = true
+				}));
+
+
 			services.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolWriteDbContext>>();
 			services.AddTransient<IRepository<StudentType>, Repository<StudentType, SchoolWriteDbContext>>();
 			services.AddTransient<IRepository<StudentFlattened>, CqrsRepository<StudentFlattened, SchoolReadDbContext>>();
@@ -79,6 +95,10 @@ namespace BoltOn.Samples.WebApi
 		public void Configure(IApplicationBuilder app, IHostApplicationLifetime appLifetime, IWebHostEnvironment env)
 		{
             app.ApplicationServices.TightenBolts();
+			GlobalConfiguration.Configuration
+				.UseActivator(new HangfireActivator(app.ApplicationServices));
+			app.UseHangfireDashboard();
+
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
@@ -89,6 +109,21 @@ namespace BoltOn.Samples.WebApi
 				endpoints.MapControllers();
 			});
 			appLifetime.ApplicationStopping.Register(() => app.ApplicationServices.LoosenBolts());
+		}
+	}
+
+	public class HangfireActivator : JobActivator
+	{
+		private readonly IServiceProvider _serviceProvider;
+
+		public HangfireActivator(IServiceProvider serviceProvider)
+		{
+			_serviceProvider = serviceProvider;
+		}
+
+		public override object ActivateJob(Type type)
+		{
+			return _serviceProvider.GetService(type);
 		}
 	}
 }

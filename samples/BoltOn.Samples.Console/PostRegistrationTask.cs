@@ -27,8 +27,8 @@ namespace BoltOn.Samples.Console
                 schoolReadDbContext.Database.EnsureCreated();
             }
 
-            var response = _requestor.ProcessAsync(new PingRequest()).GetAwaiter().GetResult();
-            System.Console.WriteLine(response.Data);
+            //var response = _requestor.ProcessAsync(new PingRequest()).GetAwaiter().GetResult();
+            //System.Console.WriteLine(response.Data);
         }
     }
 }
