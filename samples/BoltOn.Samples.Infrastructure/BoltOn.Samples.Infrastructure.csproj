@@ -19,15 +19,15 @@
     <Folder Include="Data\Mappings\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="BoltOn" Version="0.26.0" />
-    <PackageReference Include="BoltOn.Data.EF" Version="0.16.0" />
-    <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.10.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.7" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="BoltOn.Data.CosmosDb" Version="0.11.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="../../src/BoltOn.Bus.MassTransit/BoltOn.Bus.MassTransit.csproj" />
+    <ProjectReference Include="../../src/BoltOn.Data.CosmosDb/BoltOn.Data.CosmosDb.csproj" />
+    <ProjectReference Include="../../src/BoltOn.Data.EF/BoltOn.Data.EF.csproj" />
+    <ProjectReference Include="../../src/BoltOn/BoltOn.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />
   </ItemGroup>
 </Project>

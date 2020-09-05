@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 using BoltOn.Cache;
 using Hangfire;
 using Hangfire.SqlServer;
+using BoltOn.Hangfire;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -35,36 +36,49 @@ namespace BoltOn.Samples.WebApi
 				options.BoltOnMassTransitBusModule();
 				options.BoltOnCqrsModule();
 				options.BoltOnCacheModule();
+				//options.BoltOnHangfireModule(configuration => configuration
+				//	.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+				//	.UseSimpleAssemblyNameTypeSerializer()
+				//	.UseRecommendedSerializerSettings()
+				//	.UseSqlServerStorage("Data Source=127.0.0.1,5005;initial catalog=HangfireTest;persist security info=True;User ID=sa;Password=Password1;", new SqlServerStorageOptions
+				//	{
+				//		CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+				//		SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+				//		QueuePollInterval = TimeSpan.Zero,
+				//		UseRecommendedIsolationLevel = true,
+				//		DisableGlobalLocks = true
+				//	}));
+				//options.BoltOnHangfireModule();
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolWriteDbContext).Assembly);
 			});
 
 			var writeDbConnectionString = Configuration.GetValue<string>("SqlWriteDbConnectionString");
-            var readDbConnectionString = Configuration.GetValue<string>("SqlReadDbConnectionString");
-            var rabbitmqUri = Configuration.GetValue<string>("RabbitMqUri");
+			var readDbConnectionString = Configuration.GetValue<string>("SqlReadDbConnectionString");
+			var rabbitmqUri = Configuration.GetValue<string>("RabbitMqUri");
 			var rabbitmqUsername = Configuration.GetValue<string>("RabbitMqUsername");
 			var rabbitmqPassword = Configuration.GetValue<string>("RabbitMqPassword");
 			var redisUrl = Configuration.GetValue<string>("RedisUrl");
 			services.AddMassTransit(x =>
-            {
-                x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
-                {
-                    cfg.Host(new Uri(rabbitmqUri), hostConfigurator =>
-                    {
-                        hostConfigurator.Username(rabbitmqUsername);
-                        hostConfigurator.Password(rabbitmqPassword);
-                    });
-                }));
-            });
+			{
+				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
+				{
+					cfg.Host(new Uri(rabbitmqUri), hostConfigurator =>
+					{
+						hostConfigurator.Username(rabbitmqUsername);
+						hostConfigurator.Password(rabbitmqPassword);
+					});
+				}));
+			});
 
-            services.AddDbContext<SchoolWriteDbContext>(options =>
-            {
-                options.UseSqlServer(writeDbConnectionString);
-            });
+			services.AddDbContext<SchoolWriteDbContext>(options =>
+			{
+				options.UseSqlServer(writeDbConnectionString);
+			});
 
-            services.AddDbContext<SchoolReadDbContext>(options =>
-            {
-                options.UseSqlServer(readDbConnectionString);
-            });
+			services.AddDbContext<SchoolReadDbContext>(options =>
+			{
+				options.UseSqlServer(readDbConnectionString);
+			});
 
 			services.AddStackExchangeRedisCache(options =>
 			{
@@ -86,6 +100,21 @@ namespace BoltOn.Samples.WebApi
 					DisableGlobalLocks = true
 				}));
 
+			//GlobalConfiguration.Configuration
+			//	.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+			//	.UseColouredConsoleLogProvider()
+			//	.UseSimpleAssemblyNameTypeSerializer()
+			//	.UseRecommendedSerializerSettings()
+			//	.UseSqlServerStorage("Data Source=127.0.0.1,5005;initial catalog=HangfireTest;persist security info=True;User ID=sa;Password=Password1;", new SqlServerStorageOptions
+			//	{
+			//		CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+			//		SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+			//		QueuePollInterval = TimeSpan.Zero,
+			//		UseRecommendedIsolationLevel = true,
+			//		UsePageLocksOnDequeue = true,
+			//		DisableGlobalLocks = true
+			//	});
+
 
 			services.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolWriteDbContext>>();
 			services.AddTransient<IRepository<StudentType>, Repository<StudentType, SchoolWriteDbContext>>();
@@ -94,10 +123,17 @@ namespace BoltOn.Samples.WebApi
 
 		public void Configure(IApplicationBuilder app, IHostApplicationLifetime appLifetime, IWebHostEnvironment env)
 		{
-            app.ApplicationServices.TightenBolts();
+			app.ApplicationServices.TightenBolts();
 			GlobalConfiguration.Configuration
-				.UseActivator(new HangfireActivator(app.ApplicationServices));
-			app.UseHangfireDashboard();
+				.UseActivator(new BoltOnHangfireActivator(app.ApplicationServices));
+			try
+			{
+				app.UseHangfireDashboard();
+			}
+			catch(Exception ex)
+			{
+				var test = 1;
+			}
 
 			if (env.IsDevelopment())
 			{
@@ -112,18 +148,18 @@ namespace BoltOn.Samples.WebApi
 		}
 	}
 
-	public class HangfireActivator : JobActivator
-	{
-		private readonly IServiceProvider _serviceProvider;
+	//public class HangfireActivator : JobActivator
+	//{
+	//	private readonly IServiceProvider _serviceProvider;
 
-		public HangfireActivator(IServiceProvider serviceProvider)
-		{
-			_serviceProvider = serviceProvider;
-		}
+	//	public HangfireActivator(IServiceProvider serviceProvider)
+	//	{
+	//		_serviceProvider = serviceProvider;
+	//	}
 
-		public override object ActivateJob(Type type)
-		{
-			return _serviceProvider.GetService(type);
-		}
-	}
+	//	public override object ActivateJob(Type type)
+	//	{
+	//		return _serviceProvider.GetService(type);
+	//	}
+	//}
 }

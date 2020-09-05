@@ -6,5 +6,100 @@
     "BoltOn.Data.CosmosDb": "../src/BoltOn.Data.CosmosDb/BoltOn.Data.CosmosDb.csproj",
     "BoltOn.Bus.MassTransit": "../src/BoltOn.Bus.MassTransit/BoltOn.Bus.MassTransit.csproj",
     "BoltOn.Cache": "../src/BoltOn.Cache/BoltOn.Cache.csproj"
-  }
+  },
+  "restore": [
+    {
+      "name": "BoltOn.Samples.Application",
+      "packages": [
+        {
+          "packageName": "BoltOn",
+          "version": "0.26.0"
+        },
+        {
+          "packageName": "BoltOn.Data.EF",
+          "version": "0.16.0"
+        },
+        {
+          "packageName": "BoltOn.Bus.MassTransit",
+          "version": "0.10.0"
+        }
+      ]
+    },
+    {
+      "name": "BoltOn.Samples.Console",
+      "packages": [
+        {
+          "packageName": "BoltOn",
+          "version": "0.26.0"
+        },
+        {
+          "packageName": "BoltOn.Data.EF",
+          "version": "0.16.0"
+        },
+        {
+          "packageName": "BoltOn.Data.CosmosDb",
+          "version": "0.11.0"
+        },
+        {
+          "packageName": "BoltOn.Bus.MassTransit",
+          "version": "0.10.0"
+        }
+      ]
+    },
+    {
+      "name": "BoltOn.Samples.Infrastructure",
+      "packages": [
+        {
+          "packageName": "BoltOn",
+          "version": "0.26.0"
+        },
+        {
+          "packageName": "BoltOn.Data.EF",
+          "version": "0.16.0"
+        },
+        {
+          "packageName": "BoltOn.Data.CosmosDb",
+          "version": "0.11.0"
+        },
+        {
+          "packageName": "BoltOn.Bus.MassTransit",
+          "version": "0.10.0"
+        }
+      ]
+    },
+    {
+      "name": "BoltOn.Samples.WebApi",
+      "packages": [
+        {
+          "packageName": "BoltOn",
+          "version": "0.26.0"
+        },
+        {
+          "packageName": "BoltOn.Data.EF",
+          "version": "0.16.0"
+        },
+        {
+          "packageName": "BoltOn.Bus.MassTransit",
+          "version": "0.10.0"
+        },
+        {
+          "packageName": "BoltOn.Cache",
+          "version": "0.3.0"
+        }
+      ]
+    },
+    {
+      "name": "BoltOn.Overrides",
+      "packages": [
+        {
+          "packageName": "BoltOn",
+          "version": "0.26.0"
+        },
+        {
+          "packageName": "BoltOn.Data.EF",
+          "version": "0.16.0"
+        }
+      ]
+    }
+  ]
 }

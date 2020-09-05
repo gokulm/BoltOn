@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Data.CosmosDb", "..\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Bus.MassTransit", "..\src\BoltOn.Bus.MassTransit\BoltOn.Bus.MassTransit.csproj", "{E2D19CDD-6743-4F5C-86C9-63C9C7870BBC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Cache", "..\src\BoltOn.Cache\BoltOn.Cache.csproj", "{21FCA5A7-12F4-45DA-B005-4D7F0FFDB9DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -153,6 +155,18 @@ Global
 		{E2D19CDD-6743-4F5C-86C9-63C9C7870BBC}.Release|x64.Build.0 = Release|Any CPU
 		{E2D19CDD-6743-4F5C-86C9-63C9C7870BBC}.Release|x86.ActiveCfg = Release|Any CPU
 		{E2D19CDD-6743-4F5C-86C9-63C9C7870BBC}.Release|x86.Build.0 = Release|Any CPU
+		{21FCA5A7-12F4-45DA-B005-4D7F0FFDB9DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21FCA5A7-12F4-45DA-B005-4D7F0FFDB9DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21FCA5A7-12F4-45DA-B005-4D7F0FFDB9DA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{21FCA5A7-12F4-45DA-B005-4D7F0FFDB9DA}.Debug|x64.Build.0 = Debug|Any CPU
+		{21FCA5A7-12F4-45DA-B005-4D7F0FFDB9DA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{21FCA5A7-12F4-45DA-B005-4D7F0FFDB9DA}.Debug|x86.Build.0 = Debug|Any CPU
+		{21FCA5A7-12F4-45DA-B005-4D7F0FFDB9DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21FCA5A7-12F4-45DA-B005-4D7F0FFDB9DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21FCA5A7-12F4-45DA-B005-4D7F0FFDB9DA}.Release|x64.ActiveCfg = Release|Any CPU
+		{21FCA5A7-12F4-45DA-B005-4D7F0FFDB9DA}.Release|x64.Build.0 = Release|Any CPU
+		{21FCA5A7-12F4-45DA-B005-4D7F0FFDB9DA}.Release|x86.ActiveCfg = Release|Any CPU
+		{21FCA5A7-12F4-45DA-B005-4D7F0FFDB9DA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

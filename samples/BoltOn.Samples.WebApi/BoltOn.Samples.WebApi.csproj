@@ -4,21 +4,24 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BoltOn" Version="0.26.0" />
-    <PackageReference Include="BoltOn.Data.EF" Version="0.16.0" />
-    <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.10.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.7" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.7" />
     <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.0.3" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="7.0.3" />
-    <PackageReference Include="BoltOn.Cache" Version="0.3.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="3.1.7" />
     <PackageReference Include="Hangfire.Core" Version="1.7.12" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.7.12" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.12" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="../../src/BoltOn.Bus.MassTransit/BoltOn.Bus.MassTransit.csproj" />
+    <ProjectReference Include="../../src/BoltOn.Cache/BoltOn.Cache.csproj" />
+    <ProjectReference Include="../../src/BoltOn.Data.EF/BoltOn.Data.EF.csproj" />
+    <ProjectReference Include="../../src/BoltOn/BoltOn.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Infrastructure\BoltOn.Samples.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\BoltOn.Hangfire\BoltOn.Hangfire.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 </Project>

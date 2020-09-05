@@ -14,7 +14,9 @@ namespace BoltOn.Hangfire
 			boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
 
 			if (configuration != null)
+			{
 				boltOnOptions.ServiceCollection.AddHangfire((provider, config) => configuration(config));
+			}
 
 			return boltOnOptions;
 		}
