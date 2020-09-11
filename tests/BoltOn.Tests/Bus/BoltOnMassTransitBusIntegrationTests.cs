@@ -17,7 +17,7 @@ namespace BoltOn.Tests.Bus
 	public class BoltOnMassTransitBusIntegrationTests : IDisposable
 	{	 
 		[Fact]
-		public async Task PublishAsync_InMemoryHost_GetsConsumed()
+		public async Task PublishAsync_PublishToInMemoryHost_GetsConsumed()
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -59,7 +59,7 @@ namespace BoltOn.Tests.Bus
 		}
 
 		[Fact]
-		public async Task PublishAsync_Message_GetsConsumed()
+		public async Task PublishAsync_PublishToRabbitMq_GetsConsumed()
 		{
 			if (!IntegrationTestHelper.IsRabbitMqRunning)
 				return;
@@ -75,13 +75,13 @@ namespace BoltOn.Tests.Bus
 			{
 				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
-                    cfg.Host(new Uri("rabbitmq://localhost:5672"), hostConfigurator =>
+                    cfg.Host(new Uri("rabbitmq://localhost:5010"), hostConfigurator =>
                     {
                         hostConfigurator.Username("guest");
                         hostConfigurator.Password("guest");
                     });
 
-                    cfg.ReceiveEndpoint("CreateTestStudent_Queue", endpoint =>
+                    cfg.ReceiveEndpoint($"{nameof(CreateTestStudent)}_Queue", endpoint =>
 					{
 						endpoint.Consumer(provider.GetService<BoltOnMassTransitConsumer<CreateTestStudent>>);
 					});
@@ -101,6 +101,52 @@ namespace BoltOn.Tests.Bus
 			await bus.PublishAsync(new CreateTestStudent { FirstName = "test" });
 			// as assert not working after async method, added sleep
 			Thread.Sleep(1000);
+
+			// assert
+			var result = RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f ==
+										$"{nameof(CreateTestStudentHandler)} invoked");
+			Assert.NotNull(result);
+		}
+
+		[Fact]
+		public async Task PublishAsync_PublishToAzureServiceBus_GetsConsumed()
+		{
+			if (!IntegrationTestHelper.IsAzureServiceBusRunning)
+				return;
+
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn(b =>
+			{
+				b.BoltOnAssemblies(GetType().Assembly);
+				b.BoltOnMassTransitBusModule();
+			});
+
+			serviceCollection.AddMassTransit(x =>
+			{
+				x.UsingAzureServiceBus((context, cfg) =>
+				{
+					cfg.Host("ADD_CONNECTIONSTRING");
+
+					cfg.ReceiveEndpoint($"createteststudent_queue", endpoint =>
+					{
+						endpoint.Consumer(context.GetService<BoltOnMassTransitConsumer<CreateTestStudent>>);
+					});
+				});
+			});
+
+			var logger = new Mock<IBoltOnLogger<CreateTestStudentHandler>>();
+			logger.Setup(s => s.Debug(It.IsAny<string>()))
+								.Callback<string>(st => RequestorTestHelper.LoggerStatements.Add(st));
+			serviceCollection.AddTransient((s) => logger.Object);
+
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var bus = serviceProvider.GetService<BoltOn.Bus.IBus>();
+			     
+			// act
+			await bus.PublishAsync(new CreateTestStudent { FirstName = "test" });
+			// as assert not working after async method, added sleep
+			Thread.Sleep(2000);
 
 			// assert
 			var result = RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f ==

@@ -31,6 +31,7 @@
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.7" />
         <PackageReference Include="System.Text.Json" Version="4.7.2" />
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="3.1.7" />
+        <PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="7.0.4" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Bootstrapping\" />
