@@ -14,6 +14,8 @@ using BoltOn.Samples.Application.Entities;
 using Hangfire;
 using Hangfire.SqlServer;
 using BoltOn.Hangfire;
+using BoltOn.Other;
+using System.Threading;
 
 namespace BoltOn.Samples.Console
 {
@@ -41,20 +43,7 @@ namespace BoltOn.Samples.Console
 				o.BoltOnMassTransitBusModule();
 				o.BoltOnCqrsModule(b => b.PurgeEventsProcessedBefore = TimeSpan.FromHours(12));
 				o.BoltOnEFModule();
-				o.BoltOnHangfireModule(configuration =>
-					configuration.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-					.UseColouredConsoleLogProvider()
-					.UseSimpleAssemblyNameTypeSerializer()
-					.UseRecommendedSerializerSettings()
-					.UseSqlServerStorage("Data Source=127.0.0.1,5005;initial catalog=HangfireTest;persist security info=True;User ID=sa;Password=Password1;", new SqlServerStorageOptions
-					{
-						CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-						SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-						QueuePollInterval = TimeSpan.Zero,
-						UseRecommendedIsolationLevel = true,
-						UsePageLocksOnDequeue = true,
-						DisableGlobalLocks = true
-					}));
+				o.BoltOnHangfireModule();
 			});
 
 			var readDbConnectionString = configuration.GetValue<string>("SqlReadDbConnectionString");
@@ -91,43 +80,29 @@ namespace BoltOn.Samples.Console
 
 			serviceCollection.AddTransient<IRepository<StudentFlattened>, CqrsRepository<StudentFlattened, SchoolReadDbContext>>();
 
-			//GlobalConfiguration.Configuration
-			//	.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-			//	.UseColouredConsoleLogProvider()
-			//	.UseSimpleAssemblyNameTypeSerializer()
-			//	.UseRecommendedSerializerSettings()
-			//	.UseSqlServerStorage("Data Source=127.0.0.1,5005;initial catalog=HangfireTest;persist security info=True;User ID=sa;Password=Password1;", new SqlServerStorageOptions
-			//	{
-			//		CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-			//		SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-			//		QueuePollInterval = TimeSpan.Zero,
-			//		UseRecommendedIsolationLevel = true,
-			//		UsePageLocksOnDequeue = true,
-			//		DisableGlobalLocks = true
-			//	});
+			GlobalConfiguration.Configuration
+				.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+				.UseColouredConsoleLogProvider()
+				.UseSimpleAssemblyNameTypeSerializer()
+				.UseRecommendedSerializerSettings()
+				.UseSqlServerStorage("Data Source=127.0.0.1,5005;initial catalog=HangfireTest;persist security info=True;User ID=sa;Password=Password1;", new SqlServerStorageOptions
+				{
+					CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+					SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+					QueuePollInterval = TimeSpan.Zero,
+					UseRecommendedIsolationLevel = true,
+					UsePageLocksOnDequeue = true,
+					DisableGlobalLocks = true
+				});
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 
-			//GlobalConfiguration.Configuration
-			//	.UseActivator(new HangfireActivator(serviceProvider));
+			RecurringJob.AddOrUpdate<BoltOnHangfireJobProcessor>("PingJob",
+				b => b.ProcessAsync<PingRequest, PongResponse>(new PingRequest(), CancellationToken.None), Cron.Minutely);
+
 			using var server = new BackgroundJobServer();
 			System.Console.ReadLine();
 		}
 	}
-
-	//public class HangfireActivator : JobActivator
-	//{
-	//	private readonly IServiceProvider _serviceProvider;
-
-	//	public HangfireActivator(IServiceProvider serviceProvider)
-	//	{
-	//		_serviceProvider = serviceProvider;
-	//	}
-
-	//	public override object ActivateJob(Type type)
-	//	{
-	//		return _serviceProvider.GetService(type);
-	//	}
-	//}
 }

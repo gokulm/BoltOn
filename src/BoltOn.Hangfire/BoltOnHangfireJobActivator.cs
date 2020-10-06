@@ -3,11 +3,11 @@ using Hangfire;
 
 namespace BoltOn.Hangfire
 {
-	public class BoltOnHangfireActivator : JobActivator
+	public class BoltOnHangfireJobActivator : JobActivator
 	{
 		private readonly IServiceProvider _serviceProvider;
 
-		public BoltOnHangfireActivator(IServiceProvider serviceProvider)
+		public BoltOnHangfireJobActivator(IServiceProvider serviceProvider)
 		{
 			_serviceProvider = serviceProvider;
 		}

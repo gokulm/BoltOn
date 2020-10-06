@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Hosting;
 using BoltOn.Cache;
 using Hangfire;
 using Hangfire.SqlServer;
-using BoltOn.Hangfire;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -36,19 +35,6 @@ namespace BoltOn.Samples.WebApi
 				options.BoltOnMassTransitBusModule();
 				options.BoltOnCqrsModule();
 				options.BoltOnCacheModule();
-				//options.BoltOnHangfireModule(configuration => configuration
-				//	.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-				//	.UseSimpleAssemblyNameTypeSerializer()
-				//	.UseRecommendedSerializerSettings()
-				//	.UseSqlServerStorage("Data Source=127.0.0.1,5005;initial catalog=HangfireTest;persist security info=True;User ID=sa;Password=Password1;", new SqlServerStorageOptions
-				//	{
-				//		CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-				//		SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-				//		QueuePollInterval = TimeSpan.Zero,
-				//		UseRecommendedIsolationLevel = true,
-				//		DisableGlobalLocks = true
-				//	}));
-				//options.BoltOnHangfireModule();
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolWriteDbContext).Assembly);
 			});
 
@@ -88,21 +74,12 @@ namespace BoltOn.Samples.WebApi
 			services.AddControllers();
 
 			services.AddHangfire(configuration => configuration
-				.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-				.UseSimpleAssemblyNameTypeSerializer()
-				.UseRecommendedSerializerSettings()
-				.UseSqlServerStorage("Data Source=127.0.0.1,5005;initial catalog=HangfireTest;persist security info=True;User ID=sa;Password=Password1;", new SqlServerStorageOptions
-				{
-					CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-					SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-					QueuePollInterval = TimeSpan.Zero,
-					UseRecommendedIsolationLevel = true,
-					DisableGlobalLocks = true
-				}));
+				.UseSqlServerStorage("Data Source=127.0.0.1,5005;initial catalog=HangfireTest;persist security info=True;User ID=sa;Password=Password1;"));
 
-			//GlobalConfiguration.Configuration
+
+
+			//services.AddHangfire(configuration => configuration
 			//	.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-			//	.UseColouredConsoleLogProvider()
 			//	.UseSimpleAssemblyNameTypeSerializer()
 			//	.UseRecommendedSerializerSettings()
 			//	.UseSqlServerStorage("Data Source=127.0.0.1,5005;initial catalog=HangfireTest;persist security info=True;User ID=sa;Password=Password1;", new SqlServerStorageOptions
@@ -111,10 +88,8 @@ namespace BoltOn.Samples.WebApi
 			//		SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
 			//		QueuePollInterval = TimeSpan.Zero,
 			//		UseRecommendedIsolationLevel = true,
-			//		UsePageLocksOnDequeue = true,
 			//		DisableGlobalLocks = true
-			//	});
-
+			//	}));
 
 			services.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolWriteDbContext>>();
 			services.AddTransient<IRepository<StudentType>, Repository<StudentType, SchoolWriteDbContext>>();
@@ -124,8 +99,6 @@ namespace BoltOn.Samples.WebApi
 		public void Configure(IApplicationBuilder app, IHostApplicationLifetime appLifetime, IWebHostEnvironment env)
 		{
 			app.ApplicationServices.TightenBolts();
-			GlobalConfiguration.Configuration
-				.UseActivator(new BoltOnHangfireActivator(app.ApplicationServices));
 			try
 			{
 				app.UseHangfireDashboard();
@@ -147,19 +120,4 @@ namespace BoltOn.Samples.WebApi
 			appLifetime.ApplicationStopping.Register(() => app.ApplicationServices.LoosenBolts());
 		}
 	}
-
-	//public class HangfireActivator : JobActivator
-	//{
-	//	private readonly IServiceProvider _serviceProvider;
-
-	//	public HangfireActivator(IServiceProvider serviceProvider)
-	//	{
-	//		_serviceProvider = serviceProvider;
-	//	}
-
-	//	public override object ActivateJob(Type type)
-	//	{
-	//		return _serviceProvider.GetService(type);
-	//	}
-	//}
 }

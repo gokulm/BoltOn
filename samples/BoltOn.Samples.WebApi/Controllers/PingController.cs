@@ -10,22 +10,17 @@ namespace BoltOn.Samples.WebApi.Controllers
 	public class PingController : ControllerBase
 	{
 		private readonly IRequestor _requestor;
-		private readonly IBackgroundJobClient _backgroundJobClient;
 
-		public PingController(IRequestor requestor,
-			IBackgroundJobClient backgroundJobClient)
+		public PingController(IRequestor requestor)
 		{
 			_requestor = requestor;
-			_backgroundJobClient = backgroundJobClient;
 		}
 
 		[HttpGet, Route("[controller]")]
-		public async Task<ActionResult<string>> Get()
+		public async Task<ActionResult<PongResponse>> Get()
 		{
-			_backgroundJobClient.Enqueue<IRequestor>(r => r.ProcessAsync(new PingRequest(), System.Threading.CancellationToken.None));
-
-			//var response = await _requestor.ProcessAsync(new PingRequest());
-			return await Task.FromResult("test");
+			var response = await _requestor.ProcessAsync(new PingRequest());
+			return response;
 		}
 	}
 }

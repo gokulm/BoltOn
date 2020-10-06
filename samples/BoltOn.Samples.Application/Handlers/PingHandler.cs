@@ -4,7 +4,7 @@ using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class PingRequest : IQuery<PongResponse>
+	public class PingRequest : IRequest<PongResponse>
 	{
 	}
 

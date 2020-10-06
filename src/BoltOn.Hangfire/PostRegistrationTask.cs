@@ -7,18 +7,15 @@ namespace BoltOn.Hangfire
     public class PostRegistrationTask : IPostRegistrationTask
     {
         private readonly IServiceProvider _serviceProvider;
-		private readonly IGlobalConfiguration _globalConfiguration;
 
-		public PostRegistrationTask(IServiceProvider serviceProvider,
-            IGlobalConfiguration globalConfiguration)
+		public PostRegistrationTask(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-			_globalConfiguration = globalConfiguration;
 		}
 
         public void Run()
         {
-            _globalConfiguration.UseActivator(new BoltOnHangfireActivator(_serviceProvider));
+            GlobalConfiguration.Configuration.UseActivator(new BoltOnHangfireJobActivator(_serviceProvider));
         }
     }
 }

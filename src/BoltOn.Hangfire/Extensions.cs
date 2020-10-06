@@ -1,37 +1,16 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using BoltOn.Bootstrapping;
-using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Hangfire
 {
 	public static class Extensions
 	{
-		public static BoltOnOptions BoltOnHangfireModule(this BoltOnOptions boltOnOptions,
-			Action<IGlobalConfiguration> configuration = null)
+		public static BoltOnOptions BoltOnHangfireModule(this BoltOnOptions boltOnOptions)
 		{
 			boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-
-			if (configuration != null)
-			{
-				boltOnOptions.ServiceCollection.AddHangfire((provider, config) => configuration(config));
-			}
-
+			boltOnOptions.ServiceCollection.AddTransient<BoltOnHangfireJobProcessor>();
 			return boltOnOptions;
-		}
-
-		private static void AddHangfire(
-			this IServiceCollection services,
-			Action<IServiceProvider, IGlobalConfiguration> configuration)
-		{
-			services.AddSingleton(serviceProvider =>
-			{
-				var configurationInstance = GlobalConfiguration.Configuration;
-				configuration(serviceProvider, configurationInstance);
-
-				return configurationInstance;
-			});
 		}
 	}
 }
