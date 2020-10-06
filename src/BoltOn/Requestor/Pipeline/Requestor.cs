@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Logging;
 using BoltOn.Requestor.Interceptors;
+using System.Reflection;
 
 namespace BoltOn.Requestor.Pipeline
 {
@@ -70,13 +71,14 @@ namespace BoltOn.Requestor.Pipeline
 				_logger.Debug($"Resolving handler for request: {requestType}");
 				var genericHandlerType = typeof(IHandler<>);
 				var interfaceHandlerType = genericHandlerType.MakeGenericType(request.GetType());
-				var handler = _serviceProvider.GetService(interfaceHandlerType);
+				dynamic handler = _serviceProvider.GetService(interfaceHandlerType);
 				if (handler == null)
-					throw new Exception(string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
+					throw new Exception($"Handler not found for request: {requestType}");
 				_logger.Debug($"Resolved handler: {handler.GetType()}");
-				dynamic decorator = Activator.CreateInstance(typeof(HandlerDecorator<>)
-																	   .MakeGenericType(requestType), handler);
-				var response = await decorator.HandleAsync(request, cancellationToken).ConfigureAwait(false);
+				var handleMethod = interfaceHandlerType.GetMethod("HandleAsync");
+				await handleMethod.Invoke(handler, BindingFlags.DoNotWrapExceptions, null,
+					new object[] { request, cancellationToken }, null).ConfigureAwait(false);
+				dynamic response = await Task.FromResult(new DummyResponse());
 				return response;
 			}
 			else
@@ -85,13 +87,13 @@ namespace BoltOn.Requestor.Pipeline
 				_logger.Debug($"Resolving handler for request: {requestType}");
 				var genericHandlerType = typeof(IHandler<,>);
 				var interfaceHandlerType = genericHandlerType.MakeGenericType(request.GetType(), typeof(TResponse));
-				var handler = _serviceProvider.GetService(interfaceHandlerType);
+				dynamic handler = _serviceProvider.GetService(interfaceHandlerType);
 				if (handler == null)
-					throw new Exception(string.Format(Constants.ExceptionMessages.HANDLER_NOT_FOUND, requestType));
+					throw new Exception($"Handler not found for request: {requestType}");
 				_logger.Debug($"Resolved handler: {handler.GetType()}");
-				dynamic decorator = Activator.CreateInstance(typeof(HandlerDecorator<,>)
-																	   .MakeGenericType(requestType, typeof(TResponse)), handler);
-				var response = await decorator.HandleAsync(request, cancellationToken).ConfigureAwait(false);
+				var handleMethod = interfaceHandlerType.GetMethod("HandleAsync");
+				var response = await handleMethod.Invoke(handler, BindingFlags.DoNotWrapExceptions, null,
+					new object[] { request, cancellationToken }, null).ConfigureAwait(false);
 				return response;
 			}
 		}
