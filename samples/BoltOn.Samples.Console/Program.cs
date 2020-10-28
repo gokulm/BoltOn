@@ -12,9 +12,7 @@ using Microsoft.Extensions.Configuration;
 using BoltOn.Data;
 using BoltOn.Samples.Application.Entities;
 using Hangfire;
-using Hangfire.SqlServer;
 using BoltOn.Hangfire;
-using BoltOn.Other;
 using System.Threading;
 
 namespace BoltOn.Samples.Console
@@ -81,27 +79,15 @@ namespace BoltOn.Samples.Console
 			serviceCollection.AddTransient<IRepository<StudentFlattened>, CqrsRepository<StudentFlattened, SchoolReadDbContext>>();
 
 			GlobalConfiguration.Configuration
-				.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-				.UseColouredConsoleLogProvider()
-				.UseSimpleAssemblyNameTypeSerializer()
-				.UseRecommendedSerializerSettings()
-				.UseSqlServerStorage("Data Source=127.0.0.1,5005;initial catalog=HangfireTest;persist security info=True;User ID=sa;Password=Password1;", new SqlServerStorageOptions
-				{
-					CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-					SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-					QueuePollInterval = TimeSpan.Zero,
-					UseRecommendedIsolationLevel = true,
-					UsePageLocksOnDequeue = true,
-					DisableGlobalLocks = true
-				});
+				.UseSqlServerStorage("Data Source=127.0.0.1,5005;initial catalog=HangfireTest;persist security info=True;User ID=sa;Password=Password1;");
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 
-			RecurringJob.AddOrUpdate<BoltOnHangfireJobProcessor>("PingJob",
-				b => b.ProcessAsync<PingRequest, PongResponse>(new PingRequest(), CancellationToken.None), Cron.Minutely);
+			RecurringJob.AddOrUpdate<BoltOnHangfireJobProcessor>("TestJob",
+				b => b.ProcessAsync(new TestRequest(), CancellationToken.None), Cron.Minutely);
 
-			using var server = new BackgroundJobServer();
+			using var server = new BackgroundJobServer();  
 			System.Console.ReadLine();
 		}
 	}

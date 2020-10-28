@@ -20,12 +20,5 @@ namespace BoltOn.Hangfire
         {
             await _requestor.ProcessAsync(request, cancellationToken);
         }
-
-        [JobDisplayName("{0}")]
-        public async Task ProcessAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : IRequest<TResponse>
-        {
-            await _requestor.ProcessAsync(request, cancellationToken);
-        }
     }
 }
