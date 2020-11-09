@@ -15,11 +15,9 @@
     <Folder Include="Entities\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="BoltOn" Version="0.26.0" />
+    <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.10.0" />
+    <PackageReference Include="BoltOn.Data.EF" Version="0.16.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="../../src/BoltOn.Bus.MassTransit/BoltOn.Bus.MassTransit.csproj" />
-    <ProjectReference Include="../../src/BoltOn.Data.EF/BoltOn.Data.EF.csproj" />
-    <ProjectReference Include="../../src/BoltOn/BoltOn.csproj" />
   </ItemGroup>
 </Project>

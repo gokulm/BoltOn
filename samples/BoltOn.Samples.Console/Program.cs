@@ -11,9 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using BoltOn.Data;
 using BoltOn.Samples.Application.Entities;
-using Hangfire;
-using BoltOn.Hangfire;
-using System.Threading;
 
 namespace BoltOn.Samples.Console
 {
@@ -41,7 +38,6 @@ namespace BoltOn.Samples.Console
 				o.BoltOnMassTransitBusModule();
 				o.BoltOnCqrsModule(b => b.PurgeEventsProcessedBefore = TimeSpan.FromHours(12));
 				o.BoltOnEFModule();
-				o.BoltOnHangfireModule();
 			});
 
 			var readDbConnectionString = configuration.GetValue<string>("SqlReadDbConnectionString");
@@ -77,17 +73,9 @@ namespace BoltOn.Samples.Console
 			});
 
 			serviceCollection.AddTransient<IRepository<StudentFlattened>, CqrsRepository<StudentFlattened, SchoolReadDbContext>>();
-
-			GlobalConfiguration.Configuration
-				.UseSqlServerStorage("Data Source=127.0.0.1,5005;initial catalog=HangfireTest;persist security info=True;User ID=sa;Password=Password1;");
-
+			
 			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-
-			RecurringJob.AddOrUpdate<BoltOnHangfireJobProcessor>("TestJob",
-				b => b.ProcessAsync(new TestRequest(), CancellationToken.None), Cron.Minutely);
-
-			using var server = new BackgroundJobServer();  
+			serviceProvider.TightenBolts();  
 			System.Console.ReadLine();
 		}
 	}

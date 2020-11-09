@@ -13,8 +13,6 @@ using BoltOn.Data;
 using BoltOn.Samples.Application.Entities;
 using Microsoft.AspNetCore.Hosting;
 using BoltOn.Cache;
-using Hangfire;
-using Hangfire.SqlServer;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -72,12 +70,6 @@ namespace BoltOn.Samples.WebApi
 			});
 
 			services.AddControllers();
-
-			services.AddHangfire(configuration => configuration
-				.UseSqlServerStorage("Data Source=127.0.0.1,5005;initial catalog=HangfireTest;" +
-										"persist security info=True;User ID=sa;Password=Password1;"));
-
-
 			services.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolWriteDbContext>>();
 			services.AddTransient<IRepository<StudentType>, Repository<StudentType, SchoolWriteDbContext>>();
 			services.AddTransient<IRepository<StudentFlattened>, CqrsRepository<StudentFlattened, SchoolReadDbContext>>();
@@ -86,14 +78,6 @@ namespace BoltOn.Samples.WebApi
 		public void Configure(IApplicationBuilder app, IHostApplicationLifetime appLifetime, IWebHostEnvironment env)
 		{
 			app.ApplicationServices.TightenBolts();
-			try
-			{
-				app.UseHangfireDashboard();
-			}
-			catch(Exception ex)
-			{
-				var test = 1;
-			}
 
 			if (env.IsDevelopment())
 			{

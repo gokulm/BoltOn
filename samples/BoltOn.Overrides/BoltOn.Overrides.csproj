@@ -7,7 +7,7 @@
     <Folder Include="UoW\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../src/BoltOn.Data.EF/BoltOn.Data.EF.csproj" />
-    <ProjectReference Include="../../src/BoltOn/BoltOn.csproj" />
+    <PackageReference Include="BoltOn" Version="0.26.0" />
+    <PackageReference Include="BoltOn.Data.EF" Version="0.16.0" />
   </ItemGroup>
 </Project>
