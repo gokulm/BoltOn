@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using BoltOn.Requestor.Pipeline;
 using BoltOn.Samples.Application.Handlers;
-using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BoltOn.Samples.WebApi.Controllers

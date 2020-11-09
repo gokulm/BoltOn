@@ -17,9 +17,5 @@
   <ItemGroup>
     <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Infrastructure\BoltOn.Samples.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\src\BoltOn.Hangfire\BoltOn.Hangfire.csproj">
-      <GlobalPropertiesToRemove>
-      </GlobalPropertiesToRemove>
-    </ProjectReference>
   </ItemGroup>
 </Project>
