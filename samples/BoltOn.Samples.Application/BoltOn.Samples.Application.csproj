@@ -16,8 +16,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BoltOn" Version="0.26.0" />
-    <PackageReference Include="BoltOn.Data.EF" Version="0.16.0" />
     <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.10.0" />
+    <PackageReference Include="BoltOn.Data.EF" Version="0.16.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 </Project>

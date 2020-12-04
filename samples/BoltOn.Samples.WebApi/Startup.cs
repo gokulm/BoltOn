@@ -37,32 +37,32 @@ namespace BoltOn.Samples.WebApi
 			});
 
 			var writeDbConnectionString = Configuration.GetValue<string>("SqlWriteDbConnectionString");
-            var readDbConnectionString = Configuration.GetValue<string>("SqlReadDbConnectionString");
-            var rabbitmqUri = Configuration.GetValue<string>("RabbitMqUri");
+			var readDbConnectionString = Configuration.GetValue<string>("SqlReadDbConnectionString");
+			var rabbitmqUri = Configuration.GetValue<string>("RabbitMqUri");
 			var rabbitmqUsername = Configuration.GetValue<string>("RabbitMqUsername");
 			var rabbitmqPassword = Configuration.GetValue<string>("RabbitMqPassword");
 			var redisUrl = Configuration.GetValue<string>("RedisUrl");
 			services.AddMassTransit(x =>
-            {
-                x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
-                {
-                    cfg.Host(new Uri(rabbitmqUri), hostConfigurator =>
-                    {
-                        hostConfigurator.Username(rabbitmqUsername);
-                        hostConfigurator.Password(rabbitmqPassword);
-                    });
-                }));
-            });
+			{
+				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
+				{
+					cfg.Host(new Uri(rabbitmqUri), hostConfigurator =>
+					{
+						hostConfigurator.Username(rabbitmqUsername);
+						hostConfigurator.Password(rabbitmqPassword);
+					});
+				}));
+			});
 
-            services.AddDbContext<SchoolWriteDbContext>(options =>
-            {
-                options.UseSqlServer(writeDbConnectionString);
-            });
+			services.AddDbContext<SchoolWriteDbContext>(options =>
+			{
+				options.UseSqlServer(writeDbConnectionString);
+			});
 
-            services.AddDbContext<SchoolReadDbContext>(options =>
-            {
-                options.UseSqlServer(readDbConnectionString);
-            });
+			services.AddDbContext<SchoolReadDbContext>(options =>
+			{
+				options.UseSqlServer(readDbConnectionString);
+			});
 
 			services.AddStackExchangeRedisCache(options =>
 			{
@@ -70,7 +70,6 @@ namespace BoltOn.Samples.WebApi
 			});
 
 			services.AddControllers();
-
 			services.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolWriteDbContext>>();
 			services.AddTransient<IRepository<StudentType>, Repository<StudentType, SchoolWriteDbContext>>();
 			services.AddTransient<IRepository<StudentFlattened>, CqrsRepository<StudentFlattened, SchoolReadDbContext>>();
@@ -78,7 +77,8 @@ namespace BoltOn.Samples.WebApi
 
 		public void Configure(IApplicationBuilder app, IHostApplicationLifetime appLifetime, IWebHostEnvironment env)
 		{
-            app.ApplicationServices.TightenBolts();
+			app.ApplicationServices.TightenBolts();
+
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
