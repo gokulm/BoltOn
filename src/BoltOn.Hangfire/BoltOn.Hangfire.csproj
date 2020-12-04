@@ -7,8 +7,8 @@
     <Owners>Gokulnath Murugesan</Owners>
     <PackageProjectUrl>https://github.com/gokulm/BoltOn</PackageProjectUrl>
     <PackageTags>C#, .NET</PackageTags>
-    <Title>BoltOn.Data.Hangfire</Title>
-    <PackageId>BoltOn.Data.Hangfire</PackageId>
+    <Title>BoltOn.Hangfire</Title>
+    <PackageId>BoltOn.Hangfire</PackageId>
     <Description>This is an add-on to BoltOn NuGet package to support Hangfire</Description>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
