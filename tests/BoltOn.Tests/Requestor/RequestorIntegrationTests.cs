@@ -435,6 +435,50 @@ namespace BoltOn.Tests.Requestor
 			Assert.True(isAutoDetectChangesEnabled);
 		}
 
+		[Fact]
+		public async Task Process_HandlerRegistrationsDisabled_ThrowsException()
+		{
+			// arrange
+			IntegrationTestHelper.IsSeedData = false;
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn(options =>
+			{
+				options.DisableRequestorHandlersRegistration = true;
+			});
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var sut = serviceProvider.GetService<IRequestor>();
+
+			// act
+			var result = await Record.ExceptionAsync(() => sut.ProcessAsync(new TestCommand()));
+
+			// assert 
+			Assert.NotNull(result);
+			Assert.Equal("Handler not found for request: BoltOn.Tests.Requestor.Fakes.TestCommand", result.Message);
+		}
+
+		[Fact]
+		public async Task Process_HandlerRegistrationsDisabledAndExplicitRegistration_ReturnsExpectedResult()
+		{
+			// arrange
+			IntegrationTestHelper.IsSeedData = false;
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn(options =>
+			{
+				options.DisableRequestorHandlersRegistration = true;
+			});
+			serviceCollection.AddTransient<IHandler<TestCommand, bool>, TestHandler>();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var sut = serviceProvider.GetService<IRequestor>();
+
+			// act
+			var result = await sut.ProcessAsync(new TestCommand());
+
+			// assert 
+			Assert.True(result);
+		}
+
 		public void Dispose()
 		{
 			RequestorTestHelper.IsRemoveStopwatchInterceptor = false;

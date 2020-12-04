@@ -260,8 +260,7 @@ namespace BoltOn.Tests.Requestor
 
 			// assert 
 			Assert.NotNull(result);
-			Assert.Equal(string.Format(Constants.ExceptionMessages.
-									   HANDLER_NOT_FOUND, request), result.Message);
+			Assert.Equal(string.Format("Handler not found for request: {0}", request), result.Message);
 		}
 
 		[Fact]
