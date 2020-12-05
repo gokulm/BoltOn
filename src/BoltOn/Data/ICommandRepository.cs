@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+
 namespace BoltOn.Data
 {
     public interface ICommandRepository<TEntity> : IQueryRepository<TEntity>

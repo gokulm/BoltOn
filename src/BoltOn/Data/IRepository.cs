@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+
 namespace BoltOn.Data
 {
 	public interface IRepository<TEntity> where TEntity : class
