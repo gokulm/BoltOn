@@ -4,6 +4,33 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Version>0.1.0</Version>
+    <Copyright>BoltOn</Copyright>
+    <Authors>Gokulnath Murugesan</Authors>
+    <Owners>Gokulnath Murugesan</Owners>
+    <PackageProjectUrl>https://github.com/gokulm/BoltOn</PackageProjectUrl>
+    <PackageTags>C#, .NET</PackageTags>
+    <Title>BoltOn.Web</Title>
+    <PackageId>BoltOn.Web</PackageId>
+    <Description>This is an add-on to BoltOn NuGet package to support ASP.NET Core MVC/WebAPI</Description>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <LangVersion>latest</LangVersion>
+    <DefineConstants>TRACE;RELEASE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <NoStdLib>true</NoStdLib>
+    <DefineConstants>TRACE;RELEASE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="CorrelationId" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
