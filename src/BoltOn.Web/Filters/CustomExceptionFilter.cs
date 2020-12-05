@@ -43,7 +43,8 @@ namespace BoltOn.Web.Filters
             }
             else
             {
-                var result = new ViewResult { ViewName = "Error" };
+				var errorViewName = _configuration.GetValue<string>("ErrorViewName");
+                var result = new ViewResult { ViewName = string.IsNullOrWhiteSpace(errorViewName) ? "Error" : errorViewName };
                 var modelMetadata = new EmptyModelMetadataProvider();
                 result.ViewData = new ViewDataDictionary<ErrorModel>(modelMetadata, exceptionContext.ModelState)
                 {
