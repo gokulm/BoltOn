@@ -28,7 +28,7 @@ namespace BoltOn.Samples.Console
 			}
 
 			var response = _requestor.ProcessAsync(new PingRequest()).GetAwaiter().GetResult();
-			System.Console.WriteLine(response.Data);
+			System.Console.WriteLine(response);
 		}
     }
 }
