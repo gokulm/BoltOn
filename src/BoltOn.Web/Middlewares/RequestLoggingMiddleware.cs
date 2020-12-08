@@ -5,17 +5,17 @@ using Microsoft.AspNetCore.Http;
 
 namespace BoltOn.Web.Middlewares
 {
-	public class RequestMiddleware
+	public class RequestLoggingMiddleware
     {
         private readonly RequestDelegate _next;
 
-        public RequestMiddleware(RequestDelegate next)
+        public RequestLoggingMiddleware(RequestDelegate next)
         {
             _next = next;
         }
 
         public async Task Invoke(HttpContext httpContext,
-            IBoltOnLogger<RequestMiddleware> logger,
+            IBoltOnLogger<RequestLoggingMiddleware> logger,
             LoggerContext loggerContext,
             ICorrelationContextAccessor correlationContextAccessor)
         {
@@ -23,9 +23,9 @@ namespace BoltOn.Web.Middlewares
             loggerContext.SetByKey("RequestUrl", httpContext.Request.Path.Value);
             loggerContext.SetByKey("CorrelationId", correlationContextAccessor?.CorrelationContext?.CorrelationId);
 
-            logger.Debug($"Executing {nameof(RequestMiddleware)} ...");
+            logger.Debug($"Executing {nameof(RequestLoggingMiddleware)} ...");
             await _next(httpContext);
-            logger.Debug($"Executed {nameof(RequestMiddleware)}");
+            logger.Debug($"Executed {nameof(RequestLoggingMiddleware)}");
         }
     }
 }
