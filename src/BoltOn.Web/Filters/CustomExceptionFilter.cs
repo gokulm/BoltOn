@@ -72,7 +72,6 @@ namespace BoltOn.Web.Filters
 
                     if (isHttpContextNotNull)
                         exceptionContext.HttpContext.Response.StatusCode = 412;
-
                 }
                 else if (exceptionType == typeof(BadRequestException))
                 {

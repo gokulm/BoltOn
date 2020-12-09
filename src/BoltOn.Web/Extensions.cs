@@ -21,7 +21,7 @@ namespace BoltOn.Web
             var serviceProvider = app.ApplicationServices;
             if (_isWebModuleAdded)
             {
-                app.UseMiddleware<RequestLoggingMiddleware>();
+                app.UseMiddleware<RequestLoggerContextMiddleware>();
             }
             serviceProvider.TightenBolts();
         }
