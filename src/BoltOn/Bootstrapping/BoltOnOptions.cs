@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using BoltOn.Context;
 using BoltOn.Cqrs;
 using BoltOn.Logging;
 using BoltOn.Other;
@@ -47,6 +48,11 @@ namespace BoltOn.Bootstrapping
             ServiceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
             ServiceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
             ServiceCollection.AddTransient<IEventDispatcher, DefaultEventDispatcher>();
+
+            ServiceCollection.AddScoped<ScopedContext>();
+            ServiceCollection.AddScoped<LoggerContext>();
+            ServiceCollection.AddSingleton<Context.AppContext>();
+
             ServiceCollection.AddScoped<EventBag>();
             var options = new CqrsOptions();
             ServiceCollection.AddSingleton(options);

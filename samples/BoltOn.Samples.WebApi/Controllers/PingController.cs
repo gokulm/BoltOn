@@ -16,10 +16,10 @@ namespace BoltOn.Samples.WebApi.Controllers
 		}
 
 		[HttpGet, Route("[controller]")]
-		public async Task<ActionResult<PongResponse>> Get()
+		public async Task<ActionResult<string>> Get()
 		{
 			var response = await _requestor.ProcessAsync(new PingRequest());
-			return response;
+			return response.Data;
 		}
 	}
 }
