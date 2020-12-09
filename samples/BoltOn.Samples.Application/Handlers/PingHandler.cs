@@ -4,15 +4,20 @@ using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class PingRequest : IRequest<string>
+	public class PingRequest : IRequest<PongResponse>
 	{
 	}
 
-	public class PingHandler : IHandler<PingRequest, string>
+	public class PongResponse
 	{
-		public async Task<string> HandleAsync(PingRequest request, CancellationToken cancellationToken)
+		public string Data { get; set; }
+	}
+
+	public class PingHandler : IHandler<PingRequest, PongResponse>
+	{
+		public async Task<PongResponse> HandleAsync(PingRequest request, CancellationToken cancellationToken)
 		{
-			return await Task.FromResult("pong");
+			return await Task.FromResult(new PongResponse { Data = "pong" });
 		}
 	}
 }
