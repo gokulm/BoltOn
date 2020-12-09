@@ -25,10 +25,6 @@
     <DocumentationFile>
     </DocumentationFile>
     <NoStdLib>true</NoStdLib>
-    <DefineConstants>TRACE;RELEASE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
-    <NoStdLib>true</NoStdLib>
   </PropertyGroup>
 
   <ItemGroup>
