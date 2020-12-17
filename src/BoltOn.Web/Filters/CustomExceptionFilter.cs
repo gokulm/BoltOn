@@ -69,7 +69,7 @@ namespace BoltOn.Web.Filters
 			var errorMessage = genericErrorMessage;
 
 			var exceptionType = exceptionContext.Exception.GetType();
-			if (exceptionType == typeof(UserFriendlyException))
+			if (exceptionType == typeof(BusinessValidationException))
 			{
 				errorMessage = exceptionContext.Exception.Message;
 				_logger.Warn(exceptionContext.Exception.Message);
