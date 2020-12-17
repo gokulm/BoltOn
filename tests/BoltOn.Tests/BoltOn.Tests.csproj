@@ -52,6 +52,7 @@
         <Folder Include="Data\CosmosDb\Fakes\" />
         <Folder Include="StateMachine\" />
         <Folder Include="StateMachine\Fakes\" />
+        <Folder Include="Web\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
@@ -60,5 +61,6 @@
         <ProjectReference Include="..\..\src\BoltOn.Data.CosmosDb\BoltOn.Data.CosmosDb.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Cache\BoltOn.Cache.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Data.Elasticsearch\BoltOn.Data.Elasticsearch.csproj" />
+        <ProjectReference Include="..\..\src\BoltOn.Web\BoltOn.Web.csproj" />
     </ItemGroup>
 </Project>

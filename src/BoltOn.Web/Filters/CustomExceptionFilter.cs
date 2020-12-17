@@ -28,11 +28,17 @@ namespace BoltOn.Web.Filters
         public override void OnException(ExceptionContext exceptionContext)
         {
             if (exceptionContext.ExceptionHandled)
+            {
+                _logger.Debug("Exception already handled");
                 return;
+            }
 
             var exception = exceptionContext.Exception;
             if (exception == null)
+            {
+                _logger.Debug("Exception is null");
                 return;
+            }
 
             var errorViewModel = BuildErrorViewModel(exceptionContext);
             if (exceptionContext.HttpContext != null &&

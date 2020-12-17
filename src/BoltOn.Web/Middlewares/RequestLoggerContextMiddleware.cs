@@ -14,11 +14,12 @@ namespace BoltOn.Web.Middlewares
             _next = next;
         }
 
-        public async Task Invoke(HttpContext httpContext,
+        public async Task Invoke(IHttpContextAccessor httpContextAccessor,
             IBoltOnLogger<RequestLoggerContextMiddleware> logger,
             LoggerContext loggerContext,
             ICorrelationContextAccessor correlationContextAccessor)
         {
+            var httpContext = httpContextAccessor.HttpContext;
             loggerContext.SetByKey("ClientIp", httpContext.Connection.RemoteIpAddress.ToString());
             loggerContext.SetByKey("RequestUrl", httpContext.Request.Path.Value);
             loggerContext.SetByKey("CorrelationId", correlationContextAccessor?.CorrelationContext?.CorrelationId);
