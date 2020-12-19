@@ -76,7 +76,7 @@ namespace BoltOn.Tests.Web
 			var logger = autoMocker.GetMock<IBoltOnLogger<CustomExceptionFilter>>();
 
 			var configuration = autoMocker.GetMock<IConfiguration>();
-			configuration.Setup(s => s.GetSection(It.IsAny<string>())).Returns(new Mock<IConfigurationSection>().Object);
+			configuration.Setup(s => s.GetSection(It.IsAny<string>())).Returns(Mock.Of<IConfigurationSection>());
 
 			var corrleationContextAccessor = autoMocker.GetMock<ICorrelationContextAccessor>();
 			var correlationId = Guid.NewGuid().ToString();
@@ -119,7 +119,7 @@ namespace BoltOn.Tests.Web
 			var logger = autoMocker.GetMock<IBoltOnLogger<CustomExceptionFilter>>();
 
 			var configuration = autoMocker.GetMock<IConfiguration>();
-			configuration.Setup(s => s.GetSection(It.IsAny<string>())).Returns(new Mock<IConfigurationSection>().Object);
+			configuration.Setup(s => s.GetSection(It.IsAny<string>())).Returns(Mock.Of<IConfigurationSection>());
 
 			var corrleationContextAccessor = autoMocker.GetMock<ICorrelationContextAccessor>();
 			var correlationId = Guid.NewGuid().ToString();
@@ -164,15 +164,15 @@ namespace BoltOn.Tests.Web
 			var logger = autoMocker.GetMock<IBoltOnLogger<CustomExceptionFilter>>();
 
 			var configuration = autoMocker.GetMock<IConfiguration>();
-			var configurationSection1 = new Mock<IConfigurationSection>();
-			var configurationSection3 = new Mock<IConfigurationSection>();
-			configuration.Setup(s => s.GetSection("IsShowErrors")).Returns(configurationSection3.Object);
-			configuration.Setup(s => s.GetSection("ErrorMessage")).Returns(configurationSection1.Object);
-			configurationSection1.Setup(s => s.Value).Returns("test generic message");
-			var configurationSection2 = new Mock<IConfigurationSection>();
-			configuration.Setup(s => s.GetSection("ErrorViewName")).Returns(configurationSection2.Object);
-			configurationSection2.Setup(s => s.Value).Returns("ErrorView");
-			configurationSection3.Setup(s => s.Value).Returns(isShowErrors);
+			var configurationSection1 = Mock.Of<IConfigurationSection>();
+			var configurationSection2 = Mock.Of<IConfigurationSection>();
+			configuration.Setup(s => s.GetSection("IsShowErrors")).Returns(configurationSection2);
+			configuration.Setup(s => s.GetSection("ErrorMessage")).Returns(configurationSection1);
+			configurationSection1.Value = "test generic message";
+			var configurationSection3 = Mock.Of<IConfigurationSection>();
+			configuration.Setup(s => s.GetSection("ErrorViewName")).Returns(configurationSection3);
+			configurationSection3.Value = "ErrorView";
+			configurationSection2.Value = isShowErrors;
 
 			var corrleationContextAccessor = autoMocker.GetMock<ICorrelationContextAccessor>();
 			var correlationId = Guid.NewGuid().ToString();
@@ -220,7 +220,7 @@ namespace BoltOn.Tests.Web
 			var logger = autoMocker.GetMock<IBoltOnLogger<CustomExceptionFilter>>();
 
 			var configuration = autoMocker.GetMock<IConfiguration>();
-			configuration.Setup(s => s.GetSection(It.IsAny<string>())).Returns(new Mock<IConfigurationSection>().Object);
+			configuration.Setup(s => s.GetSection(It.IsAny<string>())).Returns(Mock.Of<IConfigurationSection>());
 
 			var corrleationContextAccessor = autoMocker.GetMock<ICorrelationContextAccessor>();
 			var correlationId = Guid.NewGuid().ToString();
