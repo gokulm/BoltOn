@@ -29,9 +29,9 @@ namespace BoltOn.Tests.Web
 			var logger = autoMocker.GetMock<IBoltOnLogger<CustomExceptionFilter>>();
 			var actionContext = new ActionContext()
 			{
-				HttpContext = new DefaultHttpContext(),
-				RouteData = new RouteData(),
-				ActionDescriptor = new ActionDescriptor()
+				HttpContext = Mock.Of<HttpContext>(),
+				RouteData = Mock.Of<RouteData>(),
+				ActionDescriptor = Mock.Of<ActionDescriptor>()
 			};
 			var exceptionContext = new ExceptionContext(actionContext, new List<IFilterMetadata>())
 			{
@@ -54,9 +54,9 @@ namespace BoltOn.Tests.Web
 			var logger = autoMocker.GetMock<IBoltOnLogger<CustomExceptionFilter>>();
 			var actionContext = new ActionContext()
 			{
-				HttpContext = new DefaultHttpContext(),
-				RouteData = new RouteData(),
-				ActionDescriptor = new ActionDescriptor()
+				HttpContext = Mock.Of<HttpContext>(),
+				RouteData = Mock.Of<RouteData>(),
+				ActionDescriptor = Mock.Of<ActionDescriptor>()
 			};
 			var exceptionContext = new ExceptionContext(actionContext, new List<IFilterMetadata>());
 
@@ -86,8 +86,8 @@ namespace BoltOn.Tests.Web
 			var actionContext = new ActionContext()
 			{
 				HttpContext = new DefaultHttpContext(),
-				RouteData = new RouteData(),
-				ActionDescriptor = new ActionDescriptor()
+				RouteData = Mock.Of<RouteData>(),
+				ActionDescriptor = Mock.Of<ActionDescriptor>()
 			};
 			var exceptionContext = new ExceptionContext(actionContext, new List<IFilterMetadata>())
 			{
@@ -129,8 +129,8 @@ namespace BoltOn.Tests.Web
 			var actionContext = new ActionContext()
 			{
 				HttpContext = new DefaultHttpContext(),
-				RouteData = new RouteData(),
-				ActionDescriptor = new ActionDescriptor()
+				RouteData = Mock.Of<RouteData>(),
+				ActionDescriptor = Mock.Of<ActionDescriptor>()
 			};
 			var exceptionContext = new ExceptionContext(actionContext, new List<IFilterMetadata>())
 			{
@@ -182,8 +182,8 @@ namespace BoltOn.Tests.Web
 			var actionContext = new ActionContext()
 			{
 				HttpContext = new DefaultHttpContext(),
-				RouteData = new RouteData(),
-				ActionDescriptor = new ActionDescriptor()
+				RouteData = Mock.Of<RouteData>(),
+				ActionDescriptor = Mock.Of<ActionDescriptor>()
 			};
 			var exceptionContext = new ExceptionContext(actionContext, new List<IFilterMetadata>())
 			{
@@ -230,8 +230,8 @@ namespace BoltOn.Tests.Web
 			var actionContext = new ActionContext()
 			{
 				HttpContext = new DefaultHttpContext(),
-				RouteData = new RouteData(),
-				ActionDescriptor = new ActionDescriptor()
+				RouteData = Mock.Of<RouteData>(),
+				ActionDescriptor = Mock.Of<ActionDescriptor>()
 			};
 			actionContext.HttpContext.Request.ContentType = "application/json";
 			var exceptionContext = new ExceptionContext(actionContext, new List<IFilterMetadata>())
