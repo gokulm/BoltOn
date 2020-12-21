@@ -18,24 +18,6 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
         [Fact]
-        public void BoltOn_ConcreteClassWithoutRegistrationButResolvableDependencies_ReturnsInstance()
-        {
-            // arrange
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddLogging();
-            serviceCollection.BoltOn();
-            serviceCollection.AddTransient<Employee>();
-            serviceCollection.AddTransient<ClassWithInjectedDependency>();
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-
-            // act 
-            var employee = serviceProvider.GetRequiredService<Employee>();
-
-            // assert
-            Assert.NotNull(employee);
-        }
-
-        [Fact]
         public void BoltOn_DefaultBoltOnWithAllTheAssemblies_RunsRegistrationTasksAndResolvesDependencies()
         {
             // arrange
@@ -43,7 +25,6 @@ namespace BoltOn.Tests.Bootstrapping
             serviceCollection.AddLogging();
             serviceCollection.BoltOn();
             serviceCollection.AddTransient<Employee>();
-            serviceCollection.AddTransient<ClassWithInjectedDependency>();
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
             // act 
@@ -72,7 +53,7 @@ namespace BoltOn.Tests.Bootstrapping
         }
 
         [Fact]
-        public void BoltOn_BoltOn_DoesNotExecutePostRegistrationTask()
+        public void BoltOn_BoltOnWithoutTightenBolts_DoesNotExecutePostRegistrationTask()
         {
             // arrange
             var serviceCollection = new ServiceCollection();

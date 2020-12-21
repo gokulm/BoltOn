@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using BoltOn.Logging;
 using BoltOn.Requestor.Pipeline;
 
-namespace BoltOn.Tests.Bus
+namespace BoltOn.Tests.Bus.Fakes
 {
 	public class CreateTestStudent : IRequest
 	{

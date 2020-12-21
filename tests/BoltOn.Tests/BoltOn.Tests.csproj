@@ -32,6 +32,7 @@
         <PackageReference Include="System.Text.Json" Version="4.7.2" />
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="3.1.10" />
         <PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="7.0.7" />
+        <PackageReference Include="Serilog" Version="2.10.0" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Bootstrapping\" />
@@ -52,6 +53,9 @@
         <Folder Include="Data\CosmosDb\Fakes\" />
         <Folder Include="StateMachine\" />
         <Folder Include="StateMachine\Fakes\" />
+        <Folder Include="Web\" />
+        <Folder Include="Logging\" />
+        <Folder Include="Bus\Fakes\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
@@ -60,5 +64,7 @@
         <ProjectReference Include="..\..\src\BoltOn.Data.CosmosDb\BoltOn.Data.CosmosDb.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Cache\BoltOn.Cache.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Data.Elasticsearch\BoltOn.Data.Elasticsearch.csproj" />
+        <ProjectReference Include="..\..\src\BoltOn.Web\BoltOn.Web.csproj" />
+        <ProjectReference Include="..\..\src\BoltOn.Logging.Serilog\BoltOn.Logging.Serilog.csproj" />
     </ItemGroup>
 </Project>
