@@ -10,6 +10,7 @@ using BoltOn.Tests.Other;
 using System.Linq;
 using BoltOn.Tests.Requestor.Fakes;
 using MassTransit;
+using BoltOn.Tests.Bus.Fakes;
 
 namespace BoltOn.Tests.Bus
 {

@@ -5,6 +5,7 @@ using BoltOn.Bus.MassTransit;
 using MassTransit;
 using System.Threading;
 using BoltOn.Logging;
+using BoltOn.Tests.Bus.Fakes;
 
 namespace BoltOn.Tests.Bus
 {

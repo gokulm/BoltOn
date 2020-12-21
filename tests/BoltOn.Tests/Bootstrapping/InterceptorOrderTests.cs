@@ -60,51 +60,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact]
-		public void AddInterceptor_BeforeAnInterceptorThatDoesntExist_ReturnsInterceptorsInExpectedOrder()
-		{
-			// arrange
-			var serviceCollection = new Moq.Mock<IServiceCollection>();
-			var boltOnOptions = new BoltOnOptions(serviceCollection.Object);
-
-			// act
-			boltOnOptions.AddInterceptor<StopwatchInterceptor>();
-			boltOnOptions.AddInterceptor<CqrsInterceptor>().Before<TestBootstrappingInterceptor>();
-
-			// assert
-			var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
-			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
-			var testBootstrappingInterceptorIndex = interceptorTypes.IndexOf(typeof(TestBootstrappingInterceptor));
-			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
-			Assert.True(stopWatchInterceptorIndex != -1);
-			Assert.True(testBootstrappingInterceptorIndex == -1);
-			Assert.True(cqrsInterceptorIndex != -1);
-			Assert.True(cqrsInterceptorIndex > stopWatchInterceptorIndex);
-		}
-
-		[Fact]
-		public void AddInterceptor_AfterAnInterceptorThatDoesntExist_ReturnsInterceptorsInExpectedOrder()
-		{
-			// arrange
-			var serviceCollection = new Moq.Mock<IServiceCollection>();
-			var boltOnOptions = new BoltOnOptions(serviceCollection.Object);
-
-			// act
-			boltOnOptions.AddInterceptor<StopwatchInterceptor>();
-			boltOnOptions.AddInterceptor<CqrsInterceptor>().After<TestBootstrappingInterceptor>();
-
-			// assert
-			var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
-			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
-			var testBootstrappingInterceptorIndex = interceptorTypes.IndexOf(typeof(TestBootstrappingInterceptor));
-			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
-			Assert.True(stopWatchInterceptorIndex != -1);
-			Assert.True(testBootstrappingInterceptorIndex == -1);
-			Assert.True(cqrsInterceptorIndex != -1);
-			Assert.True(cqrsInterceptorIndex > stopWatchInterceptorIndex);
-		}
-
-		[Fact]
-		public void AddInterceptor_AfterAnInterceptorTheLastInterceptor_ReturnsInterceptorsInExpectedOrder()
+		public void AddInterceptor_AfterTheLastInterceptor_ReturnsInterceptorsInExpectedOrder()
 		{
 			// arrange
 			var serviceCollection = new Moq.Mock<IServiceCollection>();
@@ -146,7 +102,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact]
-		public void AddInterceptor_BeforeAlreadyAddedInterceptor_ReturnsInterceptorsInExpectedOrder()
+		public void AddInterceptor_BeforeAnAlreadyAddedInterceptor_ReturnsInterceptorsInExpectedOrder()
 		{
 			// arrange
 			var serviceCollection = new Moq.Mock<IServiceCollection>();
@@ -165,7 +121,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
 		[Fact]
-		public void AddInterceptor_AfterAlreadyAddedInterceptor_ReturnsInterceptorsInExpectedOrder()
+		public void AddInterceptor_AfterAnAlreadyAddedInterceptor_ReturnsInterceptorsInExpectedOrder()
 		{
 			// arrange
 			var serviceCollection = new Moq.Mock<IServiceCollection>();
@@ -181,6 +137,50 @@ namespace BoltOn.Tests.Bootstrapping
 			Assert.True(stopWatchInterceptorIndex != -1);
 			Assert.True(uowInterceptorIndex != -1);
 			Assert.True(uowInterceptorIndex < stopWatchInterceptorIndex);
+		}
+
+		[Fact]
+		public void AddInterceptor_BeforeAnInterceptorThatDoesntExist_ReturnsInterceptorsInExpectedOrder()
+		{
+			// arrange
+			var serviceCollection = new Moq.Mock<IServiceCollection>();
+			var boltOnOptions = new BoltOnOptions(serviceCollection.Object);
+
+			// act
+			boltOnOptions.AddInterceptor<StopwatchInterceptor>();
+			boltOnOptions.AddInterceptor<CqrsInterceptor>().Before<TestBootstrappingInterceptor>();
+
+			// assert
+			var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
+			var testBootstrappingInterceptorIndex = interceptorTypes.IndexOf(typeof(TestBootstrappingInterceptor));
+			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
+			Assert.True(stopWatchInterceptorIndex != -1);
+			Assert.True(testBootstrappingInterceptorIndex == -1);
+			Assert.True(cqrsInterceptorIndex != -1);
+			Assert.True(cqrsInterceptorIndex > stopWatchInterceptorIndex);
+		}
+
+		[Fact]
+		public void AddInterceptor_AfterAnInterceptorThatDoesntExist_ReturnsInterceptorsInExpectedOrder()
+		{
+			// arrange
+			var serviceCollection = new Moq.Mock<IServiceCollection>();
+			var boltOnOptions = new BoltOnOptions(serviceCollection.Object);
+
+			// act
+			boltOnOptions.AddInterceptor<StopwatchInterceptor>();
+			boltOnOptions.AddInterceptor<CqrsInterceptor>().After<TestBootstrappingInterceptor>();
+
+			// assert
+			var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
+			var testBootstrappingInterceptorIndex = interceptorTypes.IndexOf(typeof(TestBootstrappingInterceptor));
+			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
+			Assert.True(stopWatchInterceptorIndex != -1);
+			Assert.True(testBootstrappingInterceptorIndex == -1);
+			Assert.True(cqrsInterceptorIndex != -1);
+			Assert.True(cqrsInterceptorIndex > stopWatchInterceptorIndex);
 		}
 	}
 }

@@ -7,6 +7,7 @@ using Moq.AutoMock;
 using Xunit;
 using BoltOn.Logging;
 using BoltOn.Requestor.Pipeline;
+using BoltOn.Tests.Bus.Fakes;
 
 namespace BoltOn.Tests.Bus
 {
