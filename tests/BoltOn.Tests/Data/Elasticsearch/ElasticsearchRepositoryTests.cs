@@ -66,24 +66,6 @@ namespace BoltOn.Tests.Data.Elasticsearch
 		}
 
 		[Fact]
-		public async Task FindByAsync_WhenParamPassedToPredicate_ThrowsException()
-		{
-			// arrange
-			if (!IntegrationTestHelper.IsElasticsearchServer)
-				return;
-			var sut = _elasticDbFixture.ServiceProvider.GetService<BoltOn.Data.IRepository<Student>>();
-
-			// act
-			var result = await Record.ExceptionAsync(async () => await sut.FindByAsync(f => f.FirstName == "John"));
-
-			// assert
-			Assert.NotNull(result);
-			Assert.Equal("BoltOn Elasticsearch does not support search by predicate. " +
-					"Pass null for the predicate param and NEST'S SearchRequest object for the options param",
-					result.Message);
-		}
-
-		[Fact]
 		public async Task FindByAsync_WhenExactMatch_ReturnsRecord()
 		{
 			// arrange
