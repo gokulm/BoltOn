@@ -1,6 +1,5 @@
 using System;
 using BoltOn.Bootstrapping;
-using BoltOn.Data;
 using BoltOn.Tests.Other;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -39,7 +38,7 @@ namespace BoltOn.Tests.Data.CosmosDb.Fakes
                     StudentType = "Grad"
                 };
 
-                var repository = scope.ServiceProvider.GetService<IRepository<StudentFlattened>>();
+                var repository = scope.ServiceProvider.GetService<BoltOn.Data.CosmosDb.IRepository<StudentFlattened>>();
                 repository?.AddAsync(studentFlattened).GetAwaiter().GetResult();
                 repository?.AddAsync(recordToBeDeleted).GetAwaiter().GetResult();
             }

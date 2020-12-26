@@ -90,7 +90,8 @@ namespace BoltOn.Tests.Data.CosmosDb
 				return;
 
 			// act
-			var result = (await _cosmosDbFixture.SubjectUnderTest.FindByAsync(f => f.StudentTypeId == 1 && f.FirstName == "john")).FirstOrDefault();
+			var result = (await _cosmosDbFixture.SubjectUnderTest.FindByAsync(f => f.StudentTypeId == 1 &&
+			f.FirstName == "john")).FirstOrDefault();
 
 			// assert
 			Assert.NotNull(result);
