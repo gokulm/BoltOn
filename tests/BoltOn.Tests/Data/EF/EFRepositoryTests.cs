@@ -113,14 +113,8 @@ namespace BoltOn.Tests.Data.EF
 		[Fact, Trait("Category", "Integration")]
 		public async Task FindByWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
 		{
-			// arrange
-			var includes = new List<Expression<Func<Student, object>>>
-			{
-				s => s.Addresses
-			};
-
 			// act
-			var result = (await _sut.FindByAsync(f => f.Id == 2, includes)).FirstOrDefault();
+			var result = (await _sut.FindByAsync(f => f.Id == 2, default, i => i.Addresses)).FirstOrDefault();
 
 			// assert
 			Assert.NotNull(result);
@@ -131,14 +125,8 @@ namespace BoltOn.Tests.Data.EF
 		[Fact, Trait("Category", "Integration")]
 		public async Task FindByAsyncWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
 		{
-			// arrange
-			var includes = new List<Expression<Func<Student, object>>>
-			{
-				s => s.Addresses
-			};
-
 			// act
-			var result = (await _sut.FindByAsync(f => f.Id == 2, includes)).FirstOrDefault();
+			var result = (await _sut.FindByAsync(f => f.Id == 2, default, i => i.Addresses)).FirstOrDefault();
 
 			// assert
 			Assert.NotNull(result);

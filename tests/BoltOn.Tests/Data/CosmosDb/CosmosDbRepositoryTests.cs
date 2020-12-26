@@ -148,7 +148,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			var actualResult = await _cosmosDbFixture.SubjectUnderTest.AddAsync(studentsFlattened, new RequestOptions { PartitionKey = new PartitionKey(2) });
 
 			// assert
-			var expectedResult = await _cosmosDbFixture.SubjectUnderTest.GetAllAsync(new RequestOptions { PartitionKey = new PartitionKey(2) });
+			var expectedResult = await _cosmosDbFixture.SubjectUnderTest.GetAllAsync(new FeedOptions { PartitionKey = new PartitionKey(2) });
 			Assert.NotNull(actualResult);
 			Assert.NotNull(expectedResult.FirstOrDefault(f => f.FirstName == "meghan" && f.LastName == "doe"));
 			Assert.NotNull(expectedResult.FirstOrDefault(f => f.FirstName == "john" && f.LastName == "smith"));

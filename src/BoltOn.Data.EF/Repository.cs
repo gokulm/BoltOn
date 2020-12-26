@@ -15,50 +15,27 @@ namespace BoltOn.Data.EF
 		protected TDbContext DbContext { get; set; }
 		protected DbSet<TEntity> DbSets { get; }
 
-		public Repository(IDbContextFactory dbContextFactory)
+		public Repository(TDbContext dbContext)
 		{
-			DbContext = dbContextFactory.Get<TDbContext>();
+			DbContext = dbContext;
 			DbSets = DbContext.Set<TEntity>();
 		}
 
-		public virtual async Task<IEnumerable<TEntity>> GetAllAsync(object options = null, CancellationToken cancellationToken = default)
-		{
-			return await DbSets.ToListAsync(cancellationToken);
-		}
-
-		public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
-			object options = null,
-			CancellationToken cancellationToken = default)
-		{
-			var query = DbSets.Where(predicate);
-			if (options is IEnumerable<Expression<Func<TEntity, object>>> includes && includes.Any())
-			{
-				query = includes.Aggregate(query,
-				(current, include) => current.Include(include));
-			}
-
-			return await query.ToListAsync(cancellationToken);
-		}
-
-		public virtual async Task<TEntity> AddAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
+		public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
 			DbSets.Add(entity);
 			await SaveChangesAsync(entity, cancellationToken);
 			return entity;
 		}
 
-		public virtual async Task UpdateAsync(TEntity entity, object options = null, CancellationToken cancellationToken = default)
+		public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
-			DbSets.Update(entity);
+			if (!DbContext.ChangeTracker.Entries<TEntity>().Select(s => s.Entity).Contains(entity))
+				DbSets.Update(entity);
 			await SaveChangesAsync(entity, cancellationToken);
 		}
 
-		public virtual async Task<TEntity> GetByIdAsync(object id, object options = null, CancellationToken cancellationToken = default)
-		{
-			return await DbSets.FindAsync(id);
-		}
-
-		public virtual async Task DeleteAsync(object id, object options = null, CancellationToken cancellationToken = default)
+		public virtual async Task DeleteAsync(object id, CancellationToken cancellationToken = default)
 		{
 			// todo: delete without loading
 			var entity = await GetByIdAsync(id, cancellationToken);
@@ -66,7 +43,7 @@ namespace BoltOn.Data.EF
 			await SaveChangesAsync(entity, cancellationToken);
 		}
 
-		public virtual async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null,
+		public virtual async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities,
 			CancellationToken cancellationToken = default)
 		{
 			await DbSets.AddRangeAsync(entities);
@@ -82,6 +59,28 @@ namespace BoltOn.Data.EF
 		protected virtual async Task SaveChangesAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
 		{
 			await DbContext.SaveChangesAsync(cancellationToken);
-		}				
+		}
+
+		public virtual async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
+		{
+			return await DbSets.FindAsync(id);
+		}
+
+		public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
+		{
+			return await DbSets.ToListAsync(cancellationToken);
+		}
+
+		public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
+		{
+			var query = DbSets.Where(predicate);
+			if (includes != null)
+			{
+				query = includes.Aggregate(query,
+				(current, include) => current.Include(include));
+			}
+
+			return await query.ToListAsync(cancellationToken);
+		}
 	}
 }

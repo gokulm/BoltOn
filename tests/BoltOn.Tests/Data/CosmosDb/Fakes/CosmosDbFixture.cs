@@ -1,5 +1,4 @@
 ﻿using System;
-using BoltOn.Data;
 using BoltOn.Data.CosmosDb;
 using BoltOn.Tests.Other;
 using Microsoft.Extensions.DependencyInjection;

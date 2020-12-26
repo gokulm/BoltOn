@@ -282,10 +282,10 @@ namespace BoltOn.Tests.Data.Elasticsearch
 		public async Task<IEnumerable<Student>> Search(SearchRequest searchRequest)
 		{
 			// arrange
-			var sut = _elasticDbFixture.ServiceProvider.GetService<BoltOn.Data.IRepository<Student>>();
+			var sut = _elasticDbFixture.ServiceProvider.GetService<BoltOn.Data.Elasticsearch.IRepository<Student>>();
 
 			// act
-			return await sut.FindByAsync(null, searchRequest);
+			return await sut.FindByAsync(searchRequest);
 		}
 	}
 }
