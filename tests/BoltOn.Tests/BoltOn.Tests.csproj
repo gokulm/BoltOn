@@ -56,6 +56,7 @@
         <Folder Include="Web\" />
         <Folder Include="Logging\" />
         <Folder Include="Bus\Fakes\" />
+        <Folder Include="Data\EF\Fakes\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />

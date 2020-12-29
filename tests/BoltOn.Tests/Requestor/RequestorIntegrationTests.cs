@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BoltOn.Data.EF;
 using BoltOn.Requestor.Pipeline;
 using BoltOn.Tests.Data.EF;
+using BoltOn.Tests.Data.EF.Fakes;
 using BoltOn.Tests.Other;
 using BoltOn.Tests.Requestor.Fakes;
 using BoltOn.Tests.UoW;

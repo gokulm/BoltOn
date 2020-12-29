@@ -12,6 +12,12 @@ namespace BoltOn.Tests.Other
 		public SchoolDbContext(DbContextOptions<SchoolDbContext> options) : base(options)
 		{
 		}
+
+		protected override void ApplyConfigurations(ModelBuilder modelBuilder)
+		{
+			modelBuilder.ApplyConfiguration(new StudentMapping());
+			modelBuilder.ApplyConfiguration(new AddressMapping());
+		}
 	}
 
 	public class Student : BaseEntity<int>
