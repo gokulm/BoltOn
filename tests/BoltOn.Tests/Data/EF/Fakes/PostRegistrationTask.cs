@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using BoltOn.Bootstrapping;
 using BoltOn.Tests.Other;
 
-namespace BoltOn.Tests.Data.EF
+namespace BoltOn.Tests.Data.EF.Fakes
 {
 	public class PostRegistrationTask : IPostRegistrationTask
 	{

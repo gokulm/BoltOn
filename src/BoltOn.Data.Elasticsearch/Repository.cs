@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Nest;
@@ -20,15 +19,14 @@ namespace BoltOn.Data.Elasticsearch
 			}
 		}
 
-		public ElasticClient Client { get; }
+		protected ElasticClient Client { get; }
 
 		public Repository(TElasticsearchOptions elasticsearchOptions)
 		{
 			Client = new ElasticClient(elasticsearchOptions.ConnectionSettings);
 		}
 
-		public virtual async Task<TEntity> GetByIdAsync(object id, object options = null,
-			CancellationToken cancellationToken = default)
+		public virtual async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default)
 		{
 			var result = await Client.GetAsync<TEntity>(id.ToString(), idx => idx.Index(IndexName),
 				cancellationToken);
@@ -37,8 +35,7 @@ namespace BoltOn.Data.Elasticsearch
 			return result.Source;
 		}
 
-		public virtual async Task<IEnumerable<TEntity>> GetAllAsync(object options = null,
-			CancellationToken cancellationToken = default)
+		public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
 		{
 			var result = await Client.SearchAsync<TEntity>(search =>
 				search.MatchAll().Index(IndexName), cancellationToken);
@@ -47,14 +44,13 @@ namespace BoltOn.Data.Elasticsearch
 			return result.Documents;
 		}
 
-		public virtual async Task<TEntity> AddAsync(TEntity entity, object options = null,
-			CancellationToken cancellationToken = default)
+		public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
-			var result = await AddAsync(new List<TEntity> { entity }, options, cancellationToken);
+			var result = await AddAsync(new List<TEntity> { entity }, cancellationToken);
 			return result.FirstOrDefault();
 		}
 
-		public virtual async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, object options = null,
+		public virtual async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities,
 			CancellationToken cancellationToken = default)
 		{
 			var tempEntities = entities.ToList();
@@ -67,7 +63,7 @@ namespace BoltOn.Data.Elasticsearch
 			return tempEntities;
 		}
 
-		public virtual async Task UpdateAsync(TEntity entity, object options = null,
+		public virtual async Task UpdateAsync(TEntity entity,
 			CancellationToken cancellationToken = default)
 		{
 			var result = await Client.UpdateAsync(new DocumentPath<TEntity>(entity),
@@ -76,7 +72,7 @@ namespace BoltOn.Data.Elasticsearch
 				throw result.OriginalException;
 		}
 
-		public virtual async Task DeleteAsync(object id, object options = null,
+		public virtual async Task DeleteAsync(object id,
 			CancellationToken cancellationToken = default)
 		{
 			var result = await Client.DeleteAsync<TEntity>(id.ToString(),
@@ -85,18 +81,10 @@ namespace BoltOn.Data.Elasticsearch
 				throw result.OriginalException;
 		}
 
-		/// <summary>
-		/// BoltOn Elasticsearch does not support search by predicate, so pass NEST's SearchRequest
-		/// object for options parameter and null for predicate parameter
-		/// </summary>
-		public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
-			object options = null, CancellationToken cancellationToken = default)
+		public virtual async Task<IEnumerable<TEntity>> FindByAsync(SearchRequest searchRequest = null,
+			CancellationToken cancellationToken = default)
 		{
-			if (predicate != null)
-				throw new NotImplementedException("BoltOn Elasticsearch does not support search by predicate. " +
-					"Pass null for the predicate param and NEST'S SearchRequest object for the options param");
-
-			if (options != null && options is SearchRequest searchRequest)
+			if (searchRequest != null)
 			{
 				Func<QueryContainerDescriptor<TEntity>, QueryContainer> func = (q) => searchRequest.Query;
 				var result = await Client.SearchAsync<TEntity>(s => s.Index(IndexName).Query(func), cancellationToken);

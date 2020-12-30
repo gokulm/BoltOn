@@ -9,8 +9,8 @@ namespace BoltOn.Tests.Other
 
 	public class StudentRepository : Repository<Student, SchoolDbContext>, IStudentRepository
 	{
-		public StudentRepository(IDbContextFactory dbContextFactory)
-			: base(dbContextFactory)
+		public StudentRepository(SchoolDbContext schoolDbContext)
+			: base(schoolDbContext)
 		{
 		}
 	}

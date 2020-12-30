@@ -16,8 +16,8 @@ namespace BoltOn.Data.EF
 		private readonly EventBag _eventBag;
 		private readonly CqrsOptions _cqrsOptions;
 
-		public CqrsRepository(IDbContextFactory dbContextFactory, EventBag eventBag,
-			CqrsOptions cqrsOptions) : base(dbContextFactory)
+		public CqrsRepository(TDbContext dbContext, EventBag eventBag,
+			CqrsOptions cqrsOptions) : base(dbContext)
 		{
 			_eventBag = eventBag;
 			_cqrsOptions = cqrsOptions;
