@@ -1,9 +1,8 @@
 using System;
-using BoltOn.Data;
+using System.Collections.Generic;
 using BoltOn.Data.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Collections.Generic;
 
 namespace BoltOn.Tests.Other
 {
@@ -20,15 +19,17 @@ namespace BoltOn.Tests.Other
 		}
 	}
 
-	public class Student : BaseEntity<int>
+	public class Student 
 	{
+		public int Id { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
 		public List<Address> Addresses { get; set; } = new List<Address>();
 	}
 
-	public class Address : BaseEntity<Guid>
+	public class Address 
 	{
+		public Guid Id { get; set; }
 		public string Street { get; set; }
 		public string City { get; set; }
 		public Student Student { get; set; }

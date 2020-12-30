@@ -38,7 +38,7 @@ namespace BoltOn.Tests.UoW
 			var result = sut.Build(new TestQuery());
 
 			// assert
-			Assert.Equal(System.Transactions.IsolationLevel.ReadCommitted, result.IsolationLevel);
+			Assert.Equal(System.Transactions.IsolationLevel.ReadUncommitted, result.IsolationLevel);
 			logger.Verify(l => l.Debug("Getting isolation level for Query"));
 		}
 

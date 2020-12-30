@@ -4,21 +4,18 @@ using BoltOn.Logging;
 using BoltOn.Requestor.Pipeline;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Transactions;
 
 namespace BoltOn.Requestor.Interceptors
 {
 	public class UnitOfWorkInterceptor : IInterceptor
 	{
-		private readonly IUnitOfWorkManager _unitOfWorkManager;
-		private IUnitOfWork _unitOfWork;
 		private readonly IBoltOnLogger<UnitOfWorkInterceptor> _logger;
 		private readonly IUnitOfWorkOptionsBuilder _uowOptionsBuilder;
 
 		public UnitOfWorkInterceptor(IBoltOnLogger<UnitOfWorkInterceptor> logger,
-									IUnitOfWorkManager unitOfWorkManager,
 									IUnitOfWorkOptionsBuilder uowOptionsBuilder)
 		{
-			_unitOfWorkManager = unitOfWorkManager;
 			_logger = logger;
 			_uowOptionsBuilder = uowOptionsBuilder;
 		}
@@ -30,22 +27,20 @@ namespace BoltOn.Requestor.Interceptors
                 return await next.Invoke(request, cancellationToken);
 
             _logger.Debug($"UnitOfWorkInterceptor started");
-            var unitOfWorkOptions = _uowOptionsBuilder.Build(request);
-            _logger.Debug($"About to start UoW with IsolationLevel: {unitOfWorkOptions.IsolationLevel.ToString()}");
-            TResponse response;
-            using (_unitOfWork = _unitOfWorkManager.Get(unitOfWorkOptions))
-            {
-                response = await next.Invoke(request, cancellationToken);
-                _unitOfWork.Commit();
-            }
-            _unitOfWork = null;
-            _logger.Debug($"UnitOfWorkInterceptor ended");
-            return response;
+            var uowOptions = _uowOptionsBuilder.Build(request);
+			using var transactionScope = new TransactionScope(uowOptions.TransactionScopeOption, new TransactionOptions
+			{
+				IsolationLevel = uowOptions.IsolationLevel,
+				Timeout = uowOptions.TransactionTimeout
+			}, TransactionScopeAsyncFlowOption.Enabled);
+			var response = await next.Invoke(request, cancellationToken);
+			transactionScope.Complete();
+			_logger.Debug($"UnitOfWorkInterceptor ended");
+			return response;
 		}
 
 		public void Dispose()
 		{
-			_unitOfWork?.Dispose();
 		}
     }
 }

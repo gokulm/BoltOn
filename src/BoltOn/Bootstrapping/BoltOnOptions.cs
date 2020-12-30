@@ -42,9 +42,6 @@ namespace BoltOn.Bootstrapping
 
         private void RegisterCoreTypes()
         {
-            ServiceCollection.AddScoped<IUnitOfWorkManager>(s =>
-                new UnitOfWorkManager(s.GetRequiredService<IBoltOnLogger<UnitOfWorkManager>>(),
-                s.GetRequiredService<IUnitOfWorkFactory>()));
             ServiceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
             ServiceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
             ServiceCollection.AddTransient<IEventDispatcher, DefaultEventDispatcher>();

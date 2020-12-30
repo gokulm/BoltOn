@@ -31,7 +31,7 @@ namespace BoltOn.UoW
 					break;
 				case IQuery<TResponse> _:
 					_logger.Debug("Getting isolation level for Query");
-					isolationLevel = IsolationLevel.ReadCommitted;
+					isolationLevel = IsolationLevel.ReadUncommitted;
 					break;
 				default:
 					throw new Exception("Request should implement ICommand<> or IQuery<> to enable Unit of Work.");
