@@ -58,7 +58,6 @@ namespace BoltOn.Bootstrapping
         private void RegisterRequestor()
         {
             ServiceCollection.AddTransient<IRequestor, Requestor.Pipeline.Requestor>();
-            ServiceCollection.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
             AddInterceptor<StopwatchInterceptor>();
             AddInterceptor<UnitOfWorkInterceptor>();
         }

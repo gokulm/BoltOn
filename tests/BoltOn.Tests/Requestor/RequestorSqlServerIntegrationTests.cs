@@ -37,7 +37,7 @@ namespace BoltOn.Tests.Requestor
 
 			// act
 			var result = await sut.ProcessAsync(new AddStudentRequest { Id = 30, FirstName = "first", LastName = "last" });
-			var dbContext = serviceProvider.GetService<IDbContextFactory>().Get<SchoolDbContext>();
+			var dbContext = serviceProvider.GetService<SchoolDbContext>();
 
 			// assert 
 			Assert.NotNull(result);

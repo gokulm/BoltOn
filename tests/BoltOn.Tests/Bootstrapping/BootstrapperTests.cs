@@ -4,6 +4,7 @@ using BoltOn.Bootstrapping;
 using BoltOn.Cqrs;
 using BoltOn.Requestor.Interceptors;
 using BoltOn.Tests.Bootstrapping.Fakes;
+using BoltOn.UoW;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 

@@ -5,6 +5,7 @@ using System.Reflection;
 using BoltOn.Bootstrapping;
 using BoltOn.Cqrs;
 using BoltOn.Requestor.Interceptors;
+using BoltOn.UoW;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn

@@ -103,14 +103,10 @@ namespace BoltOn.Tests.Requestor
 			var logger = new Mock<IBoltOnLogger<UnitOfWorkInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
-			var uowOptions = autoMocker.GetMock<UnitOfWorkOptions>();
-			uowOptions.Setup(u => u.IsolationLevel).Returns(IsolationLevel.ReadCommitted);
-			var uowOptionsBuilder = autoMocker.GetMock<IUnitOfWorkOptionsBuilder>();
 			var request = new TestCommand();
-			uowOptionsBuilder.Setup(u => u.Build(request)).Returns(uowOptions.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
 			{
-				new UnitOfWorkInterceptor(logger.Object, uowOptionsBuilder.Object)
+				new UnitOfWorkInterceptor(logger.Object)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
@@ -133,14 +129,10 @@ namespace BoltOn.Tests.Requestor
 			var logger = new Mock<IBoltOnLogger<UnitOfWorkInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
-			var uowOptions = autoMocker.GetMock<UnitOfWorkOptions>();
-			uowOptions.Setup(u => u.IsolationLevel).Returns(IsolationLevel.ReadCommitted);
-			var uowOptionsBuilder = autoMocker.GetMock<IUnitOfWorkOptionsBuilder>();
 			var request = new TestCommand();
-			uowOptionsBuilder.Setup(u => u.Build(request)).Returns(uowOptions.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
 			{
-				new UnitOfWorkInterceptor(logger.Object, uowOptionsBuilder.Object)
+				new UnitOfWorkInterceptor(logger.Object)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Throws<Exception>();
@@ -160,14 +152,10 @@ namespace BoltOn.Tests.Requestor
 			var logger = new Mock<IBoltOnLogger<UnitOfWorkInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
-			var uowOptions = autoMocker.GetMock<UnitOfWorkOptions>();
-			uowOptions.Setup(u => u.IsolationLevel).Returns(IsolationLevel.ReadCommitted);
-			var uowOptionsBuilder = autoMocker.GetMock<IUnitOfWorkOptionsBuilder>();
 			var request = new TestCommand();
-			uowOptionsBuilder.Setup(u => u.Build(request)).Returns(uowOptions.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
 			{
-				new UnitOfWorkInterceptor(logger.Object, uowOptionsBuilder.Object)
+				new UnitOfWorkInterceptor(logger.Object)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			testHandler.Setup(s => s.HandleAsync(request, default)).Throws<Exception>();
@@ -252,15 +240,9 @@ namespace BoltOn.Tests.Requestor
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var logger = new Mock<IBoltOnLogger<ChangeTrackerInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestQuery, bool>)))
 				.Returns(testHandler.Object);
 			var request = new TestQuery();
-			var changeTrackerContext = new ChangeTrackerContext();
-			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
-			{
-				new ChangeTrackerInterceptor(logger.Object, changeTrackerContext)
-			});
 			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
 
@@ -269,9 +251,6 @@ namespace BoltOn.Tests.Requestor
 
 			// assert 
 			Assert.True(result);
-			Assert.True(changeTrackerContext.IsQueryRequest);
-			logger.Verify(l => l.Debug($"Entering {nameof(ChangeTrackerInterceptor)}..."));
-			logger.Verify(l => l.Debug($"IsQueryRequest: {true}"));
 		}
 
 		[Fact]
@@ -281,15 +260,9 @@ namespace BoltOn.Tests.Requestor
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var logger = new Mock<IBoltOnLogger<CustomChangeTrackerInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestStaleQuery, bool>)))
 				.Returns(testHandler.Object);
 			var request = new TestStaleQuery();
-			var changeTrackerContext = new ChangeTrackerContext();
-			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
-			{
-				new CustomChangeTrackerInterceptor(logger.Object, changeTrackerContext)
-			});
 			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
 
@@ -298,9 +271,6 @@ namespace BoltOn.Tests.Requestor
 
 			// assert 
 			Assert.True(result);
-			Assert.True(changeTrackerContext.IsQueryRequest);
-			logger.Verify(l => l.Debug($"Entering {nameof(CustomChangeTrackerInterceptor)}..."));
-			logger.Verify(l => l.Debug($"IsQueryRequest or IQueryUncommitted: {true}"));
 		}
 
 		[Fact]
@@ -310,15 +280,9 @@ namespace BoltOn.Tests.Requestor
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var logger = new Mock<IBoltOnLogger<ChangeTrackerInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
 			var request = new TestCommand();
-			var changeTrackerContext = new ChangeTrackerContext();
-			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
-			{
-				new ChangeTrackerInterceptor(logger.Object, changeTrackerContext)
-			});
 			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
 
@@ -327,9 +291,6 @@ namespace BoltOn.Tests.Requestor
 
 			// assert 
 			Assert.True(result);
-			Assert.False(changeTrackerContext.IsQueryRequest);
-			logger.Verify(l => l.Debug($"Entering {nameof(ChangeTrackerInterceptor)}..."));
-			logger.Verify(l => l.Debug($"IsQueryRequest: {false}"));
 		}
 
 		public void Dispose()

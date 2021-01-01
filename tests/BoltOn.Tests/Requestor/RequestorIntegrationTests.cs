@@ -7,8 +7,6 @@ using BoltOn.Requestor.Pipeline;
 using BoltOn.Tests.Data.EF.Fakes;
 using BoltOn.Tests.Other;
 using BoltOn.Tests.Requestor.Fakes;
-using BoltOn.Tests.UoW;
-using BoltOn.UoW;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -285,7 +283,6 @@ namespace BoltOn.Tests.Requestor
 				options.RegisterRequestorFakes();
                 options.BoltOnEFModule();
             });
-			serviceCollection.AddSingleton<IUnitOfWorkOptionsBuilder, TestCustomUnitOfWorkOptionsBuilder>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IRequestor>();
@@ -318,7 +315,6 @@ namespace BoltOn.Tests.Requestor
 
 			// assert 
 			Assert.True(result);
-			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(CustomChangeTrackerInterceptor)}..."));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
@@ -343,7 +339,6 @@ namespace BoltOn.Tests.Requestor
 
 			// assert 
 			Assert.True(result); 
-			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(CustomChangeTrackerInterceptor)}..."));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
@@ -369,7 +364,6 @@ namespace BoltOn.Tests.Requestor
 
 			// assert 
 			Assert.Equal(1, command.Value); 
-			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(CustomChangeTrackerInterceptor)}..."));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f == "Getting isolation level for Command or Query"));
 		}
 
@@ -393,14 +387,13 @@ namespace BoltOn.Tests.Requestor
 
 			// act
 			var result = await sut.ProcessAsync(new GetStudentRequest { StudentId = 2 });
-			var dbContext = serviceProvider.GetService<IDbContextFactory>().Get<SchoolDbContext>();
+			var dbContext = serviceProvider.GetService<SchoolDbContext>();
 			var isAutoDetectChangesEnabled = dbContext.ChangeTracker.AutoDetectChangesEnabled;
 			var queryTrackingBehavior = dbContext.ChangeTracker.QueryTrackingBehavior;
 
 			// assert 
 			Assert.NotNull(result);
 			Assert.Equal(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking, queryTrackingBehavior);
-			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(ChangeTrackerInterceptor)}..."));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {true}"));
 			Assert.False(isAutoDetectChangesEnabled);
 		}
@@ -423,14 +416,13 @@ namespace BoltOn.Tests.Requestor
 
 			// act
 			var result = await sut.ProcessAsync(new TestCommand());
-			var dbContext = serviceProvider.GetService<IDbContextFactory>().Get<SchoolDbContext>();
+			var dbContext = serviceProvider.GetService<SchoolDbContext>();
 			var isAutoDetectChangesEnabled = dbContext.ChangeTracker.AutoDetectChangesEnabled;
 			var queryTrackingBehavior = dbContext.ChangeTracker.QueryTrackingBehavior;
 
 			// assert 
 			Assert.True(result);
 			Assert.Equal(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.TrackAll, queryTrackingBehavior);
-			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"Entering {nameof(ChangeTrackerInterceptor)}..."));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f == $"IsQueryRequest: {false}"));
 			Assert.True(isAutoDetectChangesEnabled);
 		}
