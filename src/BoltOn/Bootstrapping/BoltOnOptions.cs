@@ -8,7 +8,7 @@ using BoltOn.Logging;
 using BoltOn.Other;
 using BoltOn.Requestor.Interceptors;
 using BoltOn.Requestor.Pipeline;
-using BoltOn.UoW;
+using BoltOn.Transaction;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
@@ -59,7 +59,7 @@ namespace BoltOn.Bootstrapping
         {
             ServiceCollection.AddTransient<IRequestor, Requestor.Pipeline.Requestor>();
             AddInterceptor<StopwatchInterceptor>();
-            AddInterceptor<UnitOfWorkInterceptor>();
+            AddInterceptor<TransactionInterceptor>();
         }
 
         public InterceptorOptions AddInterceptor<TInterceptor>() where TInterceptor : IInterceptor

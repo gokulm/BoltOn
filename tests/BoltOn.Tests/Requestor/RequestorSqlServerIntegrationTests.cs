@@ -15,7 +15,7 @@ namespace BoltOn.Tests.Requestor
 	{
 		[Fact]
 		[TestPriority(1)]
-		public async Task Process_RequestorWithCommandRequestInSqlServer_AddsRecordInDbWithUoW()
+		public async Task Process_RequestorWithCommandRequestInSqlServer_AddsRecordInDbWithinTransaction()
 		{
 			if (!IntegrationTestHelper.IsSqlRunning)
 				return;

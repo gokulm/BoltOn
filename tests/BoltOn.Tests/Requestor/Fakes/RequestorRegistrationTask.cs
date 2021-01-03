@@ -2,6 +2,7 @@
 using BoltOn.Bootstrapping;
 using BoltOn.Logging;
 using BoltOn.Requestor.Interceptors;
+using BoltOn.Transaction;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -26,6 +27,11 @@ namespace BoltOn.Tests.Requestor.Fakes
 			stopWatchInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
 									 .Callback<string>(st => RequestorTestHelper.LoggerStatements.Add(st));
 			boltOnOptions.ServiceCollection.AddTransient((s) => stopWatchInterceptorLogger.Object);
+
+			var transactionInterceptorLogger = new Mock<IBoltOnLogger<TransactionInterceptor>>();
+			transactionInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
+									 .Callback<string>(st => RequestorTestHelper.LoggerStatements.Add(st));
+			boltOnOptions.ServiceCollection.AddTransient((s) => transactionInterceptorLogger.Object);
 
 			if (RequestorTestHelper.IsClearInterceptors)
 				boltOnOptions.RemoveAllInterceptors();

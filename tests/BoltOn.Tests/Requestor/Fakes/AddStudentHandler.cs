@@ -4,11 +4,11 @@ using System.Transactions;
 using BoltOn.Data;
 using BoltOn.Requestor.Pipeline;
 using BoltOn.Tests.Other;
-using BoltOn.UoW;
+using BoltOn.Transaction;
 
 namespace BoltOn.Tests.Requestor.Fakes
 {
-	public class AddStudentRequest : IRequest<Student>, IEnableUnitOfWork
+	public class AddStudentRequest : IRequest<Student>, IEnableTransaction
 	{
 		public int Id { get; set; }
 		public string FirstName { get; set; }

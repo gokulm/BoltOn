@@ -1,9 +1,9 @@
 using System;
 using System.Transactions;
 
-namespace BoltOn.UoW
+namespace BoltOn.Transaction
 {
-	public interface IEnableUnitOfWork 
+	public interface IEnableTransaction
 	{
 		public IsolationLevel IsolationLevel { get; }
 		public TimeSpan TransactionTimeout => TransactionManager.DefaultTimeout;

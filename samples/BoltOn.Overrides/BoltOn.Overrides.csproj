@@ -4,7 +4,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Requestor\" />
-    <Folder Include="UoW\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BoltOn" Version="0.26.0" />
