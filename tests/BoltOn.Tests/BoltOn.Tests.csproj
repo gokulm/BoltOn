@@ -37,7 +37,6 @@
     <ItemGroup>
         <Folder Include="Bootstrapping\" />
         <Folder Include="Common\" />
-        <Folder Include="UoW\" />
         <Folder Include="Data\" />
         <Folder Include="Data\EF\" />
         <Folder Include="Other\" />

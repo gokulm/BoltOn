@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BoltOn.Data;
 
 namespace BoltOn.Cqrs
 {
-	public abstract class BaseCqrsEntity : BaseEntity<Guid>
+	public abstract class BaseCqrsEntity
 	{
+		public virtual Guid Id { get; set; }
+
 		private HashSet<ICqrsEvent> _eventsToBeProcessed = new HashSet<ICqrsEvent>();
 
 		private HashSet<ICqrsEvent> _processedEvents = new HashSet<ICqrsEvent>();

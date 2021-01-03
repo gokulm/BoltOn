@@ -1,16 +1,16 @@
-﻿using BoltOn.Data.EF;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Tests.Cqrs.Fakes
 {
-    public class CqrsDbContext : BaseDbContext<CqrsDbContext>
+	public class CqrsDbContext : DbContext
     {
         public CqrsDbContext(DbContextOptions<CqrsDbContext> options) : base(options)
         {
         }
 
-        protected override void ApplyConfigurations(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new StudentMapping());
             modelBuilder.ApplyConfiguration(new StudentFlattenedMapping());
         }

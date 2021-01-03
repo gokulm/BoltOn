@@ -5,6 +5,7 @@ using System.Reflection;
 using BoltOn.Bootstrapping;
 using BoltOn.Cqrs;
 using BoltOn.Requestor.Interceptors;
+using BoltOn.Transaction;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn
@@ -49,7 +50,7 @@ namespace BoltOn
 			boltOnOptions.IsCqrsEnabled = true;
 			var options = new CqrsOptions();
 			action?.Invoke(options);
-			boltOnOptions.AddInterceptor<CqrsInterceptor>().Before<UnitOfWorkInterceptor>();
+			boltOnOptions.AddInterceptor<CqrsInterceptor>().Before<TransactionInterceptor>();
 			boltOnOptions.ServiceCollection.AddSingleton(options);
 			boltOnOptions.ServiceCollection.AddTransient<IEventDispatcher, EventDispatcher>();
 			return boltOnOptions;

@@ -1,7 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using BoltOn.Requestor.Interceptors;
 using BoltOn.Requestor.Pipeline;
+using BoltOn.Transaction;
 
 namespace BoltOn.Tests.Requestor.Fakes
 {
@@ -9,8 +11,9 @@ namespace BoltOn.Tests.Requestor.Fakes
     {
 	}
 
-	public class TestCommand : ICommand<bool>
+	public class TestCommand : IRequest<bool>, IEnableTransaction
 	{
+		public IsolationLevel IsolationLevel => IsolationLevel.ReadCommitted;
 	}
 
 	public class TestOneWayRequest : IRequest, IEnableInterceptor<StopwatchInterceptor>
@@ -18,32 +21,25 @@ namespace BoltOn.Tests.Requestor.Fakes
 		public int Value { get; set; }
 	}
 
-	public class TestOneWayCommand : ICommand, IEnableInterceptor<StopwatchInterceptor>
+	public class TestOneWayCommand : IRequest, IEnableTransaction
 	{
 		public int Value { get; set; }
+
+		public IsolationLevel IsolationLevel => IsolationLevel.ReadCommitted;
 	}
 
-	public class TestQuery : IQuery<bool>
+	public class TestStaleQuery : IRequest<bool>, IEnableTransaction
 	{
-	}
-
-	public class TestStaleQuery : IQueryUncommitted<bool>
-	{
+		public IsolationLevel IsolationLevel => IsolationLevel.ReadUncommitted;
 	}
 
 	public class TestHandler : 
-		IHandler<TestQuery, bool>,
 		IHandler<TestRequest, bool>,
 		IHandler<TestCommand, bool>,
 		IHandler<TestOneWayRequest>,
 		IHandler<TestOneWayCommand>,
 		IHandler<TestStaleQuery, bool>
 	{
-		public virtual async Task<bool> HandleAsync(TestQuery request, CancellationToken cancellationToken)
-		{
-			return await Task.FromResult(true);
-		}
-
 		public virtual async Task<bool> HandleAsync(TestRequest request, CancellationToken cancellationToken)
 		{
 			return await Task.FromResult(true);

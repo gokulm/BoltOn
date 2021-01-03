@@ -1,16 +1,20 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using BoltOn.Data;
 using BoltOn.Requestor.Pipeline;
 using BoltOn.Tests.Other;
+using BoltOn.Transaction;
 
 namespace BoltOn.Tests.Requestor.Fakes
 {
-	public class AddStudentRequest : ICommand<Student>
+	public class AddStudentRequest : IRequest<Student>, IEnableTransaction
 	{
 		public int Id { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
+
+        public IsolationLevel IsolationLevel => IsolationLevel.ReadCommitted;
 	}
 
 	public class AddStudentHandler : IHandler<AddStudentRequest, Student>

@@ -8,7 +8,7 @@ using BoltOn.Logging;
 using BoltOn.Other;
 using BoltOn.Requestor.Interceptors;
 using BoltOn.Requestor.Pipeline;
-using BoltOn.UoW;
+using BoltOn.Transaction;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
@@ -42,9 +42,6 @@ namespace BoltOn.Bootstrapping
 
         private void RegisterCoreTypes()
         {
-            ServiceCollection.AddScoped<IUnitOfWorkManager>(s =>
-                new UnitOfWorkManager(s.GetRequiredService<IBoltOnLogger<UnitOfWorkManager>>(),
-                s.GetRequiredService<IUnitOfWorkFactory>()));
             ServiceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
             ServiceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
             ServiceCollection.AddTransient<IEventDispatcher, DefaultEventDispatcher>();
@@ -61,9 +58,8 @@ namespace BoltOn.Bootstrapping
         private void RegisterRequestor()
         {
             ServiceCollection.AddTransient<IRequestor, Requestor.Pipeline.Requestor>();
-            ServiceCollection.AddSingleton<IUnitOfWorkOptionsBuilder, UnitOfWorkOptionsBuilder>();
             AddInterceptor<StopwatchInterceptor>();
-            AddInterceptor<UnitOfWorkInterceptor>();
+            AddInterceptor<TransactionInterceptor>();
         }
 
         public InterceptorOptions AddInterceptor<TInterceptor>() where TInterceptor : IInterceptor

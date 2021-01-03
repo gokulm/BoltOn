@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using BoltOn.Data.EF;
 using BoltOn.Logging;
 using BoltOn.Requestor.Interceptors;
 using BoltOn.Requestor.Pipeline;
 using BoltOn.Tests.Requestor.Fakes;
-using BoltOn.UoW;
+using BoltOn.Transaction;
 using BoltOn.Utilities;
 using Moq;
 using Moq.AutoMock;
@@ -16,7 +15,7 @@ using Xunit;
 
 namespace BoltOn.Tests.Requestor
 {
-    public class RequestorTests : IDisposable
+	public class RequestorTests : IDisposable
 	{
 		[Fact]
 		public async Task Process_RegisteredHandlerThatReturnsBool_ReturnsSuccessfulResult()
@@ -72,13 +71,15 @@ namespace BoltOn.Tests.Requestor
 			var testHandler = new Mock<TestHandler>();
 			var logger = new Mock<IBoltOnLogger<TestRequestSpecificInterceptor>>();
 			var logger2 = new Mock<IBoltOnLogger<StopwatchInterceptor>>();
+			var logger3 = new Mock<IBoltOnLogger<TransactionInterceptor>>();
 			var boltOnClock = new Mock<IBoltOnClock>();
 			var currentDateTime = DateTime.Now;
 			boltOnClock.Setup(s => s.Now).Returns(currentDateTime);
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
 				.Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor> { new TestRequestSpecificInterceptor(logger.Object),
-				new StopwatchInterceptor(logger2.Object, boltOnClock.Object) });
+				new StopwatchInterceptor(logger2.Object, boltOnClock.Object) ,
+				new TransactionInterceptor(logger3.Object) });
 			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			var request = new TestRequest();
 			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
@@ -91,29 +92,23 @@ namespace BoltOn.Tests.Requestor
 			logger.Verify(l => l.Debug("TestRequestSpecificInterceptor Started"), Times.Never);
 			logger.Verify(l => l.Debug("TestRequestSpecificInterceptor Ended"), Times.Never);
 			logger2.Verify(l => l.Debug($"StopwatchInterceptor started at {currentDateTime}"), Times.Once);
+			logger3.Verify(l => l.Debug("Request didn't enable transaction"));
 		}
 
 		[Fact]
-		public async Task Process_RequestorWithCommandRequest_ExecutesUoWInterceptorAndStartsTransactionsWithDefaultCommandIsolationLevel()
+		public async Task Process_RequestorWithReadCommittedRequest_ExecutesTransactionInterceptorAndStartsTransactionsWithAppropriateIsolationLevel()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var logger = new Mock<IBoltOnLogger<UnitOfWorkInterceptor>>();
+			var logger = new Mock<IBoltOnLogger<TransactionInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
-			var uowManager = autoMocker.GetMock<IUnitOfWorkManager>();
-			var uow = new Mock<IUnitOfWork>();
-			uowManager.Setup(u => u.Get(It.IsAny<UnitOfWorkOptions>())).Returns(uow.Object);
-			var uowOptions = autoMocker.GetMock<UnitOfWorkOptions>();
-			uowOptions.Setup(u => u.IsolationLevel).Returns(IsolationLevel.ReadCommitted);
-			var uowOptionsBuilder = autoMocker.GetMock<IUnitOfWorkOptionsBuilder>();
 			var request = new TestCommand();
-			uowOptionsBuilder.Setup(u => u.Build(request)).Returns(uowOptions.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
 			{
-				new UnitOfWorkInterceptor(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
+				new TransactionInterceptor(logger.Object)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
@@ -123,66 +118,25 @@ namespace BoltOn.Tests.Requestor
 
 			// assert 
 			Assert.True(result);
-			uowManager.Verify(u => u.Get(uowOptions.Object));
-			uow.Verify(u => u.Commit());
-			logger.Verify(l => l.Debug($"About to start UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
-			logger.Verify(l => l.Debug("UnitOfWorkInterceptor ended"));
+			logger.Verify(l => l.Debug($"About to start transaction. TransactionScopeOption: {TransactionScopeOption.RequiresNew} " +
+					$"IsolationLevel: {IsolationLevel.ReadCommitted} Timeout: { TransactionManager.DefaultTimeout}"));
+			logger.Verify(l => l.Debug("Transaction completed"));
    		}
 
 		[Fact]
-		public async Task Process_RequestorWithCommandRequestAndHandlerThrowsException_ExecutesUoWInterceptorAndStartsTransactionsButNotCommit()
+		public async Task Process_RequestorWithAsyncHandlerThrowsException_ExecutesTransactionInterceptorAndStartsTransactionsButNotCommit()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var logger = new Mock<IBoltOnLogger<UnitOfWorkInterceptor>>();
+			var logger = new Mock<IBoltOnLogger<TransactionInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
-			var uowManager = autoMocker.GetMock<IUnitOfWorkManager>();
-			var uow = new Mock<IUnitOfWork>();
-			uowManager.Setup(u => u.Get(It.IsAny<UnitOfWorkOptions>())).Returns(uow.Object);
-			var uowOptions = autoMocker.GetMock<UnitOfWorkOptions>();
-			uowOptions.Setup(u => u.IsolationLevel).Returns(IsolationLevel.ReadCommitted);
-			var uowOptionsBuilder = autoMocker.GetMock<IUnitOfWorkOptionsBuilder>();
 			var request = new TestCommand();
-			uowOptionsBuilder.Setup(u => u.Build(request)).Returns(uowOptions.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
 			{
-				new UnitOfWorkInterceptor(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
-			});
-			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
-			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Throws<Exception>();
-
-			// act & assert 
-			await Assert.ThrowsAsync<Exception>(() => sut.ProcessAsync(request));
-			uowManager.Verify(u => u.Get(uowOptions.Object));
-			uow.Verify(u => u.Commit(), Times.Never);
-			logger.Verify(l => l.Debug($"About to start UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
-			logger.Verify(l => l.Debug("UnitOfWorkInterceptor ended"), Times.Never);
-		}
-
-		[Fact]
-		public async Task Process_RequestorWithAsyncHandlerThrowsException_ExecutesUoWInterceptorAndStartsTransactionsButNotCommit()
-		{
-			// arrange
-			var autoMocker = new AutoMocker();
-			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
-			var testHandler = new Mock<TestHandler>();
-			var logger = new Mock<IBoltOnLogger<UnitOfWorkInterceptor>>();
-			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestCommand, bool>)))
-				.Returns(testHandler.Object);
-			var uowManager = autoMocker.GetMock<IUnitOfWorkManager>();
-			var uow = new Mock<IUnitOfWork>();
-			uowManager.Setup(u => u.Get(It.IsAny<UnitOfWorkOptions>())).Returns(uow.Object);
-			var uowOptions = autoMocker.GetMock<UnitOfWorkOptions>();
-			uowOptions.Setup(u => u.IsolationLevel).Returns(IsolationLevel.ReadCommitted);
-			var uowOptionsBuilder = autoMocker.GetMock<IUnitOfWorkOptionsBuilder>();
-			var request = new TestCommand();
-			uowOptionsBuilder.Setup(u => u.Build(request)).Returns(uowOptions.Object);
-			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
-			{
-				new UnitOfWorkInterceptor(logger.Object, uowManager.Object, uowOptionsBuilder.Object)
+				new TransactionInterceptor(logger.Object)
 			});
 			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
 			testHandler.Setup(s => s.HandleAsync(request, default)).Throws<Exception>();
@@ -192,34 +146,8 @@ namespace BoltOn.Tests.Requestor
 
             //assert 
             Assert.NotNull(result);
-            uowManager.Verify(u => u.Get(uowOptions.Object));
-			uow.Verify(u => u.Commit(), Times.Never);
-			logger.Verify(l => l.Debug($"About to start UoW with IsolationLevel: {IsolationLevel.ReadCommitted.ToString()}"));
-			logger.Verify(l => l.Debug("UnitOfWorkInterceptor ended"), Times.Never);
+            logger.Verify(l => l.Debug("Transaction completed"), Times.Never);
 		}
-
-		[Fact]
-		public async Task Process_RegisteredHandlerThatThrowsException_ReturnsUnsuccessfulResult()
-		{
-			// arrange
-			var autoMocker = new AutoMocker();
-			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
-			var testHandler = new Mock<TestHandler>();
-			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
-						   .Returns(testHandler.Object);
-			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>());
-			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
-			var request = new TestRequest();
-			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Throws(new Exception("handler failed"));
-
-			// act
-			var result = await Record.ExceptionAsync(async () => await sut.ProcessAsync(request));
-
-			// assert 
-			Assert.NotNull(result);
-			Assert.Equal("handler failed", result.Message);
-		}
-
 
 		[Fact]
 		public async Task Process_RegisteredAsyncHandlerThatThrowsException_ReturnsUnsuccessfulResult()
@@ -261,93 +189,6 @@ namespace BoltOn.Tests.Requestor
 			// assert 
 			Assert.NotNull(result);
 			Assert.Equal(string.Format("Handler not found for request: {0}", request), result.Message);
-		}
-
-		[Fact]
-		public async Task Get_RequestorWithQueryRequest_ExecutesEFQueryTrackingBehaviorInterceptorAndDisablesTracking()
-		{
-			// arrange
-			var autoMocker = new AutoMocker();
-			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
-			var testHandler = new Mock<TestHandler>();
-			var logger = new Mock<IBoltOnLogger<ChangeTrackerInterceptor>>();
-			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestQuery, bool>)))
-				.Returns(testHandler.Object);
-			var request = new TestQuery();
-			var changeTrackerContext = new ChangeTrackerContext();
-			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
-			{
-				new ChangeTrackerInterceptor(logger.Object, changeTrackerContext)
-			});
-			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
-			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
-
-			// act
-			var result = await sut.ProcessAsync(request);
-
-			// assert 
-			Assert.True(result);
-			Assert.True(changeTrackerContext.IsQueryRequest);
-			logger.Verify(l => l.Debug($"Entering {nameof(ChangeTrackerInterceptor)}..."));
-			logger.Verify(l => l.Debug($"IsQueryRequest: {true}"));
-		}
-
-		[Fact]
-		public async Task Get_RequestorWithQueryUncommittedRequest_ExecutesChangeTrackerContextInterceptorAndDisablesTracking()
-		{
-			// arrange
-			var autoMocker = new AutoMocker();
-			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
-			var testHandler = new Mock<TestHandler>();
-			var logger = new Mock<IBoltOnLogger<CustomChangeTrackerInterceptor>>();
-			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestStaleQuery, bool>)))
-				.Returns(testHandler.Object);
-			var request = new TestStaleQuery();
-			var changeTrackerContext = new ChangeTrackerContext();
-			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
-			{
-				new CustomChangeTrackerInterceptor(logger.Object, changeTrackerContext)
-			});
-			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
-			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
-
-			// act
-			var result = await sut.ProcessAsync(request);
-
-			// assert 
-			Assert.True(result);
-			Assert.True(changeTrackerContext.IsQueryRequest);
-			logger.Verify(l => l.Debug($"Entering {nameof(CustomChangeTrackerInterceptor)}..."));
-			logger.Verify(l => l.Debug($"IsQueryRequest or IQueryUncommitted: {true}"));
-		}
-
-		[Fact]
-		public async Task Get_RequestorWithCommandRequest_ExecutesChangeTrackerContextInterceptorAndEnablesTracking()
-		{
-			// arrange
-			var autoMocker = new AutoMocker();
-			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
-			var testHandler = new Mock<TestHandler>();
-			var logger = new Mock<IBoltOnLogger<ChangeTrackerInterceptor>>();
-			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestCommand, bool>)))
-				.Returns(testHandler.Object);
-			var request = new TestCommand();
-			var changeTrackerContext = new ChangeTrackerContext();
-			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor>
-			{
-				new ChangeTrackerInterceptor(logger.Object, changeTrackerContext)
-			});
-			var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
-			testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
-
-			// act
-			var result = await sut.ProcessAsync(request);
-
-			// assert 
-			Assert.True(result);
-			Assert.False(changeTrackerContext.IsQueryRequest);
-			logger.Verify(l => l.Debug($"Entering {nameof(ChangeTrackerInterceptor)}..."));
-			logger.Verify(l => l.Debug($"IsQueryRequest: {false}"));
 		}
 
 		public void Dispose()
