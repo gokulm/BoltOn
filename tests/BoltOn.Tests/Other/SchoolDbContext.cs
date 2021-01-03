@@ -1,19 +1,19 @@
 using System;
 using System.Collections.Generic;
-using BoltOn.Data.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BoltOn.Tests.Other
 {
-	public class SchoolDbContext : BaseDbContext<SchoolDbContext>
+	public class SchoolDbContext : DbContext
 	{
 		public SchoolDbContext(DbContextOptions<SchoolDbContext> options) : base(options)
 		{
 		}
 
-		protected override void ApplyConfigurations(ModelBuilder modelBuilder)
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			base.OnModelCreating(modelBuilder);
 			modelBuilder.ApplyConfiguration(new StudentMapping());
 			modelBuilder.ApplyConfiguration(new AddressMapping());
 		}
