@@ -10,10 +10,10 @@ namespace BoltOn.Cache
 {
     public class CacheResponseInterceptor : IInterceptor
     {
-        private readonly IBoltOnLogger<CacheResponseInterceptor> _logger;
+        private readonly IAppLogger<CacheResponseInterceptor> _logger;
         private readonly IBoltOnCache _boltOnCache;
 
-        public CacheResponseInterceptor(IBoltOnLogger<CacheResponseInterceptor> logger,
+        public CacheResponseInterceptor(IAppLogger<CacheResponseInterceptor> logger,
             IBoltOnCache boltOnCache)
         {
             _logger = logger;

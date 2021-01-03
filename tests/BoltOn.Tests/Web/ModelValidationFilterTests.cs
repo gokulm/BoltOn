@@ -22,7 +22,7 @@ namespace BoltOn.Tests.Web
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<ModelValidationFilter>();
-			var logger = autoMocker.GetMock<IBoltOnLogger<ModelValidationFilter>>();
+			var logger = autoMocker.GetMock<IAppLogger<ModelValidationFilter>>();
 			var modelState = new ModelStateDictionary();
 
 			var actionContext = new ActionContext(
@@ -52,7 +52,7 @@ namespace BoltOn.Tests.Web
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<ModelValidationFilter>();
-			var logger = autoMocker.GetMock<IBoltOnLogger<ModelValidationFilter>>();
+			var logger = autoMocker.GetMock<IAppLogger<ModelValidationFilter>>();
 			var modelState = new ModelStateDictionary();
 			modelState.AddModelError("name", "invalid name");
 
@@ -86,7 +86,7 @@ namespace BoltOn.Tests.Web
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<ModelValidationFilter>();
-			var logger = autoMocker.GetMock<IBoltOnLogger<ModelValidationFilter>>();
+			var logger = autoMocker.GetMock<IAppLogger<ModelValidationFilter>>();
 			var modelState = new ModelStateDictionary();
 			modelState.AddModelError("firstName", "invalid first name");
 			modelState.AddModelError("lastName", "invalid last name");

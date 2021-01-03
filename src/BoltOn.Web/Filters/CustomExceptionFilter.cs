@@ -14,9 +14,9 @@ namespace BoltOn.Web.Filters
 	{
 		private readonly IConfiguration _configuration;
 		private readonly ICorrelationContextAccessor _correlationContextAccessor;
-		private readonly IBoltOnLogger<CustomExceptionFilter> _logger;
+		private readonly IAppLogger<CustomExceptionFilter> _logger;
 
-		public CustomExceptionFilter(IBoltOnLogger<CustomExceptionFilter> logger,
+		public CustomExceptionFilter(IAppLogger<CustomExceptionFilter> logger,
 			IConfiguration configuration,
 			ICorrelationContextAccessor correlationContextAccessor)
 		{

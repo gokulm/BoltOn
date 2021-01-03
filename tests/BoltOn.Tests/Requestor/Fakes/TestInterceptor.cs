@@ -9,9 +9,9 @@ namespace BoltOn.Tests.Requestor.Fakes
 {
 	public class TestInterceptor : IInterceptor
 	{
-		private readonly IBoltOnLogger<TestInterceptor> _logger;
+		private readonly IAppLogger<TestInterceptor> _logger;
 
-		public TestInterceptor(IBoltOnLogger<TestInterceptor> logger)
+		public TestInterceptor(IAppLogger<TestInterceptor> logger)
 		{
 			_logger = logger;
 		}

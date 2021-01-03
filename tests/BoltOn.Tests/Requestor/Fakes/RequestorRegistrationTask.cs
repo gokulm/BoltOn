@@ -18,17 +18,17 @@ namespace BoltOn.Tests.Requestor.Fakes
 			boltOnClock.Setup(s => s.Now).Returns(currentDateTime);
 			boltOnOptions.ServiceCollection.AddTransient((s) => boltOnClock.Object);
 
-			var testInterceptorLogger = new Mock<IBoltOnLogger<TestInterceptor>>();
+			var testInterceptorLogger = new Mock<IAppLogger<TestInterceptor>>();
 			testInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => RequestorTestHelper.LoggerStatements.Add(st));
 			boltOnOptions.ServiceCollection.AddTransient((s) => testInterceptorLogger.Object);
 
-			var stopWatchInterceptorLogger = new Mock<IBoltOnLogger<StopwatchInterceptor>>();
+			var stopWatchInterceptorLogger = new Mock<IAppLogger<StopwatchInterceptor>>();
 			stopWatchInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
 									 .Callback<string>(st => RequestorTestHelper.LoggerStatements.Add(st));
 			boltOnOptions.ServiceCollection.AddTransient((s) => stopWatchInterceptorLogger.Object);
 
-			var transactionInterceptorLogger = new Mock<IBoltOnLogger<TransactionInterceptor>>();
+			var transactionInterceptorLogger = new Mock<IAppLogger<TransactionInterceptor>>();
 			transactionInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
 									 .Callback<string>(st => RequestorTestHelper.LoggerStatements.Add(st));
 			boltOnOptions.ServiceCollection.AddTransient((s) => transactionInterceptorLogger.Object);

@@ -7,9 +7,9 @@ namespace BoltOn.Web.Filters
 {
     public class ModelValidationFilter : ActionFilterAttribute
     {
-		private readonly IBoltOnLogger<ModelValidationFilter> _logger;
+		private readonly IAppLogger<ModelValidationFilter> _logger;
 
-		public ModelValidationFilter(IBoltOnLogger<ModelValidationFilter> logger)
+		public ModelValidationFilter(IAppLogger<ModelValidationFilter> logger)
 		{
 			_logger = logger;
 		}

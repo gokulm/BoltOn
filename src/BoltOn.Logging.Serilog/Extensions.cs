@@ -21,7 +21,7 @@ namespace BoltOn.Logging.Serilog
             }
 
             boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-            boltOnOptions.ServiceCollection.AddTransient(typeof(IBoltOnLogger<>),
+            boltOnOptions.ServiceCollection.AddTransient(typeof(IAppLogger<>),
 				typeof(BoltOnSerilogLogger<>));
             return boltOnOptions;
         }

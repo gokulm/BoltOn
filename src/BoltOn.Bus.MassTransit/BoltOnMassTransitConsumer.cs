@@ -8,10 +8,10 @@ namespace BoltOn.Bus.MassTransit
 	public class BoltOnMassTransitConsumer<TRequest> : IConsumer<TRequest> where TRequest : class, IRequest
 	{
 		private readonly IRequestor _requestor;
-		private readonly IBoltOnLogger<BoltOnMassTransitConsumer<TRequest>> _logger;
+		private readonly IAppLogger<BoltOnMassTransitConsumer<TRequest>> _logger;
 
 		public BoltOnMassTransitConsumer(IRequestor requestor,
-			IBoltOnLogger<BoltOnMassTransitConsumer<TRequest>> logger)
+			IAppLogger<BoltOnMassTransitConsumer<TRequest>> logger)
 		{
 			_requestor = requestor;
 			_logger = logger;

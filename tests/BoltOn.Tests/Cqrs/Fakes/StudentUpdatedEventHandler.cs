@@ -24,10 +24,10 @@ namespace BoltOn.Tests.Cqrs.Fakes
 	public class StudentUpdatedEventHandler : IHandler<StudentUpdatedEvent>,
         IHandler<TestCqrsUpdated2Event>
     {
-        private readonly IBoltOnLogger<StudentUpdatedEventHandler> _logger;
+        private readonly IAppLogger<StudentUpdatedEventHandler> _logger;
         private readonly IRepository<StudentFlattened> _repository;
 
-        public StudentUpdatedEventHandler(IBoltOnLogger<StudentUpdatedEventHandler> logger,
+        public StudentUpdatedEventHandler(IAppLogger<StudentUpdatedEventHandler> logger,
             IRepository<StudentFlattened> repository)
         {
             _logger = logger;

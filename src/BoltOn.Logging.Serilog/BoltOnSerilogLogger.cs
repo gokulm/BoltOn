@@ -7,7 +7,7 @@ using Serilog.Events;
 
 namespace BoltOn.Logging.Serilog
 {
-    public class BoltOnSerilogLogger<TType> : IBoltOnLogger<TType>
+    public class BoltOnSerilogLogger<TType> : IAppLogger<TType>
     {
         private readonly string _typeName;
         private readonly IServiceProvider _serviceProvider;

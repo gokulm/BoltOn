@@ -47,16 +47,16 @@ namespace BoltOn.Tests.Cqrs
 				}));
 			});
 
-			var logger = new Mock<IBoltOnLogger<UpdateStudentHandler>>();
+			var logger = new Mock<IAppLogger<UpdateStudentHandler>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
-			var logger2 = new Mock<IBoltOnLogger<StudentUpdatedEventHandler>>();
+			var logger2 = new Mock<IAppLogger<StudentUpdatedEventHandler>>();
 			serviceCollection.AddTransient(s => logger2.Object);
 
-			var logger3 = new Mock<IBoltOnLogger<CqrsInterceptor>>();
+			var logger3 = new Mock<IAppLogger<CqrsInterceptor>>();
 			serviceCollection.AddTransient(s => logger3.Object);
 
-			var logger4 = new Mock<IBoltOnLogger<EventDispatcher>>();
+			var logger4 = new Mock<IAppLogger<EventDispatcher>>();
 			serviceCollection.AddTransient((s) => logger4.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -109,7 +109,7 @@ namespace BoltOn.Tests.Cqrs
 				}));
 			});
 
-			var logger = new Mock<IBoltOnLogger<StudentCreatedEventHandler>>();
+			var logger = new Mock<IAppLogger<StudentCreatedEventHandler>>();
 			logger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger.Object);
@@ -161,7 +161,7 @@ namespace BoltOn.Tests.Cqrs
 				}));
 			});
 
-			var logger = new Mock<IBoltOnLogger<StudentCreatedEventHandler>>();
+			var logger = new Mock<IAppLogger<StudentCreatedEventHandler>>();
 			serviceCollection.AddTransient((s) => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -213,10 +213,10 @@ namespace BoltOn.Tests.Cqrs
 				}));
 			});
 
-			var logger = new Mock<IBoltOnLogger<StudentCreatedEventHandler>>();
+			var logger = new Mock<IAppLogger<StudentCreatedEventHandler>>();
 			serviceCollection.AddTransient((s) => logger.Object);
 
-			var logger2 = new Mock<IBoltOnLogger<CqrsInterceptor>>();
+			var logger2 = new Mock<IAppLogger<CqrsInterceptor>>();
 			serviceCollection.AddSingleton((s) => logger2.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -270,10 +270,10 @@ namespace BoltOn.Tests.Cqrs
 				}));
 			});
 
-			var logger = new Mock<IBoltOnLogger<StudentCreatedEventHandler>>();
+			var logger = new Mock<IAppLogger<StudentCreatedEventHandler>>();
 			serviceCollection.AddTransient((s) => logger.Object);
 
-			var logger2 = new Mock<IBoltOnLogger<CqrsInterceptor>>();
+			var logger2 = new Mock<IAppLogger<CqrsInterceptor>>();
 			logger2.Setup(s => s.Debug(It.Is<string>(s => s.StartsWith("Removing event. Id:")))).Throws(new Exception());
 			serviceCollection.AddSingleton((s) => logger2.Object);
 
@@ -467,7 +467,7 @@ namespace BoltOn.Tests.Cqrs
 				b.RegisterCqrsFakes();
 			});
 
-			var logger2 = new Mock<IBoltOnLogger<StudentUpdatedEventHandler>>();
+			var logger2 = new Mock<IAppLogger<StudentUpdatedEventHandler>>();
 			logger2.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient(s => logger2.Object);
@@ -494,7 +494,7 @@ namespace BoltOn.Tests.Cqrs
 				"prop1 Input2Propert2: 10"), Times.Never);
 		}
 
-		private static Mock<IBoltOnLogger<CqrsInterceptor>> MockForFailedBus(ServiceCollection serviceCollection)
+		private static Mock<IAppLogger<CqrsInterceptor>> MockForFailedBus(ServiceCollection serviceCollection)
 		{
 			serviceCollection.AddMassTransit(x =>
 			{
@@ -512,22 +512,22 @@ namespace BoltOn.Tests.Cqrs
 				}));
 			});
 
-			var logger = new Mock<IBoltOnLogger<UpdateStudentHandler>>();
+			var logger = new Mock<IAppLogger<UpdateStudentHandler>>();
 			logger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger.Object);
 
-			var logger2 = new Mock<IBoltOnLogger<StudentUpdatedEventHandler>>();
+			var logger2 = new Mock<IAppLogger<StudentUpdatedEventHandler>>();
 			logger2.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger2.Object);
 
-			var logger4 = new Mock<IBoltOnLogger<EventDispatcher>>();
+			var logger4 = new Mock<IAppLogger<EventDispatcher>>();
 			logger4.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			serviceCollection.AddTransient((s) => logger4.Object);
 
-			var cqrsInterceptorLogger = new Mock<IBoltOnLogger<CqrsInterceptor>>();
+			var cqrsInterceptorLogger = new Mock<IAppLogger<CqrsInterceptor>>();
 			cqrsInterceptorLogger.Setup(s => s.Debug(It.IsAny<string>()))
 								.Callback<string>(st => CqrsTestHelper.LoggerStatements.Add(st));
 			cqrsInterceptorLogger.Setup(s => s.Error(It.IsAny<string>()))

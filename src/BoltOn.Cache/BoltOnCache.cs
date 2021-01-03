@@ -10,11 +10,11 @@ namespace BoltOn.Cache
 	public class BoltOnCache : IBoltOnCache
 	{
 		private readonly IDistributedCache _distributedCache;
-		private readonly IBoltOnLogger<BoltOnCache> _logger;
+		private readonly IAppLogger<BoltOnCache> _logger;
 		private readonly IBoltOnCacheSerializer _serializer;
 
 		public BoltOnCache(IDistributedCache distributedCache,
-			IBoltOnLogger<BoltOnCache> logger,
+			IAppLogger<BoltOnCache> logger,
 			IBoltOnCacheSerializer serializer)
 		{
 			_distributedCache = distributedCache;

@@ -10,9 +10,9 @@ namespace BoltOn.Transaction
 {
 	public class TransactionInterceptor : IInterceptor
 	{
-		private readonly IBoltOnLogger<TransactionInterceptor> _logger;
+		private readonly IAppLogger<TransactionInterceptor> _logger;
 
-		public TransactionInterceptor(IBoltOnLogger<TransactionInterceptor> logger)
+		public TransactionInterceptor(IAppLogger<TransactionInterceptor> logger)
 		{
 			_logger = logger;
 		}

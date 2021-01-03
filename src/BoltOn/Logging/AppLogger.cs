@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BoltOn.Logging
 {
-    public interface IBoltOnLogger<TType>
+    public interface IAppLogger<TType>
 	{
 		void Debug(string message);
 		void Info(string message);
@@ -12,11 +12,11 @@ namespace BoltOn.Logging
 		void Warn(string message);
 	}
 
-	public class BoltOnLogger<TType> : IBoltOnLogger<TType>
+	public class AppLogger<TType> : IAppLogger<TType>
 	{
 		readonly ILogger<TType> _logger;
 
-		public BoltOnLogger(IServiceProvider serviceProvider)
+		public AppLogger(IServiceProvider serviceProvider)
 		{
 			_logger = serviceProvider.GetService(typeof(ILogger<TType>)) as ILogger<TType>;
 		}

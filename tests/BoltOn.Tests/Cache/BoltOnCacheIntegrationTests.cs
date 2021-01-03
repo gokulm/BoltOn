@@ -50,7 +50,7 @@ namespace BoltOn.Tests.Cache
 			var serviceCollection = new ServiceCollection();
 			Setup(serviceCollection);
 
-			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var logger = new Mock<IAppLogger<BoltOnCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -75,7 +75,7 @@ namespace BoltOn.Tests.Cache
 			// arrange
 			var serviceCollection = new ServiceCollection();
 			Setup(serviceCollection);
-			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var logger = new Mock<IAppLogger<BoltOnCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -103,7 +103,7 @@ namespace BoltOn.Tests.Cache
 			// arrange
 			var serviceCollection = new ServiceCollection();
 			Setup(serviceCollection);
-			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var logger = new Mock<IAppLogger<BoltOnCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -130,7 +130,7 @@ namespace BoltOn.Tests.Cache
 			// arrange
 			var serviceCollection = new ServiceCollection();
 			Setup(serviceCollection);
-			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var logger = new Mock<IAppLogger<BoltOnCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -158,7 +158,7 @@ namespace BoltOn.Tests.Cache
 			// arrange
 			var serviceCollection = new ServiceCollection();
 			Setup(serviceCollection);
-			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var logger = new Mock<IAppLogger<BoltOnCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -190,7 +190,7 @@ namespace BoltOn.Tests.Cache
 			var serviceCollection = new ServiceCollection();
 			Setup(serviceCollection);
 
-			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var logger = new Mock<IAppLogger<BoltOnCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -219,7 +219,7 @@ namespace BoltOn.Tests.Cache
 			var serviceCollection = new ServiceCollection();
 			Setup(serviceCollection);
 
-			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var logger = new Mock<IAppLogger<BoltOnCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();

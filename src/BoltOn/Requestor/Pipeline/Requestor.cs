@@ -17,11 +17,11 @@ namespace BoltOn.Requestor.Pipeline
 
 	public class Requestor : IRequestor
 	{
-		private readonly IBoltOnLogger<Requestor> _logger;
+		private readonly IAppLogger<Requestor> _logger;
 		private readonly IServiceProvider _serviceProvider;
 		private readonly IEnumerable<IInterceptor> _interceptors;
 
-		public Requestor(IBoltOnLogger<Requestor> logger, IServiceProvider serviceProvider,
+		public Requestor(IAppLogger<Requestor> logger, IServiceProvider serviceProvider,
 						IEnumerable<IInterceptor> interceptors)
 		{
 			_logger = logger;

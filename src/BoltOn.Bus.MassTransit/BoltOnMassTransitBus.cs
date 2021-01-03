@@ -9,10 +9,10 @@ namespace BoltOn.Bus.MassTransit
 	public class BoltOnMassTransitBus : IBus
 	{
 		private readonly IBusControl _busControl;
-		private readonly IBoltOnLogger<BoltOnMassTransitBus> _logger;
+		private readonly IAppLogger<BoltOnMassTransitBus> _logger;
 
 		public BoltOnMassTransitBus(IBusControl busControl, 
-			IBoltOnLogger<BoltOnMassTransitBus> logger)
+			IAppLogger<BoltOnMassTransitBus> logger)
 		{
 			_busControl = busControl;
 			_logger = logger;

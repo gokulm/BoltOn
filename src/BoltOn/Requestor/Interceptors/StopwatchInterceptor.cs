@@ -10,10 +10,10 @@ namespace BoltOn.Requestor.Interceptors
 {
 	public class StopwatchInterceptor : IInterceptor
 	{
-		private readonly IBoltOnLogger<StopwatchInterceptor> _logger;
+		private readonly IAppLogger<StopwatchInterceptor> _logger;
 		private readonly IBoltOnClock _boltOnClock;
 
-		public StopwatchInterceptor(IBoltOnLogger<StopwatchInterceptor> logger, IBoltOnClock boltOnClock)
+		public StopwatchInterceptor(IAppLogger<StopwatchInterceptor> logger, IBoltOnClock boltOnClock)
 		{
 			_logger = logger;
 			_boltOnClock = boltOnClock;

@@ -12,9 +12,9 @@ namespace BoltOn.Tests.Bus.Fakes
 
 	public class CreateTestStudentHandler : IHandler<CreateTestStudent>
     {
-        private readonly IBoltOnLogger<CreateTestStudentHandler> _logger;
+        private readonly IAppLogger<CreateTestStudentHandler> _logger;
 
-        public CreateTestStudentHandler(IBoltOnLogger<CreateTestStudentHandler> logger)
+        public CreateTestStudentHandler(IAppLogger<CreateTestStudentHandler> logger)
         {
             _logger = logger;
         }

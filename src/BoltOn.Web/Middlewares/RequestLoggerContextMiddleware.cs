@@ -15,7 +15,7 @@ namespace BoltOn.Web.Middlewares
         }
 
         public async Task Invoke(IHttpContextAccessor httpContextAccessor,
-            IBoltOnLogger<RequestLoggerContextMiddleware> logger,
+            IAppLogger<RequestLoggerContextMiddleware> logger,
             LoggerContext loggerContext,
             ICorrelationContextAccessor correlationContextAccessor)
         {

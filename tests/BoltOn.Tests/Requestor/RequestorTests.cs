@@ -45,7 +45,7 @@ namespace BoltOn.Tests.Requestor
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var logger = new Mock<IBoltOnLogger<TestInterceptor>>();
+			var logger = new Mock<IAppLogger<TestInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
 						  .Returns(testHandler.Object);
 			autoMocker.Use<IEnumerable<IInterceptor>>(new List<IInterceptor> { new TestInterceptor(logger.Object) });
@@ -69,9 +69,9 @@ namespace BoltOn.Tests.Requestor
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var logger = new Mock<IBoltOnLogger<TestRequestSpecificInterceptor>>();
-			var logger2 = new Mock<IBoltOnLogger<StopwatchInterceptor>>();
-			var logger3 = new Mock<IBoltOnLogger<TransactionInterceptor>>();
+			var logger = new Mock<IAppLogger<TestRequestSpecificInterceptor>>();
+			var logger2 = new Mock<IAppLogger<StopwatchInterceptor>>();
+			var logger3 = new Mock<IAppLogger<TransactionInterceptor>>();
 			var boltOnClock = new Mock<IBoltOnClock>();
 			var currentDateTime = DateTime.Now;
 			boltOnClock.Setup(s => s.Now).Returns(currentDateTime);
@@ -102,7 +102,7 @@ namespace BoltOn.Tests.Requestor
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var logger = new Mock<IBoltOnLogger<TransactionInterceptor>>();
+			var logger = new Mock<IAppLogger<TransactionInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
 			var request = new TestCommand();
@@ -130,7 +130,7 @@ namespace BoltOn.Tests.Requestor
 			var autoMocker = new AutoMocker();
 			var serviceProvider = autoMocker.GetMock<IServiceProvider>();
 			var testHandler = new Mock<TestHandler>();
-			var logger = new Mock<IBoltOnLogger<TransactionInterceptor>>();
+			var logger = new Mock<IAppLogger<TransactionInterceptor>>();
 			serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestCommand, bool>)))
 				.Returns(testHandler.Object);
 			var request = new TestCommand();

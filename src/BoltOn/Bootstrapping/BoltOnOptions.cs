@@ -42,8 +42,8 @@ namespace BoltOn.Bootstrapping
 
         private void RegisterCoreTypes()
         {
-            ServiceCollection.AddSingleton(typeof(IBoltOnLogger<>), typeof(BoltOnLogger<>));
-            ServiceCollection.AddSingleton<IBoltOnLoggerFactory, BoltOnLoggerFactory>();
+            ServiceCollection.AddSingleton(typeof(IAppLogger<>), typeof(AppLogger<>));
+            ServiceCollection.AddSingleton<IAppLoggerFactory, AppLoggerFactory>();
             ServiceCollection.AddTransient<IEventDispatcher, DefaultEventDispatcher>();
 
             ServiceCollection.AddScoped<ScopedContext>();

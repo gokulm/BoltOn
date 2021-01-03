@@ -16,10 +16,10 @@ namespace BoltOn.Tests.Cqrs.Fakes
 
 	public class AddStudentHandler : IHandler<AddStudentRequest>
     {
-        private readonly IBoltOnLogger<AddStudentHandler> _logger;
+        private readonly IAppLogger<AddStudentHandler> _logger;
         private readonly IRepository<Student> _repository;
 
-        public AddStudentHandler(IBoltOnLogger<AddStudentHandler> logger,
+        public AddStudentHandler(IAppLogger<AddStudentHandler> logger,
             IRepository<Student> repository)
         {
             _logger = logger;
