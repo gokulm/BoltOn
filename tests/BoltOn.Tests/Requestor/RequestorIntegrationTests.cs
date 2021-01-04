@@ -41,7 +41,6 @@ namespace BoltOn.Tests.Requestor
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == "Request didn't enable transaction"));
 		}
 
-
 		[Fact]
 		public async Task Process_BootstrapWithDefaults_InvokesAllTheInterceptorsAndReturnsSuccessfulResultForOneWayRequest()
 		{
@@ -245,13 +244,17 @@ namespace BoltOn.Tests.Requestor
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IRequestor>();
+			var testCommand = new TestCommand();
 
 			// act
-			var result = await Record.ExceptionAsync(() => sut.ProcessAsync(new TestCommand()));
+			var result = await Record.ExceptionAsync(() =>
+			{
+				return sut.ProcessAsync(testCommand);
+			});
 
 			// assert 
 			Assert.NotNull(result);
-			Assert.Equal("Handler not found for request: BoltOn.Tests.Requestor.Fakes.TestCommand", result.Message);
+			Assert.Equal($"Handler not found for request: {testCommand.GetType()}", result.Message);
 		}
 
 		[Fact]
