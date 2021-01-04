@@ -15,7 +15,7 @@ namespace BoltOn.Hangfire
 
         public void Run()
         {
-            GlobalConfiguration.Configuration.UseActivator(new BoltOnHangfireJobActivator(_serviceProvider));
+            GlobalConfiguration.Configuration.UseActivator(new AppHangfireJobActivator(_serviceProvider));
         }
     }
 }

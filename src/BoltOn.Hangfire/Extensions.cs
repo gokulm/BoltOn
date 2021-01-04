@@ -9,7 +9,7 @@ namespace BoltOn.Hangfire
 		public static BoltOnOptions BoltOnHangfireModule(this BoltOnOptions boltOnOptions)
 		{
 			boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-			boltOnOptions.ServiceCollection.AddTransient<BoltOnHangfireJobProcessor>();
+			boltOnOptions.ServiceCollection.AddTransient<AppHangfireJobProcessor>();
 			return boltOnOptions;
 		}
 	}

@@ -9,18 +9,18 @@ using Xunit;
 
 namespace BoltOn.Tests.Logging
 {
-	public class BoltOnSerilogLoggerTests
+	public class AppSerilogLoggerTests
 	{
 		private readonly AutoMocker _autoMocker;
-		private readonly BoltOnSerilogLogger<TestClass> _sut;
+		private readonly AppSerilogLogger<TestClass> _sut;
 		private readonly Mock<LoggerContext> _loggerContext;
 		private readonly Mock<IConfiguration> _configuration;
 
-		public BoltOnSerilogLoggerTests()
+		public AppSerilogLoggerTests()
 		{
 			// arrange
 			_autoMocker = new AutoMocker();
-			_sut = _autoMocker.CreateInstance<BoltOnSerilogLogger<TestClass>>();
+			_sut = _autoMocker.CreateInstance<AppSerilogLogger<TestClass>>();
 			var serviceProvider = _autoMocker.GetMock<IServiceProvider>();
 			_loggerContext = new Mock<LoggerContext>();
 			var keyValues = new Dictionary<string, object>();
