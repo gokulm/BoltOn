@@ -1,6 +1,6 @@
 ﻿namespace BoltOn.Context
 {
-    public class AppContext : BaseBoltOnContext
+    public class AppContext : BaseContext
     {
     }
 }

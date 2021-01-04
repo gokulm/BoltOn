@@ -2,13 +2,13 @@
 
 namespace BoltOn.Cache
 {
-    public interface IBoltOnCacheSerializer
+    public interface IAppCacheSerializer
     {
         byte[] ToByteArray(object obj);
         T FromByteArray<T>(byte[] byteArray);
     }
 
-    public class BoltOnCacheSerializer : IBoltOnCacheSerializer
+    public class AppCacheSerializer : IAppCacheSerializer
     {
         public T FromByteArray<T>(byte[] byteArray)
         {

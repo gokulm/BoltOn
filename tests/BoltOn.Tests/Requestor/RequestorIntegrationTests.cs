@@ -25,7 +25,7 @@ namespace BoltOn.Tests.Requestor
 			serviceCollection.BoltOn(b => b.RegisterRequestorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
+			var appClock = serviceProvider.GetService<IAppClock>();
 			var requestor = serviceProvider.GetService<IRequestor>();
 
 			// act
@@ -34,9 +34,9 @@ namespace BoltOn.Tests.Requestor
 			// assert 
 			Assert.True(result);
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
+																				   $"StopwatchInterceptor started at {appClock.Now}"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0"));
+																				   $"StopwatchInterceptor ended at {appClock.Now}. Time elapsed: 0"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == "Request didn't enable transaction"));
 		}
@@ -52,7 +52,7 @@ namespace BoltOn.Tests.Requestor
 			serviceCollection.BoltOn(b => b.RegisterRequestorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
+			var appClock = serviceProvider.GetService<IAppClock>();
 			var requestor = serviceProvider.GetService<IRequestor>();
 			var request = new TestOneWayRequest();
 
@@ -62,9 +62,9 @@ namespace BoltOn.Tests.Requestor
 			// assert 
 			Assert.Equal(1, request.Value);
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
+																				   $"StopwatchInterceptor started at {appClock.Now}"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0"));
+																				   $"StopwatchInterceptor ended at {appClock.Now}. Time elapsed: 0"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == "Request didn't enable transaction"));
 		}
@@ -79,7 +79,7 @@ namespace BoltOn.Tests.Requestor
             serviceCollection.BoltOn(b => b.RegisterRequestorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
+			var appClock = serviceProvider.GetService<IAppClock>();
 			var requestor = serviceProvider.GetService<IRequestor>();
 			var request = new TestOneWayCommand();
 
@@ -89,9 +89,9 @@ namespace BoltOn.Tests.Requestor
 			// assert 
 			Assert.Equal(1, request.Value);
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
+																				   $"StopwatchInterceptor started at {appClock.Now}"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0"));
+																				   $"StopwatchInterceptor ended at {appClock.Now}. Time elapsed: 0"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"About to start transaction. TransactionScopeOption: {TransactionScopeOption.RequiresNew} " +
 					$"IsolationLevel: {IsolationLevel.ReadCommitted} Timeout: { TransactionManager.DefaultTimeout}"));
@@ -108,7 +108,7 @@ namespace BoltOn.Tests.Requestor
             serviceCollection.BoltOn(b => b.RegisterRequestorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
+			var appClock = serviceProvider.GetService<IAppClock>();
 			var requestor = serviceProvider.GetService<IRequestor>();
 			var request = new TestOneWayRequest();
 
@@ -118,9 +118,9 @@ namespace BoltOn.Tests.Requestor
 			// assert 
 			Assert.Equal(1, request.Value);
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
+																				   $"StopwatchInterceptor started at {appClock.Now}"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0"));
+																				   $"StopwatchInterceptor ended at {appClock.Now}. Time elapsed: 0"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == "Request didn't enable transaction"));
 		}
@@ -134,7 +134,7 @@ namespace BoltOn.Tests.Requestor
             serviceCollection.BoltOn(b => b.RegisterRequestorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
+			var appClock = serviceProvider.GetService<IAppClock>();
 			var requestor = serviceProvider.GetService<IRequestor>();
 
 			// act
@@ -146,9 +146,9 @@ namespace BoltOn.Tests.Requestor
 			// assert 
 			Assert.True(result);
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor started at {boltOnClock.Now}"));
+																				   $"StopwatchInterceptor started at {appClock.Now}"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d ==
-																				   $"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0"));
+																				   $"StopwatchInterceptor ended at {appClock.Now}. Time elapsed: 0"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == "TestInterceptor Started"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == "Request didn't enable transaction"));
 		}
@@ -162,7 +162,7 @@ namespace BoltOn.Tests.Requestor
             serviceCollection.BoltOn(b => b.RegisterRequestorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
+			var appClock = serviceProvider.GetService<IAppClock>();
 			var requestor = serviceProvider.GetService<IRequestor>();
 
 			// act
@@ -173,12 +173,12 @@ namespace BoltOn.Tests.Requestor
 			Assert.True(RequestorTestHelper.LoggerStatements.IndexOf("TestInterceptor Started") > 0);
 			Assert.True(RequestorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended") > 0);
 			Assert.True(RequestorTestHelper.LoggerStatements.IndexOf("TestRequestSpecificInterceptor Started") == -1);
-			Assert.True(RequestorTestHelper.LoggerStatements.IndexOf($"StopwatchInterceptor started at {boltOnClock.Now}") <
+			Assert.True(RequestorTestHelper.LoggerStatements.IndexOf($"StopwatchInterceptor started at {appClock.Now}") <
 						RequestorTestHelper.LoggerStatements.IndexOf("TestInterceptor Started"));
-			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor started at {boltOnClock.Now}"));
-			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor ended at {boltOnClock.Now}. " +
+			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor started at {appClock.Now}"));
+			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor ended at {appClock.Now}. " +
 																				   "Time elapsed: 0"));
-			Assert.True(RequestorTestHelper.LoggerStatements.IndexOf($"StopwatchInterceptor ended at {boltOnClock.Now}. Time elapsed: 0") >
+			Assert.True(RequestorTestHelper.LoggerStatements.IndexOf($"StopwatchInterceptor ended at {appClock.Now}. Time elapsed: 0") >
 						RequestorTestHelper.LoggerStatements.IndexOf("TestInterceptor Ended"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == "Request didn't enable transaction"));
 		}
@@ -192,7 +192,7 @@ namespace BoltOn.Tests.Requestor
             serviceCollection.BoltOn(b => b.RegisterRequestorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
+			var appClock = serviceProvider.GetService<IAppClock>();
 			var sut = serviceProvider.GetService<IRequestor>();
 
 			// act
@@ -202,8 +202,8 @@ namespace BoltOn.Tests.Requestor
 			Assert.True(result);
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f == "TestInterceptor Started"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f == "TestInterceptor Ended"));
-			Assert.Null(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor started at {boltOnClock.Now}"));
-			Assert.Null(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor ended at {boltOnClock.Now}. " +
+			Assert.Null(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor started at {appClock.Now}"));
+			Assert.Null(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor ended at {appClock.Now}. " +
 																				"Time elapsed: 0"));
 		}
 
@@ -216,7 +216,7 @@ namespace BoltOn.Tests.Requestor
             serviceCollection.BoltOn(b => b.RegisterRequestorFakes());
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var boltOnClock = serviceProvider.GetService<IBoltOnClock>();
+			var appClock = serviceProvider.GetService<IAppClock>();
 			var sut = serviceProvider.GetService<IRequestor>();
 
 			// act
@@ -226,8 +226,8 @@ namespace BoltOn.Tests.Requestor
 			Assert.True(result);
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f == "TestInterceptor Started"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(f => f == "TestInterceptor Ended"));
-			Assert.Null(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor started at {boltOnClock.Now}"));
-			Assert.Null(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor ended at {boltOnClock.Now}. " +
+			Assert.Null(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor started at {appClock.Now}"));
+			Assert.Null(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == $"StopwatchInterceptor ended at {appClock.Now}. " +
 																				"Time elapsed: 0"));
 			Assert.NotNull(RequestorTestHelper.LoggerStatements.FirstOrDefault(d => d == "Request didn't enable transaction"));
 		}

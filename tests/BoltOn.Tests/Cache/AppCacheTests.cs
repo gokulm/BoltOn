@@ -11,7 +11,7 @@ using Xunit;
 
 namespace BoltOn.Tests.Cache
 {
-    public class BoltOnCacheTests
+    public class AppCacheTests
     {
         [Fact]
         public async Task SetAsync_SetString_SetsStringInTheCache()
@@ -19,9 +19,9 @@ namespace BoltOn.Tests.Cache
             // arrange
             var autoMocker = new AutoMocker();
             var distributedCache = autoMocker.GetMock<IDistributedCache>();
-            var logger = autoMocker.GetMock<IAppLogger<BoltOnCache>>();
-            var serializer = autoMocker.GetMock<IBoltOnCacheSerializer>();
-            var sut = autoMocker.CreateInstance<BoltOnCache>();
+            var logger = autoMocker.GetMock<IAppLogger<AppCache>>();
+            var serializer = autoMocker.GetMock<IAppCacheSerializer>();
+            var sut = autoMocker.CreateInstance<AppCache>();
 
             // act
             await sut.SetAsync("TestKey", "TestValue");
@@ -39,9 +39,9 @@ namespace BoltOn.Tests.Cache
             // arrange
             var autoMocker = new AutoMocker();
             var distributedCache = autoMocker.GetMock<IDistributedCache>();
-            var logger = autoMocker.GetMock<IAppLogger<BoltOnCache>>();
-            var serializer = autoMocker.GetMock<IBoltOnCacheSerializer>();
-            var sut = autoMocker.CreateInstance<BoltOnCache>();
+            var logger = autoMocker.GetMock<IAppLogger<AppCache>>();
+            var serializer = autoMocker.GetMock<IAppCacheSerializer>();
+            var sut = autoMocker.CreateInstance<AppCache>();
 
             // act
             await sut.SetAsync("StudentId", new Student());
@@ -59,9 +59,9 @@ namespace BoltOn.Tests.Cache
             // arrange
             var autoMocker = new AutoMocker();
             var distributedCache = autoMocker.GetMock<IDistributedCache>();
-            var logger = autoMocker.GetMock<IAppLogger<BoltOnCache>>();
-            var serializer = autoMocker.GetMock<IBoltOnCacheSerializer>();
-            var sut = autoMocker.CreateInstance<BoltOnCache>();
+            var logger = autoMocker.GetMock<IAppLogger<AppCache>>();
+            var serializer = autoMocker.GetMock<IAppCacheSerializer>();
+            var sut = autoMocker.CreateInstance<AppCache>();
 
             // act
             await sut.SetAsync<string>("TestKey", null);
@@ -79,10 +79,10 @@ namespace BoltOn.Tests.Cache
             // arrange
             var autoMocker = new AutoMocker();
             var distributedCache = autoMocker.GetMock<IDistributedCache>();
-            var logger = autoMocker.GetMock<IAppLogger<BoltOnCache>>();
-            var serializer = autoMocker.GetMock<IBoltOnCacheSerializer>();
+            var logger = autoMocker.GetMock<IAppLogger<AppCache>>();
+            var serializer = autoMocker.GetMock<IAppCacheSerializer>();
             serializer.Setup(s => s.FromByteArray<string>(It.IsAny<byte[]>())).Returns("TestValue");
-            var sut = autoMocker.CreateInstance<BoltOnCache>();
+            var sut = autoMocker.CreateInstance<AppCache>();
 
             // act
             var result = await sut.GetAsync<string>("TestKey");
@@ -100,12 +100,12 @@ namespace BoltOn.Tests.Cache
             // arrange
             var autoMocker = new AutoMocker();
             var distributedCache = autoMocker.GetMock<IDistributedCache>();
-            var logger = autoMocker.GetMock<IAppLogger<BoltOnCache>>();
-            var serializer = autoMocker.GetMock<IBoltOnCacheSerializer>();
+            var logger = autoMocker.GetMock<IAppLogger<AppCache>>();
+            var serializer = autoMocker.GetMock<IAppCacheSerializer>();
             var student = new Student();
             serializer.Setup(s => s.FromByteArray<Student>(It.IsAny<byte[]>()))
                 .Returns(student);
-            var sut = autoMocker.CreateInstance<BoltOnCache>();
+            var sut = autoMocker.CreateInstance<AppCache>();
 
             // act
             var result = await sut.GetAsync<Student>("TestKey");
@@ -124,11 +124,11 @@ namespace BoltOn.Tests.Cache
             // arrange
             var autoMocker = new AutoMocker();
             var distributedCache = autoMocker.GetMock<IDistributedCache>();
-            var logger = autoMocker.GetMock<IAppLogger<BoltOnCache>>();
-            var serializer = autoMocker.GetMock<IBoltOnCacheSerializer>();
+            var logger = autoMocker.GetMock<IAppLogger<AppCache>>();
+            var serializer = autoMocker.GetMock<IAppCacheSerializer>();
             serializer.Setup(s => s.FromByteArray<string>(It.IsAny<byte[]>())).Returns("TestValue");
             var valueGetter = new Func<Task<string>>(() => Task.FromResult("value getter string"));
-            var sut = autoMocker.CreateInstance<BoltOnCache>();
+            var sut = autoMocker.CreateInstance<AppCache>();
 
             // act
             var result = await sut.GetAsync("TestKey", valueGetter: valueGetter);
@@ -149,9 +149,9 @@ namespace BoltOn.Tests.Cache
             var distributedCache = autoMocker.GetMock<IDistributedCache>();
             distributedCache.Setup(s => s.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((byte[])null));
-            var logger = autoMocker.GetMock<IAppLogger<BoltOnCache>>();
+            var logger = autoMocker.GetMock<IAppLogger<AppCache>>();
             var valueGetter = new Func<Task<string>>(() => Task.FromResult("TestValue"));
-            var sut = autoMocker.CreateInstance<BoltOnCache>();
+            var sut = autoMocker.CreateInstance<AppCache>();
 
             // act
             var result = await sut.GetAsync<string>("TestKey", valueGetter: valueGetter);
@@ -176,9 +176,9 @@ namespace BoltOn.Tests.Cache
             var distributedCache = autoMocker.GetMock<IDistributedCache>();
             distributedCache.Setup(s => s.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((byte[])null));
-            var logger = autoMocker.GetMock<IAppLogger<BoltOnCache>>();
+            var logger = autoMocker.GetMock<IAppLogger<AppCache>>();
             var valueGetter = new Func<Task<string>>(() => { throw new Exception("test exception"); });
-            var sut = autoMocker.CreateInstance<BoltOnCache>();
+            var sut = autoMocker.CreateInstance<AppCache>();
 
             // act
             var result = await Record.ExceptionAsync(async () =>
@@ -197,10 +197,10 @@ namespace BoltOn.Tests.Cache
             // arrange
             var autoMocker = new AutoMocker();
             var distributedCache = autoMocker.GetMock<IDistributedCache>();
-            var logger = autoMocker.GetMock<IAppLogger<BoltOnCache>>();
-            var serializer = autoMocker.GetMock<IBoltOnCacheSerializer>();
+            var logger = autoMocker.GetMock<IAppLogger<AppCache>>();
+            var serializer = autoMocker.GetMock<IAppCacheSerializer>();
             serializer.Setup(s => s.FromByteArray<string>(It.IsAny<byte[]>())).Returns("TestValue");
-            var sut = autoMocker.CreateInstance<BoltOnCache>();
+            var sut = autoMocker.CreateInstance<AppCache>();
 
             // act
             var result = await sut.GetAsync<string>("TestKey", slidingExpiration: TimeSpan.FromSeconds(2));
@@ -223,10 +223,10 @@ namespace BoltOn.Tests.Cache
             // arrange
             var autoMocker = new AutoMocker();
             var distributedCache = autoMocker.GetMock<IDistributedCache>();
-            var logger = autoMocker.GetMock<IAppLogger<BoltOnCache>>();
-            var serializer = autoMocker.GetMock<IBoltOnCacheSerializer>();
+            var logger = autoMocker.GetMock<IAppLogger<AppCache>>();
+            var serializer = autoMocker.GetMock<IAppCacheSerializer>();
             serializer.Setup(s => s.FromByteArray<string>(It.IsAny<byte[]>())).Returns("TestValue");
-            var sut = autoMocker.CreateInstance<BoltOnCache>();
+            var sut = autoMocker.CreateInstance<AppCache>();
 
             // act
             await sut.RemoveAsync("TestKey");

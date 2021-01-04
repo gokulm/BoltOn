@@ -10,7 +10,7 @@ namespace BoltOn.Cache
 		public static BoltOnOptions BoltOnCacheModule(this BoltOnOptions boltOnOptions)
 		{
 			boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-			boltOnOptions.ServiceCollection.AddTransient<IBoltOnCache, BoltOnCache>();
+			boltOnOptions.ServiceCollection.AddTransient<IAppCache, AppCache>();
 			boltOnOptions.AddInterceptor<CacheResponseInterceptor>().After<StopwatchInterceptor>();
 			return boltOnOptions;
 		}

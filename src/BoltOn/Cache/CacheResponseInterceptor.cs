@@ -11,13 +11,13 @@ namespace BoltOn.Cache
     public class CacheResponseInterceptor : IInterceptor
     {
         private readonly IAppLogger<CacheResponseInterceptor> _logger;
-        private readonly IBoltOnCache _boltOnCache;
+        private readonly IAppCache _appCache;
 
         public CacheResponseInterceptor(IAppLogger<CacheResponseInterceptor> logger,
-            IBoltOnCache boltOnCache)
+            IAppCache appCache)
         {
             _logger = logger;
-            _boltOnCache = boltOnCache;
+            _appCache = appCache;
         }
 
         public async Task<TResponse> RunAsync<TRequest, TResponse>(TRequest request,
@@ -32,7 +32,7 @@ namespace BoltOn.Cache
             if (cacheRequest != null)
             {
                 _logger.Debug($"Retrieving response from cache. Key: {cacheRequest.CacheKey}");
-                var responseFromCache = await _boltOnCache.GetAsync<TResponse>(cacheRequest.CacheKey,
+                var responseFromCache = await _appCache.GetAsync<TResponse>(cacheRequest.CacheKey,
                     cancellationToken, slidingExpiration: cacheRequest.SlidingExpiration);
 
                 if (!EqualityComparer<TResponse>.Default.Equals(responseFromCache, default))
@@ -48,14 +48,14 @@ namespace BoltOn.Cache
             if (cacheRequest != null)
             {
                 _logger.Debug($"Saving response in cache. Key: {cacheRequest.CacheKey}");
-                await _boltOnCache.SetAsync(cacheRequest.CacheKey, response,
+                await _appCache.SetAsync(cacheRequest.CacheKey, response,
                     cancellationToken, cacheRequest.SlidingExpiration);
             }
 
             if (request is IClearCachedResponse clearCacheRequest)
             {
                 _logger.Debug($"Removing response from cache. Key: {clearCacheRequest.CacheKey}");
-                await _boltOnCache.RemoveAsync(clearCacheRequest.CacheKey, cancellationToken);
+                await _appCache.RemoveAsync(clearCacheRequest.CacheKey, cancellationToken);
             }
 
             _logger.Debug("CacheResponseInterceptor ended");

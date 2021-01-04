@@ -1,6 +1,6 @@
 ﻿namespace BoltOn.Context
 {
-    public class ScopedContext : BaseBoltOnContext
+    public class ScopedContext : BaseContext
     {
     }
 }

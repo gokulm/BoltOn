@@ -7,15 +7,15 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace BoltOn.Cache
 {
-	public class BoltOnCache : IBoltOnCache
+	public class AppCache : IAppCache
 	{
 		private readonly IDistributedCache _distributedCache;
-		private readonly IAppLogger<BoltOnCache> _logger;
-		private readonly IBoltOnCacheSerializer _serializer;
+		private readonly IAppLogger<AppCache> _logger;
+		private readonly IAppCacheSerializer _serializer;
 
-		public BoltOnCache(IDistributedCache distributedCache,
-			IAppLogger<BoltOnCache> logger,
-			IBoltOnCacheSerializer serializer)
+		public AppCache(IDistributedCache distributedCache,
+			IAppLogger<AppCache> logger,
+			IAppCacheSerializer serializer)
 		{
 			_distributedCache = distributedCache;
 			_logger = logger;
