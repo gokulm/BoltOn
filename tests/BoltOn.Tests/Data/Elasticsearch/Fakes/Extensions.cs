@@ -8,17 +8,17 @@ namespace BoltOn.Tests.Data.Elasticsearch.Fakes
 {
 	public static class Extensions
 	{
-		public static void SetupFakes(this BoltOnOptions boltOnOptions)
+		public static void SetupFakes(this BootstrapperOptions bootstrapperOptions)
 		{
 			if (IntegrationTestHelper.IsElasticsearchServer)
 			{
 				var uri = new Uri("http://localhost:9200/");
-				boltOnOptions.ServiceCollection.AddElasticsearch<TestElasticsearchOptions>(e =>
+				bootstrapperOptions.ServiceCollection.AddElasticsearch<TestElasticsearchOptions>(e =>
 				{
 					e.ConnectionSettings = new Nest.ConnectionSettings(uri);
 				});
 
-				boltOnOptions.ServiceCollection.AddTransient<IRepository<Student>, Repository<Student, TestElasticsearchOptions>>();
+				bootstrapperOptions.ServiceCollection.AddTransient<IRepository<Student>, Repository<Student, TestElasticsearchOptions>>();
 			}
 		}
 	}

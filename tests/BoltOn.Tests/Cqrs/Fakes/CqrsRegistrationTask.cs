@@ -9,17 +9,17 @@ namespace BoltOn.Tests.Cqrs.Fakes
 {
     public static class CqrsRegistrationTask
     {
-        public static void RegisterCqrsFakes(this BoltOnOptions boltOnOptions)
+        public static void RegisterCqrsFakes(this BootstrapperOptions bootstrapperOptions)
         {
-            boltOnOptions.ServiceCollection.AddDbContext<CqrsDbContext>(options =>
+            bootstrapperOptions.ServiceCollection.AddDbContext<CqrsDbContext>(options =>
             {
                 options.UseInMemoryDatabase("InMemoryDbCqrsDbContext");
                 options.ConfigureWarnings(x => x.Ignore(RelationalEventId.AmbientTransactionWarning));
             });
 
-            boltOnOptions.ServiceCollection.AddTransient<IRepository<Student>, 
+            bootstrapperOptions.ServiceCollection.AddTransient<IRepository<Student>, 
                 CqrsRepository<Student, CqrsDbContext>>();
-            boltOnOptions.ServiceCollection.AddTransient<IRepository<StudentFlattened>,
+            bootstrapperOptions.ServiceCollection.AddTransient<IRepository<StudentFlattened>,
                 CqrsRepository<StudentFlattened, CqrsDbContext>>();
         }
     }

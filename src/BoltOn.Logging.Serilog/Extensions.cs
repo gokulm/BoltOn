@@ -8,7 +8,7 @@ namespace BoltOn.Logging.Serilog
 {
 	public static class Extensions
     {
-        public static BoltOnOptions AddSerilogModule(this BoltOnOptions boltOnOptions,
+        public static BootstrapperOptions AddSerilogModule(this BootstrapperOptions bootstrapperOptions,
             IConfiguration configuration = null)
         {
             if (configuration != null)
@@ -20,10 +20,10 @@ namespace BoltOn.Logging.Serilog
                                 .CreateLogger();
             }
 
-            boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-            boltOnOptions.ServiceCollection.AddTransient(typeof(IAppLogger<>),
+            bootstrapperOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
+            bootstrapperOptions.ServiceCollection.AddTransient(typeof(IAppLogger<>),
 				typeof(AppSerilogLogger<>));
-            return boltOnOptions;
+            return bootstrapperOptions;
         }
     }
 }

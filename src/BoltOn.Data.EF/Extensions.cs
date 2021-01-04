@@ -8,10 +8,10 @@ namespace BoltOn.Data.EF
 {
 	public static class Extensions
     {
-        public static BoltOnOptions BoltOnEFModule(this BoltOnOptions boltOnOptions)
+        public static BootstrapperOptions BoltOnEFModule(this BootstrapperOptions bootstrapperOptions)
         {
-            boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-            return boltOnOptions;
+            bootstrapperOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
+            return bootstrapperOptions;
         }
 
 		/// <summary>

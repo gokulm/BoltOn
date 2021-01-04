@@ -155,7 +155,7 @@ namespace BoltOn.Tests.Bootstrapping
 		}
 
         [Fact]
-        public void GetService_BoltOnOptionsWithDefaultInterceptors_ReturnsRegisteredInterceptorsInOrder()
+        public void GetService_BootstrapperOptionsWithDefaultInterceptors_ReturnsRegisteredInterceptorsInOrder()
         {
             // arrange
             var serviceCollection = new ServiceCollection();
@@ -164,10 +164,10 @@ namespace BoltOn.Tests.Bootstrapping
             serviceProvider.TightenBolts();
 
             // act
-            var boltOnOptions = serviceProvider.GetService<BoltOnOptions>();
+            var bootstrapperOptions = serviceProvider.GetService<BootstrapperOptions>();
 
             // assert
-            var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+            var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
             var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
             var transactionInterceptorIndex = interceptorTypes.IndexOf(typeof(TransactionInterceptor));
 			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
@@ -178,7 +178,7 @@ namespace BoltOn.Tests.Bootstrapping
         }
 
         [Fact]
-        public void GetService_BoltOnOptionsWithCqrsModule_ReturnsRegisteredInterceptorsInOrder()
+        public void GetService_BootstrapperOptionsWithCqrsModule_ReturnsRegisteredInterceptorsInOrder()
         {
             // arrange
             var serviceCollection = new ServiceCollection();
@@ -187,10 +187,10 @@ namespace BoltOn.Tests.Bootstrapping
             serviceProvider.TightenBolts();
 
             // act
-            var boltOnOptions = serviceProvider.GetService<BoltOnOptions>();
+            var bootstrapperOptions = serviceProvider.GetService<BootstrapperOptions>();
 
             // assert
-            var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+            var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
             var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
             var transactionInterceptorIndex = interceptorTypes.IndexOf(typeof(TransactionInterceptor));
             var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));

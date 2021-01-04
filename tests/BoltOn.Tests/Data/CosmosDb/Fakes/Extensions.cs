@@ -10,7 +10,7 @@ namespace BoltOn.Tests.Data.CosmosDb.Fakes
 {
 	public static class Extensions 
 	{
-		public static void RegisterCosmosdbFakes(this BoltOnOptions boltOnOptions)
+		public static void RegisterCosmosdbFakes(this BootstrapperOptions bootstrapperOptions)
 		{
 			var cosmosDbOptions = new TestSchoolCosmosDbOptions
 			{
@@ -18,11 +18,11 @@ namespace BoltOn.Tests.Data.CosmosDb.Fakes
 				AuthorizationKey = "==",
 				DatabaseName = "studentsdb"
 			};
-			boltOnOptions.ServiceCollection.AddSingleton(cosmosDbOptions);
+			bootstrapperOptions.ServiceCollection.AddSingleton(cosmosDbOptions);
 
 			if (IntegrationTestHelper.IsCosmosDbServer)
 			{
-				boltOnOptions.ServiceCollection.AddCosmosDb<TestSchoolCosmosDbOptions>(options =>
+				bootstrapperOptions.ServiceCollection.AddCosmosDb<TestSchoolCosmosDbOptions>(options =>
 				{
 					options.Uri = cosmosDbOptions.Uri;
 					options.AuthorizationKey = cosmosDbOptions.AuthorizationKey;

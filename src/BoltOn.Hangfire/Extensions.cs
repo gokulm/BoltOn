@@ -6,11 +6,11 @@ namespace BoltOn.Hangfire
 {
 	public static class Extensions
 	{
-		public static BoltOnOptions BoltOnHangfireModule(this BoltOnOptions boltOnOptions)
+		public static BootstrapperOptions BoltOnHangfireModule(this BootstrapperOptions bootstrapperOptions)
 		{
-			boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-			boltOnOptions.ServiceCollection.AddTransient<AppHangfireJobProcessor>();
-			return boltOnOptions;
+			bootstrapperOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
+			bootstrapperOptions.ServiceCollection.AddTransient<AppHangfireJobProcessor>();
+			return bootstrapperOptions;
 		}
 	}
 }
