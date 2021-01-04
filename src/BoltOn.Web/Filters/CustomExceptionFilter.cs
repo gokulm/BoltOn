@@ -40,7 +40,7 @@ namespace BoltOn.Web.Filters
 				return;
 			}
 
-			var errorViewModel = BuildErrorViewModel(exceptionContext);
+			var errorViewModel = BuildErrorModel(exceptionContext);
 			if (exceptionContext.HttpContext != null &&
 				exceptionContext.HttpContext.Request.ContentType != null &&
 				exceptionContext.HttpContext.Request.ContentType.Contains("application/json"))
@@ -61,7 +61,7 @@ namespace BoltOn.Web.Filters
 			exceptionContext.ExceptionHandled = true;
 		}
 
-		private ErrorModel BuildErrorViewModel(ExceptionContext exceptionContext)
+		private ErrorModel BuildErrorModel(ExceptionContext exceptionContext)
 		{
 			var isShowErrors = _configuration.GetValue<bool>("IsShowErrors");
 			var genericErrorMessage = _configuration.GetValue<string>("ErrorMessage");

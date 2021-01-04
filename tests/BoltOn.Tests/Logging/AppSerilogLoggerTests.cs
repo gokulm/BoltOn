@@ -30,7 +30,6 @@ namespace BoltOn.Tests.Logging
 
 			_configuration = _autoMocker.GetMock<IConfiguration>();
 			_configuration.Setup(s => s.GetSection("Module")).Returns(Mock.Of<IConfigurationSection>());
-
 		}
 
 		[Fact]
