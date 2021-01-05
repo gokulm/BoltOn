@@ -12,7 +12,7 @@ using Xunit;
 
 namespace BoltOn.Tests.Cache
 {
-	public class BoltOnCacheIntegrationTests
+	public class AppCacheIntegrationTests
 	{
 		[Fact]
 		public async Task SetAsync_SetNull_DoesNotCallUnderlyingDistributedCache()
@@ -29,7 +29,7 @@ namespace BoltOn.Tests.Cache
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var sut = serviceProvider.GetService<IBoltOnCache>();
+			var sut = serviceProvider.GetService<IAppCache>();
 
 			// act
 			await sut.SetAsync<string>("TestKey", null);
@@ -50,12 +50,12 @@ namespace BoltOn.Tests.Cache
 			var serviceCollection = new ServiceCollection();
 			Setup(serviceCollection);
 
-			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var logger = new Mock<IAppLogger<AppCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var sut = serviceProvider.GetService<IBoltOnCache>();
+			var sut = serviceProvider.GetService<IAppCache>();
 
 			// act
 			await sut.SetAsync("TestKey", "TestValue");
@@ -75,12 +75,12 @@ namespace BoltOn.Tests.Cache
 			// arrange
 			var serviceCollection = new ServiceCollection();
 			Setup(serviceCollection);
-			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var logger = new Mock<IAppLogger<AppCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var sut = serviceProvider.GetService<IBoltOnCache>();
+			var sut = serviceProvider.GetService<IAppCache>();
 			var student = new Fakes.Student { FirstName = "first", Id = Guid.NewGuid() };
 
 			// act
@@ -103,12 +103,12 @@ namespace BoltOn.Tests.Cache
 			// arrange
 			var serviceCollection = new ServiceCollection();
 			Setup(serviceCollection);
-			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var logger = new Mock<IAppLogger<AppCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var sut = serviceProvider.GetService<IBoltOnCache>();
+			var sut = serviceProvider.GetService<IAppCache>();
 			var byteArray = System.Text.Encoding.Default.GetBytes("Test Value");
 
 			// act
@@ -130,12 +130,12 @@ namespace BoltOn.Tests.Cache
 			// arrange
 			var serviceCollection = new ServiceCollection();
 			Setup(serviceCollection);
-			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var logger = new Mock<IAppLogger<AppCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var sut = serviceProvider.GetService<IBoltOnCache>();
+			var sut = serviceProvider.GetService<IAppCache>();
 			var student = new Fakes.Student { FirstName = "first", Id = Guid.NewGuid() };
 
 			// act
@@ -158,12 +158,12 @@ namespace BoltOn.Tests.Cache
 			// arrange
 			var serviceCollection = new ServiceCollection();
 			Setup(serviceCollection);
-			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var logger = new Mock<IAppLogger<AppCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var sut = serviceProvider.GetService<IBoltOnCache>();
+			var sut = serviceProvider.GetService<IAppCache>();
 			var student = new Fakes.Student { FirstName = "first", Id = Guid.NewGuid() };
 			const int expirationInterval = 1000;
 
@@ -190,12 +190,12 @@ namespace BoltOn.Tests.Cache
 			var serviceCollection = new ServiceCollection();
 			Setup(serviceCollection);
 
-			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var logger = new Mock<IAppLogger<AppCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var sut = serviceProvider.GetService<IBoltOnCache>();
+			var sut = serviceProvider.GetService<IAppCache>();
 
 			// act
 			await sut.SetAsync("TestKey", "TestValue");
@@ -219,12 +219,12 @@ namespace BoltOn.Tests.Cache
 			var serviceCollection = new ServiceCollection();
 			Setup(serviceCollection);
 
-			var logger = new Mock<IBoltOnLogger<BoltOnCache>>();
+			var logger = new Mock<IAppLogger<AppCache>>();
 			serviceCollection.AddTransient(s => logger.Object);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
-			var sut = serviceProvider.GetService<IBoltOnCache>();
+			var sut = serviceProvider.GetService<IAppCache>();
 
 			// act
 			await sut.RemoveAsync("TestKey");

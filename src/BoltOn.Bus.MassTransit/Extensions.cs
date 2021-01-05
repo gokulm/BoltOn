@@ -6,12 +6,12 @@ namespace BoltOn.Bus.MassTransit
 {
 	public static class Extensions
 	{
-		public static BoltOnOptions BoltOnMassTransitBusModule(this BoltOnOptions boltOnOptions)
+		public static BootstrapperOptions BoltOnMassTransitBusModule(this BootstrapperOptions bootstrapperOptions)
 		{
-			boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-            boltOnOptions.ServiceCollection.AddSingleton<IBus, BoltOnMassTransitBus>();
-            boltOnOptions.ServiceCollection.AddTransient(typeof(BoltOnMassTransitConsumer<>));
-			return boltOnOptions;
+			bootstrapperOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
+            bootstrapperOptions.ServiceCollection.AddSingleton<IBus, BoltOnMassTransitBus>();
+            bootstrapperOptions.ServiceCollection.AddTransient(typeof(BoltOnMassTransitConsumer<>));
+			return bootstrapperOptions;
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace BoltOn.Tests.Bus
 			// arrange
 			var autoMocker = new AutoMocker();
 			var busControl = autoMocker.GetMock<IBusControl>();
-			var logger = autoMocker.GetMock<IBoltOnLogger<BoltOnMassTransitBus>>();
+			var logger = autoMocker.GetMock<IAppLogger<BoltOnMassTransitBus>>();
 			var sut = autoMocker.CreateInstance<BoltOnMassTransitBus>();
 			var request = new CreateTestStudent();
 			var cts = new CancellationTokenSource();

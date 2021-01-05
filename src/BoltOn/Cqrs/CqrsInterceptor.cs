@@ -11,11 +11,11 @@ namespace BoltOn.Cqrs
 	public class CqrsInterceptor : IInterceptor
 	{
 		private readonly EventBag _eventBag;
-		private readonly IBoltOnLogger<CqrsInterceptor> _logger;
+		private readonly IAppLogger<CqrsInterceptor> _logger;
 		private readonly IEventDispatcher _eventDispatcher;
 		private readonly CqrsOptions _cqrsOptions;
 
-		public CqrsInterceptor(EventBag eventBag, IBoltOnLogger<CqrsInterceptor> logger,
+		public CqrsInterceptor(EventBag eventBag, IAppLogger<CqrsInterceptor> logger,
 			IEventDispatcher eventDispatcher, CqrsOptions cqrsOptions)
 		{
 			_eventBag = eventBag;

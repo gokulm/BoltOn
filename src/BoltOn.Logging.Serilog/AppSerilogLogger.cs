@@ -7,13 +7,13 @@ using Serilog.Events;
 
 namespace BoltOn.Logging.Serilog
 {
-    public class BoltOnSerilogLogger<TType> : IBoltOnLogger<TType>
+    public class AppSerilogLogger<TType> : IAppLogger<TType>
     {
         private readonly string _typeName;
         private readonly IServiceProvider _serviceProvider;
         private readonly IConfiguration _configuration;
 
-        public BoltOnSerilogLogger(IServiceProvider serviceProvider,
+        public AppSerilogLogger(IServiceProvider serviceProvider,
             IConfiguration configuration)
         {
             _typeName = typeof(TType).Name;

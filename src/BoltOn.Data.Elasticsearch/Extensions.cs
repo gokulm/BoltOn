@@ -16,10 +16,10 @@ namespace BoltOn.Data.Elasticsearch
             return _pluralizer.Pluralize(word);
         }
 
-        public static BoltOnOptions BoltOnElasticsearchModule(this BoltOnOptions boltOnOptions)
+        public static BootstrapperOptions BoltOnElasticsearchModule(this BootstrapperOptions bootstrapperOptions)
         {
-            boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-            return boltOnOptions;
+            bootstrapperOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
+            return bootstrapperOptions;
         }
 
         public static IServiceCollection AddElasticsearch<TElasticsearchOptions>(this IServiceCollection serviceCollection,

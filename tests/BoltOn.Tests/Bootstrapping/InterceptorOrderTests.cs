@@ -17,15 +17,15 @@ namespace BoltOn.Tests.Bootstrapping
 		{
 			// arrange
 			var serviceCollection = new Moq.Mock<IServiceCollection>();
-			var boltOnOptions = new BoltOnOptions(serviceCollection.Object);
+			var bootstrapperOptions = new BootstrapperOptions(serviceCollection.Object);
 
 			// act
-			boltOnOptions.AddInterceptor<StopwatchInterceptor>();
-			boltOnOptions.AddInterceptor<TransactionInterceptor>();
-			boltOnOptions.AddInterceptor<CqrsInterceptor>().After<StopwatchInterceptor>();
+			bootstrapperOptions.AddInterceptor<StopwatchInterceptor>();
+			bootstrapperOptions.AddInterceptor<TransactionInterceptor>();
+			bootstrapperOptions.AddInterceptor<CqrsInterceptor>().After<StopwatchInterceptor>();
 
 			// assert
-			var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+			var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
 			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
 			var transactionInterceptorIndex = interceptorTypes.IndexOf(typeof(TransactionInterceptor));
 			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
@@ -41,15 +41,15 @@ namespace BoltOn.Tests.Bootstrapping
 		{
 			// arrange
 			var serviceCollection = new Moq.Mock<IServiceCollection>();
-			var boltOnOptions = new BoltOnOptions(serviceCollection.Object);
+			var bootstrapperOptions = new BootstrapperOptions(serviceCollection.Object);
 
 			// act
-			boltOnOptions.AddInterceptor<StopwatchInterceptor>();
-			boltOnOptions.AddInterceptor<TransactionInterceptor>();
-			boltOnOptions.AddInterceptor<CqrsInterceptor>().Before<TransactionInterceptor>();
+			bootstrapperOptions.AddInterceptor<StopwatchInterceptor>();
+			bootstrapperOptions.AddInterceptor<TransactionInterceptor>();
+			bootstrapperOptions.AddInterceptor<CqrsInterceptor>().Before<TransactionInterceptor>();
 
 			// assert
-			var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+			var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
 			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
 			var transactionInterceptorIndex = interceptorTypes.IndexOf(typeof(TransactionInterceptor));
 			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
@@ -65,13 +65,13 @@ namespace BoltOn.Tests.Bootstrapping
 		{
 			// arrange
 			var serviceCollection = new Moq.Mock<IServiceCollection>();
-			var boltOnOptions = new BoltOnOptions(serviceCollection.Object);
+			var bootstrapperOptions = new BootstrapperOptions(serviceCollection.Object);
 
 			// act
-			boltOnOptions.AddInterceptor<TestBootstrappingInterceptor>().After<TransactionInterceptor>();
+			bootstrapperOptions.AddInterceptor<TestBootstrappingInterceptor>().After<TransactionInterceptor>();
 
 			// assert
-			var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+			var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
 			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
 			var testBootstrappingInterceptorIndex = interceptorTypes.IndexOf(typeof(TestBootstrappingInterceptor));
 			var transactionInterceptorIndex = interceptorTypes.IndexOf(typeof(TransactionInterceptor));
@@ -86,13 +86,13 @@ namespace BoltOn.Tests.Bootstrapping
 		{
 			// arrange
 			var serviceCollection = new Moq.Mock<IServiceCollection>();
-			var boltOnOptions = new BoltOnOptions(serviceCollection.Object);
+			var bootstrapperOptions = new BootstrapperOptions(serviceCollection.Object);
 
 			// act
-			boltOnOptions.AddInterceptor<TestBootstrappingInterceptor>().Before<StopwatchInterceptor>();
+			bootstrapperOptions.AddInterceptor<TestBootstrappingInterceptor>().Before<StopwatchInterceptor>();
 
 			// assert
-			var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+			var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
 			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
 			var testBootstrappingInterceptorIndex = interceptorTypes.IndexOf(typeof(TestBootstrappingInterceptor));
 			var transactionInterceptorIndex = interceptorTypes.IndexOf(typeof(TransactionInterceptor));
@@ -107,13 +107,13 @@ namespace BoltOn.Tests.Bootstrapping
 		{
 			// arrange
 			var serviceCollection = new Moq.Mock<IServiceCollection>();
-			var boltOnOptions = new BoltOnOptions(serviceCollection.Object);
+			var bootstrapperOptions = new BootstrapperOptions(serviceCollection.Object);
 
 			// act
-			boltOnOptions.AddInterceptor<TransactionInterceptor>().Before<StopwatchInterceptor>();
+			bootstrapperOptions.AddInterceptor<TransactionInterceptor>().Before<StopwatchInterceptor>();
 
 			// assert
-			var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+			var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
 			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
 			var transactionInterceptorIndex = interceptorTypes.IndexOf(typeof(TransactionInterceptor));
 			Assert.True(stopWatchInterceptorIndex != -1);
@@ -126,13 +126,13 @@ namespace BoltOn.Tests.Bootstrapping
 		{
 			// arrange
 			var serviceCollection = new Moq.Mock<IServiceCollection>();
-			var boltOnOptions = new BoltOnOptions(serviceCollection.Object);
+			var bootstrapperOptions = new BootstrapperOptions(serviceCollection.Object);
 
 			// act
-			boltOnOptions.AddInterceptor<StopwatchInterceptor>().After<TransactionInterceptor>();
+			bootstrapperOptions.AddInterceptor<StopwatchInterceptor>().After<TransactionInterceptor>();
 
 			// assert
-			var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+			var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
 			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
 			var transactionInterceptorIndex = interceptorTypes.IndexOf(typeof(TransactionInterceptor));
 			Assert.True(stopWatchInterceptorIndex != -1);
@@ -145,14 +145,14 @@ namespace BoltOn.Tests.Bootstrapping
 		{
 			// arrange
 			var serviceCollection = new Moq.Mock<IServiceCollection>();
-			var boltOnOptions = new BoltOnOptions(serviceCollection.Object);
+			var bootstrapperOptions = new BootstrapperOptions(serviceCollection.Object);
 
 			// act
-			boltOnOptions.AddInterceptor<StopwatchInterceptor>();
-			boltOnOptions.AddInterceptor<CqrsInterceptor>().Before<TestBootstrappingInterceptor>();
+			bootstrapperOptions.AddInterceptor<StopwatchInterceptor>();
+			bootstrapperOptions.AddInterceptor<CqrsInterceptor>().Before<TestBootstrappingInterceptor>();
 
 			// assert
-			var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+			var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
 			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
 			var testBootstrappingInterceptorIndex = interceptorTypes.IndexOf(typeof(TestBootstrappingInterceptor));
 			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
@@ -167,14 +167,14 @@ namespace BoltOn.Tests.Bootstrapping
 		{
 			// arrange
 			var serviceCollection = new Moq.Mock<IServiceCollection>();
-			var boltOnOptions = new BoltOnOptions(serviceCollection.Object);
+			var bootstrapperOptions = new BootstrapperOptions(serviceCollection.Object);
 
 			// act
-			boltOnOptions.AddInterceptor<StopwatchInterceptor>();
-			boltOnOptions.AddInterceptor<CqrsInterceptor>().After<TestBootstrappingInterceptor>();
+			bootstrapperOptions.AddInterceptor<StopwatchInterceptor>();
+			bootstrapperOptions.AddInterceptor<CqrsInterceptor>().After<TestBootstrappingInterceptor>();
 
 			// assert
-			var interceptorTypes = boltOnOptions.InterceptorTypes.ToList();
+			var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
 			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
 			var testBootstrappingInterceptorIndex = interceptorTypes.IndexOf(typeof(TestBootstrappingInterceptor));
 			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));

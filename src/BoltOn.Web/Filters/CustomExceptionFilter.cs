@@ -14,9 +14,9 @@ namespace BoltOn.Web.Filters
 	{
 		private readonly IConfiguration _configuration;
 		private readonly ICorrelationContextAccessor _correlationContextAccessor;
-		private readonly IBoltOnLogger<CustomExceptionFilter> _logger;
+		private readonly IAppLogger<CustomExceptionFilter> _logger;
 
-		public CustomExceptionFilter(IBoltOnLogger<CustomExceptionFilter> logger,
+		public CustomExceptionFilter(IAppLogger<CustomExceptionFilter> logger,
 			IConfiguration configuration,
 			ICorrelationContextAccessor correlationContextAccessor)
 		{
@@ -40,7 +40,7 @@ namespace BoltOn.Web.Filters
 				return;
 			}
 
-			var errorViewModel = BuildErrorViewModel(exceptionContext);
+			var errorViewModel = BuildErrorModel(exceptionContext);
 			if (exceptionContext.HttpContext != null &&
 				exceptionContext.HttpContext.Request.ContentType != null &&
 				exceptionContext.HttpContext.Request.ContentType.Contains("application/json"))
@@ -61,7 +61,7 @@ namespace BoltOn.Web.Filters
 			exceptionContext.ExceptionHandled = true;
 		}
 
-		private ErrorModel BuildErrorViewModel(ExceptionContext exceptionContext)
+		private ErrorModel BuildErrorModel(ExceptionContext exceptionContext)
 		{
 			var isShowErrors = _configuration.GetValue<bool>("IsShowErrors");
 			var genericErrorMessage = _configuration.GetValue<string>("ErrorMessage");

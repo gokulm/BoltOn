@@ -19,7 +19,7 @@ namespace BoltOn.Tests.Web
             // arrange
             var autoMocker = new AutoMocker();
             var sut = autoMocker.CreateInstance<RequestLoggerContextMiddleware>();
-            var logger = new Mock<IBoltOnLogger<RequestLoggerContextMiddleware>>();
+            var logger = new Mock<IAppLogger<RequestLoggerContextMiddleware>>();
             var httpContextAccessor = Mock.Of<IHttpContextAccessor>();
 			var httpContext = new Mock<HttpContext>();
             httpContextAccessor.HttpContext = httpContext.Object;

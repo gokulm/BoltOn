@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace BoltOn.Context
 {
-	public abstract class BaseBoltOnContext
+	public abstract class BaseContext
     {
         private readonly Dictionary<string, object> _keyValues = new Dictionary<string, object>();
 

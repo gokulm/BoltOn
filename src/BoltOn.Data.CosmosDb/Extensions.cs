@@ -16,10 +16,10 @@ namespace BoltOn.Data.CosmosDb
             return _pluralizer.Pluralize(word);
         }
 
-        public static BoltOnOptions BoltOnCosmosDbModule(this BoltOnOptions boltOnOptions)
+        public static BootstrapperOptions BoltOnCosmosDbModule(this BootstrapperOptions bootstrapperOptions)
         {
-            boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-            return boltOnOptions;
+            bootstrapperOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
+            return bootstrapperOptions;
         }
 
 		public static IServiceCollection AddCosmosDb<TCosmosDbOptions>(this IServiceCollection serviceCollection,

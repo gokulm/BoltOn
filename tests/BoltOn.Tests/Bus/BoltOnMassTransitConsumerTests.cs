@@ -20,7 +20,7 @@ namespace BoltOn.Tests.Bus
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<BoltOnMassTransitConsumer<CreateTestStudent>>();
 			var requestor = autoMocker.GetMock<IRequestor>();
-			var logger = autoMocker.GetMock<IBoltOnLogger<BoltOnMassTransitConsumer<CreateTestStudent>>>();
+			var logger = autoMocker.GetMock<IAppLogger<BoltOnMassTransitConsumer<CreateTestStudent>>>();
 			var consumerContext = new Mock<ConsumeContext<CreateTestStudent>>();
 			var request = new CreateTestStudent();
 			consumerContext.Setup(c => c.Message).Returns(request);

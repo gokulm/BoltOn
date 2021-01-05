@@ -5,11 +5,11 @@ using Hangfire;
 
 namespace BoltOn.Hangfire
 {
-    public class BoltOnHangfireJobProcessor
+    public class AppHangfireJobProcessor
     {
         private readonly IRequestor _requestor;
 
-        public BoltOnHangfireJobProcessor(IRequestor requestor)
+        public AppHangfireJobProcessor(IRequestor requestor)
         {
             _requestor = requestor;
         }

@@ -9,11 +9,11 @@ namespace BoltOn.Web
     {
         private static bool _isWebModuleAdded;
 
-        public static BoltOnOptions AddWebModule(this BoltOnOptions boltOnOptions)
+        public static BootstrapperOptions AddWebModule(this BootstrapperOptions bootstrapperOptions)
         {
             _isWebModuleAdded = true;
-            boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-            return boltOnOptions;
+            bootstrapperOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
+            return bootstrapperOptions;
         }
 
         public static void TightenBolts(this IApplicationBuilder app)

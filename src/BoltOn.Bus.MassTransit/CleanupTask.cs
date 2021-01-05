@@ -9,13 +9,13 @@ namespace BoltOn.Bus.MassTransit
     public class CleanupTask : ICleanupTask
     {
         private readonly IServiceProvider _serviceProvider;
-		private readonly IBoltOnLogger<CleanupTask> _logger;
+		private readonly IAppLogger<CleanupTask> _logger;
 
 		public CleanupTask(IServiceProvider serviceProvider, 
-			IBoltOnLogger<CleanupTask> boltOnLogger)
+			IAppLogger<CleanupTask> logger)
         {
             _serviceProvider = serviceProvider;
-			_logger = boltOnLogger;
+			_logger = logger;
 		}
 
         public void Run()

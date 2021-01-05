@@ -7,12 +7,12 @@ namespace BoltOn.Cache
 {
 	public static class Extensions
 	{
-		public static BoltOnOptions BoltOnCacheModule(this BoltOnOptions boltOnOptions)
+		public static BootstrapperOptions BoltOnCacheModule(this BootstrapperOptions bootstrapperOptions)
 		{
-			boltOnOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-			boltOnOptions.ServiceCollection.AddTransient<IBoltOnCache, BoltOnCache>();
-			boltOnOptions.AddInterceptor<CacheResponseInterceptor>().After<StopwatchInterceptor>();
-			return boltOnOptions;
+			bootstrapperOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
+			bootstrapperOptions.ServiceCollection.AddTransient<IAppCache, AppCache>();
+			bootstrapperOptions.AddInterceptor<CacheResponseInterceptor>().After<StopwatchInterceptor>();
+			return bootstrapperOptions;
 		}
 	}
 }

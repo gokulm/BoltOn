@@ -12,9 +12,9 @@ namespace BoltOn
 {
 	public static class Extensions
 	{
-		public static IServiceCollection BoltOn(this IServiceCollection serviceCollection, Action<BoltOnOptions> action = null)
+		public static IServiceCollection BoltOn(this IServiceCollection serviceCollection, Action<BootstrapperOptions> action = null)
 		{
-			var options = new BoltOnOptions(serviceCollection);
+			var options = new BootstrapperOptions(serviceCollection);
 			action?.Invoke(options);
 			options.RegisterByConvention(Assembly.GetCallingAssembly());
 			options.RegisterInterceptors();
@@ -24,46 +24,46 @@ namespace BoltOn
 
 		public static void TightenBolts(this IServiceProvider serviceProvider)
 		{
-			var boltOnOptions = serviceProvider.GetService<BoltOnOptions>();
-            if (!boltOnOptions.IsTightened)
+			var bootstrapperOptions = serviceProvider.GetService<BootstrapperOptions>();
+            if (!bootstrapperOptions.IsTightened)
             {
                 var postRegistrationTasks = serviceProvider.GetServices<IPostRegistrationTask>();
 				postRegistrationTasks.ToList().ForEach(t => t.Run());
-                boltOnOptions.IsTightened = true;
+                bootstrapperOptions.IsTightened = true;
             }
         }
 
 		public static void LoosenBolts(this IServiceProvider serviceProvider)
 		{
-            var boltOnOptions = serviceProvider.GetService<BoltOnOptions>();
-            if (!boltOnOptions.IsAppCleaned)
+            var bootstrapperOptions = serviceProvider.GetService<BootstrapperOptions>();
+            if (!bootstrapperOptions.IsAppCleaned)
 			{
                 var postRegistrationTasks = serviceProvider.GetService<IEnumerable<ICleanupTask>>();
                 postRegistrationTasks.Reverse().ToList().ForEach(t => t.Run());
-                boltOnOptions.IsAppCleaned = true;
+                bootstrapperOptions.IsAppCleaned = true;
             }
 		}
 
-		public static BoltOnOptions BoltOnCqrsModule(this BoltOnOptions boltOnOptions,
+		public static BootstrapperOptions BoltOnCqrsModule(this BootstrapperOptions bootstrapperOptions,
 			Action<CqrsOptions> action = null)
         {
-			boltOnOptions.IsCqrsEnabled = true;
+			bootstrapperOptions.IsCqrsEnabled = true;
 			var options = new CqrsOptions();
 			action?.Invoke(options);
-			boltOnOptions.AddInterceptor<CqrsInterceptor>().Before<TransactionInterceptor>();
-			boltOnOptions.ServiceCollection.AddSingleton(options);
-			boltOnOptions.ServiceCollection.AddTransient<IEventDispatcher, EventDispatcher>();
-			return boltOnOptions;
+			bootstrapperOptions.AddInterceptor<CqrsInterceptor>().Before<TransactionInterceptor>();
+			bootstrapperOptions.ServiceCollection.AddSingleton(options);
+			bootstrapperOptions.ServiceCollection.AddTransient<IEventDispatcher, EventDispatcher>();
+			return bootstrapperOptions;
 		}
 
 		public static void After<TInterceptor>(this InterceptorOptions options)
 			where TInterceptor : IInterceptor
 		{
-			var boltOnOptions = options.BoltOnOptions;
-			var tempInterceptorTypes = boltOnOptions.InterceptorTypes.ToList();
-			if (boltOnOptions.RecentlyAddedInterceptor != null)
+			var bootstrapperOptions = options.BootstrapperOptions;
+			var tempInterceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
+			if (bootstrapperOptions.RecentlyAddedInterceptor != null)
 			{
-				var recentlyAddedInterceptor = boltOnOptions.RecentlyAddedInterceptor;
+				var recentlyAddedInterceptor = bootstrapperOptions.RecentlyAddedInterceptor;
 				var tempIndex = tempInterceptorTypes.IndexOf(typeof(TInterceptor));
 				if (tempIndex >= 0)
 				{
@@ -71,7 +71,7 @@ namespace BoltOn
 					if (tempIndex == tempInterceptorTypes.Count)
 						tempIndex -= 1;
 					tempInterceptorTypes.Insert(tempIndex + 1, recentlyAddedInterceptor);
-					boltOnOptions.InterceptorTypes = new HashSet<Type>(tempInterceptorTypes);
+					bootstrapperOptions.InterceptorTypes = new HashSet<Type>(tempInterceptorTypes);
 				}
 			}
 		}
@@ -79,17 +79,17 @@ namespace BoltOn
 		public static void Before<TInterceptor>(this InterceptorOptions options)
 			where TInterceptor : IInterceptor
 		{
-			var boltOnOptions = options.BoltOnOptions;
-			var tempInterceptorTypes = boltOnOptions.InterceptorTypes.ToList();
-			if (boltOnOptions.RecentlyAddedInterceptor != null)
+			var bootstrapperOptions = options.BootstrapperOptions;
+			var tempInterceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
+			if (bootstrapperOptions.RecentlyAddedInterceptor != null)
 			{
-				var recentlyAddedInterceptor = boltOnOptions.RecentlyAddedInterceptor;
+				var recentlyAddedInterceptor = bootstrapperOptions.RecentlyAddedInterceptor;
 				var tempIndex = tempInterceptorTypes.IndexOf(typeof(TInterceptor));
 				if (tempIndex >= 0)
 				{
 					tempInterceptorTypes.Remove(recentlyAddedInterceptor);
 					tempInterceptorTypes.Insert(tempIndex, recentlyAddedInterceptor);
-					boltOnOptions.InterceptorTypes = new HashSet<Type>(tempInterceptorTypes);
+					bootstrapperOptions.InterceptorTypes = new HashSet<Type>(tempInterceptorTypes);
 				}
 			}
 		}

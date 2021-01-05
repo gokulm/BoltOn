@@ -2,11 +2,11 @@
 {
     public class InterceptorOptions
     {
-        internal BoltOnOptions BoltOnOptions { get; }
+        internal BootstrapperOptions BootstrapperOptions { get; }
 
-        public InterceptorOptions(BoltOnOptions boltOnOptions)
+        public InterceptorOptions(BootstrapperOptions bootstrapperOptions)
         {
-            BoltOnOptions = boltOnOptions;
+            BootstrapperOptions = bootstrapperOptions;
         }
     }
 }

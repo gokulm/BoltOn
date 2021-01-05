@@ -26,7 +26,7 @@ namespace BoltOn.Tests.Web
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<CustomExceptionFilter>();
-			var logger = autoMocker.GetMock<IBoltOnLogger<CustomExceptionFilter>>();
+			var logger = autoMocker.GetMock<IAppLogger<CustomExceptionFilter>>();
 			var actionContext = new ActionContext()
 			{
 				HttpContext = Mock.Of<HttpContext>(),
@@ -51,7 +51,7 @@ namespace BoltOn.Tests.Web
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<CustomExceptionFilter>();
-			var logger = autoMocker.GetMock<IBoltOnLogger<CustomExceptionFilter>>();
+			var logger = autoMocker.GetMock<IAppLogger<CustomExceptionFilter>>();
 			var actionContext = new ActionContext()
 			{
 				HttpContext = Mock.Of<HttpContext>(),
@@ -73,7 +73,7 @@ namespace BoltOn.Tests.Web
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<CustomExceptionFilter>();
-			var logger = autoMocker.GetMock<IBoltOnLogger<CustomExceptionFilter>>();
+			var logger = autoMocker.GetMock<IAppLogger<CustomExceptionFilter>>();
 
 			var configuration = autoMocker.GetMock<IConfiguration>();
 			configuration.Setup(s => s.GetSection(It.IsAny<string>())).Returns(Mock.Of<IConfigurationSection>());
@@ -116,7 +116,7 @@ namespace BoltOn.Tests.Web
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<CustomExceptionFilter>();
-			var logger = autoMocker.GetMock<IBoltOnLogger<CustomExceptionFilter>>();
+			var logger = autoMocker.GetMock<IAppLogger<CustomExceptionFilter>>();
 
 			var configuration = autoMocker.GetMock<IConfiguration>();
 			configuration.Setup(s => s.GetSection(It.IsAny<string>())).Returns(Mock.Of<IConfigurationSection>());
@@ -161,7 +161,7 @@ namespace BoltOn.Tests.Web
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<CustomExceptionFilter>();
-			var logger = autoMocker.GetMock<IBoltOnLogger<CustomExceptionFilter>>();
+			var logger = autoMocker.GetMock<IAppLogger<CustomExceptionFilter>>();
 
 			var configuration = autoMocker.GetMock<IConfiguration>();
 			var configurationSection1 = Mock.Of<IConfigurationSection>();
@@ -217,7 +217,7 @@ namespace BoltOn.Tests.Web
 			// arrange
 			var autoMocker = new AutoMocker();
 			var sut = autoMocker.CreateInstance<CustomExceptionFilter>();
-			var logger = autoMocker.GetMock<IBoltOnLogger<CustomExceptionFilter>>();
+			var logger = autoMocker.GetMock<IAppLogger<CustomExceptionFilter>>();
 
 			var configuration = autoMocker.GetMock<IConfiguration>();
 			configuration.Setup(s => s.GetSection(It.IsAny<string>())).Returns(Mock.Of<IConfigurationSection>());

@@ -4,9 +4,9 @@ namespace BoltOn.Tests.Bootstrapping.Fakes
 {
     public class Employee
     {
-        private readonly IBoltOnLogger<Employee> _logger;
+        private readonly IAppLogger<Employee> _logger;
 
-        public Employee(IBoltOnLogger<Employee> logger)
+        public Employee(IAppLogger<Employee> logger)
         {
             _logger = logger;
             _logger.Info("Employee instantiated...");
