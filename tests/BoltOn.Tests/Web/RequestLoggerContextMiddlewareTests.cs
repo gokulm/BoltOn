@@ -20,9 +20,7 @@ namespace BoltOn.Tests.Web
             var autoMocker = new AutoMocker();
             var sut = autoMocker.CreateInstance<RequestLoggerContextMiddleware>();
             var logger = new Mock<IAppLogger<RequestLoggerContextMiddleware>>();
-            var httpContextAccessor = Mock.Of<IHttpContextAccessor>();
 			var httpContext = new Mock<HttpContext>();
-            httpContextAccessor.HttpContext = httpContext.Object;
             var connectionInfo = new Mock<ConnectionInfo>();
             httpContext.Setup(s => s.Connection).Returns(connectionInfo.Object);
             var request = Mock.Of<HttpRequest>();
@@ -36,7 +34,7 @@ namespace BoltOn.Tests.Web
             correlationContextAccessor.Setup(s => s.CorrelationContext).Returns(correlationContext);
 
             // act
-            await sut.Invoke(httpContextAccessor, logger.Object, loggerContext.Object, correlationContextAccessor.Object);
+            await sut.Invoke(httpContext.Object, logger.Object, loggerContext.Object, correlationContextAccessor.Object);
 
             // assert
             logger.Verify(v => v.Debug("Model is invalid"), Times.Never);

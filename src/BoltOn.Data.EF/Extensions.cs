@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 namespace BoltOn.Data.EF
 {
 	public static class Extensions
-    {
-        public static BootstrapperOptions BoltOnEFModule(this BootstrapperOptions bootstrapperOptions)
-        {
-            bootstrapperOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-            return bootstrapperOptions;
-        }
+	{
+		public static BootstrapperOptions BoltOnEFModule(this BootstrapperOptions bootstrapperOptions)
+		{
+			bootstrapperOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
+			return bootstrapperOptions;
+		}
 
 		/// <summary>
 		/// Add all the configurations that are in the same namespace as type T

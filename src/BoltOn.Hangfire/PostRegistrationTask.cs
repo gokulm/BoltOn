@@ -4,18 +4,18 @@ using Hangfire;
 
 namespace BoltOn.Hangfire
 {
-    public class PostRegistrationTask : IPostRegistrationTask
-    {
-        private readonly IServiceProvider _serviceProvider;
+	public class PostRegistrationTask : IPostRegistrationTask
+	{
+		private readonly IServiceProvider _serviceProvider;
 
 		public PostRegistrationTask(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
+		{
+			_serviceProvider = serviceProvider;
 		}
 
-        public void Run()
-        {
-            GlobalConfiguration.Configuration.UseActivator(new AppHangfireJobActivator(_serviceProvider));
-        }
-    }
+		public void Run()
+		{
+			GlobalConfiguration.Configuration.UseActivator(new AppHangfireJobActivator(_serviceProvider));
+		}
+	}
 }

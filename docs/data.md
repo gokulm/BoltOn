@@ -72,6 +72,14 @@ If you want to override the Repository class' methods or if you want to add meth
 		}
 	}
 
+** Note: ** Entity Framework has an extension method `ApplyConfigurationsFromAssembly` to add all the configurations in an assembly; in case if you want to add configurations only from certain namespace in an assembly, the extension method `ApplyConfigurationsFromNamespaceOfType<T>`, which is part of **BoltOn.Data.EF** can be used.
+
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+   Assembly assemblyWithConfigurations = GetType().Assembly; //get whatever assembly you want
+   modelBuilder.ApplyConfigurationsFromAssembly(assemblyWithConfigurations);
+}
+
 CosmosDb
 --------
 In order to use CosmosDb, you need do the following:

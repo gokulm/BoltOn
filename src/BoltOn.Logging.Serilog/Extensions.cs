@@ -7,23 +7,23 @@ using Serilog;
 namespace BoltOn.Logging.Serilog
 {
 	public static class Extensions
-    {
-        public static BootstrapperOptions BoltOnSerilogModule(this BootstrapperOptions bootstrapperOptions,
-            IConfiguration configuration = null)
-        {
-            if (configuration != null)
-            {
-                Log.Logger = new LoggerConfiguration()
-                                .Enrich.WithMachineName()
-                                .Enrich.FromLogContext()
-                                .ReadFrom.Configuration(configuration)
-                                .CreateLogger();
-            }
+	{
+		public static BootstrapperOptions BoltOnSerilogModule(this BootstrapperOptions bootstrapperOptions,
+			IConfiguration configuration = null)
+		{
+			if (configuration != null)
+			{
+				Log.Logger = new LoggerConfiguration()
+								.Enrich.WithMachineName()
+								.Enrich.FromLogContext()
+								.ReadFrom.Configuration(configuration)
+								.CreateLogger();
+			}
 
-            bootstrapperOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
-            bootstrapperOptions.ServiceCollection.AddTransient(typeof(IAppLogger<>),
+			bootstrapperOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
+			bootstrapperOptions.ServiceCollection.AddTransient(typeof(IAppLogger<>),
 				typeof(AppSerilogLogger<>));
-            return bootstrapperOptions;
-        }
-    }
+			return bootstrapperOptions;
+		}
+	}
 }

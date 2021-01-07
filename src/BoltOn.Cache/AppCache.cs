@@ -50,7 +50,7 @@ namespace BoltOn.Cache
 			TimeSpan? slidingExpiration = default)
 		{
 			_logger.Debug($"Setting value in cache... Key: {key}");
-			if(value == null)
+			if (value == null)
 				return;
 			var byteArray = _serializer.ToByteArray(value);
 			var options = new DistributedCacheEntryOptions { SlidingExpiration = slidingExpiration };
