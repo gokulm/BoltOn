@@ -8,7 +8,7 @@ namespace BoltOn.Logging.Serilog
 {
 	public static class Extensions
     {
-        public static BootstrapperOptions AddSerilogModule(this BootstrapperOptions bootstrapperOptions,
+        public static BootstrapperOptions BoltOnSerilogModule(this BootstrapperOptions bootstrapperOptions,
             IConfiguration configuration = null)
         {
             if (configuration != null)

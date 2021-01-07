@@ -25,28 +25,28 @@ namespace BoltOn
 		public static void TightenBolts(this IServiceProvider serviceProvider)
 		{
 			var bootstrapperOptions = serviceProvider.GetService<BootstrapperOptions>();
-            if (!bootstrapperOptions.IsTightened)
-            {
-                var postRegistrationTasks = serviceProvider.GetServices<IPostRegistrationTask>();
+			if (!bootstrapperOptions.IsTightened)
+			{
+				var postRegistrationTasks = serviceProvider.GetServices<IPostRegistrationTask>();
 				postRegistrationTasks.ToList().ForEach(t => t.Run());
-                bootstrapperOptions.IsTightened = true;
-            }
-        }
+				bootstrapperOptions.IsTightened = true;
+			}
+		}
 
 		public static void LoosenBolts(this IServiceProvider serviceProvider)
 		{
-            var bootstrapperOptions = serviceProvider.GetService<BootstrapperOptions>();
-            if (!bootstrapperOptions.IsAppCleaned)
+			var bootstrapperOptions = serviceProvider.GetService<BootstrapperOptions>();
+			if (!bootstrapperOptions.IsAppCleaned)
 			{
-                var postRegistrationTasks = serviceProvider.GetService<IEnumerable<ICleanupTask>>();
-                postRegistrationTasks.Reverse().ToList().ForEach(t => t.Run());
-                bootstrapperOptions.IsAppCleaned = true;
-            }
+				var postRegistrationTasks = serviceProvider.GetService<IEnumerable<ICleanupTask>>();
+				postRegistrationTasks.Reverse().ToList().ForEach(t => t.Run());
+				bootstrapperOptions.IsAppCleaned = true;
+			}
 		}
 
 		public static BootstrapperOptions BoltOnCqrsModule(this BootstrapperOptions bootstrapperOptions,
 			Action<CqrsOptions> action = null)
-        {
+		{
 			bootstrapperOptions.IsCqrsEnabled = true;
 			var options = new CqrsOptions();
 			action?.Invoke(options);

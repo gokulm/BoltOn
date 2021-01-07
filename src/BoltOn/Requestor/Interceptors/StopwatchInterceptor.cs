@@ -19,22 +19,22 @@ namespace BoltOn.Requestor.Interceptors
 			_appClock = appClock;
 		}
 
-        public async Task<TResponse> RunAsync<TRequest, TResponse>(TRequest request, 
-            CancellationToken cancellationToken,
-            Func<TRequest, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
+		public async Task<TResponse> RunAsync<TRequest, TResponse>(TRequest request,
+			CancellationToken cancellationToken,
+			Func<TRequest, CancellationToken, Task<TResponse>> next) where TRequest : IRequest<TResponse>
 		{
 			if (!(request is IEnableInterceptor<StopwatchInterceptor>))
-                return await next.Invoke(request, cancellationToken);
+				return await next.Invoke(request, cancellationToken);
 
-            var stopwatch = new Stopwatch();
-            _logger.Debug($"StopwatchInterceptor started at {_appClock.Now}");
-            var response = await next(request, cancellationToken);
-            _logger.Debug($"StopwatchInterceptor ended at {_appClock.Now}. Time elapsed: {stopwatch.ElapsedMilliseconds}");
-            return response;
+			var stopwatch = new Stopwatch();
+			_logger.Debug($"StopwatchInterceptor started at {_appClock.Now}");
+			var response = await next(request, cancellationToken);
+			_logger.Debug($"StopwatchInterceptor ended at {_appClock.Now}. Time elapsed: {stopwatch.ElapsedMilliseconds}");
+			return response;
 		}
 
-        public void Dispose()
-        {
-        }
+		public void Dispose()
+		{
+		}
 	}
 }

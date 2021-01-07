@@ -9,7 +9,7 @@ namespace BoltOn.Web
     {
         private static bool _isWebModuleAdded;
 
-        public static BootstrapperOptions AddWebModule(this BootstrapperOptions bootstrapperOptions)
+        public static BootstrapperOptions BoltOnWebModule(this BootstrapperOptions bootstrapperOptions)
         {
             _isWebModuleAdded = true;
             bootstrapperOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
