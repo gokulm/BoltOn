@@ -10,7 +10,6 @@ nav:
     - Web: web.md
     - Utilities: utilities.md
     - Logging: logging.md
-    # - Optional: optional.md
     - Samples: samples.md
     # - CLI: cli.md
     - CI & CD: build.md

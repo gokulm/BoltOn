@@ -1,3 +1,0 @@
-Logging
--------
-BoltOn uses .NET Core's logger internally, with just a custom adapter to mainly support unit testing, as .NET Core's ILogger has only one method and all the other methods are extension methods. You could use any logging provider as you wish, or you could inherit [`AppLogger<TType>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Logging/AppLogger.cs) and override the logging methods.

@@ -96,13 +96,13 @@ namespace BoltOn.Web.Filters
 					exceptionContext.HttpContext.Response.StatusCode = 500;
 			}
 
-			var errorViewModel = new ErrorModel
+			var errorModel = new ErrorModel
 			{
 				Message = errorMessage,
 				Id = _correlationContextAccessor.CorrelationContext.CorrelationId
 			};
 
-			return errorViewModel;
+			return errorModel;
 		}
 	}
 }

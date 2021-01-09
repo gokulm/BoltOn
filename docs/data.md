@@ -10,12 +10,23 @@ In order to use Entity Framework implementation of the repository, you need to d
 
 * Install **BoltOn.Data.EF** NuGet package.
 * Call `BoltOnEFModule()` in your startup's BoltOn() method.
-* Inherit [`Repository<TEntity, TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs) or [`QueryRepository<TEntity, TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/QueryRepository.cs)to create a repository for your entity.
+* Register [`IRepository<TEntity>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs) to [`Repository<TEntity, TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs) or [`IQueryRepository<TEntity>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IQueryRepository.cs) to [`QueryRepository<TEntity, TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/QueryRepository.cs).
+* `IQueryRepository` has only methods related to data retrieval, and it sets EF's `QueryTrackingBehavior` to `QueryTrackingBehavior.NoTracking`.
 
 Example:
 
-	// act
-	var result = repository.FindByAsync(f => f.Id == 2, default, i => i.Addressess).FirstOrDefault();
+	services.BoltOn(options =>
+	{
+		options.BoltOnEFModule();
+	});
+
+	services.AddDbContext<SchoolDbContext>(options =>
+	{
+		options.UseSqlServer("connectionstring");
+	});
+	
+	services.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
+	services.AddTransient<IQueryRepository<Course>, QueryRepository<Student, SchoolDbContext>>();
 
 * Add all the database columns to entity properties mapping inside a mapping class by implementing `IEntityTypeConfiguration<TEntity>` interface.
 
@@ -30,8 +41,9 @@ Example:
 	}
 
     // Entity
-    public class Student : BaseEntity<int>
+    public class Student 
 	{
+		public int StudentId { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
 	}
@@ -43,7 +55,7 @@ Example:
 		{
 			builder
 				.ToTable("Student")
-				.HasKey(k => k.Id);
+				.HasKey(k => k.StudentId);
 			builder
 				.Property(p => p.Id)
 				.HasColumnName("StudentId");
@@ -53,11 +65,9 @@ Example:
 		}
 	}
 
-and register like this:
+* If you want to override the Repository class' methods or if you want to add methods, create your own repository.
 
-	serviceCollection.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
-
-If you want to override the Repository class' methods or if you want to add methods, create your own repository, like this:
+Example:
 
     // Repository
     public interface IStudentRepository : IRepository<Student>
@@ -74,11 +84,13 @@ If you want to override the Repository class' methods or if you want to add meth
 
 ** Note: ** Entity Framework has an extension method `ApplyConfigurationsFromAssembly` to add all the configurations in an assembly; in case if you want to add configurations only from certain namespace in an assembly, the extension method `ApplyConfigurationsFromNamespaceOfType<T>`, which is part of **BoltOn.Data.EF** can be used.
 
-protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-   Assembly assemblyWithConfigurations = GetType().Assembly; //get whatever assembly you want
-   modelBuilder.ApplyConfigurationsFromAssembly(assemblyWithConfigurations);
-}
+Like this:
+
+	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		base.OnModelCreating(modelBuilder);
+		modelBuilder.ApplyConfigurationsFromNamespaceOfType<StudentMapping>();
+	}
 
 CosmosDb
 --------
