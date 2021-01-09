@@ -8,7 +8,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Optional - BoltOn</title>
+  <title>Logging - BoltOn</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -17,8 +17,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Optional";
-    var mkdocs_page_input_path = "optional.md";
+    var mkdocs_page_name = "Logging";
+    var mkdocs_page_input_path = "logging.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -75,12 +75,12 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../cqrs/">CQRS</a>
+    <a class="" href="../statemachine/">State Machine</a>
 	    </li>
           
             <li class="toctree-l1">
 		
-    <a class="" href="../statemachine/">State Machine</a>
+    <a class="" href="../web/">Web</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -90,19 +90,13 @@
           
             <li class="toctree-l1 current">
 		
-    <a class="current" href="./">Optional</a>
+    <a class="current" href="./">Logging</a>
     <ul class="subnav">
             
     <li class="toctree-l2"><a href="#logging">Logging</a></li>
     
 
-    <li class="toctree-l2"><a href="#iqueryuncommitted">IQueryUncommitted</a></li>
-    
-
-    <li class="toctree-l2"><a href="#interceptor">Interceptor</a></li>
-    
-
-    <li class="toctree-l2"><a href="#unitofworkoptionsbuilder">UnitOfWorkOptionsBuilder</a></li>
+    <li class="toctree-l2"><a href="#serilog">Serilog</a></li>
     
 
     </ul>
@@ -140,7 +134,7 @@
     
       
     
-    <li>Optional</li>
+    <li>Logging</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -151,75 +145,15 @@
             <div class="section">
               
                 <h2 id="logging">Logging</h2>
-<p>BoltOn uses .NET Core's logger internally, with just a custom adapter to mainly support unit testing, as .NET Core's ILogger has only one method and all the other methods are extension methods. You could use any logging provider as you wish, or you could inherit <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Logging/BoltOnLogger.cs"><code>BoltOnLogger&lt;TType&gt;</code></a> and override the logging methods.</p>
-<h2 id="iqueryuncommitted">IQueryUncommitted</h2>
-<p>In case if you want a custom request type which is completely different from IQuery or ICommand in terms of the transaction isolation level or transaction timeout, you could create one something like this:</p>
-<pre><code>public interface IQueryUncommitted&lt;out TResponse&gt; : IRequest&lt;TResponse&gt;, IEnableUnitOfWorkInterceptor
-{
-}
-</code></pre>
-<p>And then create a custom interceptor in case if you want to tweak the ChangeTrackerContext, like the one mentioned <a href="#interceptor">below</a> and create a custom UnitOfWorkOptionsBuilder to change the transaction isolation level or timeout, like the one mentioned <a href="#unitofworkoptionsbuilder">below</a>. And, finally register them like this:</p>
-<pre><code>serviceCollection.RemoveInterceptor&lt;ChangeTrackerInterceptor&gt;();
-serviceCollection.AddInterceptor&lt;CustomChangeTrackerInterceptor&gt;();
-serviceCollection.AddTransient&lt;IUnitOfWorkOptionsBuilder, CustomUnitOfWorkOptionsBuilder&gt;();
-</code></pre>
-<h2 id="interceptor">Interceptor</h2>
-<p>You could create your custom interceptor for change tracking something like this:</p>
-<pre><code>public class CustomChangeTrackerInterceptor : IInterceptor
-{
-    private readonly ChangeTrackerContext _changeTrackerContext;
-
-    public CustomChangeTrackerInterceptor(ChangeTrackerContext changeTrackerContext)
-    {
-        _changeTrackerContext = changeTrackerContext;
-    }
-
-    public async Task&lt;TResponse&gt; RunAsync&lt;TRequest, TResponse&gt;(IRequest&lt;TResponse&gt; request, CancellationToken cancellationToken, 
-        Func&lt;IRequest&lt;TResponse&gt;, CancellationToken, Task&lt;TResponse&gt;&gt; next) where TRequest : IRequest&lt;TResponse&gt;
-    {
-        _changeTrackerContext.IsQueryRequest = request is IQuery&lt;TResponse&gt; || request is IQueryUncommitted&lt;TResponse&gt;;
-        var response = await next(request, cancellationToken);
-        return response;
-    }
-
-    public void Dispose()
-    {
-    }
-}
-</code></pre>
-<h2 id="unitofworkoptionsbuilder">UnitOfWorkOptionsBuilder</h2>
-<p>You could create your custom UnitOfWorkOptionsBuilder to change the isolation level and/or transaction timeout based on request type something like this:</p>
-<pre><code>public class CustomUnitOfWorkOptionsBuilder : IUnitOfWorkOptionsBuilder
-{
-    private readonly IBoltOnLogger&lt;CustomUnitOfWorkOptionsBuilder&gt; _logger;
-
-    public CustomUnitOfWorkOptionsBuilder(IBoltOnLogger&lt;CustomUnitOfWorkOptionsBuilder&gt; logger)
-    {
-        _logger = logger;
-    }
-
-    public UnitOfWorkOptions Build&lt;TResponse&gt;(IRequest&lt;TResponse&gt; request)
-    {
-        IsolationLevel isolationLevel;
-        switch (request)
-        {
-            case ICommand&lt;TResponse&gt; _:
-            case IQuery&lt;TResponse&gt; _:
-            case ICommand _:
-                _logger.Debug("Getting isolation level for Command or Query");
-                isolationLevel = IsolationLevel.ReadCommitted;
-                break;
-            case IQueryUncommitted&lt;TResponse&gt; _:
-                _logger.Debug("Getting isolation level for QueryUncommitted");
-                isolationLevel = IsolationLevel.ReadUncommitted;
-                break;
-            default:
-                throw new Exception("Request should implement ICommand&lt;&gt; or IQuery&lt;&gt; to enable Unit of Work.");
-        }
-        return new UnitOfWorkOptions { IsolationLevel = isolationLevel };
-    }
-}
-</code></pre>
+<p>BoltOn uses .NET Core's logger internally, with just a custom adapter to mainly support unit testing, as .NET Core's ILogger has only one method and all the other methods are extension methods. You could use any logging provider as you wish, or you could inherit <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Logging/AppLogger.cs"><code>AppLogger&lt;TType&gt;</code></a> and override the logging methods. Also, <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Logging/AppLoggerFactory.cs"><code>AppLoggerFactory</code></a> can be used when <code>AppLogger</code> cannot be used.</p>
+<h2 id="serilog">Serilog</h2>
+<p>In order to use Serilog, you need to do the following:</p>
+<ul>
+<li>Install <strong>BoltOn.Logging.Serilog</strong> NuGet package.</li>
+<li>Call <code>BoltOnSerilogModule()</code> in your startup's BoltOn() method, and pass <code>IConfiguration</code> object, which basically registers <code>IAppLogger</code> to <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Logging.Serilog/AppSerilogLogger.cs"><code>AppSerilogLogger</code></a></li>
+</ul>
+<p><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Logging/LoggerContext.cs"><code>LoggerContext</code></a> is a scoped object, which can be injected anywhere and all the attributes that need to be logged can be added to it, which is what <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Web/Middlewares/RequestLoggerContextMiddleware.cs"><code>RequestLoggerContextMiddleware</code></a> does.</p>
+<p>Check out Serilog's documentation to know more about sinks and they can be configured in code/appSettings.</p>
               
             </div>
           </div>

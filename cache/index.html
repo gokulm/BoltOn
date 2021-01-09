@@ -81,12 +81,12 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../cqrs/">CQRS</a>
+    <a class="" href="../statemachine/">State Machine</a>
 	    </li>
           
             <li class="toctree-l1">
 		
-    <a class="" href="../statemachine/">State Machine</a>
+    <a class="" href="../web/">Web</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -96,7 +96,7 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../optional/">Optional</a>
+    <a class="" href="../logging/">Logging</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -147,7 +147,7 @@
 <li>Install <strong>BoltOn.Cache</strong> NuGet package in the host project.</li>
 <li>Call <code>BoltOnCacheModule()</code> in your startup's BoltOn() method. </li>
 <li>Install the appropriate NuGet package depending on the <code>IDistributedCache</code> implementations that .NET Core provides - Memory, Redis and SQL Server. Use the appropriate extension methods like <code>AddDistributedMemoryCache</code> or <code>AddDistributedSqlServerCache</code> or <code>AddStackExchangeRedisCache</code> to configure the underlying cache. </li>
-<li>Finally, inject <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/IBoltOnCache.cs">IBoltOnCache</a> whereever you want in your application.</li>
+<li>Finally, inject <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/IAppCache.cs">IAppCache</a> whereever you want in your application.</li>
 </ul>
 <p>Example:</p>
 <pre><code>var serviceCollection = new ServiceCollection();
@@ -187,7 +187,7 @@ serviceCollection.AddStackExchangeRedisCache(options =&gt;
 </code></pre>
 <p><strong>Note:</strong>
 <br />
-<a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Cache/BoltOnCache.cs">BoltOnCache</a> uses .NET Core's built-in serializer (System.Text.Json) for serializing cache values to byte array. You can switch the serializer by writing your own implemenation for <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Cache/BoltOnCacheSerializer.cs">IBoltOnCacheSerializer</a> and registering the implementation while bootstrapping your application.</p>
+<a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Cache/AppCache.cs">AppCache</a> uses .NET Core's built-in serializer (System.Text.Json) for serializing cache values to byte array. You can switch the serializer by writing your own implementation for <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Cache/AppCacheSerializer.cs">IAppCacheSerializer</a> and registering the implementation while bootstrapping your application.</p>
 <p>Check out .NET Core's IDistributedCache documentation to know more about the other configurations and usage.</p>
               
             </div>
@@ -196,7 +196,7 @@ serviceCollection.AddStackExchangeRedisCache(options =&gt;
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../cqrs/" class="btn btn-neutral float-right" title="CQRS">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../statemachine/" class="btn btn-neutral float-right" title="State Machine">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../bus/" class="btn btn-neutral" title="Bus"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -228,7 +228,7 @@ serviceCollection.AddStackExchangeRedisCache(options =&gt;
         <span><a href="../bus/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../cqrs/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../statemachine/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

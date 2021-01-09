@@ -63,16 +63,10 @@
     <a class="current" href="./">Data</a>
     <ul class="subnav">
             
-    <li class="toctree-l2"><a href="#entity">Entity</a></li>
-    
-
-    <li class="toctree-l2"><a href="#irepository">IRepository</a></li>
+    <li class="toctree-l2"><a href="#repository">Repository</a></li>
     
 
     <li class="toctree-l2"><a href="#entity-framework-repository">Entity Framework Repository</a></li>
-    
-
-    <li class="toctree-l2"><a href="#dbcontextfactory">DbContextFactory</a></li>
     
 
     <li class="toctree-l2"><a href="#cosmosdb">CosmosDb</a></li>
@@ -96,12 +90,12 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../cqrs/">CQRS</a>
+    <a class="" href="../statemachine/">State Machine</a>
 	    </li>
           
             <li class="toctree-l1">
 		
-    <a class="" href="../statemachine/">State Machine</a>
+    <a class="" href="../web/">Web</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -111,7 +105,7 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../optional/">Optional</a>
+    <a class="" href="../logging/">Logging</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -156,38 +150,37 @@
           <div role="main">
             <div class="section">
               
-                <h2 id="entity">Entity</h2>
-<p>You could create an entity by inheriting <code>BaseEntity&lt;TIdType&gt;</code> where TIdType is the type of the Id property.</p>
-<h2 id="irepository">IRepository</h2>
-<p><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs"><code>IRepository</code></a> interface in the core BoltOn package is abstracted out to keep it agnostic of any particular database, so that the implementation could be changed easily while bootstrapping the application when we switch databases (which rarely happens though). </p>
-<p>The disadvantage of this abstraction is, we lose certain native features of the underlying database specific features, as it isn't easy to come up with a common IRepository interface to support all the databases. So, please feel free to override the existing implementation or come up with your own implemenation for some of the missing methods.</p>
+                <h2 id="repository">Repository</h2>
+<p><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs"><code>IRepository</code></a> and <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IQueryRepository.cs"><code>IQueryRepository</code></a> interfaces in the core BoltOn package is abstracted out to keep it agnostic of any particular database. However, they're currently implemented only in BoltOn.Data.EF package. </p>
+<p>There are separate <code>IRepository</code> interfaces in CosmosDb and ElasticSearch packages too.</p>
 <h2 id="entity-framework-repository">Entity Framework Repository</h2>
 <p>In order to use Entity Framework implementation of the repository, you need to do the following:</p>
 <ul>
 <li>Install <strong>BoltOn.Data.EF</strong> NuGet package.</li>
 <li>Call <code>BoltOnEFModule()</code> in your startup's BoltOn() method.</li>
-<li>Create an entity by inheriting <code>BaseEntity&lt;TIdType&gt;</code>. The inheritance is not mandatory though.</li>
-<li>Create a DbContext by inheriting <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseDbContext.cs"><code>BaseDbContext&lt;TDbContext&gt;</code></a>. You could inherit EF's DbContext directy if you're not interested in any of the benefits that BaseDbContext offers.</li>
-<li>Inherit <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs"><code>Repository&lt;TEntity, TDbContext&gt;</code></a> to create a repository for your entity.</li>
-<li>All the repository methods accept an optional parameter options, in FindBy methods, if other navigation properties need to be fetched, a collection of expressions can be passed.</li>
+<li>Register <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs"><code>IRepository&lt;TEntity&gt;</code></a> to <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs"><code>Repository&lt;TEntity, TDbContext&gt;</code></a> or <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IQueryRepository.cs"><code>IQueryRepository&lt;TEntity&gt;</code></a> to <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/QueryRepository.cs"><code>QueryRepository&lt;TEntity, TDbContext&gt;</code></a>.</li>
+<li><code>IQueryRepository</code> has only methods related to data retrieval, and it sets EF's <code>QueryTrackingBehavior</code> to <code>QueryTrackingBehavior.NoTracking</code>.</li>
 </ul>
 <p>Example:</p>
-<pre><code>var includes = new List&lt;Expression&lt;Func&lt;Student, object&gt;&gt;&gt;
+<pre><code>services.BoltOn(options =&gt;
 {
-    s =&gt; s.Addresses
-};
+    options.BoltOnEFModule();
+});
 
-// act
-var result = repository.FindBy(f =&gt; f.Id == 2, includes).FirstOrDefault();
+services.AddDbContext&lt;SchoolDbContext&gt;(options =&gt;
+{
+    options.UseSqlServer("connectionstring");
+});
+
+services.AddTransient&lt;IRepository&lt;Student&gt;, Repository&lt;Student, SchoolDbContext&gt;&gt;();
+services.AddTransient&lt;IQueryRepository&lt;Course&gt;, QueryRepository&lt;Student, SchoolDbContext&gt;&gt;();
 </code></pre>
 <ul>
 <li>Add all the database columns to entity properties mapping inside a mapping class by implementing <code>IEntityTypeConfiguration&lt;TEntity&gt;</code> interface.</li>
-<li>The mapping classes will be automatically added to your DbContext if you inherit <code>BaseDbContext&lt;TDbContext&gt;</code> and if they are in the same assembly where the DbContext resides.</li>
-<li>In case if you do not want all the mapping configuration classes in the assembly to be added, you can override <code>ApplyConfigurations(ModelBuilder modelBuilder)</code> method of <code>BaseDbContext</code> and add the configuration classes manually.</li>
 </ul>
 <p>Example:</p>
 <pre><code>// DbContext
-public class SchoolDbContext : BaseDbContext&lt;SchoolDbContext&gt;
+public class SchoolDbContext : DbContext
 {
     public SchoolDbContext(DbContextOptions&lt;SchoolDbContext&gt; options) : base(options)
     {
@@ -195,8 +188,9 @@ public class SchoolDbContext : BaseDbContext&lt;SchoolDbContext&gt;
 }
 
 // Entity
-public class Student : BaseEntity&lt;int&gt;
+public class Student 
 {
+    public int StudentId { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
 }
@@ -208,7 +202,7 @@ public class StudentMapping : IEntityTypeConfiguration&lt;Student&gt;
     {
         builder
             .ToTable("Student")
-            .HasKey(k =&gt; k.Id);
+            .HasKey(k =&gt; k.StudentId);
         builder
             .Property(p =&gt; p.Id)
             .HasColumnName("StudentId");
@@ -218,10 +212,10 @@ public class StudentMapping : IEntityTypeConfiguration&lt;Student&gt;
     }
 }
 </code></pre>
-<p>and register like this:</p>
-<pre><code>serviceCollection.AddTransient&lt;IRepository&lt;Student&gt;, Repository&lt;Student, SchoolDbContext&gt;&gt;();
-</code></pre>
-<p>If you want to override the Repository class' methods or if you want to add methods, create your own repository, like this:</p>
+<ul>
+<li>If you want to override the Repository class' methods or if you want to add methods, create your own repository.</li>
+</ul>
+<p>Example:</p>
 <pre><code>// Repository
 public interface IStudentRepository : IRepository&lt;Student&gt;
 {
@@ -235,15 +229,19 @@ public class StudentRepository : Repository&lt;Student, SchoolDbContext&gt;, ISt
     }
 }
 </code></pre>
-<h2 id="dbcontextfactory">DbContextFactory</h2>
-<p>This factory uses IServiceProvider to resolve DbContexts, and if the request implements <code>IQuery&lt;&gt;</code>, it sets the DbContexts' <code>ChangeTracker.QueryTrackingBehavior</code> to <code>QueryTrackingBehavior.NoTracking</code> and <code>ChangeTracker.AutoDetectChangesEnabled</code> to false with the help of <code>ChangeTrackerInterceptor</code>. </p>
-<p><strong>Note:</strong> You could disable this behavior by removing the interceptor from the pipeline using <code>RemoveInterceptor&lt;ChangeTrackerInterceptor&gt;</code> extension method.</p>
+<p><strong> Note: </strong> Entity Framework has an extension method <code>ApplyConfigurationsFromAssembly</code> to add all the configurations in an assembly; in case if you want to add configurations only from certain namespace in an assembly, the extension method <code>ApplyConfigurationsFromNamespaceOfType&lt;T&gt;</code>, which is part of <strong>BoltOn.Data.EF</strong> can be used.</p>
+<p>Like this:</p>
+<pre><code>protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    base.OnModelCreating(modelBuilder);
+    modelBuilder.ApplyConfigurationsFromNamespaceOfType&lt;StudentMapping&gt;();
+}
+</code></pre>
 <h2 id="cosmosdb">CosmosDb</h2>
 <p>In order to use CosmosDb, you need do the following:</p>
 <ul>
 <li>Install <strong>BoltOn.Data.CosmosDb</strong> NuGet package.</li>
 <li>Call <code>BoltOnCosmosDbModule()</code> in your startup's BoltOn() method.</li>
-<li>Create an entity by inheriting <code>BaseEntity&lt;TIdType&gt;</code>. The inheritance is not mandatory though.</li>
 <li>Create an options class by inheriting <code>BaseCosmosDbOptions</code> class. </li>
 <li>Use AddCosmosDb extension method to initialize options like URI, AuthorizationKey and Database Name.</li>
 <li>Inherit <code>Repository&lt;TEntity, TCosmosDbOptions&gt;</code> to create a repository for your entity.</li>
@@ -267,10 +265,10 @@ public class SchoolCosmosDbOptions : BaseCosmosDbOptions
 }
 
 // Entity
-public class Student : BaseEntity&lt;string&gt;
+public class Student 
 {
     [JsonProperty("id")]
-    public override string Id { get; set; }
+    public string Id { get; set; }
     [JsonProperty("studentId")]
     public int StudentId { get; set; }
     public string FirstName { get; set; }
@@ -287,8 +285,8 @@ public interface IStudentRepository : IRepository&lt;Student&gt;
 
 public class StudentRepository : Repository&lt;Student, SchoolCosmosDbOptions&gt;, IStudentRepository
 {
-    public StudentRepository(SchoolCosmosDbOptions options, EventBag eventBag, IBoltOnClock boltOnClock)
-        : base(options, eventBag, boltOnClock)
+    public StudentRepository(SchoolCosmosDbOptions options)
+        : base(options)
     {
     }
 }
@@ -304,7 +302,6 @@ public class StudentRepository : Repository&lt;Student, SchoolCosmosDbOptions&gt
 <ul>
 <li>Install <strong>BoltOn.Data.Elasticsearch</strong> NuGet package.</li>
 <li>Call <code>BoltOnElasticsearchModule()</code> in your startup's BoltOn() method.</li>
-<li>Create an entity by inheriting <code>BaseEntity&lt;TIdType&gt;</code>. The inheritance is not mandatory though.</li>
 <li>Create an options class by inheriting <code>BaseElasticsearchOptions</code> class. </li>
 <li>Use AddElasticsearch extension method to initialize NEST library's ConnectionSettings.</li>
 <li>Inherit <code>Repository&lt;TEntity, TElasticsearchOptions&gt;</code> to create a repository for your entity.</li>
@@ -326,8 +323,9 @@ public class SchoolElasticDbOptions : BaseElasticsearchOptions
 }
 
 // Entity
-public class Student : BaseEntity&lt;int&gt;
+public class Student 
 {
+    public int StudentId { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
 }
@@ -335,14 +333,13 @@ public class Student : BaseEntity&lt;int&gt;
 <p>and register like this:</p>
 <pre><code>serviceCollection.AddTransient&lt;IRepository&lt;Student&gt;, Repository&lt;Student, SchoolElasticDbOptions&gt;&gt;()
 </code></pre>
-<p><strong>Note:</strong> The existing FindByAsync doesn't support find by expression, so pass null for the predicate param and NEST's <code>SearchRequest</code> for the options param.  </p>
 <p>Example:</p>
 <pre><code>var searchRequest = new SearchRequest
 {
     Query = new MatchQuery { Field = "firstName", Query = "John" }
 };
 
-repository.FindByAsync(null, searchRequest)
+repository.FindByAsync(searchRequest)
 </code></pre>
               
             </div>

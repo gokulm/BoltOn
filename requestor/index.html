@@ -64,9 +64,6 @@
     <li class="toctree-l2"><a href="#interceptors">Interceptors</a></li>
     
 
-    <li class="toctree-l2"><a href="#unit-of-work">Unit of Work</a></li>
-    
-
     </ul>
 	    </li>
           
@@ -87,12 +84,12 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../cqrs/">CQRS</a>
+    <a class="" href="../statemachine/">State Machine</a>
 	    </li>
           
             <li class="toctree-l1">
 		
-    <a class="" href="../statemachine/">State Machine</a>
+    <a class="" href="../web/">Web</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -102,7 +99,7 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../optional/">Optional</a>
+    <a class="" href="../logging/">Logging</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -156,15 +153,7 @@
 <br /> To create a request that doesn't have any response and doesn't require unit of work.</li>
 <li><code>IRequest&lt;out TResponse&gt;</code> 
 <br /> To create a request with response of type TResponse and doesn't require unit of work.</li>
-<li><code>ICommand</code>
-<br /> To create a request that doesn't have any response and that requires unit of work. A transaction with isolation level <strong>ReadCommitted</strong> will be started for the requests that implement this interface. </li>
-<li><code>ICommand&lt;out TResponse&gt;</code> 
-<br /> To create a request with response of type TResponse and that requires require unit of work. A transaction with isolation level <strong>ReadCommitted</strong> will be started for the requests that implement this interface.</li>
-<li><code>IQuery&lt;out TResponse&gt;</code>
-<br /> To create a request with response of type TResponse and that requires unit of work. A transaction with isolation level ReadCommitted will be started for the requests that implement this interface. 
-<br /> If <strong>BoltOn.Data.EF</strong> package is installed and bolted, DbContexts' ChangeTracker.QueryTrackingBehavior will be set to <code>QueryTrackingBehavior.NoTracking</code> and <code>ChangeTracker.AutoDetectChangesEnabled</code> will be set to false in <a href="../data/#dbcontextfactory">DbContextFactory</a>.</li>
 </ul>
-<p>In case if you want a custom request type with a different isolation level, you could create an interface and customize <code>UnitOfWorkOptionsBuilder</code> by overriding it or by creating a new one. Check out this custom request type called <code>IQueryUncommitted</code> with isolation level <strong>ReadUncommitted</strong> <a href="../optional/#iqueryuncommitted">here</a>. </p>
 <p>The <strong>response</strong> can be any value or reference type.</p>
 <p>After declaring the request and the response, you need to create a handler by implementiong any of these interfaces:</p>
 <ul>
@@ -174,7 +163,7 @@
 <br> For handlers that have responses.</li>
 </ul>
 <p>Example:</p>
-<pre><code>public class GetAllStudentsRequest : IQuery&lt;IEnumerable&lt;StudentDto&gt;&gt;
+<pre><code>public class GetAllStudentsRequest : IRequest&lt;IEnumerable&lt;StudentDto&gt;&gt;
 {
 }
 
@@ -212,6 +201,14 @@ public class StudentsController : Controller
     }
 }
 </code></pre>
+<p><strong> Note: </strong> Handlers get registered automatically while bootstrapping the application using services.BoltOn(); to disable the automatic handler registrations, <code>DisableRequestorHandlerRegistrations()</code> can be used. </p>
+<p>Like this:</p>
+<pre><code>var serviceCollection = new ServiceCollection();
+serviceCollection.BoltOn(options =&gt;
+{
+    options.DisableRequestorHandlerRegistrations();
+});
+</code></pre>
 <h2 id="interceptors">Interceptors</h2>
 <p>Every request flows thru a set of built-in interceptors (mentioned below), and the execution of them can be controlled by implementing appropriate marker interfaces. </p>
 <ul>
@@ -220,8 +217,8 @@ public class StudentsController : Controller
 <br> This interceptor logs the time that a request enters and exits the pipeline. This interceptor is enabled by default as <code>IRequest</code> implements <code>IEnableInterceptor&lt;StopwatchInterceptor&gt;</code> interface.</p>
 </li>
 <li>
-<p><code>UnitOfWorkInterceptor</code>
-<br> This interceptor starts a transaction with an isolation level based on the interface like IQuery or ICommand etc., (mentioned above) that the request implements. This interceptor is enabled only if the request implements <code>IEnableInterceptor&lt;UnitOfWorkInterceptor&gt;</code> interface. <code>ICommand</code> and <code>IQuery</code> interfaces implement <code>IEnableInterceptor&lt;UnitOfWorkInterceptor&gt;</code>.</p>
+<p><code>TransactionInterceptor</code>
+<br> This interceptor starts a transaction with an isolation level set in the request class. This interceptor is enabled only if the request implements <code>IEnableTransaction</code> interface. </p>
 </li>
 </ul>
 <p>You could create an interceptor by implementing <code>IInterceptor</code> interface, like <a href="../optional/#interceptor">this</a>. If you want to control the execution of an interceptor based on the incoming request, you can make the request implement <code>IEnableInterceptor&lt;TInterceptor&gt;</code> and add a check something like this:</p>
@@ -240,13 +237,6 @@ public class StudentsController : Controller
 <pre><code>boltOnOptions.AddInterceptor&lt;CqrsInterceptor&gt;().Before&lt;UnitOfWorkInterceptor&gt;();
 </code></pre>
 </li>
-</ul>
-<h2 id="unit-of-work">Unit of Work</h2>
-<ul>
-<li>If you use Requestor and implement any of the interfaces like IQuery or ICommand, starting or committing unit of work will be done automatically using <code>UnitOfWorkInterceptor</code>, as both <code>IQuery</code> and <code>ICommand</code> implement <code>IEnableInterceptor&lt;UnitOfWorkInterceptor&gt;</code>.</li>
-<li>If you're not using Requestor and if you want to start a unit of work, you could just use .NET's TransactionScope or call Get method in <code>IUnitOfWorkManager</code> by passing <code>UnitOfWorkOptions</code> with TransactionScopeOption, IsolationLevel and TransactionTimeout set based on your needs. The default transaction isolation level is <code>IsolationLevel.ReadCommitted</code>. </li>
-<li>The <code>Get</code> method of <code>UnitOfWorkManager</code> can be called only once, an exception will be thrown if it's called again. </li>
-<li>In case if you want to change the default transaction isolation level of all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement <code>IUnitOfWorkOptionsBuilder</code> like <a href="../optional/#unitofworkoptionsbuilder">this</a> or inherit <code>UnitOfWorkOptionsBuilder</code> and override the Build method.</li>
 </ul>
               
             </div>
