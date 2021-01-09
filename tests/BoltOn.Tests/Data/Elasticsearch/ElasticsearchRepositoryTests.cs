@@ -261,7 +261,7 @@ namespace BoltOn.Tests.Data.Elasticsearch
 			Assert.Null(queryResult);
 		}
 
-		public async Task<IEnumerable<Student>> Search(SearchRequest searchRequest)
+		private async Task<IEnumerable<Student>> Search(SearchRequest searchRequest)
 		{
 			// arrange
 			var sut = _elasticDbFixture.ServiceProvider.GetService<BoltOn.Data.Elasticsearch.IRepository<Student>>();

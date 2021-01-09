@@ -3,8 +3,8 @@
 namespace BoltOn.Logging
 {
 	public interface IAppLoggerFactory
-    {
-        IAppLogger<TType> Create<TType>();
+	{
+		IAppLogger<TType> Create<TType>();
 	}
 
 	public sealed class AppLoggerFactory : IAppLoggerFactory

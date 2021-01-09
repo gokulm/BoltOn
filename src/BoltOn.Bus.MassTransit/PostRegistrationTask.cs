@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace BoltOn.Bus.MassTransit
 {
 	public class PostRegistrationTask : IPostRegistrationTask
-    {
+	{
 		private readonly IServiceProvider _serviceProvider;
 
 		public PostRegistrationTask(IServiceProvider serviceProvider)
@@ -15,9 +15,9 @@ namespace BoltOn.Bus.MassTransit
 		}
 
 		public void Run()
-        {
-            var busControl = _serviceProvider.GetService<IBusControl>();
-            busControl?.Start();
-        }
-    }
+		{
+			var busControl = _serviceProvider.GetService<IBusControl>();
+			busControl?.Start();
+		}
+	}
 }

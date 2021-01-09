@@ -6,28 +6,28 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bus.MassTransit
 {
-    public class CleanupTask : ICleanupTask
-    {
-        private readonly IServiceProvider _serviceProvider;
+	public class CleanupTask : ICleanupTask
+	{
+		private readonly IServiceProvider _serviceProvider;
 		private readonly IAppLogger<CleanupTask> _logger;
 
-		public CleanupTask(IServiceProvider serviceProvider, 
+		public CleanupTask(IServiceProvider serviceProvider,
 			IAppLogger<CleanupTask> logger)
-        {
-            _serviceProvider = serviceProvider;
+		{
+			_serviceProvider = serviceProvider;
 			_logger = logger;
 		}
 
-        public void Run()
-        {
+		public void Run()
+		{
 			_logger.Debug("Cleaning up bus...");
-            var busControl = _serviceProvider.GetService<IBusControl>();
-            if (busControl == null) 
-                return;
+			var busControl = _serviceProvider.GetService<IBusControl>();
+			if (busControl == null)
+				return;
 
-            _logger.Debug("Stopping bus...");
-            busControl.Stop();
-            _logger.Debug("Stopped bus");
-        }
-    }
+			_logger.Debug("Stopping bus...");
+			busControl.Stop();
+			_logger.Debug("Stopped bus");
+		}
+	}
 }

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BoltOn.Logging
 {
-    public interface IAppLogger<TType>
+	public interface IAppLogger<TType>
 	{
 		void Debug(string message);
 		void Info(string message);
@@ -45,5 +45,5 @@ namespace BoltOn.Logging
 		{
 			_logger?.LogError(null, exception);
 		}
-  	}
+	}
 }

@@ -1,12 +1,8 @@
-Entity
-------
-You could create an entity by inheriting `BaseEntity<TIdType>` where TIdType is the type of the Id property.
-
-IRepository
+Repository 
 -----------
-[`IRepository`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs) interface in the core BoltOn package is abstracted out to keep it agnostic of any particular database, so that the implementation could be changed easily while bootstrapping the application when we switch databases (which rarely happens though). 
+[`IRepository`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs) and [`IQueryRepository`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IQueryRepository.cs) interfaces in the core BoltOn package is abstracted out to keep it agnostic of any particular database. However, they're currently implemented only in BoltOn.Data.EF package. 
 
-The disadvantage of this abstraction is, we lose certain native features of the underlying database specific features, as it isn't easy to come up with a common IRepository interface to support all the databases. So, please feel free to override the existing implementation or come up with your own implemenation for some of the missing methods.
+There are separate `IRepository` interfaces in CosmosDb and ElasticSearch packages too.
 
 Entity Framework Repository
 ---------------------------
@@ -14,29 +10,30 @@ In order to use Entity Framework implementation of the repository, you need to d
 
 * Install **BoltOn.Data.EF** NuGet package.
 * Call `BoltOnEFModule()` in your startup's BoltOn() method.
-* Create an entity by inheriting `BaseEntity<TIdType>`. The inheritance is not mandatory though.
-* Create a DbContext by inheriting [`BaseDbContext<TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/BaseDbContext.cs). You could inherit EF's DbContext directy if you're not interested in any of the benefits that BaseDbContext offers.
-* Inherit [`Repository<TEntity, TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs) to create a repository for your entity.
-* All the repository methods accept an optional parameter options, in FindBy methods, if other navigation properties need to be fetched, a collection of expressions can be passed.
+* Register [`IRepository<TEntity>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs) to [`Repository<TEntity, TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs) or [`IQueryRepository<TEntity>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IQueryRepository.cs) to [`QueryRepository<TEntity, TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/QueryRepository.cs).
+* `IQueryRepository` has only methods related to data retrieval, and it sets EF's `QueryTrackingBehavior` to `QueryTrackingBehavior.NoTracking`.
 
 Example:
 
-	var includes = new List<Expression<Func<Student, object>>>
+	services.BoltOn(options =>
 	{
-		s => s.Addresses
-	};
+		options.BoltOnEFModule();
+	});
 
-	// act
-	var result = repository.FindBy(f => f.Id == 2, includes).FirstOrDefault();
+	services.AddDbContext<SchoolDbContext>(options =>
+	{
+		options.UseSqlServer("connectionstring");
+	});
+	
+	services.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
+	services.AddTransient<IQueryRepository<Course>, QueryRepository<Student, SchoolDbContext>>();
 
 * Add all the database columns to entity properties mapping inside a mapping class by implementing `IEntityTypeConfiguration<TEntity>` interface.
-* The mapping classes will be automatically added to your DbContext if you inherit `BaseDbContext<TDbContext>` and if they are in the same assembly where the DbContext resides.
-* In case if you do not want all the mapping configuration classes in the assembly to be added, you can override `ApplyConfigurations(ModelBuilder modelBuilder)` method of `BaseDbContext` and add the configuration classes manually.
 
 Example:
 
     // DbContext
-    public class SchoolDbContext : BaseDbContext<SchoolDbContext>
+    public class SchoolDbContext : DbContext
 	{
 		public SchoolDbContext(DbContextOptions<SchoolDbContext> options) : base(options)
 		{
@@ -44,8 +41,9 @@ Example:
 	}
 
     // Entity
-    public class Student : BaseEntity<int>
+    public class Student 
 	{
+		public int StudentId { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
 	}
@@ -57,7 +55,7 @@ Example:
 		{
 			builder
 				.ToTable("Student")
-				.HasKey(k => k.Id);
+				.HasKey(k => k.StudentId);
 			builder
 				.Property(p => p.Id)
 				.HasColumnName("StudentId");
@@ -67,11 +65,9 @@ Example:
 		}
 	}
 
-and register like this:
+* If you want to override the Repository class' methods or if you want to add methods, create your own repository.
 
-	serviceCollection.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
-
-If you want to override the Repository class' methods or if you want to add methods, create your own repository, like this:
+Example:
 
     // Repository
     public interface IStudentRepository : IRepository<Student>
@@ -86,11 +82,15 @@ If you want to override the Repository class' methods or if you want to add meth
 		}
 	}
 
-DbContextFactory
-----------------
-This factory uses IServiceProvider to resolve DbContexts, and if the request implements `IQuery<>`, it sets the DbContexts' `ChangeTracker.QueryTrackingBehavior` to `QueryTrackingBehavior.NoTracking` and `ChangeTracker.AutoDetectChangesEnabled` to false with the help of `ChangeTrackerInterceptor`. 
+** Note: ** Entity Framework has an extension method `ApplyConfigurationsFromAssembly` to add all the configurations in an assembly; in case if you want to add configurations only from certain namespace in an assembly, the extension method `ApplyConfigurationsFromNamespaceOfType<T>`, which is part of **BoltOn.Data.EF** can be used.
 
-**Note:** You could disable this behavior by removing the interceptor from the pipeline using `RemoveInterceptor<ChangeTrackerInterceptor>` extension method.
+Like this:
+
+	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		base.OnModelCreating(modelBuilder);
+		modelBuilder.ApplyConfigurationsFromNamespaceOfType<StudentMapping>();
+	}
 
 CosmosDb
 --------
@@ -98,7 +98,6 @@ In order to use CosmosDb, you need do the following:
 
 * Install **BoltOn.Data.CosmosDb** NuGet package.
 * Call `BoltOnCosmosDbModule()` in your startup's BoltOn() method.
-* Create an entity by inheriting `BaseEntity<TIdType>`. The inheritance is not mandatory though.
 * Create an options class by inheriting `BaseCosmosDbOptions` class. 
 * Use AddCosmosDb extension method to initialize options like URI, AuthorizationKey and Database Name.
 * Inherit `Repository<TEntity, TCosmosDbOptions>` to create a repository for your entity.
@@ -123,10 +122,10 @@ Example:
     }
 
 	// Entity
-	public class Student : BaseEntity<string>
+	public class Student 
     {
         [JsonProperty("id")]
-        public override string Id { get; set; }
+        public string Id { get; set; }
         [JsonProperty("studentId")]
         public int StudentId { get; set; }
         public string FirstName { get; set; }
@@ -145,8 +144,8 @@ If you want to override the Repository class' methods or if you want to add meth
 
 	public class StudentRepository : Repository<Student, SchoolCosmosDbOptions>, IStudentRepository
 	{
-		public StudentRepository(SchoolCosmosDbOptions options, EventBag eventBag, IBoltOnClock boltOnClock)
-			: base(options, eventBag, boltOnClock)
+		public StudentRepository(SchoolCosmosDbOptions options)
+			: base(options)
 		{
 		}
 	}
@@ -164,7 +163,6 @@ In order to use Elasticsearch, you need do the following:
 
 * Install **BoltOn.Data.Elasticsearch** NuGet package.
 * Call `BoltOnElasticsearchModule()` in your startup's BoltOn() method.
-* Create an entity by inheriting `BaseEntity<TIdType>`. The inheritance is not mandatory though.
 * Create an options class by inheriting `BaseElasticsearchOptions` class. 
 * Use AddElasticsearch extension method to initialize NEST library's ConnectionSettings.
 * Inherit `Repository<TEntity, TElasticsearchOptions>` to create a repository for your entity.
@@ -187,8 +185,9 @@ Example:
     }
 
 	// Entity
-    public class Student : BaseEntity<int>
+    public class Student 
 	{
+		public int StudentId { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
 	}
@@ -197,8 +196,6 @@ and register like this:
 
 	serviceCollection.AddTransient<IRepository<Student>, Repository<Student, SchoolElasticDbOptions>>()
 
-**Note:** The existing FindByAsync doesn't support find by expression, so pass null for the predicate param and NEST's `SearchRequest` for the options param.  
-
 Example:
 
 	var searchRequest = new SearchRequest
@@ -206,4 +203,4 @@ Example:
 		Query = new MatchQuery { Field = "firstName", Query = "John" }
 	};
 
-	repository.FindByAsync(null, searchRequest)
+	repository.FindByAsync(searchRequest)

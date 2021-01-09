@@ -11,14 +11,14 @@ namespace BoltOn.Bus.MassTransit
 		private readonly IBusControl _busControl;
 		private readonly IAppLogger<BoltOnMassTransitBus> _logger;
 
-		public BoltOnMassTransitBus(IBusControl busControl, 
+		public BoltOnMassTransitBus(IBusControl busControl,
 			IAppLogger<BoltOnMassTransitBus> logger)
 		{
 			_busControl = busControl;
 			_logger = logger;
 		}
 
-		public async Task PublishAsync<TRequest>(TRequest message, CancellationToken cancellationToken = default) 
+		public async Task PublishAsync<TRequest>(TRequest message, CancellationToken cancellationToken = default)
 			where TRequest : IRequest
 		{
 			_logger.Debug($"Publishing message of type - {message.GetType().Name} ...");

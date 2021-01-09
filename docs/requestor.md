@@ -10,15 +10,6 @@ In order to use the Requestor, you need to create a request by implementing any 
 <br /> To create a request that doesn't have any response and doesn't require unit of work.
 * `IRequest<out TResponse>` 
 <br /> To create a request with response of type TResponse and doesn't require unit of work.
-* `ICommand`
-<br /> To create a request that doesn't have any response and that requires unit of work. A transaction with isolation level **ReadCommitted** will be started for the requests that implement this interface. 
-* `ICommand<out TResponse>` 
-<br /> To create a request with response of type TResponse and that requires require unit of work. A transaction with isolation level **ReadCommitted** will be started for the requests that implement this interface.
-* `IQuery<out TResponse>`
-<br /> To create a request with response of type TResponse and that requires unit of work. A transaction with isolation level ReadCommitted will be started for the requests that implement this interface. 
-<br /> If **BoltOn.Data.EF** package is installed and bolted, DbContexts' ChangeTracker.QueryTrackingBehavior will be set to `QueryTrackingBehavior.NoTracking` and `ChangeTracker.AutoDetectChangesEnabled` will be set to false in [DbContextFactory](../data/#dbcontextfactory).
-
-In case if you want a custom request type with a different isolation level, you could create an interface and customize `UnitOfWorkOptionsBuilder` by overriding it or by creating a new one. Check out this custom request type called `IQueryUncommitted` with isolation level **ReadUncommitted** [here](../optional/#iqueryuncommitted). 
 
 The **response** can be any value or reference type.
 
@@ -31,7 +22,7 @@ After declaring the request and the response, you need to create a handler by im
 
 Example:
 
-    public class GetAllStudentsRequest : IQuery<IEnumerable<StudentDto>>
+    public class GetAllStudentsRequest : IRequest<IEnumerable<StudentDto>>
 	{
 	}
 
@@ -69,6 +60,16 @@ Example:
 		}
 	}
 
+** Note: ** Handlers get registered automatically while bootstrapping the application using services.BoltOn(); to disable the automatic handler registrations, `DisableRequestorHandlerRegistrations()` can be used. 
+
+Like this:
+
+	var serviceCollection = new ServiceCollection();
+	serviceCollection.BoltOn(options =>
+	{
+		options.DisableRequestorHandlerRegistrations();
+	});
+
 Interceptors
 ------------
 Every request flows thru a set of built-in interceptors (mentioned below), and the execution of them can be controlled by implementing appropriate marker interfaces. 
@@ -76,8 +77,8 @@ Every request flows thru a set of built-in interceptors (mentioned below), and t
 * `StopwatchInterceptor`
 <br> This interceptor logs the time that a request enters and exits the pipeline. This interceptor is enabled by default as `IRequest` implements `IEnableInterceptor<StopwatchInterceptor>` interface.
 
-* `UnitOfWorkInterceptor`
-<br> This interceptor starts a transaction with an isolation level based on the interface like IQuery or ICommand etc., (mentioned above) that the request implements. This interceptor is enabled only if the request implements `IEnableInterceptor<UnitOfWorkInterceptor>` interface. `ICommand` and `IQuery` interfaces implement `IEnableInterceptor<UnitOfWorkInterceptor>`.
+* `TransactionInterceptor`
+<br> This interceptor starts a transaction with an isolation level set in the request class. This interceptor is enabled only if the request implements `IEnableTransaction` interface. 
 
 You could create an interceptor by implementing `IInterceptor` interface, like [this](../optional/#interceptor). If you want to control the execution of an interceptor based on the incoming request, you can make the request implement `IEnableInterceptor<TInterceptor>` and add a check something like this:
 
@@ -95,12 +96,3 @@ You could create an interceptor by implementing `IInterceptor` interface, like [
 	Example:
 
 		boltOnOptions.AddInterceptor<CqrsInterceptor>().Before<UnitOfWorkInterceptor>();
-
-Unit of Work
-------------
-
-* If you use Requestor and implement any of the interfaces like IQuery or ICommand, starting or committing unit of work will be done automatically using `UnitOfWorkInterceptor`, as both `IQuery` and `ICommand` implement `IEnableInterceptor<UnitOfWorkInterceptor>`.
-* If you're not using Requestor and if you want to start a unit of work, you could just use .NET's TransactionScope or call Get method in `IUnitOfWorkManager` by passing `UnitOfWorkOptions` with TransactionScopeOption, IsolationLevel and TransactionTimeout set based on your needs. The default transaction isolation level is `IsolationLevel.ReadCommitted`. 
-* The `Get` method of `UnitOfWorkManager` can be called only once, an exception will be thrown if it's called again. 
-* In case if you want to change the default transaction isolation level of all the requests or only certain requests, or if you want to change the TransactionTimeout, you can implement `IUnitOfWorkOptionsBuilder` like [this](../optional/#unitofworkoptionsbuilder) or inherit `UnitOfWorkOptionsBuilder` and override the Build method.
-

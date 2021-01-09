@@ -2,25 +2,25 @@
 
 namespace BoltOn.Cache
 {
-    public interface IAppCacheSerializer
-    {
-        byte[] ToByteArray(object obj);
-        T FromByteArray<T>(byte[] byteArray);
-    }
+	public interface IAppCacheSerializer
+	{
+		byte[] ToByteArray(object obj);
+		T FromByteArray<T>(byte[] byteArray);
+	}
 
-    public class AppCacheSerializer : IAppCacheSerializer
-    {
-        public T FromByteArray<T>(byte[] byteArray)
-        {
-            if (byteArray == default || byteArray.Length == 0)
-                return default;
+	public class AppCacheSerializer : IAppCacheSerializer
+	{
+		public T FromByteArray<T>(byte[] byteArray)
+		{
+			if (byteArray == default || byteArray.Length == 0)
+				return default;
 
-            return JsonSerializer.Deserialize<T>(byteArray);
-        }
+			return JsonSerializer.Deserialize<T>(byteArray);
+		}
 
-        public byte[] ToByteArray(object obj)
-        {
-            return JsonSerializer.SerializeToUtf8Bytes(obj);
-        }
-    }
+		public byte[] ToByteArray(object obj)
+		{
+			return JsonSerializer.SerializeToUtf8Bytes(obj);
+		}
+	}
 }

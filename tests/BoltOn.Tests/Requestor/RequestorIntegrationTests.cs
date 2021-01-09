@@ -239,7 +239,7 @@ namespace BoltOn.Tests.Requestor
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(options =>
 			{
-				options.DisableRequestorHandlersRegistration = true;
+				options.DisableRequestorHandlerRegistrations();
 			});
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
@@ -265,7 +265,7 @@ namespace BoltOn.Tests.Requestor
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(options =>
 			{
-				options.DisableRequestorHandlersRegistration = true;
+				options.DisableRequestorHandlerRegistrations();
 			});
 			serviceCollection.AddTransient<IHandler<TestCommand, bool>, TestHandler>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();

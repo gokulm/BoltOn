@@ -15,6 +15,8 @@ namespace BoltOn.Bootstrapping
 {
     public sealed class BootstrapperOptions
     {
+        private bool _isDisableRequestorHandlerRegistrations = false;
+
         internal bool IsCqrsEnabled { get; set; }
         internal bool IsTightened { get; set; }
         internal bool IsAppCleaned { get; set; }
@@ -23,7 +25,6 @@ namespace BoltOn.Bootstrapping
         internal InterceptorOptions InterceptorOptions { get; }
         internal HashSet<Assembly> RegisteredAssemblies { get; } = new HashSet<Assembly>();
         public IServiceCollection ServiceCollection { get; }
-        public bool DisableRequestorHandlersRegistration { get; set; }
 
         public BootstrapperOptions(IServiceCollection serviceCollection)
         {
@@ -39,6 +40,11 @@ namespace BoltOn.Bootstrapping
             var distinctAssemblies = assemblies.Distinct();
             RegisterByConvention(distinctAssemblies);
         }
+
+		public void DisableRequestorHandlerRegistrations()
+		{
+            _isDisableRequestorHandlerRegistrations = true;
+		}
 
         private void RegisterCoreTypes()
         {
@@ -124,7 +130,7 @@ namespace BoltOn.Bootstrapping
                 if (RegisteredAssemblies.Contains(assembly))
                     continue;
 
-                if (!DisableRequestorHandlersRegistration)
+                if (!_isDisableRequestorHandlerRegistrations)
                 {
                     RegisterHandlers(assembly);
                     RegisterOneWayHandlers(assembly);
