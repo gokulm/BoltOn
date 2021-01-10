@@ -65,7 +65,7 @@ This method does the following:
 
 * The order of the methods called is important. If BoltOnEFModule() is called after BoltOnAssemblies(), the assemblies passed to the latter will override the registrations.
 * To exclude classes from registration, decorate them with `[ExcludeFromRegistration]` attribute.
-* Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other modules. Each and every module calls other extension methods to attach their own dependent modules. 
+* Use the BootstrapperOptions' extension method like BoltOnEFModule to attach the other modules. Each and every module calls other extension methods to attach their own dependent modules. 
 
 TightenBolts()
 --------------

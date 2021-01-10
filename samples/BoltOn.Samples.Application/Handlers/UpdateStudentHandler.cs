@@ -9,7 +9,7 @@ using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class UpdateStudentRequest : ICommand, IClearCachedResponse
+	public class UpdateStudentRequest : IRequest, IClearCachedResponse
 	{
 		public Guid StudentId { get; set; }
 
@@ -25,11 +25,11 @@ namespace BoltOn.Samples.Application.Handlers
 	public class UpdateStudentHandler : IHandler<UpdateStudentRequest>
 	{
 		private readonly IRepository<Student> _studentRepository;
-		private readonly IBoltOnLogger<UpdateStudentHandler> _logger;
+		private readonly IAppLogger<UpdateStudentHandler> _logger;
 		private readonly IRepository<StudentType> _studentTypeRepository;
 
 		public UpdateStudentHandler(IRepository<Student> studentRepository,
-			IBoltOnLogger<UpdateStudentHandler> logger,
+			IAppLogger<UpdateStudentHandler> logger,
 			IRepository<StudentType> studentTypeRepository)
 		{
 			_studentRepository = studentRepository;

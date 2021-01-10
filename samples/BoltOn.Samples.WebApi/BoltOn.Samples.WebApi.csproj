@@ -4,15 +4,15 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BoltOn" Version="0.26.0" />
-    <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.10.0" />
-    <PackageReference Include="BoltOn.Cache" Version="0.3.0" />
-    <PackageReference Include="BoltOn.Data.EF" Version="0.16.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.7" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.7" />
-    <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.0.3" />
-    <PackageReference Include="MassTransit.RabbitMQ" Version="7.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="3.1.7" />
+    <PackageReference Include="BoltOn" Version="0.33.1" />
+    <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.12.1" />
+    <PackageReference Include="BoltOn.Cache" Version="0.5.1" />
+    <PackageReference Include="BoltOn.Data.EF" Version="0.21.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.10" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.10" />
+    <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.1.2" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="7.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="3.1.10" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />

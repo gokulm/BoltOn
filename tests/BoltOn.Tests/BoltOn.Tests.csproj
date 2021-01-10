@@ -53,7 +53,6 @@
         <Folder Include="StateMachine\" />
         <Folder Include="StateMachine\Fakes\" />
         <Folder Include="Web\" />
-        <Folder Include="Logging\" />
         <Folder Include="Bus\Fakes\" />
         <Folder Include="Data\EF\Fakes\" />
     </ItemGroup>

@@ -11,7 +11,7 @@ using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class GetAllStudentsRequest : IQuery<IEnumerable<StudentDto>>, ICacheResponse
+	public class GetAllStudentsRequest : IRequest<IEnumerable<StudentDto>>, ICacheResponse
 	{
 		public string CacheKey => "Students";
 

@@ -80,7 +80,7 @@ Every request flows thru a set of built-in interceptors (mentioned below), and t
 * `TransactionInterceptor`
 <br> This interceptor starts a transaction with an isolation level set in the request class. This interceptor is enabled only if the request implements `IEnableTransaction` interface. 
 
-You could create an interceptor by implementing `IInterceptor` interface, like [this](../optional/#interceptor). If you want to control the execution of an interceptor based on the incoming request, you can make the request implement `IEnableInterceptor<TInterceptor>` and add a check something like this:
+You could create an interceptor by implementing `IInterceptor` interface. If you want to control the execution of an interceptor based on the incoming request, you can make the request implement `IEnableInterceptor<TInterceptor>` and add a check something like this:
 
 	if (!(request is IEnableInterceptor<StopwatchInterceptor>))
 		return await next.Invoke(request, cancellationToken);
@@ -95,4 +95,4 @@ You could create an interceptor by implementing `IInterceptor` interface, like [
 
 	Example:
 
-		boltOnOptions.AddInterceptor<CqrsInterceptor>().Before<UnitOfWorkInterceptor>();
+		bootstrapperOptions.AddInterceptor<TransactionInterceptor>().Before<StopwatchInterceptor>();

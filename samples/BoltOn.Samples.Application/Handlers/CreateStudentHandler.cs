@@ -8,7 +8,7 @@ using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class CreateStudentRequest : ICommand<Student>, IClearCachedResponse
+	public class CreateStudentRequest : IRequest<Student>, IClearCachedResponse
 	{
 		public string FirstName { get; set; }
 
@@ -22,11 +22,11 @@ namespace BoltOn.Samples.Application.Handlers
 	public class CreateStudentHandler : IHandler<CreateStudentRequest, Student>
 	{
 		private readonly IRepository<Student> _studentRepository;
-		private readonly IBoltOnLogger<CreateStudentHandler> _logger;
+		private readonly IAppLogger<CreateStudentHandler> _logger;
 		private readonly IRepository<StudentType> _studentTypeRepository;
 
 		public CreateStudentHandler(IRepository<Student> studentRepository,
-			IBoltOnLogger<CreateStudentHandler> logger,
+			IAppLogger<CreateStudentHandler> logger,
 			IRepository<StudentType> studentTypeRepository)
 		{
 			_studentRepository = studentRepository;
