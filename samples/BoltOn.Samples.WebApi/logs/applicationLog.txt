@@ -1,0 +1,123 @@
+[2021-01-10 07:45:49.280] [null] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executing RequestLoggerContextMiddleware ... 
+[2021-01-10 07:45:49.459] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Running Interceptors... 
+[2021-01-10 07:45:49.464] [null] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor started at 1/10/2021 7:45:49 AM 
+[2021-01-10 07:45:49.467] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor started 
+[2021-01-10 07:45:49.468] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> Retrieving response from cache. Key: Students 
+[2021-01-10 07:45:49.471] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Getting from cache... Key: Students 
+[2021-01-10 07:45:49.766] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Sliding cache expiration... 
+[2021-01-10 07:45:49.767] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Setting value in cache... Key: Students 
+[2021-01-10 07:45:49.771] [null] [GokulMac] [DBG] [TransactionInterceptor] [::1] [/students]> Request didn't enable transaction 
+[2021-01-10 07:45:49.779] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Resolving handler for request: BoltOn.Samples.Application.Handlers.GetAllStudentsRequest 
+[2021-01-10 07:45:49.859] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Resolved handler: BoltOn.Samples.Application.Handlers.GetAllStudentsHandler 
+[2021-01-10 07:45:50.311] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> Saving response in cache. Key: Students 
+[2021-01-10 07:45:50.311] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Setting value in cache... Key: Students 
+[2021-01-10 07:45:50.358] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor ended 
+[2021-01-10 07:45:50.359] [null] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor ended at 1/10/2021 7:45:50 AM. Time elapsed: 0 
+[2021-01-10 07:45:50.394] [null] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executed RequestLoggerContextMiddleware 
+[2021-01-10 07:46:03.583] [null] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/ping]> Executing RequestLoggerContextMiddleware ... 
+[2021-01-10 07:46:03.592] [null] [GokulMac] [DBG] [Requestor] [::1] [/ping]> Running Interceptors... 
+[2021-01-10 07:46:03.592] [null] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/ping]> StopwatchInterceptor started at 1/10/2021 7:46:03 AM 
+[2021-01-10 07:46:03.593] [null] [GokulMac] [DBG] [TransactionInterceptor] [::1] [/ping]> Request didn't enable transaction 
+[2021-01-10 07:46:03.593] [null] [GokulMac] [DBG] [Requestor] [::1] [/ping]> Resolving handler for request: BoltOn.Samples.Application.Handlers.PingRequest 
+[2021-01-10 07:46:03.597] [null] [GokulMac] [DBG] [Requestor] [::1] [/ping]> Resolved handler: BoltOn.Samples.Application.Handlers.PingHandler 
+[2021-01-10 07:46:03.605] [null] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/ping]> StopwatchInterceptor ended at 1/10/2021 7:46:03 AM. Time elapsed: 0 
+[2021-01-10 07:46:03.606] [null] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/ping]> Executed RequestLoggerContextMiddleware 
+[2021-01-10 07:46:27.526] [null] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executing RequestLoggerContextMiddleware ... 
+[2021-01-10 07:46:27.614] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Running Interceptors... 
+[2021-01-10 07:46:27.615] [null] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor started at 1/10/2021 7:46:27 AM 
+[2021-01-10 07:46:27.615] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor started 
+[2021-01-10 07:46:27.615] [null] [GokulMac] [DBG] [TransactionInterceptor] [::1] [/students]> Request didn't enable transaction 
+[2021-01-10 07:46:27.616] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Resolving handler for request: BoltOn.Samples.Application.Handlers.CreateStudentRequest 
+[2021-01-10 07:46:27.662] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Resolved handler: BoltOn.Samples.Application.Handlers.CreateStudentHandler 
+[2021-01-10 07:46:27.664] [null] [GokulMac] [DBG] [CreateStudentHandler] [::1] [/students]> Creating student... 
+[2021-01-10 07:46:27.877] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> Removing response from cache. Key: Students 
+[2021-01-10 07:46:27.878] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Removing from cache... Key: Students 
+[2021-01-10 07:46:27.885] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor ended 
+[2021-01-10 07:46:27.885] [null] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor ended at 1/10/2021 7:46:27 AM. Time elapsed: 0 
+[2021-01-10 07:46:27.898] [null] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executed RequestLoggerContextMiddleware 
+[2021-01-10 07:46:53.377] [null] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executing RequestLoggerContextMiddleware ... 
+[2021-01-10 07:46:53.379] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Running Interceptors... 
+[2021-01-10 07:46:53.379] [null] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor started at 1/10/2021 7:46:53 AM 
+[2021-01-10 07:46:53.379] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor started 
+[2021-01-10 07:46:53.379] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> Retrieving response from cache. Key: Students 
+[2021-01-10 07:46:53.379] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Getting from cache... Key: Students 
+[2021-01-10 07:46:53.383] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Sliding cache expiration... 
+[2021-01-10 07:46:53.384] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Setting value in cache... Key: Students 
+[2021-01-10 07:46:53.384] [null] [GokulMac] [DBG] [TransactionInterceptor] [::1] [/students]> Request didn't enable transaction 
+[2021-01-10 07:46:53.384] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Resolving handler for request: BoltOn.Samples.Application.Handlers.GetAllStudentsRequest 
+[2021-01-10 07:46:53.385] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Resolved handler: BoltOn.Samples.Application.Handlers.GetAllStudentsHandler 
+[2021-01-10 07:46:53.391] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> Saving response in cache. Key: Students 
+[2021-01-10 07:46:53.391] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Setting value in cache... Key: Students 
+[2021-01-10 07:46:53.393] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor ended 
+[2021-01-10 07:46:53.394] [null] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor ended at 1/10/2021 7:46:53 AM. Time elapsed: 0 
+[2021-01-10 07:46:53.395] [null] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executed RequestLoggerContextMiddleware 
+[2021-01-10 07:47:03.524] [null] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executing RequestLoggerContextMiddleware ... 
+[2021-01-10 07:47:03.526] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Running Interceptors... 
+[2021-01-10 07:47:03.528] [null] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor started at 1/10/2021 7:47:03 AM 
+[2021-01-10 07:47:03.529] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor started 
+[2021-01-10 07:47:03.529] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> Retrieving response from cache. Key: Students 
+[2021-01-10 07:47:03.529] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Getting from cache... Key: Students 
+[2021-01-10 07:47:03.558] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Sliding cache expiration... 
+[2021-01-10 07:47:03.558] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Setting value in cache... Key: Students 
+[2021-01-10 07:47:03.563] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> Returning response from cache 
+[2021-01-10 07:47:03.564] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor ended 
+[2021-01-10 07:47:03.564] [null] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor ended at 1/10/2021 7:47:03 AM. Time elapsed: 0 
+[2021-01-10 07:47:03.566] [null] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executed RequestLoggerContextMiddleware 
+[2021-01-10 07:47:19.073] [null] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executing RequestLoggerContextMiddleware ... 
+[2021-01-10 07:47:19.102] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Running Interceptors... 
+[2021-01-10 07:47:19.103] [null] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor started at 1/10/2021 7:47:19 AM 
+[2021-01-10 07:47:19.103] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor started 
+[2021-01-10 07:47:19.103] [null] [GokulMac] [DBG] [TransactionInterceptor] [::1] [/students]> Request didn't enable transaction 
+[2021-01-10 07:47:19.104] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Resolving handler for request: BoltOn.Samples.Application.Handlers.UpdateStudentRequest 
+[2021-01-10 07:47:19.107] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Resolved handler: BoltOn.Samples.Application.Handlers.UpdateStudentHandler 
+[2021-01-10 07:47:19.110] [null] [GokulMac] [DBG] [UpdateStudentHandler] [::1] [/students]> Updating student... 
+[2021-01-10 07:47:19.227] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> Removing response from cache. Key: Students 
+[2021-01-10 07:47:19.227] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Removing from cache... Key: Students 
+[2021-01-10 07:47:19.230] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor ended 
+[2021-01-10 07:47:19.230] [null] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor ended at 1/10/2021 7:47:19 AM. Time elapsed: 0 
+[2021-01-10 07:47:19.234] [null] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executed RequestLoggerContextMiddleware 
+[2021-01-10 07:47:22.605] [null] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executing RequestLoggerContextMiddleware ... 
+[2021-01-10 07:47:22.607] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Running Interceptors... 
+[2021-01-10 07:47:22.607] [null] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor started at 1/10/2021 7:47:22 AM 
+[2021-01-10 07:47:22.608] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor started 
+[2021-01-10 07:47:22.608] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> Retrieving response from cache. Key: Students 
+[2021-01-10 07:47:22.608] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Getting from cache... Key: Students 
+[2021-01-10 07:47:22.614] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Sliding cache expiration... 
+[2021-01-10 07:47:22.614] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Setting value in cache... Key: Students 
+[2021-01-10 07:47:22.614] [null] [GokulMac] [DBG] [TransactionInterceptor] [::1] [/students]> Request didn't enable transaction 
+[2021-01-10 07:47:22.614] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Resolving handler for request: BoltOn.Samples.Application.Handlers.GetAllStudentsRequest 
+[2021-01-10 07:47:22.616] [null] [GokulMac] [DBG] [Requestor] [::1] [/students]> Resolved handler: BoltOn.Samples.Application.Handlers.GetAllStudentsHandler 
+[2021-01-10 07:47:22.624] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> Saving response in cache. Key: Students 
+[2021-01-10 07:47:22.624] [null] [GokulMac] [DBG] [AppCache] [::1] [/students]> Setting value in cache... Key: Students 
+[2021-01-10 07:47:22.627] [null] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor ended 
+[2021-01-10 07:47:22.627] [null] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor ended at 1/10/2021 7:47:22 AM. Time elapsed: 0 
+[2021-01-10 07:47:22.629] [null] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executed RequestLoggerContextMiddleware 
+[2021-01-10 07:50:58.623] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executing RequestLoggerContextMiddleware ... 
+[2021-01-10 07:50:58.747] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [Requestor] [::1] [/students]> Running Interceptors... 
+[2021-01-10 07:50:58.751] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor started at 1/10/2021 7:50:58 AM 
+[2021-01-10 07:50:58.755] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor started 
+[2021-01-10 07:50:58.755] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> Retrieving response from cache. Key: Students 
+[2021-01-10 07:50:58.757] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [AppCache] [::1] [/students]> Getting from cache... Key: Students 
+[2021-01-10 07:50:58.972] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [AppCache] [::1] [/students]> Sliding cache expiration... 
+[2021-01-10 07:50:58.974] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [AppCache] [::1] [/students]> Setting value in cache... Key: Students 
+[2021-01-10 07:50:58.977] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [TransactionInterceptor] [::1] [/students]> Request didn't enable transaction 
+[2021-01-10 07:50:58.985] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [Requestor] [::1] [/students]> Resolving handler for request: BoltOn.Samples.Application.Handlers.GetAllStudentsRequest 
+[2021-01-10 07:50:59.062] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [Requestor] [::1] [/students]> Resolved handler: BoltOn.Samples.Application.Handlers.GetAllStudentsHandler 
+[2021-01-10 07:50:59.482] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> Saving response in cache. Key: Students 
+[2021-01-10 07:50:59.482] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [AppCache] [::1] [/students]> Setting value in cache... Key: Students 
+[2021-01-10 07:50:59.524] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor ended 
+[2021-01-10 07:50:59.524] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor ended at 1/10/2021 7:50:59 AM. Time elapsed: 0 
+[2021-01-10 07:50:59.550] [78f527f4-a9bc-4b5c-8302-3ac4806893b3] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executed RequestLoggerContextMiddleware 
+[2021-01-10 07:51:09.037] [632e89b4-9e9b-4385-a180-01a041788a50] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executing RequestLoggerContextMiddleware ... 
+[2021-01-10 07:51:09.095] [632e89b4-9e9b-4385-a180-01a041788a50] [GokulMac] [DBG] [Requestor] [::1] [/students]> Running Interceptors... 
+[2021-01-10 07:51:09.096] [632e89b4-9e9b-4385-a180-01a041788a50] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor started at 1/10/2021 7:51:09 AM 
+[2021-01-10 07:51:09.096] [632e89b4-9e9b-4385-a180-01a041788a50] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor started 
+[2021-01-10 07:51:09.096] [632e89b4-9e9b-4385-a180-01a041788a50] [GokulMac] [DBG] [TransactionInterceptor] [::1] [/students]> Request didn't enable transaction 
+[2021-01-10 07:51:09.096] [632e89b4-9e9b-4385-a180-01a041788a50] [GokulMac] [DBG] [Requestor] [::1] [/students]> Resolving handler for request: BoltOn.Samples.Application.Handlers.CreateStudentRequest 
+[2021-01-10 07:51:09.136] [632e89b4-9e9b-4385-a180-01a041788a50] [GokulMac] [DBG] [Requestor] [::1] [/students]> Resolved handler: BoltOn.Samples.Application.Handlers.CreateStudentHandler 
+[2021-01-10 07:51:09.140] [632e89b4-9e9b-4385-a180-01a041788a50] [GokulMac] [DBG] [CreateStudentHandler] [::1] [/students]> Creating student... 
+[2021-01-10 07:51:09.398] [632e89b4-9e9b-4385-a180-01a041788a50] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> Removing response from cache. Key: Students 
+[2021-01-10 07:51:09.399] [632e89b4-9e9b-4385-a180-01a041788a50] [GokulMac] [DBG] [AppCache] [::1] [/students]> Removing from cache... Key: Students 
+[2021-01-10 07:51:09.406] [632e89b4-9e9b-4385-a180-01a041788a50] [GokulMac] [DBG] [CacheResponseInterceptor] [::1] [/students]> CacheResponseInterceptor ended 
+[2021-01-10 07:51:09.406] [632e89b4-9e9b-4385-a180-01a041788a50] [GokulMac] [DBG] [StopwatchInterceptor] [::1] [/students]> StopwatchInterceptor ended at 1/10/2021 7:51:09 AM. Time elapsed: 0 
+[2021-01-10 07:51:09.418] [632e89b4-9e9b-4385-a180-01a041788a50] [GokulMac] [DBG] [RequestLoggerContextMiddleware] [::1] [/students]> Executed RequestLoggerContextMiddleware 

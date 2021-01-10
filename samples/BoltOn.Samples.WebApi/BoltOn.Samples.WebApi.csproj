@@ -4,6 +4,7 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CorrelationId" Version="3.0.0" />
     <PackageReference Include="BoltOn" Version="0.33.1" />
     <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.12.1" />
     <PackageReference Include="BoltOn.Cache" Version="0.5.1" />
@@ -13,6 +14,10 @@
     <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.1.2" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="7.1.2" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="3.1.10" />
+    <PackageReference Include="BoltOn.Web" Version="0.4.1" />
+    <PackageReference Include="BoltOn.Logging.Serilog" Version="0.3.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />

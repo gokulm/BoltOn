@@ -28,9 +28,9 @@ namespace BoltOn.Samples.WebApi
             writeDbContext.Set<StudentType>().Add(outOfState);
             writeDbContext.SaveChanges();
 
-            //var readDbContext = scope.ServiceProvider.GetService<SchoolReadDbContext>();
-            //readDbContext.Database.EnsureDeleted();
-            //readDbContext.Database.EnsureCreated();
-        }
+			var readDbContext = scope.ServiceProvider.GetService<SchoolReadDbContext>();
+			readDbContext.Database.EnsureDeleted();
+			readDbContext.Database.EnsureCreated();
+		}
     }
 }

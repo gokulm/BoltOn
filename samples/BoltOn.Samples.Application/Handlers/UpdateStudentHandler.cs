@@ -26,11 +26,11 @@ namespace BoltOn.Samples.Application.Handlers
 	{
 		private readonly IRepository<Student> _studentRepository;
 		private readonly IAppLogger<UpdateStudentHandler> _logger;
-		private readonly IRepository<StudentType> _studentTypeRepository;
+		private readonly IQueryRepository<StudentType> _studentTypeRepository;
 
 		public UpdateStudentHandler(IRepository<Student> studentRepository,
 			IAppLogger<UpdateStudentHandler> logger,
-			IRepository<StudentType> studentTypeRepository)
+			IQueryRepository<StudentType> studentTypeRepository)
 		{
 			_studentRepository = studentRepository;
 			_logger = logger;

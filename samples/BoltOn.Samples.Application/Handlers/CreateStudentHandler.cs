@@ -23,11 +23,11 @@ namespace BoltOn.Samples.Application.Handlers
 	{
 		private readonly IRepository<Student> _studentRepository;
 		private readonly IAppLogger<CreateStudentHandler> _logger;
-		private readonly IRepository<StudentType> _studentTypeRepository;
+		private readonly IQueryRepository<StudentType> _studentTypeRepository;
 
 		public CreateStudentHandler(IRepository<Student> studentRepository,
 			IAppLogger<CreateStudentHandler> logger,
-			IRepository<StudentType> studentTypeRepository)
+			IQueryRepository<StudentType> studentTypeRepository)
 		{
 			_studentRepository = studentRepository;
 			_logger = logger;
