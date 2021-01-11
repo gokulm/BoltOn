@@ -2,7 +2,7 @@
 {
 	public class StudentType 
     {
-		public int Id { get; set; }
+		public int StudentTypeId { get; set; }
 		public string Description { get; set; }
 
         private StudentType()
@@ -11,7 +11,7 @@
 
         public StudentType(int id, string description)
         {
-            Id = id;
+            StudentTypeId = id;
             Description = description;
         }
     }

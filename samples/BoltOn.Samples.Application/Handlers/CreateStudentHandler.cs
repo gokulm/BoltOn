@@ -23,22 +23,18 @@ namespace BoltOn.Samples.Application.Handlers
 	{
 		private readonly IRepository<Student> _studentRepository;
 		private readonly IAppLogger<CreateStudentHandler> _logger;
-		private readonly IQueryRepository<StudentType> _studentTypeRepository;
 
 		public CreateStudentHandler(IRepository<Student> studentRepository,
-			IAppLogger<CreateStudentHandler> logger,
-			IQueryRepository<StudentType> studentTypeRepository)
+			IAppLogger<CreateStudentHandler> logger)
 		{
 			_studentRepository = studentRepository;
 			_logger = logger;
-			_studentTypeRepository = studentTypeRepository;
 		}
 
 		public async Task<Student> HandleAsync(CreateStudentRequest request, CancellationToken cancellationToken)
 		{
 			_logger.Debug("Creating student...");
-			var studentType = await _studentTypeRepository.GetByIdAsync(request.StudentTypeId, cancellationToken: cancellationToken);
-			var student = await _studentRepository.AddAsync(new Student(request, studentType.Description), cancellationToken: cancellationToken);
+			var student = await _studentRepository.AddAsync(new Student(request), cancellationToken: cancellationToken);
 			return student;
 		}
 	}

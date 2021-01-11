@@ -20,12 +20,12 @@ namespace BoltOn.Samples.Console
 
         public void Run()
         {
-			using (var scope = _serviceProvider.CreateScope())
-			{
-				var schoolReadDbContext = scope.ServiceProvider.GetService<SchoolReadDbContext>();
-				schoolReadDbContext.Database.EnsureDeleted();
-				schoolReadDbContext.Database.EnsureCreated();
-			}
+			//using (var scope = _serviceProvider.CreateScope())
+			//{
+			//	var schoolReadDbContext = scope.ServiceProvider.GetService<SchoolReadDbContext>();
+			//	schoolReadDbContext.Database.EnsureDeleted();
+			//	schoolReadDbContext.Database.EnsureCreated();
+			//}
 
 			var response = _requestor.ProcessAsync(new PingRequest()).GetAwaiter().GetResult();
 			System.Console.WriteLine(response.Data);
