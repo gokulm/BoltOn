@@ -141,20 +141,20 @@
           <div role="main">
             <div class="section">
               
-                <p>In order to run the Samples projects, SQL server, RabbitMq and Redis should be configured. If you already have SQL server, RabbitMq and Redis installed, please change the appsettings in the BoltOn.Samples.WebApi and BoltOn.Samples.Console projects. If you do not have them installed, you could use <a href="#docker-compose">docker-compose</a>, or run SQL Server, RabbitMq and Redis separately in docker using the commands mentioned below and change the appsettings. </p>
+                <p>In order to run the Samples projects, SQL server and Redis should be configured. If you already have SQL server and Redis installed, please change the appsettings in the BoltOn.Samples.WebApi and BoltOn.Samples.Console projects. If you do not have them installed, you could use <a href="#docker-compose">docker-compose</a>, or run SQL Server and Redis separately in docker using the commands mentioned below and change the appsettings. Instead of using Redis, you could also configure in-memory cache.</p>
 <h2 id="docker-compose">docker-compose</h2>
 <p>Navigate to samples folder and execute any of the commands mentioned below.</p>
 <p>To build and run:</p>
 <p><code>docker-compose up -d --build</code></p>
 <p>To stop the conainers and remove the images:</p>
 <p><code>docker-compose down --rmi local</code></p>
-<p>Here is the <a href="https://github.com/gokulm/BoltOn/blob/master/samples/docker-compose.yml">docker-compose</a> file used. It launches the samples API (http://localhost:5000/), console app (which acts MassTransit event consumer), RabbitMq (management interface http://localhost:5015/) and SQL Server (localhost,5005 with 2 databases - BoltOnSamplesWrite and BoltOnSamplesRead). You could test the <a href="https://github.com/gokulm/BoltOn/blob/master/samples/BoltOn.Samples.WebApi/Controllers/StudentsController.cs">StudentsController's</a> actions using Postman or some other API testing tool. Go over <a href="../cqrs/#implementation">CQRS</a> documentation to understand the flow.</p>
+<p>Here is the <a href="https://github.com/gokulm/BoltOn/blob/master/samples/docker-compose.yml">docker-compose</a> file used. It launches the samples API (http://localhost:5000/). You could test the <a href="https://github.com/gokulm/BoltOn/blob/master/samples/BoltOn.Samples.WebApi/Controllers/StudentsController.cs">StudentsController's</a> actions using Postman or some other API testing tool. </p>
 <p>To run SQL Server separately:</p>
 <p><code>docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Password1' -p 6000:1433 -d microsoft/mssql-server-linux:latest</code></p>
-<p>To run RabbitMq separately:</p>
-<p><code>docker run -d --name bolton-rabbitmq -p 15672:15672 -p 5672:5672 rabbitmq:3-management</code></p>
 <p>To run Redis separately:</p>
 <p><code>docker run -d -p 6379:6379 --name redis-local redis</code></p>
+<p>To run RabbitMq separately:</p>
+<p><code>docker run -d --name bolton-rabbitmq -p 15672:15672 -p 5672:5672 rabbitmq:3-management</code></p>
 <p><strong>OR</strong></p>
 <p>To run all the above containers:</p>
 <p><code>docker-compose -f docker-compose-local.yml up -d</code></p>

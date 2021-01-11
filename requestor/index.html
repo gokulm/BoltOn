@@ -221,7 +221,7 @@ serviceCollection.BoltOn(options =&gt;
 <br> This interceptor starts a transaction with an isolation level set in the request class. This interceptor is enabled only if the request implements <code>IEnableTransaction</code> interface. </p>
 </li>
 </ul>
-<p>You could create an interceptor by implementing <code>IInterceptor</code> interface, like <a href="../optional/#interceptor">this</a>. If you want to control the execution of an interceptor based on the incoming request, you can make the request implement <code>IEnableInterceptor&lt;TInterceptor&gt;</code> and add a check something like this:</p>
+<p>You could create an interceptor by implementing <code>IInterceptor</code> interface. If you want to control the execution of an interceptor based on the incoming request, you can make the request implement <code>IEnableInterceptor&lt;TInterceptor&gt;</code> and add a check something like this:</p>
 <pre><code>if (!(request is IEnableInterceptor&lt;StopwatchInterceptor&gt;))
     return await next.Invoke(request, cancellationToken);
 </code></pre>
@@ -234,7 +234,7 @@ serviceCollection.BoltOn(options =&gt;
 <li>
 <p>Interceptors can be added before or after an existing interceptor using <code>Before&lt;TInterceptor&gt;</code> or <code>After&lt;TInterceptor&gt;</code> respectively.</p>
 <p>Example:</p>
-<pre><code>boltOnOptions.AddInterceptor&lt;CqrsInterceptor&gt;().Before&lt;UnitOfWorkInterceptor&gt;();
+<pre><code>bootstrapperOptions.AddInterceptor&lt;TransactionInterceptor&gt;().Before&lt;StopwatchInterceptor&gt;();
 </code></pre>
 </li>
 </ul>

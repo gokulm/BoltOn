@@ -210,7 +210,7 @@
 <ul>
 <li>The order of the methods called is important. If BoltOnEFModule() is called after BoltOnAssemblies(), the assemblies passed to the latter will override the registrations.</li>
 <li>To exclude classes from registration, decorate them with <code>[ExcludeFromRegistration]</code> attribute.</li>
-<li>Use the BoltOnOptions' extension method like BoltOnEFModule to attach the other modules. Each and every module calls other extension methods to attach their own dependent modules. </li>
+<li>Use the BootstrapperOptions' extension method like BoltOnEFModule to attach the other modules. Each and every module calls other extension methods to attach their own dependent modules. </li>
 </ul>
 <h2 id="tightenbolts">TightenBolts()</h2>
 <p>This extension method scans all the implementations of <code>IPostRegistrationTask</code> interface in the assemblies passed to BoltOnAssemblies() and executes them. The post registration tasks support constructor injection.</p>
@@ -306,5 +306,5 @@
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2021-01-09 13:27:40
+Build Date UTC : 2021-01-11 12:40:40
 -->
