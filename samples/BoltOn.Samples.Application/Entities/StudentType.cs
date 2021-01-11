@@ -1,10 +1,9 @@
-﻿using BoltOn.Data;
-
-namespace BoltOn.Samples.Application.Entities
+﻿namespace BoltOn.Samples.Application.Entities
 {
-    public class StudentType : BaseEntity<int>
+	public class StudentType 
     {
-        public string Description { get; set; }
+		public int StudentTypeId { get; set; }
+		public string Description { get; set; }
 
         private StudentType()
         {
@@ -12,7 +11,7 @@ namespace BoltOn.Samples.Application.Entities
 
         public StudentType(int id, string description)
         {
-            Id = id;
+            StudentTypeId = id;
             Description = description;
         }
     }

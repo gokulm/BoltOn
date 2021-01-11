@@ -1,11 +1,11 @@
 using System;
-using BoltOn.Cqrs;
 using BoltOn.Samples.Application.Handlers;
 
 namespace BoltOn.Samples.Application.Entities
 {
-	public class Student : BaseCqrsEntity
+	public class Student 
 	{
+		public Guid StudentId { get; set; }
 		public string FirstName { get; private set; }
 		public string LastName { get; private set; }
 		public int StudentTypeId { get; private set; }
@@ -14,37 +14,19 @@ namespace BoltOn.Samples.Application.Entities
 		{
 		}
 
-		internal Student(CreateStudentRequest request, string studentType)
+		internal Student(CreateStudentRequest request)
 		{
-			Id = Guid.NewGuid();
+			StudentId = Guid.NewGuid();
 			FirstName = request.FirstName;
 			LastName = request.LastName;
 			StudentTypeId = request.StudentTypeId;
-
-			RaiseEvent(new StudentCreatedEvent
-			{
-				StudentId = Id,
-				FirstName = FirstName,
-				LastName = LastName,
-				StudentType = studentType,
-				StudentTypeId = StudentTypeId
-			});
 		}
 
-		public void Update(UpdateStudentRequest request, string studentType)
+		public void Update(UpdateStudentRequest request)
 		{
 			FirstName = request.FirstName;
 			LastName = request.LastName;
 			StudentTypeId = request.StudentTypeId;
-
-			RaiseEvent(new StudentUpdatedEvent
-			{
-				StudentId = Id,
-				FirstName = FirstName,
-				LastName = LastName,
-				StudentType = studentType,
-				StudentTypeId = StudentTypeId
-			});
 		}
 	}
 }

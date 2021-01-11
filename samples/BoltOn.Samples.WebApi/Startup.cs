@@ -13,6 +13,12 @@ using BoltOn.Data;
 using BoltOn.Samples.Application.Entities;
 using Microsoft.AspNetCore.Hosting;
 using BoltOn.Cache;
+using BoltOn.Web.Filters;
+using BoltOn.Web;
+using BoltOn.Logging.Serilog;
+using CorrelationId.DependencyInjection;
+using Microsoft.OpenApi.Models;
+using CorrelationId;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -27,41 +33,23 @@ namespace BoltOn.Samples.WebApi
 
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddDefaultCorrelationId();
 			services.BoltOn(options =>
 			{
 				options.BoltOnEFModule();
-				options.BoltOnMassTransitBusModule();
-				options.BoltOnCqrsModule();
 				options.BoltOnCacheModule();
+				options.BoltOnWebModule();
+				options.BoltOnSerilogModule(Configuration);
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolWriteDbContext).Assembly);
 			});
 
 			var writeDbConnectionString = Configuration.GetValue<string>("SqlWriteDbConnectionString");
 			var readDbConnectionString = Configuration.GetValue<string>("SqlReadDbConnectionString");
-			var rabbitmqUri = Configuration.GetValue<string>("RabbitMqUri");
-			var rabbitmqUsername = Configuration.GetValue<string>("RabbitMqUsername");
-			var rabbitmqPassword = Configuration.GetValue<string>("RabbitMqPassword");
 			var redisUrl = Configuration.GetValue<string>("RedisUrl");
-			services.AddMassTransit(x =>
-			{
-				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
-				{
-					cfg.Host(new Uri(rabbitmqUri), hostConfigurator =>
-					{
-						hostConfigurator.Username(rabbitmqUsername);
-						hostConfigurator.Password(rabbitmqPassword);
-					});
-				}));
-			});
 
 			services.AddDbContext<SchoolWriteDbContext>(options =>
 			{
 				options.UseSqlServer(writeDbConnectionString);
-			});
-
-			services.AddDbContext<SchoolReadDbContext>(options =>
-			{
-				options.UseSqlServer(readDbConnectionString);
 			});
 
 			services.AddStackExchangeRedisCache(options =>
@@ -69,20 +57,27 @@ namespace BoltOn.Samples.WebApi
 				options.Configuration = redisUrl;
 			});
 
-			services.AddControllers();
-			services.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolWriteDbContext>>();
-			services.AddTransient<IRepository<StudentType>, Repository<StudentType, SchoolWriteDbContext>>();
-			services.AddTransient<IRepository<StudentFlattened>, CqrsRepository<StudentFlattened, SchoolReadDbContext>>();
+			services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "BoltOn Samples", Version = "v1", }));
+
+			services.AddControllers(c =>
+			{
+				c.Filters.Add<CustomExceptionFilter>();
+				c.Filters.Add<ModelValidationFilter>();
+			});
+			services.AddTransient<IRepository<Student>, Repository<Student, SchoolWriteDbContext>>();
+			services.AddTransient<IQueryRepository<StudentType>, QueryRepository<StudentType, SchoolWriteDbContext>>();
 		}
 
 		public void Configure(IApplicationBuilder app, IHostApplicationLifetime appLifetime, IWebHostEnvironment env)
 		{
-			app.ApplicationServices.TightenBolts();
-
-			if (env.IsDevelopment())
+			app.UseCorrelationId();
+			app.UseSwagger();
+			app.UseSwaggerUI(c =>
 			{
-				app.UseDeveloperExceptionPage();
-			}
+				c.SwaggerEndpoint("../swagger/v1/swagger.json", "BoltOn Samples");
+			});
+
+			app.TightenBolts();
 			app.UseRouting();
 			app.UseEndpoints(endpoints =>
 			{

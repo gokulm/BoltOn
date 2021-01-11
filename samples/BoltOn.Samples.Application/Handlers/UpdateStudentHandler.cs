@@ -9,7 +9,7 @@ using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class UpdateStudentRequest : ICommand, IClearCachedResponse
+	public class UpdateStudentRequest : IRequest, IClearCachedResponse
 	{
 		public Guid StudentId { get; set; }
 
@@ -25,24 +25,20 @@ namespace BoltOn.Samples.Application.Handlers
 	public class UpdateStudentHandler : IHandler<UpdateStudentRequest>
 	{
 		private readonly IRepository<Student> _studentRepository;
-		private readonly IBoltOnLogger<UpdateStudentHandler> _logger;
-		private readonly IRepository<StudentType> _studentTypeRepository;
+		private readonly IAppLogger<UpdateStudentHandler> _logger;
 
 		public UpdateStudentHandler(IRepository<Student> studentRepository,
-			IBoltOnLogger<UpdateStudentHandler> logger,
-			IRepository<StudentType> studentTypeRepository)
+			IAppLogger<UpdateStudentHandler> logger)
 		{
 			_studentRepository = studentRepository;
 			_logger = logger;
-			_studentTypeRepository = studentTypeRepository;
 		}
 
 		public async Task HandleAsync(UpdateStudentRequest request, CancellationToken cancellationToken)
 		{
 			_logger.Debug("Updating student...");
-			var studentType = await _studentTypeRepository.GetByIdAsync(request.StudentTypeId, cancellationToken: cancellationToken);
 			var student = await _studentRepository.GetByIdAsync(request.StudentId, cancellationToken: cancellationToken);
-			student.Update(request, studentType.Description);
+			student.Update(request);
 			await _studentRepository.UpdateAsync(student, cancellationToken: cancellationToken);
 		}
 	}
