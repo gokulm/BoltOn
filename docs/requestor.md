@@ -1,4 +1,4 @@
-Requestor is the backbone of BoltOn. It follows the [Request/Response](https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html) and [Command Message](https://www.enterpriseintegrationpatterns.com/patterns/messaging/CommandMessage.html) patterns. Since it doesn't depend on any particular framework like WebAPI, MVC etc., and comprises of pure C# classes, its handlers could be added to application/service layer and could be invoked from any .NET application.
+Requestor is the backbone of BoltOn. It follows the [Request/Response](https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html) and [Command Message](https://www.enterpriseintegrationpatterns.com/patterns/messaging/CommandMessage.html) patterns. Since it doesn't depend on any particular framework like WebAPI, MVC etc., and comprises of pure C# classes, its handlers could be added to application/service layer and could be used in a simple WebAPI based application to all the way to message queuing (MassTransit) and background tasks (Hangfire) based applications. 
 
 The main source of inspiration for the Requestor was [Agatha](https://github.com/davybrion/Agatha), and various other projects like [Brighter](https://github.com/BrighterCommand/Brighter) and [MediatR](https://github.com/jbogard/MediatR).
 
@@ -38,7 +38,7 @@ Example:
 		}
 	}
 
-* To invoke the handler, you need to inject `IRequestor` anywhere in your application, like a controller in WebAPI or a MVC application, and call `ProcessAsync` method. Check out the implemenation [Requestor](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/Requestor.cs) to know the internals.
+* To invoke the handler, you need to inject `IRequestor` in a class in your application, like a controller in WebAPI or a MVC application, and call `ProcessAsync` method. Check out the implemenation [Requestor](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/Requestor.cs) to know the internals.
 
 Example:
 
@@ -87,7 +87,7 @@ You could create an interceptor by implementing `IInterceptor` interface. If you
 
 **Note: **
 
-* Interceptors from all the bolted modules and assemblies **must be** added explicitly  using `AddInterceptor<TInterceptor>` extension method.
+* Interceptors from all the attached modules and assemblies **must be** added explicitly  using `AddInterceptor<TInterceptor>` extension method.
 * Interceptors get executed in the order they're added.
 * Interceptors can be removed using `RemoveInterceptor<TInterceptor>` extension method. 
 * All the interceptors in the pipeline (in other packages) can be removed using `RemoveAllInterceptors` extension method. However, if this extension method is executed in a registration task and if there is another registration task after your registration task to add interceptors, those interceptors will be added to the pipeline.
