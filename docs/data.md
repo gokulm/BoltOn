@@ -28,7 +28,7 @@ Example:
 	services.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
 	services.AddTransient<IQueryRepository<Course>, QueryRepository<Student, SchoolDbContext>>();
 
-* Add all the database columns to entity properties mapping inside a mapping class by implementing `IEntityTypeConfiguration<TEntity>` interface.
+* The database table mappings can be added within your DbContext or in a separate class by implementing `IEntityTypeConfiguration<TEntity>` interface.
 
 Example:
 

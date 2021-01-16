@@ -5,13 +5,13 @@ using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Bus.MassTransit
 {
-	public class BoltOnMassTransitConsumer<TRequest> : IConsumer<TRequest> where TRequest : class, IRequest
+	public class AppMessageConsumer<TRequest> : IConsumer<TRequest> where TRequest : class, IRequest
 	{
 		private readonly IRequestor _requestor;
-		private readonly IAppLogger<BoltOnMassTransitConsumer<TRequest>> _logger;
+		private readonly IAppLogger<AppMessageConsumer<TRequest>> _logger;
 
-		public BoltOnMassTransitConsumer(IRequestor requestor,
-			IAppLogger<BoltOnMassTransitConsumer<TRequest>> logger)
+		public AppMessageConsumer(IRequestor requestor,
+			IAppLogger<AppMessageConsumer<TRequest>> logger)
 		{
 			_requestor = requestor;
 			_logger = logger;

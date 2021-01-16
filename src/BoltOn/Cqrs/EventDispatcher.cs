@@ -21,10 +21,10 @@ namespace BoltOn.Cqrs
 	public class EventDispatcher : IEventDispatcher
 	{
 		private readonly IAppLogger<EventDispatcher> _logger;
-		private readonly IBus _bus;
+		private readonly IAppServiceBus _bus;
 
 		public EventDispatcher(IAppLogger<EventDispatcher> logger,
-			IBus bus)
+			IAppServiceBus bus)
 		{
 			_logger = logger;
 			_bus = bus;

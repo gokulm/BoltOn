@@ -6,13 +6,13 @@ using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Bus.MassTransit
 {
-	public class BoltOnMassTransitBus : IBus
+	public class AppServiceBus : IAppServiceBus
 	{
 		private readonly IBusControl _busControl;
-		private readonly IAppLogger<BoltOnMassTransitBus> _logger;
+		private readonly IAppLogger<AppServiceBus> _logger;
 
-		public BoltOnMassTransitBus(IBusControl busControl,
-			IAppLogger<BoltOnMassTransitBus> logger)
+		public AppServiceBus(IBusControl busControl,
+			IAppLogger<AppServiceBus> logger)
 		{
 			_busControl = busControl;
 			_logger = logger;

@@ -5,8 +5,8 @@ In order to use the bus, you need do the following:
 * Install **BoltOn.Bus.MassTransit** NuGet package.
 * Call `BoltOnMassTransitModule()` in your startup's BoltOn() method. 
 * For all the applications that will be just publishing to the queue, configure RabbitMq host and all other settings using MassTransit's extension method for `AddMassTransit`. Check out [this page](https://masstransit-project.com/MassTransit/usage/containers/msdi.html) for the supported configuration. Also refer MassTransit's documentation for all the other supported transports (other than RabbitMq), BoltOnMassTransitModule is transport agnostic.
-* For all the applications that will be consuming messages from the queue, follow all the above steps and then configure BoltOn's `BoltOnMassTransitConsumer<TMessage>` provided by the above mentioned NuGet package. 
-* Finally, inject `IBus` anywhere in your application and call `PublishAsync` method to publish your message. 
+* For all the applications that will be consuming messages from the queue, follow all the above steps and then configure BoltOn's `AppMessageConsumer<TMessage>` provided by the above mentioned NuGet package. 
+* Finally, inject `IAppServiceBus` anywhere in your application and call `PublishAsync` method to publish your message. 
 
 Example:
 
@@ -14,7 +14,7 @@ Example:
 
     services.BoltOn(options =>
     {
-        options.BoltOnRabbitMqBusModule();
+        options.BoltOnMassTransitBusModule();
     });
 
     services.AddMassTransit(x =>
@@ -43,7 +43,7 @@ Example:
 
             cfg.ReceiveEndpoint(host, "CreateStudent_Queue", endpoint =>
             {
-                endpoint.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CreateStudent>>());
+                endpoint.Consumer(() => provider.GetService<AppMessageConsumer<CreateStudent>>());
             });
         }));
     });
@@ -56,7 +56,7 @@ You could add an extension method for your transport something like the one ment
     {
         configurator.ReceiveEndpoint(host, queueName ?? $"{typeof(TRequest).Name}_Queue", endpoint =>
         {
-            endpoint.Consumer(() => serviceProvider.GetService<BoltOnMassTransitConsumer<TRequest>>());
+            endpoint.Consumer(() => serviceProvider.GetService<AppMessageConsumer<TRequest>>());
         });
     } 
 
@@ -64,7 +64,7 @@ and then call `BoltOnConsumer<CreateStudent>(provider, host)`
 
 **Note:**
 
-* As MassTransit had abstracted out the transport like RabbitMq, Azure Service Bus etc., and all the other things very well BoltOn just adds a minor add-on `BoltOnMassTransitConsumer<TMessage>` to it, which injects `IRequestor` for processing the message of type `TMessage`.
-* As the consumer injects `IRequestor` and uses it for processing the messages, all the messages should implement any of the interfaces mentioned [here](../Requestor/#request-response-and-handler). 
-Please refer to [Requestor](../requestor) documentation to know how to add handlers and its internals.
+* As MassTransit had abstracted out the transport like RabbitMq, Azure Service Bus etc., and all the other things very well BoltOn just adds a minor add-on `AppMessageConsumer<TMessage>` to it, which injects `IRequestor` for processing the message of type `TMessage`.
+* As the consumer injects `IRequestor` and uses it for processing the messages,
+please refer to [Requestor](../requestor) documentation to know how to add handlers and its internals.
 * Starting and stopping bus gets taken care by [PostRegistrationTask](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Bus.MassTransit/PostRegistrationTask.cs) and [CleanupTask](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Bus.MassTransit/CleanupTask.cs) respectively. 
