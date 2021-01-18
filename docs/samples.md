@@ -1,4 +1,4 @@
-In order to run the Samples projects, SQL server and Redis should be configured. If you already have SQL server and Redis installed, please change the appsettings in the BoltOn.Samples.WebApi and BoltOn.Samples.Console projects. If you do not have them installed, you could use [docker-compose](#docker-compose), or run SQL Server and Redis separately in docker using the commands mentioned below and change the appsettings. Instead of using Redis, you could also configure in-memory cache.
+In order to run the Samples projects, SQL server should be configured. If you already have SQL server installed, please change the appsettings in the BoltOn.Samples.WebApi and BoltOn.Samples.Console projects. If you do not have them installed, you could use [docker-compose](#docker-compose), or run SQL Server separately in docker using the commands mentioned below and change the appsettings. Instead of using Redis, you could also configure in-memory cache.
 
 docker-compose
 --------------

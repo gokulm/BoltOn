@@ -44,7 +44,6 @@ namespace BoltOn.Samples.WebApi
 			});
 
 			var writeDbConnectionString = Configuration.GetValue<string>("SqlWriteDbConnectionString");
-			var readDbConnectionString = Configuration.GetValue<string>("SqlReadDbConnectionString");
 			var redisUrl = Configuration.GetValue<string>("RedisUrl");
 
 			services.AddDbContext<SchoolWriteDbContext>(options =>
@@ -52,10 +51,7 @@ namespace BoltOn.Samples.WebApi
 				options.UseSqlServer(writeDbConnectionString);
 			});
 
-			services.AddStackExchangeRedisCache(options =>
-			{
-				options.Configuration = redisUrl;
-			});
+			services.AddDistributedMemoryCache();
 
 			services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "BoltOn Samples", Version = "v1", }));
 

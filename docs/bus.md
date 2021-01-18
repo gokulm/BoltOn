@@ -6,7 +6,7 @@ In order to use the bus, you need do the following:
 * Call `BoltOnMassTransitModule()` in your startup's BoltOn() method. 
 * For all the applications that will be just publishing to the queue, configure RabbitMq host and all other settings using MassTransit's extension method for `AddMassTransit`. Check out [this page](https://masstransit-project.com/MassTransit/usage/containers/msdi.html) for the supported configuration. Also refer MassTransit's documentation for all the other supported transports (other than RabbitMq), BoltOnMassTransitModule is transport agnostic.
 * For all the applications that will be consuming messages from the queue, follow all the above steps and then configure BoltOn's `AppMessageConsumer<TMessage>` provided by the above mentioned NuGet package. 
-* Finally, inject `IAppServiceBus` anywhere in your application and call `PublishAsync` method to publish your message. 
+* Finally, inject `IAppServiceBus` in your application and call `PublishAsync` method to publish your message. 
 
 Example:
 
@@ -50,8 +50,7 @@ Example:
 
 You could add an extension method for your transport something like the one mentioned below to configure consumers:
 
-    public static void BoltOnConsumer<TRequest>(this IRabbitMqBusFactoryConfigurator configurator, 
-        IServiceProvider serviceProvider, IRabbitMqHost host, string queueName = null)
+    public static void BoltOnConsumer<TRequest>(this IRabbitMqBusFactoryConfigurator configurator, IServiceProvider serviceProvider, IRabbitMqHost host, string queueName = null)
             where TRequest : class, IRequest
     {
         configurator.ReceiveEndpoint(host, queueName ?? $"{typeof(TRequest).Name}_Queue", endpoint =>
