@@ -176,7 +176,7 @@ services.AddTransient&lt;IRepository&lt;Student&gt;, Repository&lt;Student, Scho
 services.AddTransient&lt;IQueryRepository&lt;Course&gt;, QueryRepository&lt;Student, SchoolDbContext&gt;&gt;();
 </code></pre>
 <ul>
-<li>Add all the database columns to entity properties mapping inside a mapping class by implementing <code>IEntityTypeConfiguration&lt;TEntity&gt;</code> interface.</li>
+<li>The database table mappings can be added within your DbContext or in a separate class by implementing <code>IEntityTypeConfiguration&lt;TEntity&gt;</code> interface.</li>
 </ul>
 <p>Example:</p>
 <pre><code>// DbContext

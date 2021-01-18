@@ -144,7 +144,7 @@
           <div role="main">
             <div class="section">
               
-                <p>Requestor is the backbone of BoltOn. It follows the <a href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html">Request/Response</a> and <a href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/CommandMessage.html">Command Message</a> patterns. Since it doesn't depend on any particular framework like WebAPI, MVC etc., and comprises of pure C# classes, its handlers could be added to application/service layer and could be invoked from any .NET application.</p>
+                <p>Requestor is the backbone of BoltOn. It follows the <a href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html">Request/Response</a> and <a href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/CommandMessage.html">Command Message</a> patterns. Since it doesn't depend on any particular framework like WebAPI, MVC etc., and comprises of pure C# classes, its handlers could be added to application/service layer and could be used in a simple WebAPI based application to all the way to message queuing (MassTransit) and background tasks (Hangfire) based applications. </p>
 <p>The main source of inspiration for the Requestor was <a href="https://github.com/davybrion/Agatha">Agatha</a>, and various other projects like <a href="https://github.com/BrighterCommand/Brighter">Brighter</a> and <a href="https://github.com/jbogard/MediatR">MediatR</a>.</p>
 <h2 id="request-response-and-handler">Request, Response and Handler</h2>
 <p>In order to use the Requestor, you need to create a request by implementing any of these interfaces:</p>
@@ -180,7 +180,7 @@ public class GetAllStudentsHandler : IHandler&lt;GetAllStudentsRequest, IEnumera
 }
 </code></pre>
 <ul>
-<li>To invoke the handler, you need to inject <code>IRequestor</code> anywhere in your application, like a controller in WebAPI or a MVC application, and call <code>ProcessAsync</code> method. Check out the implemenation <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/Requestor.cs">Requestor</a> to know the internals.</li>
+<li>To invoke the handler, you need to inject <code>IRequestor</code> in a class in your application, like a controller in WebAPI or a MVC application, and call <code>ProcessAsync</code> method. Check out the implemenation <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/Requestor.cs">Requestor</a> to know the internals.</li>
 </ul>
 <p>Example:</p>
 <pre><code>[Route("api/[controller]")]
@@ -227,7 +227,7 @@ serviceCollection.BoltOn(options =&gt;
 </code></pre>
 <p><strong>Note: </strong></p>
 <ul>
-<li>Interceptors from all the bolted modules and assemblies <strong>must be</strong> added explicitly  using <code>AddInterceptor&lt;TInterceptor&gt;</code> extension method.</li>
+<li>Interceptors from all the attached modules and assemblies <strong>must be</strong> added explicitly  using <code>AddInterceptor&lt;TInterceptor&gt;</code> extension method.</li>
 <li>Interceptors get executed in the order they're added.</li>
 <li>Interceptors can be removed using <code>RemoveInterceptor&lt;TInterceptor&gt;</code> extension method. </li>
 <li>All the interceptors in the pipeline (in other packages) can be removed using <code>RemoveAllInterceptors</code> extension method. However, if this extension method is executed in a registration task and if there is another registration task after your registration task to add interceptors, those interceptors will be added to the pipeline.</li>

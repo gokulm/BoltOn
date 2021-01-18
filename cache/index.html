@@ -155,11 +155,15 @@ serviceCollection.BoltOn(b =&gt;
 {
     b.BoltOnCacheModule();
 });
-
-serviceCollection.AddStackExchangeRedisCache(options =&gt;
+</code></pre>
+<p>To use Redis, install Microsoft.Extensions.Caching.StackExchangeRedis and then add</p>
+<pre><code>serviceCollection.AddStackExchangeRedisCache(options =&gt;
 {
     options.Configuration = "localhost:6379";
 });
+</code></pre>
+<p>To use in-memory cache:</p>
+<pre><code>services.AddDistributedMemoryCache();
 </code></pre>
 <h2 id="icacheresponse-and-iclearcachedresponse">ICacheResponse and IClearCachedResponse</h2>
 <p>The BoltOnCacheModule comes with 2 other marker interfaces - <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/ICacheResponse.cs">ICacheResponse</a> and <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/IClearCachedResponse.cs">IClearCachedResponse</a> to cache and clear <a href="../requestor">Requestor</a>'s response automatically. It's done using <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/CacheResponseInterceptor.cs">CacheResponseInterceptor</a>. </p>

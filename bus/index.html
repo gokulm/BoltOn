@@ -144,14 +144,14 @@
 <li>Install <strong>BoltOn.Bus.MassTransit</strong> NuGet package.</li>
 <li>Call <code>BoltOnMassTransitModule()</code> in your startup's BoltOn() method. </li>
 <li>For all the applications that will be just publishing to the queue, configure RabbitMq host and all other settings using MassTransit's extension method for <code>AddMassTransit</code>. Check out <a href="https://masstransit-project.com/MassTransit/usage/containers/msdi.html">this page</a> for the supported configuration. Also refer MassTransit's documentation for all the other supported transports (other than RabbitMq), BoltOnMassTransitModule is transport agnostic.</li>
-<li>For all the applications that will be consuming messages from the queue, follow all the above steps and then configure BoltOn's <code>BoltOnMassTransitConsumer&lt;TMessage&gt;</code> provided by the above mentioned NuGet package. </li>
-<li>Finally, inject <code>IBus</code> anywhere in your application and call <code>PublishAsync</code> method to publish your message. </li>
+<li>For all the applications that will be consuming messages from the queue, follow all the above steps and then configure BoltOn's <code>AppMessageConsumer&lt;TMessage&gt;</code> provided by the above mentioned NuGet package. </li>
+<li>Finally, inject <code>IAppServiceBus</code> in your application and call <code>PublishAsync</code> method to publish your message. </li>
 </ul>
 <p>Example:</p>
 <p><strong>Publisher Configuration</strong></p>
 <pre><code>services.BoltOn(options =&gt;
 {
-    options.BoltOnRabbitMqBusModule();
+    options.BoltOnMassTransitBusModule();
 });
 
 services.AddMassTransit(x =&gt;
@@ -179,28 +179,27 @@ services.AddMassTransit(x =&gt;
 
         cfg.ReceiveEndpoint(host, "CreateStudent_Queue", endpoint =&gt;
         {
-            endpoint.Consumer(() =&gt; provider.GetService&lt;BoltOnMassTransitConsumer&lt;CreateStudent&gt;&gt;());
+            endpoint.Consumer(() =&gt; provider.GetService&lt;AppMessageConsumer&lt;CreateStudent&gt;&gt;());
         });
     }));
 });
 </code></pre>
 <p>You could add an extension method for your transport something like the one mentioned below to configure consumers:</p>
-<pre><code>public static void BoltOnConsumer&lt;TRequest&gt;(this IRabbitMqBusFactoryConfigurator configurator, 
-    IServiceProvider serviceProvider, IRabbitMqHost host, string queueName = null)
+<pre><code>public static void BoltOnConsumer&lt;TRequest&gt;(this IRabbitMqBusFactoryConfigurator configurator, IServiceProvider serviceProvider, IRabbitMqHost host, string queueName = null)
         where TRequest : class, IRequest
 {
     configurator.ReceiveEndpoint(host, queueName ?? $"{typeof(TRequest).Name}_Queue", endpoint =&gt;
     {
-        endpoint.Consumer(() =&gt; serviceProvider.GetService&lt;BoltOnMassTransitConsumer&lt;TRequest&gt;&gt;());
+        endpoint.Consumer(() =&gt; serviceProvider.GetService&lt;AppMessageConsumer&lt;TRequest&gt;&gt;());
     });
 }
 </code></pre>
 <p>and then call <code>BoltOnConsumer&lt;CreateStudent&gt;(provider, host)</code></p>
 <p><strong>Note:</strong></p>
 <ul>
-<li>As MassTransit had abstracted out the transport like RabbitMq, Azure Service Bus etc., and all the other things very well BoltOn just adds a minor add-on <code>BoltOnMassTransitConsumer&lt;TMessage&gt;</code> to it, which injects <code>IRequestor</code> for processing the message of type <code>TMessage</code>.</li>
-<li>As the consumer injects <code>IRequestor</code> and uses it for processing the messages, all the messages should implement any of the interfaces mentioned <a href="../Requestor/#request-response-and-handler">here</a>. 
-Please refer to <a href="../requestor">Requestor</a> documentation to know how to add handlers and its internals.</li>
+<li>As MassTransit had abstracted out the transport like RabbitMq, Azure Service Bus etc., and all the other things very well BoltOn just adds a minor add-on <code>AppMessageConsumer&lt;TMessage&gt;</code> to it, which injects <code>IRequestor</code> for processing the message of type <code>TMessage</code>.</li>
+<li>As the consumer injects <code>IRequestor</code> and uses it for processing the messages,
+please refer to <a href="../requestor">Requestor</a> documentation to know how to add handlers and its internals.</li>
 <li>Starting and stopping bus gets taken care by <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Bus.MassTransit/PostRegistrationTask.cs">PostRegistrationTask</a> and <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Bus.MassTransit/CleanupTask.cs">CleanupTask</a> respectively. </li>
 </ul>
               
