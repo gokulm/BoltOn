@@ -15,10 +15,16 @@ Example:
         b.BoltOnCacheModule();
     });
 
+To use Redis, install Microsoft.Extensions.Caching.StackExchangeRedis and then add
+
     serviceCollection.AddStackExchangeRedisCache(options =>
     {
         options.Configuration = "localhost:6379";
     });
+
+To use in-memory cache:
+
+    services.AddDistributedMemoryCache();
 
 ICacheResponse and IClearCachedResponse
 ---------------------------------------

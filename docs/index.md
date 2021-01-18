@@ -1,4 +1,4 @@
-[**BoltOn**](https://github.com/gokulm/BoltOn) is an open source application framework to help develop simple/modular/extensible/unit-testable .NET applications (Console, MVC, WebAPI, Windows Service etc.,) with reduced boilerplate code. The components are written in such a way that they're [modular](https://en.wikipedia.org/wiki/Modular_programming), thus they can be bolted on with other components and interchanged easily, and hence the name Bolt-On. 
+[**BoltOn**](https://github.com/gokulm/BoltOn) is an open source application framework to help develop simple/modular/extensible/unit-testable .NET applications (Console, MVC, WebAPI, Windows Service etc.,) with reduced boilerplate code. The components are written in such a way that they're [modular](https://en.wikipedia.org/wiki/Modular_programming), thus they can be plugged  with other components and interchanged easily, and hence the name Bolt-On. 
 
 Installation
 ------------
@@ -10,7 +10,7 @@ From CLI:
 
     dotnet add package BoltOn
 
-Here is the [list of NuGet Packages](https://www.nuget.org/packages?q=BoltOn). 
+Or, can be added from VS NuGet Package Manager. Here is the [list of NuGet Packages](https://www.nuget.org/packages?q=BoltOn). 
 
 Configuration
 -------------
@@ -27,7 +27,7 @@ After installing the package, call BoltOn() and TightenBolts() extension methods
 
             public IConfiguration Configuration { get; }
 
-            public void ConfigureServices(IServiceCollection services)
+            public void ConfigureServices(IServiceCollection services) 
             {
                 services.AddMvc();
                 services.BoltOn();

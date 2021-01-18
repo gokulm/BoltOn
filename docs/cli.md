@@ -4,7 +4,7 @@ In order to create project templates and other BoltOn components from CLI, execu
 
 WebAPI
 ------
-To create a .NET Core WebAPI project with BoltOn package bolted:
+To create a .NET Core WebAPI project with BoltOn package added:
 
     dotnet new bowebapi -n <project_name>
 

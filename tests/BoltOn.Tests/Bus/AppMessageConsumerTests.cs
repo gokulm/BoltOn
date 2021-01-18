@@ -11,16 +11,16 @@ using BoltOn.Tests.Bus.Fakes;
 
 namespace BoltOn.Tests.Bus
 {
-    public class BoltOnMassTransitConsumerTests
+    public class AppMessageConsumerTests
 	{
 		[Fact]
 		public async Task Consume_ValidRequestObject_GetsConsumed()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
-			var sut = autoMocker.CreateInstance<BoltOnMassTransitConsumer<CreateTestStudent>>();
+			var sut = autoMocker.CreateInstance<AppMessageConsumer<CreateTestStudent>>();
 			var requestor = autoMocker.GetMock<IRequestor>();
-			var logger = autoMocker.GetMock<IAppLogger<BoltOnMassTransitConsumer<CreateTestStudent>>>();
+			var logger = autoMocker.GetMock<IAppLogger<AppMessageConsumer<CreateTestStudent>>>();
 			var consumerContext = new Mock<ConsumeContext<CreateTestStudent>>();
 			var request = new CreateTestStudent();
 			consumerContext.Setup(c => c.Message).Returns(request);

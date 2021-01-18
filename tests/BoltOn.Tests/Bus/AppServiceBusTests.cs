@@ -9,7 +9,7 @@ using BoltOn.Tests.Bus.Fakes;
 
 namespace BoltOn.Tests.Bus
 {
-	public class BoltOnMassTransitBusTests 
+	public class AppServiceBusTests 
 	{
 		[Fact]
 		public async Task PublishAsync_Message_GetsPublished()
@@ -17,8 +17,8 @@ namespace BoltOn.Tests.Bus
 			// arrange
 			var autoMocker = new AutoMocker();
 			var busControl = autoMocker.GetMock<IBusControl>();
-			var logger = autoMocker.GetMock<IAppLogger<BoltOnMassTransitBus>>();
-			var sut = autoMocker.CreateInstance<BoltOnMassTransitBus>();
+			var logger = autoMocker.GetMock<IAppLogger<AppServiceBus>>();
+			var sut = autoMocker.CreateInstance<AppServiceBus>();
 			var request = new CreateTestStudent();
 			var cts = new CancellationTokenSource();
 

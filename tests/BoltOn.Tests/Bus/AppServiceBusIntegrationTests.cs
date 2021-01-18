@@ -15,7 +15,7 @@ using BoltOn.Tests.Bus.Fakes;
 namespace BoltOn.Tests.Bus
 {
     [Collection("IntegrationTests")]
-    public class BoltOnMassTransitBusIntegrationTests : IDisposable
+    public class AppServiceBusIntegrationTests : IDisposable
     {
         [Fact]
         public async Task PublishAsync_PublishToInMemoryHost_GetsConsumed()
@@ -33,7 +33,7 @@ namespace BoltOn.Tests.Bus
                 {
                     cfg.ReceiveEndpoint("CreateTestStudent_queue", ep =>
                     {
-                        ep.Consumer(() => provider.GetService<BoltOnMassTransitConsumer<CreateTestStudent>>());
+                        ep.Consumer(() => provider.GetService<AppMessageConsumer<CreateTestStudent>>());
                     });
                 }));
             });
@@ -46,7 +46,7 @@ namespace BoltOn.Tests.Bus
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             serviceProvider.TightenBolts();
-            var bus = serviceProvider.GetService<BoltOn.Bus.IBus>();
+            var bus = serviceProvider.GetService<BoltOn.Bus.IAppServiceBus>();
 
             // act
             await bus.PublishAsync(new CreateTestStudent { FirstName = "test" });
@@ -84,7 +84,7 @@ namespace BoltOn.Tests.Bus
 
                     cfg.ReceiveEndpoint($"{nameof(CreateTestStudent)}_Queue", endpoint =>
                     {
-                        endpoint.Consumer(provider.GetService<BoltOnMassTransitConsumer<CreateTestStudent>>);
+                        endpoint.Consumer(provider.GetService<AppMessageConsumer<CreateTestStudent>>);
                     });
                 }));
             });
@@ -96,7 +96,7 @@ namespace BoltOn.Tests.Bus
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             serviceProvider.TightenBolts();
-            var bus = serviceProvider.GetService<BoltOn.Bus.IBus>();
+            var bus = serviceProvider.GetService<BoltOn.Bus.IAppServiceBus>();
 
             // act
             await bus.PublishAsync(new CreateTestStudent { FirstName = "test" });
@@ -130,7 +130,7 @@ namespace BoltOn.Tests.Bus
 
                     cfg.ReceiveEndpoint($"createteststudent_queue", endpoint =>
                     {
-                        endpoint.Consumer(context.GetService<BoltOnMassTransitConsumer<CreateTestStudent>>);
+                        endpoint.Consumer(context.GetService<AppMessageConsumer<CreateTestStudent>>);
                     });
                 });
             });
@@ -142,7 +142,7 @@ namespace BoltOn.Tests.Bus
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             serviceProvider.TightenBolts();
-            var bus = serviceProvider.GetService<BoltOn.Bus.IBus>();
+            var bus = serviceProvider.GetService<BoltOn.Bus.IAppServiceBus>();
 
             // act
             await bus.PublishAsync(new CreateTestStudent { FirstName = "test" });
