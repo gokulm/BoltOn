@@ -18,7 +18,7 @@ namespace BoltOn.Samples.WebApi
         public void Run()
         {
             using var scope = _serviceProvider.CreateScope();
-            var writeDbContext = scope.ServiceProvider.GetService<SchoolWriteDbContext>();
+            var writeDbContext = scope.ServiceProvider.GetService<SchoolDbContext>();
             writeDbContext.Database.EnsureDeleted();
             writeDbContext.Database.EnsureCreated();
 
