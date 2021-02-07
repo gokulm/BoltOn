@@ -1,7 +1,9 @@
-﻿using BoltOn.Cache;
+﻿using AutoMapper;
+using BoltOn.Cache;
 using BoltOn.Data;
 using BoltOn.Data.EF;
 using BoltOn.Logging.Serilog;
+using BoltOn.Samples.Application;
 using BoltOn.Samples.Application.Entities;
 using BoltOn.Samples.Application.Handlers;
 using BoltOn.Samples.Infrastructure.Data;
@@ -42,7 +44,6 @@ namespace BoltOn.Samples.WebApi
 			});
 
 			var writeDbConnectionString = Configuration.GetValue<string>("SqlWriteDbConnectionString");
-			var redisUrl = Configuration.GetValue<string>("RedisUrl");
 
 			services.AddDbContext<SchoolDbContext>(options =>
 			{
@@ -50,6 +51,7 @@ namespace BoltOn.Samples.WebApi
 			});
 
 			services.AddDistributedMemoryCache();
+			services.AddAutoMapper(typeof(MappingProfile));
 
 			services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "BoltOn Samples", Version = "v1", }));
 
@@ -69,6 +71,7 @@ namespace BoltOn.Samples.WebApi
 			app.UseSwaggerUI(c =>
 			{
 				c.SwaggerEndpoint("../swagger/v1/swagger.json", "BoltOn Samples");
+				c.DefaultModelsExpandDepth(-1);
 			});
 
 			app.TightenBolts();

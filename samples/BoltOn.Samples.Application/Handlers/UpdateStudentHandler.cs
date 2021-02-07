@@ -12,13 +12,10 @@ namespace BoltOn.Samples.Application.Handlers
 	public class UpdateStudentRequest : IRequest, IClearCachedResponse
 	{
 		public Guid StudentId { get; set; }
-
 		public string FirstName { get; set; }
-
 		public string LastName { get; set; }
-
+		public string Email { get; set; }
 		public int StudentTypeId { get; set; }
-
 		public string CacheKey => "Students";
 	}
 

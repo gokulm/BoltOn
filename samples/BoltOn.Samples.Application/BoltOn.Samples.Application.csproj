@@ -19,5 +19,6 @@
     <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.12.1" />
     <PackageReference Include="BoltOn.Data.EF" Version="0.21.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
   </ItemGroup>
 </Project>
