@@ -43,11 +43,11 @@ namespace BoltOn.Samples.WebApi
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolDbContext).Assembly);
 			});
 
-			var writeDbConnectionString = Configuration.GetValue<string>("SqlWriteDbConnectionString");
+			var boltOnSamplesDbConnectionString = Configuration.GetValue<string>("BoltOnSamplesDbConnectionString");
 
 			services.AddDbContext<SchoolDbContext>(options =>
 			{
-				options.UseSqlServer(writeDbConnectionString);
+				options.UseSqlServer(boltOnSamplesDbConnectionString);
 			});
 
 			services.AddDistributedMemoryCache();

@@ -6,7 +6,7 @@ using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.WebApi
 {
-    public class PostRegistrationTask //: IPostRegistrationTask
+    public class PostRegistrationTask : IPostRegistrationTask
     {
         private readonly IServiceProvider _serviceProvider;
 
