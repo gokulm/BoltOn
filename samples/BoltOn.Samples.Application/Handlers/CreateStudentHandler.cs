@@ -11,11 +11,9 @@ namespace BoltOn.Samples.Application.Handlers
 	public class CreateStudentRequest : IRequest<Student>, IClearCachedResponse
 	{
 		public string FirstName { get; set; }
-
 		public string LastName { get; set; }
-
 		public int StudentTypeId { get; set; }
-
+		public string Email { get; set; }
 		public string CacheKey => "Students";
 	}
 

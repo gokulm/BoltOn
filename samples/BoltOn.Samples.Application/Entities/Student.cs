@@ -8,6 +8,7 @@ namespace BoltOn.Samples.Application.Entities
 		public Guid StudentId { get; set; }
 		public string FirstName { get; private set; }
 		public string LastName { get; private set; }
+		public string Email { get; private set; }
 		public int StudentTypeId { get; private set; }
 
         private Student()
@@ -20,6 +21,7 @@ namespace BoltOn.Samples.Application.Entities
 			FirstName = request.FirstName;
 			LastName = request.LastName;
 			StudentTypeId = request.StudentTypeId;
+			Email = request.Email;
 		}
 
 		public void Update(UpdateStudentRequest request)
@@ -27,6 +29,7 @@ namespace BoltOn.Samples.Application.Entities
 			FirstName = request.FirstName;
 			LastName = request.LastName;
 			StudentTypeId = request.StudentTypeId;
+			Email = request.Email;
 		}
 	}
 }

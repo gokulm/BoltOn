@@ -1,24 +1,25 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using AutoMapper;
+using BoltOn.Cache;
+using BoltOn.Data;
+using BoltOn.Data.EF;
+using BoltOn.Logging.Serilog;
+using BoltOn.Samples.Application;
+using BoltOn.Samples.Application.Entities;
+using BoltOn.Samples.Application.Handlers;
+using BoltOn.Samples.Infrastructure.Data;
+using BoltOn.Web;
+using BoltOn.Web.Filters;
+using CorrelationId;
+using CorrelationId.DependencyInjection;
+using Hangfire;
+using MassTransit;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using BoltOn.Data.EF;
-using BoltOn.Samples.Application.Handlers;
-using BoltOn.Bus.MassTransit;
-using BoltOn.Samples.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-using MassTransit;
-using System;
 using Microsoft.Extensions.Hosting;
-using BoltOn.Data;
-using BoltOn.Samples.Application.Entities;
-using Microsoft.AspNetCore.Hosting;
-using BoltOn.Cache;
-using BoltOn.Web.Filters;
-using BoltOn.Web;
-using BoltOn.Logging.Serilog;
-using CorrelationId.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using CorrelationId;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -40,18 +41,27 @@ namespace BoltOn.Samples.WebApi
 				options.BoltOnCacheModule();
 				options.BoltOnWebModule();
 				options.BoltOnSerilogModule(Configuration);
-				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolWriteDbContext).Assembly);
+				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolDbContext).Assembly);
 			});
 
-			var writeDbConnectionString = Configuration.GetValue<string>("SqlWriteDbConnectionString");
-			var redisUrl = Configuration.GetValue<string>("RedisUrl");
+			var boltOnSamplesDbConnectionString = Configuration.GetValue<string>("BoltOnSamplesDbConnectionString");
 
-			services.AddDbContext<SchoolWriteDbContext>(options =>
+			services.AddDbContext<SchoolDbContext>(options =>
 			{
-				options.UseSqlServer(writeDbConnectionString);
+				options.UseSqlServer(boltOnSamplesDbConnectionString);
 			});
 
 			services.AddDistributedMemoryCache();
+			services.AddAutoMapper(typeof(MappingProfile));
+
+			// uncomment to use this app as Hangfire Dashboard
+			//GlobalConfiguration.Configuration
+			// .UseSqlServerStorage(boltOnSamplesDbConnectionString);
+
+			//services.AddHangfire(config =>
+			//{
+			//	config.UseSqlServerStorage(boltOnSamplesDbConnectionString);
+			//});
 
 			services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "BoltOn Samples", Version = "v1", }));
 
@@ -60,8 +70,8 @@ namespace BoltOn.Samples.WebApi
 				c.Filters.Add<CustomExceptionFilter>();
 				c.Filters.Add<ModelValidationFilter>();
 			});
-			services.AddTransient<IRepository<Student>, Repository<Student, SchoolWriteDbContext>>();
-			services.AddTransient<IQueryRepository<StudentType>, QueryRepository<StudentType, SchoolWriteDbContext>>();
+			services.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
+			services.AddTransient<IQueryRepository<StudentType>, QueryRepository<StudentType, SchoolDbContext>>();
 		}
 
 		public void Configure(IApplicationBuilder app, IHostApplicationLifetime appLifetime, IWebHostEnvironment env)
@@ -71,9 +81,14 @@ namespace BoltOn.Samples.WebApi
 			app.UseSwaggerUI(c =>
 			{
 				c.SwaggerEndpoint("../swagger/v1/swagger.json", "BoltOn Samples");
+				c.DefaultModelsExpandDepth(-1);
 			});
 
 			app.TightenBolts();
+
+			// uncomment to use this app as Hangfire Dashboard
+			//app.UseHangfireDashboard("/hangfire");
+
 			app.UseRouting();
 			app.UseEndpoints(endpoints =>
 			{
