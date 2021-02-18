@@ -6,18 +6,18 @@ Request, Response and Handler
 -
 In order to use the Requestor, you need to create a request by implementing any of these interfaces:
 
-* `IRequest`
+* [`IRequest`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/IRequest.cs)
 <br /> To create a request that doesn't have any response and doesn't require unit of work.
-* `IRequest<out TResponse>` 
+* [`IRequest<out TResponse>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/IRequest.cs)
 <br /> To create a request with response of type TResponse and doesn't require unit of work.
 
 The **response** can be any value or reference type.
 
 After declaring the request and the response, you need to create a handler by implementiong any of these interfaces:
 
-* `IHandler<in TRequest>`
+* [`IHandler<in TRequest>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/IHandler.cs)
 <br> For handlers that do not return any response.
-* `IHandler<in TRequest, TResponse>`
+* [`IHandler<in TRequest, TResponse>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/IHandler.cs)
 <br> For handlers that have responses.
 
 Example:

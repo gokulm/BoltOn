@@ -1,6 +1,6 @@
 BoltOn uses [MassTransit](https://masstransit-project.com/) bus for all the queueing. 
 
-In order to use the bus, you need do the following:
+In order to use the bus, do the following:
 
 * Install **BoltOn.Bus.MassTransit** NuGet package.
 * Call `BoltOnMassTransitModule()` in your startup's BoltOn() method. 

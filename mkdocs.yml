@@ -5,6 +5,7 @@ nav:
     - Data: data.md
     - Bus: bus.md
     - Cache: cache.md
+    - Hangfire: hangfire.md
     # - CQRS: cqrs.md
     - State Machine: statemachine.md
     - Web: web.md

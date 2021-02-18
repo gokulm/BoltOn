@@ -11,6 +11,7 @@ using BoltOn.Web;
 using BoltOn.Web.Filters;
 using CorrelationId;
 using CorrelationId.DependencyInjection;
+using Hangfire;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -53,6 +54,15 @@ namespace BoltOn.Samples.WebApi
 			services.AddDistributedMemoryCache();
 			services.AddAutoMapper(typeof(MappingProfile));
 
+			// uncomment to use this app as Hangfire Dashboard
+			//GlobalConfiguration.Configuration
+			// .UseSqlServerStorage(boltOnSamplesDbConnectionString);
+
+			//services.AddHangfire(config =>
+			//{
+			//	config.UseSqlServerStorage(boltOnSamplesDbConnectionString);
+			//});
+
 			services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "BoltOn Samples", Version = "v1", }));
 
 			services.AddControllers(c =>
@@ -75,6 +85,10 @@ namespace BoltOn.Samples.WebApi
 			});
 
 			app.TightenBolts();
+
+			// uncomment to use this app as Hangfire Dashboard
+			//app.UseHangfireDashboard("/hangfire");
+
 			app.UseRouting();
 			app.UseEndpoints(endpoints =>
 			{

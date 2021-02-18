@@ -4,7 +4,6 @@ using BoltOn.Data.EF;
 using BoltOn.Hangfire;
 using BoltOn.Samples.Application.Handlers;
 using Hangfire;
-using Hangfire.SqlServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -47,24 +46,16 @@ namespace BoltOn.Samples.Console
 			var boltOnSamplesDbConnectionString = configuration.GetValue<string>("BoltOnSamplesDbConnectionString");
 
 			GlobalConfiguration.Configuration
-			 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-			 .UseSimpleAssemblyNameTypeSerializer()
-			 .UseRecommendedSerializerSettings()
-			 .UseSqlServerStorage(boltOnSamplesDbConnectionString, new SqlServerStorageOptions
-			 {
-				 CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-				 SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-				 QueuePollInterval = TimeSpan.Zero,
-				 UseRecommendedIsolationLevel = true,
-				 UsePageLocksOnDequeue = true,
-				 DisableGlobalLocks = true
-			 });
+			 .UseSqlServerStorage(boltOnSamplesDbConnectionString);
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 
 			RecurringJob.AddOrUpdate<AppHangfireJobProcessor>("StudentsNotifier",
-				p => p.ProcessAsync(new NotifyStudentsRequest(), default), Cron.Minutely());
+				p => p.ProcessAsync(new NotifyStudentsRequest { JobType = "Recurring" }, default), Cron.Minutely());
+
+			BackgroundJob.Schedule<AppHangfireJobProcessor>(p => p.ProcessAsync(new NotifyStudentsRequest { JobType = "OneTime" }, default),
+				TimeSpan.FromSeconds(30));
 
 			using var hangfireServer = new BackgroundJobServer();
 			System.Console.ReadLine();

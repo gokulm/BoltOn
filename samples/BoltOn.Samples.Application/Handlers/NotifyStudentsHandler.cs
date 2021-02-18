@@ -7,7 +7,13 @@ namespace BoltOn.Samples.Application.Handlers
 {
 	public class NotifyStudentsRequest : IRequest
     {
-    }
+		public string JobType { get; set; }
+
+		public override string ToString()
+		{
+			return "Student Notifier " + JobType;
+		}
+	}
 
     public class NotifyStudentsHandler : IHandler<NotifyStudentsRequest>
     {
@@ -20,7 +26,7 @@ namespace BoltOn.Samples.Application.Handlers
 
         public Task HandleAsync(NotifyStudentsRequest request, CancellationToken cancellationToken)
         {
-            _logger.Debug("Notifying students...");
+            _logger.Debug($"Notifying students. JobType: {request.JobType}");
             return Task.CompletedTask;
         }
     }
