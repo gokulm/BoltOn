@@ -84,6 +84,11 @@
           
             <li class="toctree-l1">
 		
+    <a class="" href="../hangfire/">Hangfire</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
     <a class="" href="../statemachine/">State Machine</a>
 	    </li>
           
@@ -149,17 +154,17 @@
 <h2 id="request-response-and-handler">Request, Response and Handler</h2>
 <p>In order to use the Requestor, you need to create a request by implementing any of these interfaces:</p>
 <ul>
-<li><code>IRequest</code>
+<li><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/IRequest.cs"><code>IRequest</code></a>
 <br /> To create a request that doesn't have any response and doesn't require unit of work.</li>
-<li><code>IRequest&lt;out TResponse&gt;</code> 
+<li><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/IRequest.cs"><code>IRequest&lt;out TResponse&gt;</code></a>
 <br /> To create a request with response of type TResponse and doesn't require unit of work.</li>
 </ul>
 <p>The <strong>response</strong> can be any value or reference type.</p>
 <p>After declaring the request and the response, you need to create a handler by implementiong any of these interfaces:</p>
 <ul>
-<li><code>IHandler&lt;in TRequest&gt;</code>
+<li><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/IHandler.cs"><code>IHandler&lt;in TRequest&gt;</code></a>
 <br> For handlers that do not return any response.</li>
-<li><code>IHandler&lt;in TRequest, TResponse&gt;</code>
+<li><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/IHandler.cs"><code>IHandler&lt;in TRequest, TResponse&gt;</code></a>
 <br> For handlers that have responses.</li>
 </ul>
 <p>Example:</p>

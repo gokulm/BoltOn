@@ -8,7 +8,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Web - BoltOn</title>
+  <title>Hangfire - BoltOn</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -17,8 +17,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Web";
-    var mkdocs_page_input_path = "web.md";
+    var mkdocs_page_name = "Hangfire";
+    var mkdocs_page_input_path = "hangfire.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -73,9 +73,12 @@
     <a class="" href="../cache/">Cache</a>
 	    </li>
           
-            <li class="toctree-l1">
+            <li class="toctree-l1 current">
 		
-    <a class="" href="../hangfire/">Hangfire</a>
+    <a class="current" href="./">Hangfire</a>
+    <ul class="subnav">
+            
+    </ul>
 	    </li>
           
             <li class="toctree-l1">
@@ -83,18 +86,9 @@
     <a class="" href="../statemachine/">State Machine</a>
 	    </li>
           
-            <li class="toctree-l1 current">
+            <li class="toctree-l1">
 		
-    <a class="current" href="./">Web</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l2"><a href="#filters">Filters</a></li>
-    
-
-    <li class="toctree-l2"><a href="#middlewares">Middlewares</a></li>
-    
-
-    </ul>
+    <a class="" href="../web/">Web</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -139,7 +133,7 @@
     
       
     
-    <li>Web</li>
+    <li>Hangfire</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -149,43 +143,67 @@
           <div role="main">
             <div class="section">
               
-                <p><strong>BoltOn.Web</strong> has a few filters and middlewares to be used in MVC/WebAPI applications.</p>
-<p>In order to use the <strong>BoltOn.Web</strong> module, do the following:</p>
+                <p><a href="https://www.hangfire.io/">Hangfire</a> can be used along with BoltOn for all the background and scheduled jobs.</p>
+<p>In order to use it, do the following:</p>
 <ul>
-<li>Install <strong>BoltOn.Web</strong> NuGet package.</li>
-<li>Call <code>BoltOnWebModule()</code> in your startup's BoltOn() method.</li>
-<li>Call TightenBolts() extenstion method for <code>IApplicationBuilder</code>.</li>
+<li>Install <strong>BoltOn.Hangfire</strong> NuGet package.</li>
+<li>Call <code>BoltOnHangfireModule()</code> in your startup's BoltOn() method. </li>
+<li>Configure <a href="https://www.hangfire.io/">Hangfire</a> by referring to its documentation.</li>
+<li>Once all the configuration is done, create a request (without response) class that implements <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/IRequest.cs"><code>IRequest</code></a> and a handler that implements <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/IHandler.cs"><code>IHandler&lt;in TRequest&gt;</code></a>. Refer to <a href="../requestor/#request-response-and-handler">Requestor</a> to know more about the implementation. </li>
+<li>Finally, use <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Hangfire/AppHangfireJobProcessor.cs"><code>AppHangfireJobProcessor</code></a> to configure the request/handler as a background or scheduled job. </li>
 </ul>
-<h2 id="filters">Filters</h2>
-<ul>
-<li>
-<p><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Web/Filters/ModelValidationFilter.cs"><code>ModelValidationFilter</code></a>
-<br />
-It's a global filter which validates the models and throws <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Web/Exceptions/BadRequestException.cs"><code>BadRequestException</code></a> with the validation error messages set in the DataAnnotation attributes.</p>
-</li>
-<li>
-<p><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Web/Filters/CustomExceptionFilter.cs"><code>CustomExceptionFilter</code></a>
-<br />
-It's a global filter to handle all the exceptions thrown in the application and returns JSON with the CorrelationId as the Id, error message and with any of these HTTP response codes:</p>
-<ul>
-<li>HTTP Response 400 - This is returned when a <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Web/Exceptions/BadRequestException.cs"><code>BadRequestException</code></a> is thrown in the application, which usually happens for model validation errors. The ModelValidationFilter mentioned above throws this exception.</li>
-<li>HTTP Response 412 - This is returned when a <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Web/Exceptions/BusinessValidationException.cs"><code>BusinessValidationException</code></a> is thrown in the application, which is mainly used to display the actual business validation message to the user.</li>
-<li>HTTP Response 500 - This status code is returned for all the unhandled exceptions with a generic error message or the actual exception message. The generic error message can be set in the appSettings with the key "ErrorMessage", and whether to return the actual exception message or a generic message can be controlled by a flag with the key "IsShowErrors" in the appSettings. It's recommended to enable IsShowErrors in the lower environments and disable it in the higher environments as the exception messages could have sensitive information.</li>
-</ul>
-</li>
-</ul>
-<p>The global filters can be registered like this in a WebAPI application:</p>
-<pre><code>services.AddControllers(c =&gt;
+<p>Example:</p>
+<p><strong>While bootstrapping your application</strong></p>
+<pre><code>serviceCollection.BoltOn(o =&gt;
 {
-    c.Filters.Add&lt;CustomExceptionFilter&gt;();
-    c.Filters.Add&lt;ModelValidationFilter&gt;();
+    o.BoltOnHangfireModule();
 });
+
+// hangfire configuration
+GlobalConfiguration.Configuration
+    .UseSqlServerStorage("connectionstring to the db");
+
+// a job to be executed every minute 
+RecurringJob.AddOrUpdate&lt;AppHangfireJobProcessor&gt;("StudentsNotifier",
+            p =&gt; p.ProcessAsync(new NotifyStudentsRequest { JobType = "Recurring" }, default), Cron.Minutely());
+
+// to schededule an one-time background job  
+BackgroundJob.Schedule&lt;AppHangfireJobProcessor&gt;(p =&gt; p.ProcessAsync(new NotifyStudentsRequest { JobType = "OneTime" }, default),
+    TimeSpan.FromSeconds(30));
 </code></pre>
-<p>For MVC application, <code>AddControllersWithViews</code> method can be used.</p>
-<h2 id="middlewares">Middlewares</h2>
+<p><strong> Request and Handler</strong></p>
+<pre><code>public class NotifyStudentsRequest : IRequest
+{
+    public string JobType { get; set; }
+
+    public override string ToString()
+    {
+        return "Student Notifier " + JobType;
+    }
+}
+
+public class NotifyStudentsHandler : IHandler&lt;NotifyStudentsRequest&gt;
+{
+    private readonly IAppLogger&lt;NotifyStudentsHandler&gt; _logger;
+
+    public NotifyStudentsHandler(IAppLogger&lt;NotifyStudentsHandler&gt; logger)
+    {
+        _logger = logger;
+    }
+
+    public Task HandleAsync(NotifyStudentsRequest request, CancellationToken cancellationToken)
+    {
+        _logger.Debug($"Notifying students. JobType: {request.JobType}");
+        return Task.CompletedTask;
+    }
+}
+</code></pre>
+<p><strong>Note:</strong></p>
 <ul>
-<li><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Web/Middlewares/RequestLoggerContextMiddleware.cs"><code>RequestLoggerContextMiddleware</code></a>
-<br /> It's mainly used to add ClientIp, RequestUrl and CorrelationId to the LoggerContext, and it's automatically added when the BoltOn.Web is added. </li>
+<li>Please look into <a href="https://github.com/gokulm/BoltOn/tree/master/samples/BoltOn.Samples.Console">BoltOn.Samples.Console</a> to see the actual code. </li>
+<li>To know more about RecurringJob or BackgroundJob, please refer to <a href="https://www.hangfire.io/">Hangfire's</a> documentation.</li>
+<li>Override <code>ToString()</code> method of the request object for a descriptive name to be displayed on the Hangfire Dashboard.</li>
+<li>BackgroundJob can be triggered anywhere within your application and need not be while bootstrapping. </li>
 </ul>
               
             </div>
@@ -194,10 +212,10 @@ It's a global filter to handle all the exceptions thrown in the application and 
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../utilities/" class="btn btn-neutral float-right" title="Utilities">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../statemachine/" class="btn btn-neutral float-right" title="State Machine">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../statemachine/" class="btn btn-neutral" title="State Machine"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../cache/" class="btn btn-neutral" title="Cache"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -223,10 +241,10 @@ It's a global filter to handle all the exceptions thrown in the application and 
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../statemachine/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../cache/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../utilities/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../statemachine/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
