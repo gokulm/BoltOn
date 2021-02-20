@@ -10,13 +10,6 @@ services:
     container_name: bolton-sql-container
     networks:
       - bolton-network
-  redis:
-    image: redis
-    ports:
-      - "6379:6379"
-    container_name: bolton-redis-container
-    networks:
-      - bolton-network
   console:
     environment:
       - CONSOLE_ENVIRONMENT=Docker
@@ -43,7 +36,6 @@ services:
     depends_on:
       - sql
       - console
-      - redis
     networks:
       - bolton-network
 

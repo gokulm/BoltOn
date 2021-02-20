@@ -26,8 +26,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="BoltOn" Version="0.33.1" />
-    <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.12.1" />
+    <PackageReference Include="BoltOn" Version="0.34.0" />
+    <PackageReference Include="BoltOn.Bus.MassTransit" Version="0.13.0" />
     <PackageReference Include="BoltOn.Data.EF" Version="0.21.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.10" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.10" />
