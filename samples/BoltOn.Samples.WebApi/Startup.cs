@@ -55,13 +55,17 @@ namespace BoltOn.Samples.WebApi
 			services.AddAutoMapper(typeof(MappingProfile));
 
 			// uncomment to use this app as Hangfire Dashboard
-			//GlobalConfiguration.Configuration
-			// .UseSqlServerStorage(boltOnSamplesDbConnectionString);
 
-			//services.AddHangfire(config =>
-			//{
-			//	config.UseSqlServerStorage(boltOnSamplesDbConnectionString);
-			//});
+			if (Configuration.GetValue<bool>("IsHangfireEnabled"))
+			{
+				GlobalConfiguration.Configuration
+				 .UseSqlServerStorage(boltOnSamplesDbConnectionString);
+
+				services.AddHangfire(config =>
+				{
+					config.UseSqlServerStorage(boltOnSamplesDbConnectionString);
+				});
+			}
 
 			services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "BoltOn Samples", Version = "v1", }));
 
@@ -86,8 +90,8 @@ namespace BoltOn.Samples.WebApi
 
 			app.TightenBolts();
 
-			// uncomment to use this app as Hangfire Dashboard
-			//app.UseHangfireDashboard("/hangfire");
+			if (Configuration.GetValue<bool>("IsHangfireEnabled"))
+				app.UseHangfireDashboard("/hangfire");
 
 			app.UseRouting();
 			app.UseEndpoints(endpoints =>

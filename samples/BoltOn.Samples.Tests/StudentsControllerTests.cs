@@ -37,6 +37,7 @@ namespace BoltOn.Samples.Tests
             {
                 FirstName = "John",
                 LastName = "Smith",
+				Email = "john.smith@gmail.com",
                 StudentTypeId = 1
             };
 
