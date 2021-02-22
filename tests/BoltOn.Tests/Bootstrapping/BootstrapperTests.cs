@@ -142,7 +142,8 @@ namespace BoltOn.Tests.Bootstrapping
 		{
 			// arrange
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.BoltOn();
+            serviceCollection.AddLogging();
+            serviceCollection.BoltOn();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 

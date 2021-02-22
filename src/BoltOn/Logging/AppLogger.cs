@@ -16,9 +16,9 @@ namespace BoltOn.Logging
 	{
 		readonly ILogger<TType> _logger;
 
-		public AppLogger(IServiceProvider serviceProvider)
+		public AppLogger(ILogger<TType> logger)
 		{
-			_logger = serviceProvider.GetService(typeof(ILogger<TType>)) as ILogger<TType>;
+			_logger = logger;
 		}
 
 		public virtual void Debug(string message)

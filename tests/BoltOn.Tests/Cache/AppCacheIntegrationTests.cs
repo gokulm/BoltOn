@@ -24,6 +24,7 @@ namespace BoltOn.Tests.Cache
 				b.BoltOnCacheModule();
 			});
 
+			serviceCollection.AddLogging();
 			var distributedCache = new Mock<IDistributedCache>();
 			serviceCollection.AddTransient(s => distributedCache.Object);
 
@@ -245,6 +246,7 @@ namespace BoltOn.Tests.Cache
 			{
 				b.BoltOnCacheModule();
 			});
+			serviceCollection.AddLogging();
 
 			if (!IntegrationTestHelper.IsRedisCache)
 			{

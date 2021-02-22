@@ -21,6 +21,7 @@ namespace BoltOn.Tests.Bus
         public async Task PublishAsync_PublishToInMemoryHost_GetsConsumed()
         {
             var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging();
             serviceCollection.BoltOn(b =>
             {
                 b.BoltOnAssemblies(GetType().Assembly);
@@ -66,6 +67,7 @@ namespace BoltOn.Tests.Bus
                 return;
 
             var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging();
             serviceCollection.BoltOn(b =>
             {
                 b.BoltOnAssemblies(GetType().Assembly);
