@@ -25,6 +25,7 @@ namespace BoltOn.Data.EF
 		{
 			try
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				DbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 				return await DbSets.FindAsync(id);
 			}
@@ -38,6 +39,7 @@ namespace BoltOn.Data.EF
 		{
 			try
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				DbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 				return await DbSets.ToListAsync(cancellationToken);
 			}
@@ -51,6 +53,7 @@ namespace BoltOn.Data.EF
 		{
 			try
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				DbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 				var query = DbSets.Where(predicate);
 				if (includes != null)

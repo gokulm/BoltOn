@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Tests.Data.EF.Fakes;
 using BoltOn.Tests.Other;
@@ -58,6 +60,21 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
+		public async Task GetByIdAsync_WhenCancellationRequestedIsTrue_ThrowsOperationCanceledException()
+		{
+			// arrange
+			var cancellationToken = new CancellationToken(true);
+
+			// act
+			var exception = await Record.ExceptionAsync(() => _fixture.SubjectUnderTest.GetByIdAsync(1, cancellationToken));
+
+			// assert			
+			Assert.NotNull(exception);
+			Assert.IsType<OperationCanceledException>(exception);
+			Assert.Equal("The operation was canceled.", exception.Message);
+		}
+
+		[Fact, Trait("Category", "Integration")]
 		public async Task GetAll_WhenRecordsExist_ReturnsAllTheRecords()
 		{
 			// arrange
@@ -79,6 +96,21 @@ namespace BoltOn.Tests.Data.EF
 
 			// assert
 			Assert.Equal(4, result.Count());
+		}
+
+		[Fact, Trait("Category", "Integration")]
+		public async Task GetAllAsync_WhenCancellationRequestedIsTrue_ThrowsOperationCanceledException()
+		{
+			// arrange
+			var cancellationToken = new CancellationToken(true);
+
+			// act
+			var exception = await Record.ExceptionAsync(() => _fixture.SubjectUnderTest.GetAllAsync(cancellationToken));
+
+			// assert			
+			Assert.NotNull(exception);
+			Assert.IsType<OperationCanceledException>(exception);
+			Assert.Equal("The operation was canceled.", exception.Message);
 		}
 
 		[Fact, Trait("Category", "Integration")]
@@ -118,6 +150,22 @@ namespace BoltOn.Tests.Data.EF
 			Assert.NotNull(result);
 			Assert.Equal("x", result.FirstName);
 			Assert.NotEmpty(result.Addresses);
+		}
+
+		[Fact, Trait("Category", "Integration")]
+		public async Task FindByAsync_WhenCancellationRequestedIsTrue_ThrowsOperationCanceledException()
+		{
+			// arrange
+			var cancellationToken = new CancellationToken(true);
+
+			// act
+			var exception = await Record.ExceptionAsync(() => _fixture.SubjectUnderTest.FindByAsync(f => f.Id == 2,
+				cancellationToken, i => i.Addresses));
+
+			// assert			
+			Assert.NotNull(exception);
+			Assert.IsType<OperationCanceledException>(exception);
+			Assert.Equal("The operation was canceled.", exception.Message);
 		}
 	}
 }
