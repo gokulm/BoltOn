@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BoltOn.Tests.Common;
 using BoltOn.Tests.Data.EF.Fakes;
 using BoltOn.Tests.Other;
 using Xunit;
@@ -10,6 +11,7 @@ using Xunit;
 namespace BoltOn.Tests.Data.EF
 {
 	[Collection("IntegrationTests")]
+	[TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
 	public class RepositoryTests : IClassFixture<EFRepositoryFixture>
 	{
 		private readonly EFRepositoryFixture _fixture;
@@ -20,7 +22,7 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public async Task GetById_WhenRecordDoesNotExist_ReturnsNull()
+		public async Task GetByIdAsync_WhenRecordDoesNotExist_ReturnsNull()
 		{
 			// arrange
 
@@ -32,6 +34,7 @@ namespace BoltOn.Tests.Data.EF
 		}
 
 		[Fact, Trait("Category", "Integration")]
+		[TestPriority(10)]
 		public async Task GetByIdAsync_WhenRecordExists_ReturnsRecord()
 		{
 			// arrange
@@ -201,6 +204,7 @@ namespace BoltOn.Tests.Data.EF
 
 
 		[Fact, Trait("Category", "Integration")]
+		[TestPriority(90)]
 		public async Task UpdateAsync_UpdateAnExistingEntity_UpdatesTheEntity()
 		{
 			// arrange
@@ -216,22 +220,23 @@ namespace BoltOn.Tests.Data.EF
 			Assert.Equal("c", queryResult.FirstName);
 		}
 
-		//[Fact, Trait("Category", "Integration")]
-		//public async Task UpdateAsync_WhenCancellationRequestedIsTrue_ThrowsOperationCanceledException()
-		//{
-		//	// arrange
-		//	var student = await _fixture.SubjectUnderTest.GetByIdAsync(1);
-		//	var cancellationToken = new CancellationToken(true);
-		//	student.FirstName = "cc";
+		[Fact, Trait("Category", "Integration")]
+		[TestPriority(100)]
+		public async Task UpdateAsync_WhenCancellationRequestedIsTrue_ThrowsOperationCanceledException()
+		{
+			// arrange
+			var student = await _fixture.SubjectUnderTest.GetByIdAsync(1);
+			var cancellationToken = new CancellationToken(true);
+			student.FirstName = "cc";
 
-		//	// act
-		//	var exception = await Record.ExceptionAsync(() => _fixture.SubjectUnderTest.UpdateAsync(student, cancellationToken));
+			// act
+			var exception = await Record.ExceptionAsync(() => _fixture.SubjectUnderTest.UpdateAsync(student, cancellationToken));
 
-		//	// assert			
-		//	Assert.NotNull(exception);
-		//	Assert.IsType<OperationCanceledException>(exception);
-		//	Assert.Equal("The operation was canceled.", exception.Message);
-		//}
+			// assert			
+			Assert.NotNull(exception);
+			Assert.IsType<OperationCanceledException>(exception);
+			Assert.Equal("The operation was canceled.", exception.Message);
+		}
 
 		[Fact, Trait("Category", "Integration")]
 		public async Task DeleteAsync_DeleteAfterFetching_DeletesTheEntity()
