@@ -64,6 +64,5 @@
         <ProjectReference Include="..\..\src\BoltOn.Cache\BoltOn.Cache.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Data.Elasticsearch\BoltOn.Data.Elasticsearch.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Web\BoltOn.Web.csproj" />
-        <ProjectReference Include="..\..\src\BoltOn.Logging.Serilog\BoltOn.Logging.Serilog.csproj" />
     </ItemGroup>
 </Project>

@@ -40,7 +40,6 @@ namespace BoltOn.Samples.WebApi
 				options.BoltOnEFModule();
 				options.BoltOnCacheModule();
 				options.BoltOnWebModule();
-				//options.BoltOnSerilogModule(Configuration);
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolDbContext).Assembly);
 			});
 
