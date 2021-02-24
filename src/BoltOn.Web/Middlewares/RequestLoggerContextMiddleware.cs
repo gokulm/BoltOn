@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BoltOn.Logging;
 using CorrelationId.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +18,6 @@ namespace BoltOn.Web.Middlewares
 
         public async Task Invoke(HttpContext httpContext,
             ILogger<RequestLoggerContextMiddleware> logger,
-            LoggerContext loggerContext,
             ICorrelationContextAccessor correlationContextAccessor,
             IConfiguration configuration)
         {
