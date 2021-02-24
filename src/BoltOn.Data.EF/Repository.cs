@@ -53,26 +53,31 @@ namespace BoltOn.Data.EF
 
 		protected virtual async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			await DbContext.SaveChangesAsync(cancellationToken);
 		}
 
 		protected virtual async Task SaveChangesAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			await DbContext.SaveChangesAsync(cancellationToken);
 		}
 
 		public virtual async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			return await DbSets.FindAsync(id);
 		}
 
 		public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			return await DbSets.ToListAsync(cancellationToken);
 		}
 
 		public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var query = DbSets.Where(predicate);
 			if (includes != null)
 			{

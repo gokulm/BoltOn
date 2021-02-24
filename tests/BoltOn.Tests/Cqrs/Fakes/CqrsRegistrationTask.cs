@@ -11,6 +11,7 @@ namespace BoltOn.Tests.Cqrs.Fakes
     {
         public static void RegisterCqrsFakes(this BootstrapperOptions bootstrapperOptions)
         {
+            bootstrapperOptions.ServiceCollection.AddLogging();
             bootstrapperOptions.ServiceCollection.AddDbContext<CqrsDbContext>(options =>
             {
                 options.UseInMemoryDatabase("InMemoryDbCqrsDbContext");

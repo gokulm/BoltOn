@@ -31,6 +31,8 @@ namespace BoltOn.Tests.Cqrs
                 b.RegisterCqrsFakes();
             });
 
+            serviceCollection.AddLogging();
+
             serviceCollection.AddMassTransit(x =>
             {
                 x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>

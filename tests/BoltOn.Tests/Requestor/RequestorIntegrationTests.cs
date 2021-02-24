@@ -213,6 +213,7 @@ namespace BoltOn.Tests.Requestor
 			RequestorTestHelper.IsRemoveStopwatchInterceptor = true;
 			var serviceCollection = new ServiceCollection();
             serviceCollection.BoltOn(b => b.RegisterRequestorFakes());
+			serviceCollection.AddLogging();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 			var appClock = serviceProvider.GetService<IAppClock>();
@@ -237,6 +238,7 @@ namespace BoltOn.Tests.Requestor
 			// arrange
 			IntegrationTestHelper.IsSeedData = false;
 			var serviceCollection = new ServiceCollection();
+			serviceCollection.AddLogging();
 			serviceCollection.BoltOn(options =>
 			{
 				options.DisableRequestorHandlerRegistrations();
@@ -263,6 +265,7 @@ namespace BoltOn.Tests.Requestor
 			// arrange
 			IntegrationTestHelper.IsSeedData = false;
 			var serviceCollection = new ServiceCollection();
+			serviceCollection.AddLogging();
 			serviceCollection.BoltOn(options =>
 			{
 				options.DisableRequestorHandlerRegistrations();
