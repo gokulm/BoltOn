@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using BoltOn.Logging;
 using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Samples.Application.Handlers
@@ -15,8 +16,16 @@ namespace BoltOn.Samples.Application.Handlers
 
 	public class PingHandler : IHandler<PingRequest, PongResponse>
 	{
+		private readonly IAppLogger<PingHandler> _logger;
+
+		public PingHandler(IAppLogger<PingHandler> logger)
+		{
+			_logger = logger;
+		}
+
 		public async Task<PongResponse> HandleAsync(PingRequest request, CancellationToken cancellationToken)
 		{
+			_logger.Info("About to ping...");
 			return await Task.FromResult(new PongResponse { Data = "pong" });
 		}
 	}

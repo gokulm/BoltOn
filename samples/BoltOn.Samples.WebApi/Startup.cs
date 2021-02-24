@@ -2,7 +2,6 @@
 using BoltOn.Cache;
 using BoltOn.Data;
 using BoltOn.Data.EF;
-using BoltOn.Logging.Serilog;
 using BoltOn.Samples.Application;
 using BoltOn.Samples.Application.Entities;
 using BoltOn.Samples.Application.Handlers;
@@ -20,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -40,7 +40,7 @@ namespace BoltOn.Samples.WebApi
 				options.BoltOnEFModule();
 				options.BoltOnCacheModule();
 				options.BoltOnWebModule();
-				options.BoltOnSerilogModule(Configuration);
+				//options.BoltOnSerilogModule(Configuration);
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolDbContext).Assembly);
 			});
 
@@ -66,6 +66,12 @@ namespace BoltOn.Samples.WebApi
 					config.UseSqlServerStorage(boltOnSamplesDbConnectionString);
 				});
 			}
+
+			Log.Logger = new LoggerConfiguration()
+							.Enrich.WithMachineName()
+							.Enrich.FromLogContext()
+							.ReadFrom.Configuration(Configuration)
+							.CreateLogger();
 
 			services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "BoltOn Samples", Version = "v1", }));
 

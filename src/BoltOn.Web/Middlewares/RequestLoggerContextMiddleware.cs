@@ -1,7 +1,10 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BoltOn.Logging;
 using CorrelationId.Abstractions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace BoltOn.Web.Middlewares
 {
@@ -15,17 +18,20 @@ namespace BoltOn.Web.Middlewares
         }
 
         public async Task Invoke(HttpContext httpContext,
-            IAppLogger<RequestLoggerContextMiddleware> logger,
+            ILogger<RequestLoggerContextMiddleware> logger,
             LoggerContext loggerContext,
-            ICorrelationContextAccessor correlationContextAccessor)
+            ICorrelationContextAccessor correlationContextAccessor,
+            IConfiguration configuration)
         {
-            loggerContext.SetByKey("ClientIp", httpContext.Connection.RemoteIpAddress.ToString());
-            loggerContext.SetByKey("RequestUrl", httpContext.Request.Path.Value);
-            loggerContext.SetByKey("CorrelationId", correlationContextAccessor?.CorrelationContext?.CorrelationId);
-
-            logger.Debug($"Executing {nameof(RequestLoggerContextMiddleware)} ...");
-            await _next(httpContext);
-            logger.Debug($"Executed {nameof(RequestLoggerContextMiddleware)}");
+            using (logger.BeginScope(new Dictionary<string, object> { { "ClientIp", httpContext.Connection.RemoteIpAddress.ToString() } }))
+            using (logger.BeginScope(new Dictionary<string, object> { { "RequestUrl", httpContext.Request.Path.Value } }))
+            using (logger.BeginScope(new Dictionary<string, object> { { "CorrelationId", correlationContextAccessor?.CorrelationContext?.CorrelationId } }))
+            using (logger.BeginScope(new Dictionary<string, object> { { "Module", configuration.GetValue<string>("Module") } }))
+            {
+                logger.LogDebug($"Executing {nameof(RequestLoggerContextMiddleware)} ...");
+                await _next(httpContext);
+                logger.LogDebug($"Executed {nameof(RequestLoggerContextMiddleware)}");
+            }
         }
     }
 }
