@@ -30,7 +30,6 @@ namespace BoltOn.Tests.Web
             request.Path = new PathString("/test");
             httpContext.Setup(s => s.Request).Returns(request);
             connectionInfo.Setup(s => s.RemoteIpAddress).Returns(new System.Net.IPAddress(34));
-            var loggerContext = new Mock<LoggerContext>();
             var correlationContextAccessor = new Mock<ICorrelationContextAccessor>();
             var correlationId = Guid.NewGuid().ToString();
             var correlationContext = new CorrelationContext(correlationId, "test header");

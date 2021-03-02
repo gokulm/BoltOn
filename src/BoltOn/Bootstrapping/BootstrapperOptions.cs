@@ -53,7 +53,6 @@ namespace BoltOn.Bootstrapping
             ServiceCollection.AddTransient<IEventDispatcher, DefaultEventDispatcher>();
 
             ServiceCollection.AddScoped<ScopedContext>();
-            ServiceCollection.AddScoped<LoggerContext>();
             ServiceCollection.AddSingleton<Context.AppContext>();
 
             ServiceCollection.AddScoped<EventBag>();
