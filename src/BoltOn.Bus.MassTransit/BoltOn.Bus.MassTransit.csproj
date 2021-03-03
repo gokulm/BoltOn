@@ -24,8 +24,8 @@
     <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MassTransit" Version="7.0.7" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.10" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.10" />
+    <PackageReference Include="MassTransit" Version="7.1.6" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
   </ItemGroup>
 </Project>

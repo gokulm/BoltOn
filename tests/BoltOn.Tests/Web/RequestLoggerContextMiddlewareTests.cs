@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using BoltOn.Logging;
 using BoltOn.Web.Middlewares;
 using CorrelationId;
 using CorrelationId.Abstractions;
@@ -14,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace BoltOn.Tests.Web
 {
-    public class RequestLoggerContextMiddlewareTests
+	public class RequestLoggerContextMiddlewareTests
     {
         [Fact]
         public async Task Invoke_ValidInput_AddsAllTheAttributesToLoggerContext()
@@ -30,7 +29,6 @@ namespace BoltOn.Tests.Web
             request.Path = new PathString("/test");
             httpContext.Setup(s => s.Request).Returns(request);
             connectionInfo.Setup(s => s.RemoteIpAddress).Returns(new System.Net.IPAddress(34));
-            var loggerContext = new Mock<LoggerContext>();
             var correlationContextAccessor = new Mock<ICorrelationContextAccessor>();
             var correlationId = Guid.NewGuid().ToString();
             var correlationContext = new CorrelationContext(correlationId, "test header");
