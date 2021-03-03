@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using BoltOn.Logging;
 using BoltOn.Web.Middlewares;
 using CorrelationId;
 using CorrelationId.Abstractions;
@@ -14,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace BoltOn.Tests.Web
 {
-    public class RequestLoggerContextMiddlewareTests
+	public class RequestLoggerContextMiddlewareTests
     {
         [Fact]
         public async Task Invoke_ValidInput_AddsAllTheAttributesToLoggerContext()
