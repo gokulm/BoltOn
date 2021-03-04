@@ -4,19 +4,19 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BoltOn" Version="0.34.0" />
-    <PackageReference Include="BoltOn.Cache" Version="0.5.1" />
-    <PackageReference Include="BoltOn.Data.EF" Version="0.21.1" />
-    <PackageReference Include="BoltOn.Hangfire" Version="0.3.1" />
-    <PackageReference Include="BoltOn.Web" Version="0.4.1" />
+    <PackageReference Include="BoltOn" Version="1.0.0" />
+    <PackageReference Include="BoltOn.Cache" Version="1.0.0" />
+    <PackageReference Include="BoltOn.Data.EF" Version="1.0.0" />
+    <PackageReference Include="BoltOn.Hangfire" Version="1.0.0" />
+    <PackageReference Include="BoltOn.Web" Version="1.0.0" />
     <PackageReference Include="CorrelationId" Version="3.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.10" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.10" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.0.7" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="AutoMapper" Version="10.1.1" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.19" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.7.19" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.1.3" />
