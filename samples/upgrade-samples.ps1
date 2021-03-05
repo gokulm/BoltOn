@@ -39,6 +39,8 @@ function UpgradeBoltOnNuGetPackages
     # dotnet tool install nukeeper --global
     # nukeeper update --include="BoltOn*" --source=https://api.nuget.org/v3/index.json --age 0 --maxpackageupdates 100
     dotnet tool install dnt --global --add-source=https://api.nuget.org/v3/index.json
+    # to update dnt
+    # dotnet tool update dnt --global 
     dnt update-packages "BoltOn*"
     LogEndFunction "$($MyInvocation.MyCommand.Name)"
 }
