@@ -86,7 +86,7 @@ namespace BoltOn.Tests.Bootstrapping
         }
 
         [Fact]
-        public void BoltOn_BoltOnAndTightenBoltsWithExcludedFromRegistration_ReturnsNull()
+        public void BoltOn_BoltOnAndTightenBoltsWithExcludedFromRegistrationClass_ReturnsNull()
         {
             // arrange
             var serviceCollection = new ServiceCollection();
@@ -97,6 +97,23 @@ namespace BoltOn.Tests.Bootstrapping
             var serviceProvider = serviceCollection.BuildServiceProvider();
             serviceProvider.TightenBolts();
             var test = serviceProvider.GetService<ITestExcludeRegistrationService>();
+
+            // assert
+            Assert.Null(test);
+        }
+
+        [Fact]
+        public void BoltOn_BoltOnAndTightenBoltsWithExcludedFromRegistrationInterface_ReturnsNull()
+        {
+            // arrange
+            var serviceCollection = new ServiceCollection();
+
+            // act 
+            serviceCollection.AddLogging();
+            serviceCollection.BoltOn();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            serviceProvider.TightenBolts();
+            var test = serviceProvider.GetService<ITestExcludeRegistrationService2>();
 
             // assert
             Assert.Null(test);

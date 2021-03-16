@@ -1,7 +1,7 @@
 ﻿using System;
 namespace BoltOn.Other
 {
-	[AttributeUsage(AttributeTargets.Class)]
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
 	public class ExcludeFromRegistrationAttribute : Attribute
 	{
 	}
