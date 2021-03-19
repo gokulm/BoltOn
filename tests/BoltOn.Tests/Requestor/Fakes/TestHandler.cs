@@ -1,13 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using BoltOn.Requestor.Interceptors;
 using BoltOn.Requestor.Pipeline;
 using BoltOn.Transaction;
 
 namespace BoltOn.Tests.Requestor.Fakes
 {
-	public class TestRequest : IRequest<bool>, IEnableInterceptor<StopwatchInterceptor>
+	public class TestRequest : IRequest<bool>
     {
 	}
 
@@ -16,7 +15,7 @@ namespace BoltOn.Tests.Requestor.Fakes
 		public IsolationLevel IsolationLevel => IsolationLevel.ReadCommitted;
 	}
 
-	public class TestOneWayRequest : IRequest, IEnableInterceptor<StopwatchInterceptor>
+	public class TestOneWayRequest : IRequest
 	{
 		public int Value { get; set; }
 	}

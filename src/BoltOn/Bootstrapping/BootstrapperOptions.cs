@@ -107,6 +107,7 @@ namespace BoltOn.Bootstrapping
             var interfaces = (from assembly in tempAssemblies
                               from type in assembly.GetTypes()
                               where type.IsInterface
+                              && !type.GetCustomAttributes(typeof(ExcludeFromRegistrationAttribute), true).Any()
                               select type).ToList();
             var tempRegistrations = (from @interface in interfaces
                                      from assembly in tempAssemblies

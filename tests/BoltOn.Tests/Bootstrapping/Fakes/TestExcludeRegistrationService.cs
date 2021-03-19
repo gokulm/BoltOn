@@ -15,4 +15,18 @@ namespace BoltOn.Tests.Bootstrapping.Fakes
             return "test";
         }
     }
+
+    [ExcludeFromRegistration]
+    public interface ITestExcludeRegistrationService2
+    {
+        string GetName();
+    }
+
+    public class TestExcludeRegistrationService2 : ITestExcludeRegistrationService2
+    {
+        public string GetName()
+        {
+            return "test";
+        }
+    }
 }
