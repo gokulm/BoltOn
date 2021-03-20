@@ -1,5 +1,5 @@
 using BoltOn.Logging;
-using BoltOn.Web.Exceptions;
+using BoltOn.Exceptions;
 using BoltOn.Web.Models;
 using CorrelationId.Abstractions;
 using Microsoft.AspNetCore.Mvc;
