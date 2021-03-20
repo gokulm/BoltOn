@@ -1,6 +1,6 @@
 using System;
 
-namespace BoltOn.Web.Exceptions
+namespace BoltOn.Exceptions
 {
 	public class BadRequestException : Exception
 	{

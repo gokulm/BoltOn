@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BoltOn.Logging;
-using BoltOn.Web.Exceptions;
+using BoltOn.Exceptions;
 using BoltOn.Web.Filters;
 using BoltOn.Web.Models;
 using CorrelationId;

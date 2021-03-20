@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using BoltOn.Logging;
-using BoltOn.Web.Exceptions;
+using BoltOn.Exceptions;
 using BoltOn.Web.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
