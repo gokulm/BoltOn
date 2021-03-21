@@ -4,11 +4,6 @@ BoltOn uses .NET Core's logger internally, with just a custom adapter to mainly 
 
 Serilog
 -------
-In order to use Serilog, you need to do the following:
+As `IAppLogger` is just an adapter to .NET Core's ILogger, Serilog or any other logging provider can be used in your applications. 
 
-* Install **BoltOn.Logging.Serilog** NuGet package.
-* Call `BoltOnSerilogModule()` in your startup's BoltOn() method, and pass `IConfiguration` object, which basically registers `IAppLogger` to [`AppSerilogLogger`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Logging.Serilog/AppSerilogLogger.cs)
-
-[`LoggerContext`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Logging/LoggerContext.cs) is a scoped object, which can be injected anywhere and all the attributes that need to be logged can be added to it, which is what [`RequestLoggerContextMiddleware`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Web/Middlewares/RequestLoggerContextMiddleware.cs) does.
-
-Check out Serilog's documentation to know more about sinks and they can be configured in code/appSettings.
+Check out Serilog's documentation to know more about sinks and how they can be configured in code/appSettings.

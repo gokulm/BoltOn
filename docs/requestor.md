@@ -96,3 +96,11 @@ You could create an interceptor by implementing `IInterceptor` interface. If you
 	Example:
 
 		bootstrapperOptions.AddInterceptor<TransactionInterceptor>().Before<StopwatchInterceptor>();
+
+Why Requestor?
+--------------
+Adding a request, a handler and a response for every single request may look like as if we are writing a lot of code, but the advantages of it are:
+
+1. Every handler class will be responsible for one and only one thing, and thus follow **Single Responsibility Principle**, which makes them **readable, maintainable, testable** and **reusable**. 
+2. The same request/handler and the requestor can be used in Web API based applications, background jobs using [Hangfire](../hangfire) and message queueing using [AppServiceBus](../bus), and thus it will be easy for developers to pick it up.
+3. Common functionality like logging, caching, unit of work etc., can be abstracted out and can be added to handlers easily using [interceptors](../requestor/#interceptors).  
