@@ -1,17 +1,21 @@
 using System;
+using System.Collections.Generic;
 using BoltOn.Samples.Application.Handlers;
 
 namespace BoltOn.Samples.Application.Entities
 {
-	public class Student 
+	public class Student
 	{
-		public Guid StudentId { get; set; }
-		public string FirstName { get; private set; }
-		public string LastName { get; private set; }
-		public string Email { get; private set; }
-		public int StudentTypeId { get; private set; }
+		private List<StudentCourse> _courses = new List<StudentCourse>();
 
-        private Student()
+		public virtual Guid StudentId { get; private set; }
+		public virtual string FirstName { get; private set; }
+		public virtual string LastName { get; private set; }
+		public virtual string Email { get; private set; }
+		public virtual int StudentTypeId { get; private set; }
+		public virtual IReadOnlyCollection<StudentCourse> Courses { get { return _courses.AsReadOnly(); } }
+
+		private Student()
 		{
 		}
 
