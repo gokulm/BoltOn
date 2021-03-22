@@ -65,7 +65,7 @@ Example:
 		}
 	}
 
-* If you want to override the Repository class' methods or if you want to add methods, create your own repository.
+* You can override the Repository class' methods or add methods by inheriting `Repository` or `QueryRepository`.
 
 Example:
 
@@ -76,8 +76,8 @@ Example:
 
 	public class StudentRepository : Repository<Student, SchoolDbContext>, IStudentRepository
 	{
-		public StudentRepository(IDbContextFactory dbContextFactory, EventBag eventBag, IBoltOnClock boltOnClock)
-			: base(dbContextFactory, eventBag, boltOnClock)
+		public StudentRepository(SchoolDbContext schoolDbContext)
+			: base(schoolDbContext)
 		{
 		}
 	}
