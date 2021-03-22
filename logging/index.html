@@ -152,13 +152,8 @@
                 <h2 id="logging">Logging</h2>
 <p>BoltOn uses .NET Core's logger internally, with just a custom adapter to mainly support unit testing, as .NET Core's ILogger has only one method and all the other methods are extension methods. You could use any logging provider as you wish, or you could inherit <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Logging/AppLogger.cs"><code>AppLogger&lt;TType&gt;</code></a> and override the logging methods. Also, <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Logging/AppLoggerFactory.cs"><code>AppLoggerFactory</code></a> can be used when <code>AppLogger</code> cannot be used.</p>
 <h2 id="serilog">Serilog</h2>
-<p>In order to use Serilog, you need to do the following:</p>
-<ul>
-<li>Install <strong>BoltOn.Logging.Serilog</strong> NuGet package.</li>
-<li>Call <code>BoltOnSerilogModule()</code> in your startup's BoltOn() method, and pass <code>IConfiguration</code> object, which basically registers <code>IAppLogger</code> to <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Logging.Serilog/AppSerilogLogger.cs"><code>AppSerilogLogger</code></a></li>
-</ul>
-<p><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Logging/LoggerContext.cs"><code>LoggerContext</code></a> is a scoped object, which can be injected anywhere and all the attributes that need to be logged can be added to it, which is what <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Web/Middlewares/RequestLoggerContextMiddleware.cs"><code>RequestLoggerContextMiddleware</code></a> does.</p>
-<p>Check out Serilog's documentation to know more about sinks and they can be configured in code/appSettings.</p>
+<p>As <code>IAppLogger</code> is just an adapter to .NET Core's ILogger, Serilog or any other logging provider can be used in your applications. </p>
+<p>Check out Serilog's documentation to know more about sinks and how they can be configured in code/appSettings.</p>
               
             </div>
           </div>

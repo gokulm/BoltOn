@@ -218,7 +218,7 @@ public class StudentMapping : IEntityTypeConfiguration&lt;Student&gt;
 }
 </code></pre>
 <ul>
-<li>If you want to override the Repository class' methods or if you want to add methods, create your own repository.</li>
+<li>You can override the Repository class' methods or add methods by inheriting <code>Repository</code> or <code>QueryRepository</code>.</li>
 </ul>
 <p>Example:</p>
 <pre><code>// Repository
@@ -228,8 +228,8 @@ public interface IStudentRepository : IRepository&lt;Student&gt;
 
 public class StudentRepository : Repository&lt;Student, SchoolDbContext&gt;, IStudentRepository
 {
-    public StudentRepository(IDbContextFactory dbContextFactory, EventBag eventBag, IBoltOnClock boltOnClock)
-        : base(dbContextFactory, eventBag, boltOnClock)
+    public StudentRepository(SchoolDbContext schoolDbContext)
+        : base(schoolDbContext)
     {
     }
 }

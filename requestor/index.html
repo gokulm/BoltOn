@@ -64,6 +64,9 @@
     <li class="toctree-l2"><a href="#interceptors">Interceptors</a></li>
     
 
+    <li class="toctree-l2"><a href="#why-requestor">Why Requestor?</a></li>
+    
+
     </ul>
 	    </li>
           
@@ -243,6 +246,13 @@ serviceCollection.BoltOn(options =&gt;
 </code></pre>
 </li>
 </ul>
+<h2 id="why-requestor">Why Requestor?</h2>
+<p>Adding a request, a handler and a response for every single request may look like as if we are writing a lot of code, but the advantages of it are:</p>
+<ol>
+<li>Every handler class will be responsible for one and only one thing, and thus follow <strong>Single Responsibility Principle</strong>, which makes them <strong>readable, maintainable, testable</strong> and <strong>reusable</strong>. </li>
+<li>The same request/handler and the requestor can be used in Web API based applications, background jobs using <a href="../hangfire">Hangfire</a> and message queueing using <a href="../bus">AppServiceBus</a>, and thus it will be easy for developers to pick it up.</li>
+<li>Common functionality like logging, caching, unit of work etc., can be abstracted out and can be added to handlers easily using <a href="../requestor/#interceptors">interceptors</a>.  </li>
+</ol>
               
             </div>
           </div>
