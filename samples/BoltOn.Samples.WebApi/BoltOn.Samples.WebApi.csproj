@@ -4,7 +4,7 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BoltOn" Version="1.0.0" />
+    <PackageReference Include="BoltOn" Version="1.1.0" />
     <PackageReference Include="BoltOn.Cache" Version="1.0.0" />
     <PackageReference Include="BoltOn.Data.EF" Version="1.0.0" />
     <PackageReference Include="BoltOn.Hangfire" Version="1.0.0" />

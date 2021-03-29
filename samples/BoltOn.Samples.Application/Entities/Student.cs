@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using BoltOn.Samples.Application.Handlers;
+using System.Linq;
+using BoltOn.Exceptions;
 
 namespace BoltOn.Samples.Application.Entities
 {
@@ -28,12 +30,20 @@ namespace BoltOn.Samples.Application.Entities
 			Email = request.Email;
 		}
 
-		public void Update(UpdateStudentRequest request)
+		internal void Update(UpdateStudentRequest request)
 		{
 			FirstName = request.FirstName;
 			LastName = request.LastName;
 			StudentTypeId = request.StudentTypeId;
 			Email = request.Email;
+		}
+
+		internal void EnrollCourse(Guid courseId)
+		{
+			if (_courses.Any(a => a.CourseId == courseId))
+				throw new BusinessValidationException("Course already enrolled");
+
+			_courses.Add(new StudentCourse(StudentId, courseId));
 		}
 	}
 }
