@@ -8,7 +8,9 @@ namespace BoltOn.Samples.Application
 	{
 		public MappingProfile()
 		{
-			CreateMap<Student, StudentDto>();
+			CreateMap<Student, StudentDto>()
+				.ForMember(d => d.Courses, o => o.Ignore());
+			CreateMap<Course, CourseDto>();
 		}
 	}
 }

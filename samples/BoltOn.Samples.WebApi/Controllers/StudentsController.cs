@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Requestor.Pipeline;
 using BoltOn.Samples.Application.DTOs;
-using BoltOn.Samples.Application.Entities;
 using BoltOn.Samples.Application.Handlers;
 using Microsoft.AspNetCore.Mvc;
 

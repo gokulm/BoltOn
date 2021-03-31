@@ -81,6 +81,7 @@ namespace BoltOn.Samples.WebApi
 			});
 			services.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
 			services.AddTransient<IQueryRepository<StudentType>, QueryRepository<StudentType, SchoolDbContext>>();
+			services.AddTransient<IQueryRepository<Course>, QueryRepository<Course, SchoolDbContext>>();
 		}
 
 		public void Configure(IApplicationBuilder app, IHostApplicationLifetime appLifetime, IWebHostEnvironment env)

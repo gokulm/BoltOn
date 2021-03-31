@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace BoltOn.Samples.Application.DTOs
 {
@@ -10,5 +11,6 @@ namespace BoltOn.Samples.Application.DTOs
 		public string StudentType { get; set; }
 		public string Email { get; set; }
 		public int StudentTypeId { get; set; }
+		public IList<CourseDto> Courses { get; set; } = new List<CourseDto>();
 	}
 }
