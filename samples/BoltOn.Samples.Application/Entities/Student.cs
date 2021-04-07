@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using BoltOn.Samples.Application.Handlers;
 using System.Linq;
 using BoltOn.Exceptions;
+using BoltOn.Cqrs;
 
 namespace BoltOn.Samples.Application.Entities
 {
-	public class Student
+	public class Student : BaseCqrsEntity
 	{
 		private List<StudentCourse> _courses = new List<StudentCourse>();
 
@@ -16,6 +17,8 @@ namespace BoltOn.Samples.Application.Entities
 		public virtual string Email { get; private set; }
 		public virtual int StudentTypeId { get; private set; }
 		public virtual IReadOnlyCollection<StudentCourse> Courses { get { return _courses.AsReadOnly(); } }
+
+		public override string CqrsEntityId => StudentId.ToString();
 
 		private Student()
 		{
@@ -28,6 +31,8 @@ namespace BoltOn.Samples.Application.Entities
 			LastName = request.LastName;
 			StudentTypeId = request.StudentTypeId;
 			Email = request.Email;
+
+			RaiseEvent(new StudentCreatedEvent(CqrsEntityId, FirstName, LastName));
 		}
 
 		internal void Update(UpdateStudentRequest request)

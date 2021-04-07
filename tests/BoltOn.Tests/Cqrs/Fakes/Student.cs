@@ -5,7 +5,11 @@ namespace BoltOn.Tests.Cqrs.Fakes
 {
 	public class Student : BaseCqrsEntity
 	{
+		public Guid Id { get; set; }
+
 		public string Name { get; internal set; }
+
+		public override string CqrsEntityId => Id.ToString();
 
 		public Student()
 		{
@@ -14,7 +18,6 @@ namespace BoltOn.Tests.Cqrs.Fakes
 		public Student(string name, Guid? id = null)
 		{
 			Name = name;
-			Id = id ?? Guid.NewGuid();
 
 			RaiseEvent(new StudentCreatedEvent
 			{

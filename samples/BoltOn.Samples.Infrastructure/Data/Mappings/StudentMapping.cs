@@ -15,6 +15,10 @@ namespace BoltOn.Samples.Infrastructure.Data.Mappings
 				.Property(p => p.StudentId)
 				.HasColumnName("StudentId")
 				.ValueGeneratedNever();
+			builder
+				.Ignore(p => p.EventsToBeProcessed)
+				.Ignore(p => p.Courses)
+				.Ignore(p => p.ProcessedEvents);
 		}
 	}
 }

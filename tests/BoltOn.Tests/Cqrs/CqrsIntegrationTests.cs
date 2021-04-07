@@ -485,7 +485,7 @@ namespace BoltOn.Tests.Cqrs
             await requestor.ProcessAsync(new StudentUpdatedEvent
             {
                 Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId),
-                SourceId = CqrsConstants.EntityId
+                //EntityId = CqrsConstants.EntityId
             });
 
             // assert

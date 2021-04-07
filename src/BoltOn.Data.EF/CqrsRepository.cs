@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Bootstrapping;
+using BoltOn.Bus;
 using BoltOn.Cqrs;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,14 +12,12 @@ namespace BoltOn.Data.EF
 		where TDbContext : DbContext
 		where TEntity : BaseCqrsEntity
 	{
-		private readonly EventBag _eventBag;
-		private readonly CqrsOptions _cqrsOptions;
+		private readonly IAppServiceBus _bus;
 
-		public CqrsRepository(TDbContext dbContext, EventBag eventBag,
-			CqrsOptions cqrsOptions) : base(dbContext)
+		public CqrsRepository(TDbContext dbContext,
+			IAppServiceBus bus) : base(dbContext)
 		{
-			_eventBag = eventBag;
-			_cqrsOptions = cqrsOptions;
+			_bus = bus;
 		}
 
 		protected override async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
@@ -28,7 +25,8 @@ namespace BoltOn.Data.EF
 			await SaveChangesAsync(new[] { entity }, cancellationToken);
 		}
 
-		protected override async Task SaveChangesAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+		protected override async Task SaveChangesAsync(IEnumerable<TEntity> entities,
+			CancellationToken cancellationToken = default)
 		{
 			foreach (var entity in entities)
 			{
@@ -41,23 +39,8 @@ namespace BoltOn.Data.EF
 		{
 			entity.EventsToBeProcessed.ToList().ForEach(e =>
 			{
-				_eventBag.AddEventToBeProcessed(e, async (e) => await RemoveEventToBeProcessed(e));
+				_bus.PublishAsync(e);
 			});
-
-			if (entity.ProcessedEvents.Any() && _cqrsOptions.PurgeEventsProcessedBefore.HasValue)
-			{
-				var timeStamp = DateTime.UtcNow.Add(-1 * _cqrsOptions.PurgeEventsProcessedBefore.Value);
-				var processedEventsToBeRemoved = entity.ProcessedEvents.Where(w => w.ProcessedDate < timeStamp).ToList();
-				processedEventsToBeRemoved.ForEach(e => entity.RemoveProcessedEvent(e));
-			}
-		}
-
-		private async Task RemoveEventToBeProcessed(ICqrsEvent @event)
-		{
-			var entity = await GetByIdAsync(@event.SourceId);
-			entity.RemoveEventToBeProcessed(@event);
-			await UpdateAsync(entity);
-			await DbContext.SaveChangesAsync();
 		}
 	}
 }

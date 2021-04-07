@@ -6,7 +6,7 @@ namespace BoltOn.Cqrs
 {
 	public abstract class BaseCqrsEntity
 	{
-		public virtual Guid Id { get; set; }
+		public abstract string CqrsEntityId { get; }
 
 		private HashSet<ICqrsEvent> _eventsToBeProcessed = new HashSet<ICqrsEvent>();
 
@@ -37,8 +37,8 @@ namespace BoltOn.Cqrs
 			if (@event.Id == Guid.Empty)
 				@event.Id = Guid.NewGuid();
 
-			@event.SourceId = Id;
-			@event.SourceTypeName = GetType().AssemblyQualifiedName;
+			@event.EntityId = CqrsEntityId;
+			@event.EntityType = GetType().AssemblyQualifiedName;
 			if (!@event.CreatedDate.HasValue)
 				@event.CreatedDate = DateTime.Now;
 			_eventsToBeProcessed.Add(@event);
@@ -52,8 +52,6 @@ namespace BoltOn.Cqrs
 				return false;
 
 			action(@event);
-			@event.DestinationId = Id;
-			@event.DestinationTypeName = GetType().AssemblyQualifiedName;
 			if (!@event.ProcessedDate.HasValue)
 				@event.ProcessedDate = DateTime.Now;
 			_processedEvents.Add(@event);

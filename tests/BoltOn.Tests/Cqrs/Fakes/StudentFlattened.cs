@@ -4,7 +4,11 @@ using BoltOn.Cqrs;
 namespace BoltOn.Tests.Cqrs.Fakes
 {
     public class StudentFlattened : BaseCqrsEntity
-    {
+	{
+		public Guid Id { get; set; }
+
+		public override string CqrsEntityId => Id.ToString();
+
 		public virtual string FirstName { get; internal set; }
 
 		public virtual string LastName { get; internal set; }
@@ -22,7 +26,6 @@ namespace BoltOn.Tests.Cqrs.Fakes
 			@event.ProcessedDate = DateTime.UtcNow.AddSeconds(-3);
 			ProcessEvent(@event, e =>
 			{
-				Id = @event.SourceId;
 				FirstName = @event.Input;
 				LastName = @event.Input;
 			});

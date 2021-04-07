@@ -6,23 +6,25 @@ namespace BoltOn.Cqrs
 	public interface ICqrsEvent : IRequest
 	{
 		Guid Id { get; set; }
-		string SourceTypeName { get; set; }
-		string DestinationTypeName { get; set; }
-		Guid SourceId { get; set; }
-		Guid DestinationId { get; set; }
-		DateTime? CreatedDate { get; set; }
-		DateTime? ProcessedDate { get; set; }
+		string EntityType { get; set; }
+		string EntityId { get; set; }
+		DateTimeOffset? CreatedDate { get; set; }
+		DateTimeOffset? ProcessedDate { get; set; }
 	}
 
 	public class CqrsEvent : ICqrsEvent
     {
         public Guid Id { get; set; }
-        public string SourceTypeName { get; set; }
-		public string DestinationTypeName { get; set; }
-		public Guid SourceId { get; set; }
-		public Guid DestinationId { get; set; }
-		public DateTime? CreatedDate { get; set; }
-		public DateTime? ProcessedDate { get; set; }
+        public string EntityType { get; set; }
+		public string EntityId { get; set; }
+		public DateTimeOffset? CreatedDate { get; set; }
+		public DateTimeOffset? ProcessedDate { get; set; }
+
+		public CqrsEvent()
+		{
+			Id = Guid.NewGuid();
+			CreatedDate = DateTime.Now;
+		}
 
 		public override bool Equals(object obj)
 		{
@@ -33,5 +35,11 @@ namespace BoltOn.Cqrs
 		{
 			return Id.GetHashCode();
 		}
+	}
+
+	public class EventStore<TData> where TData: ICqrsEvent
+	{
+		public Guid EventId { get; set; }
+		public TData Data { get; set; }
 	}
 }

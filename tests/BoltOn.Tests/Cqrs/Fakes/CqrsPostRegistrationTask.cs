@@ -25,12 +25,12 @@ namespace BoltOn.Tests.Cqrs.Fakes
 
                 cqrsDbContext.Set<Student>().Add(new Student
                 {
-                    Id = CqrsConstants.EntityId,
+                    //CqrsEntityId = CqrsConstants.EntityId,
                     Name = "value to be replaced"
                 });
                 cqrsDbContext.Set<StudentFlattened>().Add(new StudentFlattened
                 {
-                    Id = CqrsConstants.EntityId,
+                    //CqrsEntityId = CqrsConstants.EntityId,
                     FirstName = "value to be replaced",
                     ProcessedEvents = new HashSet<CqrsEvent>
                     {

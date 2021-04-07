@@ -42,7 +42,7 @@ namespace BoltOn.Cqrs
 				foreach (var @event in _eventBag.EventsToBeProcessed.Keys)
 				{
 					eventId = @event.Id;
-					_logger.Debug($"Publishing event. Id: {@event.Id} SourceType: {@event.SourceTypeName}");
+					_logger.Debug($"Publishing event. Id: {@event.Id} SourceType: {@event.EntityType}");
 					await _eventDispatcher.DispatchAsync(@event, cancellationToken);
 
 					if (_cqrsOptions.PurgeEventsToBeProcessed)

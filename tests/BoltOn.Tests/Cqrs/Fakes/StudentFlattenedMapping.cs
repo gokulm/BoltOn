@@ -11,7 +11,7 @@ namespace BoltOn.Tests.Cqrs.Fakes
             base.Configure(builder);
             builder
                 .ToTable("StudentFlattened")
-                .HasKey(k => k.Id);
+                .HasKey(k => k.CqrsEntityId);
         }
     }
 }

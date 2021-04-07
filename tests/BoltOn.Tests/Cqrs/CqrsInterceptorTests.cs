@@ -27,14 +27,14 @@ namespace BoltOn.Tests.Cqrs
             var studentCreatedEvent = new StudentCreatedEvent
             {
                 Id = successId,
-                SourceTypeName = typeof(Student).Name,
-                DestinationTypeName = typeof(Student).Name
+                EntityType = typeof(Student).Name,
+                //DestinationTypeName = typeof(Student).Name
             };
             var studentUpdatedEvent = new StudentUpdatedEvent
             {
                 Id = successId2,
-                SourceTypeName = typeof(Student).Name,
-                DestinationTypeName = typeof(Student).Name
+                EntityType = typeof(Student).Name,
+                //DestinationTypeName = typeof(Student).Name
             };
             var eventsToBeProcessed = new Dictionary<ICqrsEvent, Func<ICqrsEvent, Task>>
             {
@@ -80,14 +80,14 @@ namespace BoltOn.Tests.Cqrs
             var studentCreatedEvent = new StudentCreatedEvent
             {
                 Id = failedId,
-                SourceTypeName = typeof(Student).Name,
-                DestinationTypeName = typeof(Student).Name
+                EntityType = typeof(Student).Name,
+                //DestinationTypeName = typeof(Student).Name
             };
             var studentUpdatedEvent = new StudentUpdatedEvent
             {
                 Id = failedId2,
-                SourceTypeName = typeof(Student).Name,
-                DestinationTypeName = typeof(Student).Name
+                EntityType = typeof(Student).Name,
+                //DestinationTypeName = typeof(Student).Name
             };
             var eventsToBeProcessed = new Dictionary<ICqrsEvent, Func<ICqrsEvent, Task>>
             {
@@ -133,14 +133,14 @@ namespace BoltOn.Tests.Cqrs
             var studentCreatedEvent = new StudentCreatedEvent
             {
                 Id = failedId,
-                SourceTypeName = typeof(Student).Name,
-                DestinationTypeName = typeof(Student).Name
+                EntityType = typeof(Student).Name,
+                //DestinationTypeName = typeof(Student).Name
             };
             var studentUpdatedEvent = new StudentUpdatedEvent
             {
                 Id = failedId2,
-                SourceTypeName = typeof(Student).Name,
-                DestinationTypeName = typeof(Student).Name
+                EntityType = typeof(Student).Name,
+                //DestinationTypeName = typeof(Student).Name
             };
             var eventsToBeProcessed = new Dictionary<ICqrsEvent, Func<ICqrsEvent, Task>>
             {
@@ -185,8 +185,8 @@ namespace BoltOn.Tests.Cqrs
             var studentCreatedEvent = new StudentCreatedEvent
             {
                 Id = successId,
-                SourceTypeName = typeof(Student).Name,
-                DestinationTypeName = typeof(Student).Name
+                EntityType = typeof(Student).Name,
+                //DestinationTypeName = typeof(Student).Name
             };
             var eventsToBeProcessed = new Dictionary<ICqrsEvent, Func<ICqrsEvent, Task>>
             {

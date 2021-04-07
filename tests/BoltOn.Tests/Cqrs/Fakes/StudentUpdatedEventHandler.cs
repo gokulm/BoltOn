@@ -37,7 +37,7 @@ namespace BoltOn.Tests.Cqrs.Fakes
         public async Task HandleAsync(StudentUpdatedEvent request, CancellationToken cancellationToken)
         {
             _logger.Debug($"{nameof(StudentUpdatedEventHandler)} invoked");
-            var studentFlattened = await _repository.GetByIdAsync(request.SourceId);
+            var studentFlattened = await _repository.GetByIdAsync(request.EntityId);
             var isSuccessful = studentFlattened.UpdateInput(request);
             if (isSuccessful)
             {
