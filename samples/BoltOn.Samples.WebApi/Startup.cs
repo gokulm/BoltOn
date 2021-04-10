@@ -22,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using BoltOn.Bus.MassTransit;
+using BoltOn.Bus;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -97,6 +98,17 @@ namespace BoltOn.Samples.WebApi
 				c.Filters.Add<CustomExceptionFilter>();
 				c.Filters.Add<ModelValidationFilter>();
 			});
+
+			//services.AddTransient<IRepository<Student>>(s =>
+			//	{
+			//		var bus = s.GetRequiredService<IAppServiceBus>();
+			//		var repo = new CqrsRepository<Student, SchoolDbContext>(s.GetRequiredService<SchoolDbContext>(), bus)
+			//		{
+			//			Bus = bus
+			//		};
+			//		return repo;
+			//	});
+
 			services.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolDbContext>>();
 			services.AddTransient<IQueryRepository<StudentType>, QueryRepository<StudentType, SchoolDbContext>>();
 			services.AddTransient<IQueryRepository<Course>, QueryRepository<Course, SchoolDbContext>>();

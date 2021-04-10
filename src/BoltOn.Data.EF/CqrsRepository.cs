@@ -28,11 +28,11 @@ namespace BoltOn.Data.EF
 		protected override async Task SaveChangesAsync(IEnumerable<TEntity> entities,
 			CancellationToken cancellationToken = default)
 		{
+			await DbContext.SaveChangesAsync(cancellationToken);
 			foreach (var entity in entities)
 			{
 				PublishEvents(entity);
 			}
-			await DbContext.SaveChangesAsync(cancellationToken);
 		}
 
 		protected virtual void PublishEvents(TEntity entity)
