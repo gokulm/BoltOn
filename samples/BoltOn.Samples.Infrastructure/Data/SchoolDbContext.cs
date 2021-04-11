@@ -14,6 +14,7 @@ namespace BoltOn.Samples.Infrastructure.Data
 		{
 			base.OnModelCreating(modelBuilder);
 			modelBuilder.ApplyConfigurationsFromNamespaceOfType<StudentMapping>();
+			modelBuilder.ApplyConfiguration(new EventStore2Mapping());
 		}
     }
 }

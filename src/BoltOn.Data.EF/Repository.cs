@@ -54,7 +54,7 @@ namespace BoltOn.Data.EF
 		protected virtual async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			await SaveChangesAsync(new[] { entity} , cancellationToken);
+			await SaveChangesAsync(new[] { entity }, cancellationToken);
 		}
 
 		protected virtual async Task SaveChangesAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)

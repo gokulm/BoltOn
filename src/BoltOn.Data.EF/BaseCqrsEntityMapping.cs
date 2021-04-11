@@ -28,10 +28,9 @@ namespace BoltOn.Data.EF
 		}
 	}
 
-	public class EventStoreMapping<TEntity> : IEntityTypeConfiguration<EventStore<TEntity>>
-		where TEntity : ICqrsEvent
+	public class EventStore2Mapping : IEntityTypeConfiguration<EventStore2>
 	{
-		public void Configure(EntityTypeBuilder<EventStore<TEntity>> builder)
+		public void Configure(EntityTypeBuilder<EventStore2> builder)
 		{
 			builder
 				.ToTable("EventStore")
@@ -50,7 +49,7 @@ namespace BoltOn.Data.EF
 				.Property(p => p.Data)
 				.HasConversion(
 						v => JsonConvert.SerializeObject(v, settings),
-						v => JsonConvert.DeserializeObject<TEntity>(v, settings));
+						v => JsonConvert.DeserializeObject<ICqrsEvent>(v, settings));
 		}
 	}
 }

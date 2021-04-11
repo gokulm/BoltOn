@@ -37,9 +37,13 @@ namespace BoltOn.Cqrs
 		}
 	}
 
-	public class EventStore<TData> where TData: ICqrsEvent
+	public class EventStore2 
 	{
 		public Guid EventId { get; set; }
-		public TData Data { get; set; }
+		public ICqrsEvent Data { get; set; }
+		public string EntityType { get; set; }
+		public string EntityId { get; set; }
+		public DateTimeOffset? CreatedDate { get; set; }
+		public DateTimeOffset? ProcessedDate { get; set; }
 	}
 }
