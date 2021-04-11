@@ -21,7 +21,7 @@ namespace BoltOn.Samples.Application.Handlers
 			string lastName)
 		{
 			Id = Guid.NewGuid();
-			EntityType = typeof(Student).Name;
+			EntityType = typeof(Student).FullName;
 			EntityId = entityId;
 			CreatedDate = DateTimeOffset.Now;
 			FirstName = firstName;

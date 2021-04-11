@@ -47,7 +47,7 @@ namespace BoltOn.Data.EF
 				transactionScope.Complete();
 			}
 
-			//entitiesList.ForEach(async e => await PublishEvents(e, cancellationToken));
+			entitiesList.ForEach(async e => await PublishEvents(e, cancellationToken));
 		}
 
 		protected async virtual Task AddEvents(TEntity entity, CancellationToken cancellationToken)
@@ -73,14 +73,14 @@ namespace BoltOn.Data.EF
 			{
 				IsolationLevel = IsolationLevel.ReadCommitted
 			}, TransactionScopeAsyncFlowOption.Enabled);
-			var entityEvents = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.CqrsEntityId &&
+			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.CqrsEntityId &&
 					f.EntityType == entity.GetType().FullName)).ToList();
-			var eventsToBePublished = entityEvents.Select(s => s.Data).ToList();
+			var eventsToBePublished = eventStoreList.Select(s => s.Data).ToList();
 
-			foreach (var @event in eventsToBePublished)
+			foreach (var eventStore in eventStoreList)
 			{
-				await _eventStoreRepository.DeleteAsync(@event, cancellationToken);
-				await _bus.PublishAsync(@event, cancellationToken);
+				await _eventStoreRepository.DeleteAsync(eventStore.EventId, cancellationToken);
+				await _bus.PublishAsync(eventStore.Data, cancellationToken);
 			}
 			transactionScope.Complete();
 		}
