@@ -32,10 +32,10 @@ namespace BoltOn.Tests.Cqrs.Fakes
                 {
                     //CqrsEntityId = CqrsConstants.EntityId,
                     FirstName = "value to be replaced",
-                    ProcessedEvents = new HashSet<CqrsEvent>
-                    {
-                        new CqrsEvent {Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId)}
-                    }
+                    //ProcessedEvents = new HashSet<BaseDomainEvent<Student>>
+                    //{
+                    //    new BaseDomainEvent<Student> {Id = Guid.Parse(CqrsConstants.AlreadyProcessedEventId)}
+                    //}
                 });
                 cqrsDbContext.SaveChanges();
             }

@@ -7,7 +7,7 @@ using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Tests.Cqrs.Fakes
 {
-	public class StudentCreatedEvent : CqrsEvent
+	public class StudentCreatedEvent : BaseDomainEvent<Student>
 	{
 		public string Input { get; set; }
 	}

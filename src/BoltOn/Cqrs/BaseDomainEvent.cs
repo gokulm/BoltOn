@@ -3,7 +3,7 @@ using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Cqrs
 {
-	public interface ICqrsEvent : IRequest
+	public interface IDomainEvent : IRequest
 	{
 		Guid Id { get; set; }
 		string EntityType { get; set; }
@@ -12,7 +12,7 @@ namespace BoltOn.Cqrs
 		DateTimeOffset? ProcessedDate { get; set; }
 	}
 
-	public class CqrsEvent : ICqrsEvent
+	public abstract class BaseDomainEvent<TEntity> : IDomainEvent
     {
         public Guid Id { get; set; }
         public string EntityType { get; set; }
@@ -20,30 +20,21 @@ namespace BoltOn.Cqrs
 		public DateTimeOffset? CreatedDate { get; set; }
 		public DateTimeOffset? ProcessedDate { get; set; }
 
-		public CqrsEvent()
+		public BaseDomainEvent()
 		{
 			Id = Guid.NewGuid();
 			CreatedDate = DateTime.Now;
+			EntityType = typeof(TEntity).FullName;
 		}
 
 		public override bool Equals(object obj)
 		{
-			return obj is CqrsEvent value && Id == value.Id;
+			return obj is BaseDomainEvent<TEntity> value && Id == value.Id;
 		}
 
 		public override int GetHashCode()
 		{
 			return Id.GetHashCode();
 		}
-	}
-
-	public class EventStore2 
-	{
-		public Guid EventId { get; set; }
-		public ICqrsEvent Data { get; set; }
-		public string EntityType { get; set; }
-		public string EntityId { get; set; }
-		public DateTimeOffset? CreatedDate { get; set; }
-		public DateTimeOffset? ProcessedDate { get; set; }
 	}
 }

@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace BoltOn.Data.EF
 {
 	public class BaseCqrsEntityMapping<TEntity> : IEntityTypeConfiguration<TEntity>
-		where TEntity : BaseCqrsEntity
+		where TEntity : BaseDomainEntity
 	{
 		public virtual void Configure(EntityTypeBuilder<TEntity> builder)
 		{
@@ -19,18 +19,18 @@ namespace BoltOn.Data.EF
 				.Property(p => p.EventsToBeProcessed)
 				.HasConversion(
 						v => JsonConvert.SerializeObject(v, settings),
-						v => JsonConvert.DeserializeObject(v, settings) as HashSet<ICqrsEvent>);
+						v => JsonConvert.DeserializeObject(v, settings) as HashSet<IDomainEvent>);
 			builder
 				.Property(p => p.ProcessedEvents)
 				.HasConversion(
 						v => JsonConvert.SerializeObject(v, settings),
-						v => JsonConvert.DeserializeObject(v, settings) as HashSet<ICqrsEvent>);
+						v => JsonConvert.DeserializeObject(v, settings) as HashSet<IDomainEvent>);
 		}
 	}
 
-	public class EventStore2Mapping : IEntityTypeConfiguration<EventStore2>
+	public class EventStore2Mapping : IEntityTypeConfiguration<EventStore>
 	{
-		public void Configure(EntityTypeBuilder<EventStore2> builder)
+		public void Configure(EntityTypeBuilder<EventStore> builder)
 		{
 			builder
 				.ToTable("EventStore")
@@ -49,7 +49,7 @@ namespace BoltOn.Data.EF
 				.Property(p => p.Data)
 				.HasConversion(
 						v => JsonConvert.SerializeObject(v, settings),
-						v => JsonConvert.DeserializeObject<ICqrsEvent>(v, settings));
+						v => JsonConvert.DeserializeObject<IDomainEvent>(v, settings));
 		}
 	}
 }

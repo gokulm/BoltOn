@@ -7,7 +7,7 @@ using BoltOn.Cqrs;
 
 namespace BoltOn.Samples.Application.Entities
 {
-	public class Student : BaseCqrsEntity
+	public class Student : BaseDomainEntity
 	{
 		private List<StudentCourse> _courses = new List<StudentCourse>();
 
@@ -18,7 +18,7 @@ namespace BoltOn.Samples.Application.Entities
 		public virtual int StudentTypeId { get; private set; }
 		public virtual IReadOnlyCollection<StudentCourse> Courses { get { return _courses.AsReadOnly(); } }
 
-		public override string CqrsEntityId => StudentId.ToString();
+		public override string DomainEntityId => StudentId.ToString();
 
 		private Student()
 		{
@@ -32,7 +32,7 @@ namespace BoltOn.Samples.Application.Entities
 			StudentTypeId = request.StudentTypeId;
 			Email = request.Email;
 
-			RaiseEvent(new StudentCreatedEvent(CqrsEntityId, FirstName, LastName));
+			RaiseEvent(new StudentCreatedEvent(DomainEntityId, FirstName, LastName));
 		}
 
 		internal void Update(UpdateStudentRequest request)

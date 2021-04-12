@@ -8,6 +8,8 @@ using BoltOn.Requestor.Pipeline;
 
 namespace BoltOn.Cqrs
 {
+	// todo: this class can be removed
+	[Obsolete]
 	public class CqrsInterceptor : IInterceptor
 	{
 		private readonly EventBag _eventBag;

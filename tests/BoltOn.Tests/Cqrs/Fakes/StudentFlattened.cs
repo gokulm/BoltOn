@@ -3,11 +3,11 @@ using BoltOn.Cqrs;
 
 namespace BoltOn.Tests.Cqrs.Fakes
 {
-    public class StudentFlattened : BaseCqrsEntity
+    public class StudentFlattened : BaseDomainEntity
 	{
 		public Guid Id { get; set; }
 
-		public override string CqrsEntityId => Id.ToString();
+		public override string DomainEntityId => Id.ToString();
 
 		public virtual string FirstName { get; internal set; }
 

@@ -4,32 +4,32 @@ using System.Linq;
 
 namespace BoltOn.Cqrs
 {
-	public abstract class BaseCqrsEntity
+	public abstract class BaseDomainEntity
 	{
-		public abstract string CqrsEntityId { get; }
+		public abstract string DomainEntityId { get; }
 
-		private HashSet<ICqrsEvent> _eventsToBeProcessed = new HashSet<ICqrsEvent>();
+		private HashSet<IDomainEvent> _eventsToBeProcessed = new HashSet<IDomainEvent>();
 
-		private HashSet<ICqrsEvent> _processedEvents = new HashSet<ICqrsEvent>();
+		private HashSet<IDomainEvent> _processedEvents = new HashSet<IDomainEvent>();
 
-		public virtual IEnumerable<ICqrsEvent> EventsToBeProcessed
+		public virtual IEnumerable<IDomainEvent> EventsToBeProcessed
 		{
 			get => _eventsToBeProcessed;
 			internal set => _eventsToBeProcessed = value == null
-				? new HashSet<ICqrsEvent>()
-				: new HashSet<ICqrsEvent>(value);
+				? new HashSet<IDomainEvent>()
+				: new HashSet<IDomainEvent>(value);
 		}
 
-		public virtual IEnumerable<ICqrsEvent> ProcessedEvents
+		public virtual IEnumerable<IDomainEvent> ProcessedEvents
 		{
 			get => _processedEvents;
 			internal set => _processedEvents = value == null
-				? new HashSet<ICqrsEvent>()
-				: new HashSet<ICqrsEvent>(value);
+				? new HashSet<IDomainEvent>()
+				: new HashSet<IDomainEvent>(value);
 		}
 
 		protected bool RaiseEvent<TEvent>(TEvent @event)
-			where TEvent : ICqrsEvent
+			where TEvent : IDomainEvent
 		{
 			if (_eventsToBeProcessed.Any(c => c.Id == @event.Id))
 				return false;
@@ -37,7 +37,7 @@ namespace BoltOn.Cqrs
 			if (@event.Id == Guid.Empty)
 				@event.Id = Guid.NewGuid();
 
-			@event.EntityId = CqrsEntityId;
+			@event.EntityId = DomainEntityId;
 			@event.EntityType = GetType().AssemblyQualifiedName;
 			if (!@event.CreatedDate.HasValue)
 				@event.CreatedDate = DateTime.Now;
@@ -46,7 +46,7 @@ namespace BoltOn.Cqrs
 		}
 
 		protected bool ProcessEvent<TEvent>(TEvent @event, Action<TEvent> action)
-			where TEvent : ICqrsEvent
+			where TEvent : IDomainEvent
 		{
 			if (_processedEvents.Any(c => c.Id == @event.Id))
 				return false;
@@ -59,13 +59,13 @@ namespace BoltOn.Cqrs
 		}
 
 		public void RemoveEventToBeProcessed<TEvent>(TEvent @event)
-			where TEvent : ICqrsEvent
+			where TEvent : IDomainEvent
 		{
 			_eventsToBeProcessed.Remove(@event);
 		}
 
 		public void RemoveProcessedEvent<TEvent>(TEvent @event)
-			where TEvent : ICqrsEvent
+			where TEvent : IDomainEvent
 		{
 			_processedEvents.Remove(@event);
 		}

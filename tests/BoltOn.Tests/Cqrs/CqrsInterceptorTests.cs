@@ -23,7 +23,7 @@ namespace BoltOn.Tests.Cqrs
             var successId = Guid.NewGuid();
             var successId2 = Guid.NewGuid();
             var eventBag = autoMocker.GetMock<EventBag>();
-            var removeEventToBeProcessedHandle = new Mock<Func<ICqrsEvent, Task>>();
+            var removeEventToBeProcessedHandle = new Mock<Func<IDomainEvent, Task>>();
             var studentCreatedEvent = new StudentCreatedEvent
             {
                 Id = successId,
@@ -36,7 +36,7 @@ namespace BoltOn.Tests.Cqrs
                 EntityType = typeof(Student).Name,
                 //DestinationTypeName = typeof(Student).Name
             };
-            var eventsToBeProcessed = new Dictionary<ICqrsEvent, Func<ICqrsEvent, Task>>
+            var eventsToBeProcessed = new Dictionary<IDomainEvent, Func<IDomainEvent, Task>>
             {
                 { studentCreatedEvent,  removeEventToBeProcessedHandle.Object },
                 { studentUpdatedEvent,  removeEventToBeProcessedHandle.Object }
@@ -64,7 +64,7 @@ namespace BoltOn.Tests.Cqrs
                 $"SourceType: {typeof(Student).Name}"));
             logger.Verify(v => v.Debug($"Dispatching or purging failed. Event Id: {successId}"), Times.Never);
             logger.Verify(v => v.Debug($"Dispatching or purging failed. Event Id: {successId2}"), Times.Never);
-            eventBag.Verify(v => v.RemoveEventToBeProcessed(It.IsAny<ICqrsEvent>()), Times.Exactly(2));
+            eventBag.Verify(v => v.RemoveEventToBeProcessed(It.IsAny<IDomainEvent>()), Times.Exactly(2));
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace BoltOn.Tests.Cqrs
             var failedId = Guid.NewGuid();
             var failedId2 = Guid.NewGuid();
             var eventBag = autoMocker.GetMock<EventBag>();
-            var removeEventToBeProcessedHandle = new Mock<Func<ICqrsEvent, Task>>();
+            var removeEventToBeProcessedHandle = new Mock<Func<IDomainEvent, Task>>();
 
             var studentCreatedEvent = new StudentCreatedEvent
             {
@@ -89,7 +89,7 @@ namespace BoltOn.Tests.Cqrs
                 EntityType = typeof(Student).Name,
                 //DestinationTypeName = typeof(Student).Name
             };
-            var eventsToBeProcessed = new Dictionary<ICqrsEvent, Func<ICqrsEvent, Task>>
+            var eventsToBeProcessed = new Dictionary<IDomainEvent, Func<IDomainEvent, Task>>
             {
                 { studentCreatedEvent,  removeEventToBeProcessedHandle.Object },
                 { studentUpdatedEvent,  removeEventToBeProcessedHandle.Object }
@@ -98,7 +98,7 @@ namespace BoltOn.Tests.Cqrs
 
             var logger = autoMocker.GetMock<IAppLogger<CqrsInterceptor>>();
             var eventDispatcher = autoMocker.GetMock<IEventDispatcher>();
-            eventDispatcher.Setup(d => d.DispatchAsync(It.Is<ICqrsEvent>(t => t.Id == failedId), default))
+            eventDispatcher.Setup(d => d.DispatchAsync(It.Is<IDomainEvent>(t => t.Id == failedId), default))
                 .Throws(new Exception());
 
             var cqrsOptions = autoMocker.GetMock<CqrsOptions>();
@@ -129,7 +129,7 @@ namespace BoltOn.Tests.Cqrs
             var failedId = Guid.NewGuid();
             var failedId2 = Guid.NewGuid();
             var eventBag = autoMocker.GetMock<EventBag>();
-            var removeEventToBeProcessedHandle = new Mock<Func<ICqrsEvent, Task>>();
+            var removeEventToBeProcessedHandle = new Mock<Func<IDomainEvent, Task>>();
             var studentCreatedEvent = new StudentCreatedEvent
             {
                 Id = failedId,
@@ -142,7 +142,7 @@ namespace BoltOn.Tests.Cqrs
                 EntityType = typeof(Student).Name,
                 //DestinationTypeName = typeof(Student).Name
             };
-            var eventsToBeProcessed = new Dictionary<ICqrsEvent, Func<ICqrsEvent, Task>>
+            var eventsToBeProcessed = new Dictionary<IDomainEvent, Func<IDomainEvent, Task>>
             {
                 { studentCreatedEvent,  removeEventToBeProcessedHandle.Object },
                 { studentUpdatedEvent,  removeEventToBeProcessedHandle.Object }
@@ -150,7 +150,7 @@ namespace BoltOn.Tests.Cqrs
             eventBag.Setup(s => s.EventsToBeProcessed).Returns(eventsToBeProcessed);
             var logger = autoMocker.GetMock<IAppLogger<CqrsInterceptor>>();
             var eventDispatcher = autoMocker.GetMock<IEventDispatcher>();
-            eventDispatcher.Setup(d => d.DispatchAsync(It.Is<ICqrsEvent>(t => t.Id == failedId2), default))
+            eventDispatcher.Setup(d => d.DispatchAsync(It.Is<IDomainEvent>(t => t.Id == failedId2), default))
                 .Throws(new Exception());
 
             var cqrsOptions = autoMocker.GetMock<CqrsOptions>();
@@ -171,7 +171,7 @@ namespace BoltOn.Tests.Cqrs
             logger.Verify(v => v.Debug($"Publishing event. Id: {failedId2} " +
                 $"SourceType: {typeof(Student).Name}"));
             logger.Verify(v => v.Error($"Dispatching or purging failed. Event Id: {failedId2}"));
-            eventBag.Verify(v => v.RemoveEventToBeProcessed(It.IsAny<ICqrsEvent>()), Times.Once);
+            eventBag.Verify(v => v.RemoveEventToBeProcessed(It.IsAny<IDomainEvent>()), Times.Once);
         }
 
         [Fact]
@@ -181,14 +181,14 @@ namespace BoltOn.Tests.Cqrs
             var autoMocker = new AutoMocker();
             var successId = Guid.NewGuid();
             var eventBag = autoMocker.GetMock<EventBag>();
-            var removeEventToBeProcessedHandle = new Mock<Func<ICqrsEvent, Task>>();
+            var removeEventToBeProcessedHandle = new Mock<Func<IDomainEvent, Task>>();
             var studentCreatedEvent = new StudentCreatedEvent
             {
                 Id = successId,
                 EntityType = typeof(Student).Name,
                 //DestinationTypeName = typeof(Student).Name
             };
-            var eventsToBeProcessed = new Dictionary<ICqrsEvent, Func<ICqrsEvent, Task>>
+            var eventsToBeProcessed = new Dictionary<IDomainEvent, Func<IDomainEvent, Task>>
             {
                 { studentCreatedEvent,  removeEventToBeProcessedHandle.Object },
             };
@@ -210,7 +210,7 @@ namespace BoltOn.Tests.Cqrs
             logger.Verify(v => v.Debug($"Publishing event. Id: {successId} " +
                 $"SourceType: {typeof(Student).Name}"));
             logger.Verify(v => v.Debug(It.Is<string>(s => s.StartsWith("Removing event. Id: "))), Times.Never);
-            eventBag.Verify(v => v.RemoveEventToBeProcessed(It.IsAny<ICqrsEvent>()), Times.Once);
+            eventBag.Verify(v => v.RemoveEventToBeProcessed(It.IsAny<IDomainEvent>()), Times.Once);
         }
     }
 }

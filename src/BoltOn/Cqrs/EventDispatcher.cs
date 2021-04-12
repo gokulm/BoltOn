@@ -1,23 +1,30 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Bus;
 using BoltOn.Logging;
 
 namespace BoltOn.Cqrs
 {
+	// todo: this interface can be removed
+	[Obsolete]
 	public interface IEventDispatcher
 	{
-		Task DispatchAsync(ICqrsEvent @event, CancellationToken cancellationToken = default);
+		Task DispatchAsync(IDomainEvent @event, CancellationToken cancellationToken = default);
     }
 
+	// todo: this class can be removed
+	[Obsolete]
 	public class DefaultEventDispatcher : IEventDispatcher
 	{
-		public Task DispatchAsync(ICqrsEvent @event, CancellationToken cancellationToken = default)
+		public Task DispatchAsync(IDomainEvent @event, CancellationToken cancellationToken = default)
 		{
 			return Task.CompletedTask;
 		}
 	}
 
+	// todo: this class can be removed
+	[Obsolete]
 	public class EventDispatcher : IEventDispatcher
 	{
 		private readonly IAppLogger<EventDispatcher> _logger;
@@ -30,7 +37,7 @@ namespace BoltOn.Cqrs
 			_bus = bus;
 		}
 
-		public async Task DispatchAsync(ICqrsEvent @event, CancellationToken cancellationToken = default)
+		public async Task DispatchAsync(IDomainEvent @event, CancellationToken cancellationToken = default)
 		{
 			_logger.Debug($"Publishing event to bus from EventDispatcher. Id: {@event.Id} SourceType: {@event.EntityType}");
 			await _bus.PublishAsync(@event, cancellationToken);

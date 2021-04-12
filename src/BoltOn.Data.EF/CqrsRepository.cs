@@ -11,14 +11,14 @@ namespace BoltOn.Data.EF
 {
 	public class CqrsRepository<TEntity, TDbContext> : Repository<TEntity, TDbContext>
 		where TDbContext : DbContext
-		where TEntity : BaseCqrsEntity
+		where TEntity : BaseDomainEntity
 	{
 		private readonly IAppServiceBus _bus;
-		private readonly IRepository<EventStore2> _eventStoreRepository;
+		private readonly IRepository<EventStore> _eventStoreRepository;
 
 		public CqrsRepository(TDbContext dbContext,
 			IAppServiceBus bus,
-			IRepository<EventStore2> repository) : base(dbContext)
+			IRepository<EventStore> repository) : base(dbContext)
 		{
 			_bus = bus;
 			_eventStoreRepository = repository;
@@ -52,15 +52,15 @@ namespace BoltOn.Data.EF
 
 		protected async virtual Task AddEvents(TEntity entity, CancellationToken cancellationToken)
 		{
-			foreach (var e in entity.EventsToBeProcessed.ToList())
+			foreach (var @event in entity.EventsToBeProcessed.ToList())
 			{
-				var eventStore = new EventStore2
+				var eventStore = new EventStore
 				{
-					EventId = e.Id,
-					EntityId = entity.CqrsEntityId,
+					EventId = @event.Id,
+					EntityId = entity.DomainEntityId,
 					EntityType = entity.GetType().FullName,
 					CreatedDate = System.DateTimeOffset.Now,
-					Data = e
+					Data = @event
 				};
 
 				await _eventStoreRepository.AddAsync(eventStore, cancellationToken);
@@ -73,9 +73,8 @@ namespace BoltOn.Data.EF
 			{
 				IsolationLevel = IsolationLevel.ReadCommitted
 			}, TransactionScopeAsyncFlowOption.Enabled);
-			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.CqrsEntityId &&
+			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.DomainEntityId &&
 					f.EntityType == entity.GetType().FullName)).ToList();
-			var eventsToBePublished = eventStoreList.Select(s => s.Data).ToList();
 
 			foreach (var eventStore in eventStoreList)
 			{

@@ -7,21 +7,14 @@ using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class StudentCreatedEvent : ICqrsEvent
+	public class StudentCreatedEvent : BaseDomainEvent<Student>, IDomainEvent
 	{
-		public Guid Id { get; set; }
-		public string EntityType { get; set; }
-		public string EntityId { get; set; }
-		public DateTimeOffset? CreatedDate { get; set; }
-		public DateTimeOffset? ProcessedDate { get; set; }
 		public string FirstName { get; private set; }
 		public string LastName { get; private set; }
 
 		public StudentCreatedEvent(string entityId, string firstName,
-			string lastName)
+			string lastName) 
 		{
-			Id = Guid.NewGuid();
-			EntityType = typeof(Student).FullName;
 			EntityId = entityId;
 			CreatedDate = DateTimeOffset.Now;
 			FirstName = firstName;

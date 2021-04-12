@@ -100,7 +100,7 @@ namespace BoltOn.Samples.WebApi
 				c.Filters.Add<ModelValidationFilter>();
 			});
 
-			services.AddTransient<IRepository<EventStore2>, Repository<EventStore2, SchoolDbContext>>();
+			services.AddTransient<IRepository<EventStore>, Repository<EventStore, SchoolDbContext>>();
 			services.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolDbContext>>();
 			services.AddTransient<IQueryRepository<StudentType>, QueryRepository<StudentType, SchoolDbContext>>();
 			services.AddTransient<IQueryRepository<Course>, QueryRepository<Course, SchoolDbContext>>();

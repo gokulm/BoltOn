@@ -320,7 +320,7 @@ namespace BoltOn.Tests.Cqrs
 
             var bus = new Mock<BoltOn.Bus.IAppServiceBus>();
             var failedBusException = new Exception("failed bus");
-            bus.Setup(d => d.PublishAsync(It.IsAny<ICqrsEvent>(), default))
+            bus.Setup(d => d.PublishAsync(It.IsAny<IDomainEvent>(), default))
                 .Throws(failedBusException);
             serviceCollection.AddSingleton(bus.Object);
 
@@ -370,7 +370,7 @@ namespace BoltOn.Tests.Cqrs
 
             var bus = new Mock<BoltOn.Bus.IAppServiceBus>();
             var failedBusException = new Exception("failed bus");
-            bus.Setup(d => d.PublishAsync(It.Is<ICqrsEvent>(t => t.Id == CqrsConstants.EventId), default))
+            bus.Setup(d => d.PublishAsync(It.Is<IDomainEvent>(t => t.Id == CqrsConstants.EventId), default))
                 .Throws(failedBusException);
             serviceCollection.AddSingleton(bus.Object);
 
@@ -421,7 +421,7 @@ namespace BoltOn.Tests.Cqrs
 
             var bus = new Mock<BoltOn.Bus.IAppServiceBus>();
             var failedBusException = new Exception("failed bus");
-            bus.Setup(d => d.PublishAsync(It.Is<ICqrsEvent>(t => t.Id == CqrsConstants.Event2Id), default))
+            bus.Setup(d => d.PublishAsync(It.Is<IDomainEvent>(t => t.Id == CqrsConstants.Event2Id), default))
                 .Throws(failedBusException);
             serviceCollection.AddSingleton(bus.Object);
 
