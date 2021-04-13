@@ -50,12 +50,10 @@ namespace BoltOn.Bootstrapping
 		{
 			ServiceCollection.AddSingleton(typeof(IAppLogger<>), typeof(AppLogger<>));
 			ServiceCollection.AddSingleton<IAppLoggerFactory, AppLoggerFactory>();
-			ServiceCollection.AddTransient<IEventDispatcher, DefaultEventDispatcher>();
 
 			ServiceCollection.AddScoped<ScopedContext>();
 			ServiceCollection.AddSingleton<Context.AppContext>();
 
-			ServiceCollection.AddScoped<EventBag>();
 			var options = new CqrsOptions();
 			ServiceCollection.AddSingleton(options);
 		}

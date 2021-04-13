@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,7 +48,13 @@ namespace BoltOn.Data.EF
 				transactionScope.Complete();
 			}
 
-			entitiesList.ForEach(async e => await PublishEvents(e, cancellationToken));
+			foreach (var entity in entitiesList)
+			{
+				if (entity.PurgeEvents)
+					await PublishEventsAndPurge(entity, cancellationToken);
+				else
+					await PublishEvents(entity, cancellationToken);
+			}
 		}
 
 		protected async virtual Task AddEvents(TEntity entity, CancellationToken cancellationToken)
@@ -67,21 +74,39 @@ namespace BoltOn.Data.EF
 			}
 		}
 
-		protected async virtual Task PublishEvents(TEntity entity, CancellationToken cancellationToken)
+		protected async virtual Task PublishEventsAndPurge(TEntity entity, CancellationToken cancellationToken)
 		{
-			using var transactionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions
-			{
-				IsolationLevel = IsolationLevel.ReadCommitted
-			}, TransactionScopeAsyncFlowOption.Enabled);
 			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.DomainEntityId &&
 					f.EntityType == entity.GetType().FullName)).ToList();
 
 			foreach (var eventStore in eventStoreList)
 			{
+				using var transactionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions
+				{
+					IsolationLevel = IsolationLevel.ReadCommitted
+				}, TransactionScopeAsyncFlowOption.Enabled);
 				await _eventStoreRepository.DeleteAsync(eventStore.EventId, cancellationToken);
 				await _bus.PublishAsync(eventStore.Data, cancellationToken);
+				transactionScope.Complete();
 			}
-			transactionScope.Complete();
+		}
+
+		protected async virtual Task PublishEvents(TEntity entity, CancellationToken cancellationToken)
+		{
+			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.DomainEntityId &&
+					f.EntityType == entity.GetType().FullName && !f.ProcessedDate.HasValue)).ToList();
+
+			foreach (var eventStore in eventStoreList)
+			{
+				using var transactionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions
+				{
+					IsolationLevel = IsolationLevel.ReadCommitted
+				}, TransactionScopeAsyncFlowOption.Enabled);
+				eventStore.ProcessedDate = DateTimeOffset.Now;
+				await _eventStoreRepository.UpdateAsync(eventStore, cancellationToken);
+				await _bus.PublishAsync(eventStore.Data, cancellationToken);
+				transactionScope.Complete();
+			}
 		}
 	}
 }

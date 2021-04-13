@@ -18,7 +18,7 @@ namespace BoltOn.Samples.Infrastructure.Data.Mappings
 			builder
 				.Ignore(p => p.EventsToBeProcessed)
 				.Ignore(p => p.Courses)
-				.Ignore(p => p.ProcessedEvents);
+				.Ignore(p => p.PurgeEvents);
 		}
 	}
 }

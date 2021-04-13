@@ -18,6 +18,8 @@ namespace BoltOn.Samples.Application.Entities
 		public virtual int StudentTypeId { get; private set; }
 		public virtual IReadOnlyCollection<StudentCourse> Courses { get { return _courses.AsReadOnly(); } }
 
+		public override bool PurgeEvents { get; set; } = false;
+
 		public override string DomainEntityId => StudentId.ToString();
 
 		private Student()

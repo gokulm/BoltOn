@@ -12,15 +12,15 @@ namespace BoltOn.Cqrs
 	[Obsolete]
 	public class CqrsInterceptor : IInterceptor
 	{
-		private readonly EventBag _eventBag;
+		//private readonly EventBag _eventBag;
 		private readonly IAppLogger<CqrsInterceptor> _logger;
 		private readonly IEventDispatcher _eventDispatcher;
 		private readonly CqrsOptions _cqrsOptions;
 
-		public CqrsInterceptor(EventBag eventBag, IAppLogger<CqrsInterceptor> logger,
+		public CqrsInterceptor(IAppLogger<CqrsInterceptor> logger,
 			IEventDispatcher eventDispatcher, CqrsOptions cqrsOptions)
 		{
-			_eventBag = eventBag;
+			//_eventBag = eventBag;
 			_logger = logger; 
 			_eventDispatcher = eventDispatcher;
 			_cqrsOptions = cqrsOptions;
@@ -41,21 +41,21 @@ namespace BoltOn.Cqrs
 			try
 			{
 				_logger.Debug("About to dispatch EventsToBeProcessed...");
-				foreach (var @event in _eventBag.EventsToBeProcessed.Keys)
-				{
-					eventId = @event.Id;
-					_logger.Debug($"Publishing event. Id: {@event.Id} SourceType: {@event.EntityType}");
-					await _eventDispatcher.DispatchAsync(@event, cancellationToken);
+				//foreach (var @event in _eventBag.EventsToBeProcessed.Keys)
+				//{
+				//	eventId = @event.Id;
+				//	_logger.Debug($"Publishing event. Id: {@event.Id} SourceType: {@event.EntityType}");
+				//	await _eventDispatcher.DispatchAsync(@event, cancellationToken);
 
-					if (_cqrsOptions.PurgeEventsToBeProcessed)
-					{
-						_logger.Debug($"Removing event. Id: {@event.Id}");
-						var removeProcessedEventHandle = _eventBag.EventsToBeProcessed[@event];
-						await removeProcessedEventHandle(@event);
-						_logger.Debug("Removed event");
-					}
-					_eventBag.RemoveEventToBeProcessed(@event);
-				}
+				//	if (_cqrsOptions.PurgeEventsToBeProcessed)
+				//	{
+				//		_logger.Debug($"Removing event. Id: {@event.Id}");
+				//		var removeProcessedEventHandle = _eventBag.EventsToBeProcessed[@event];
+				//		await removeProcessedEventHandle(@event);
+				//		_logger.Debug("Removed event");
+				//	}
+				//	_eventBag.RemoveEventToBeProcessed(@event);
+				//}
 			}
 			catch (Exception ex)
 			{

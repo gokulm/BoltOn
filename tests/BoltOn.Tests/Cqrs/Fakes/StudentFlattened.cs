@@ -24,22 +24,23 @@ namespace BoltOn.Tests.Cqrs.Fakes
 		public StudentFlattened(StudentCreatedEvent @event)
 		{
 			@event.ProcessedDate = DateTime.UtcNow.AddSeconds(-3);
-			ProcessEvent(@event, e =>
-			{
-				FirstName = @event.Input;
-				LastName = @event.Input;
-			});
+			//ProcessEvent(@event, e =>
+			//{
+			//	FirstName = @event.Input;
+			//	LastName = @event.Input;
+			//});
 		}
 
 		public bool UpdateInput(StudentUpdatedEvent @event)
         {
-            return ProcessEvent(@event, e =>
-			{
-				FirstName = e.Name;
-				LastName = e.Name;
-                Input2Property1 = e.Input2.Property1;
-                Input2Property2 = e.Input2.Property2;
-            });
+			//         return ProcessEvent(@event, e =>
+			//{
+			//	FirstName = e.Name;
+			//	LastName = e.Name;
+			//             Input2Property1 = e.Input2.Property1;
+			//             Input2Property2 = e.Input2.Property2;
+			//         });
+			return false;
         }
     }
 }

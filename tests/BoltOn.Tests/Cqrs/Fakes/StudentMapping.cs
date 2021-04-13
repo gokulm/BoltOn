@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Tests.Cqrs.Fakes
 {
-    public class StudentMapping : BaseCqrsEntityMapping<Student>
+    public class StudentMapping : BaseDomainEntityMapping<Student>
     {
         public override void Configure(EntityTypeBuilder<Student> builder)
         {
