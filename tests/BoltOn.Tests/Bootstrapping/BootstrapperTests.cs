@@ -188,35 +188,9 @@ namespace BoltOn.Tests.Bootstrapping
             var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
             var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
             var transactionInterceptorIndex = interceptorTypes.IndexOf(typeof(TransactionInterceptor));
-			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
 			Assert.True(stopWatchInterceptorIndex != -1);
             Assert.True(transactionInterceptorIndex != -1);
-			Assert.True(cqrsInterceptorIndex == -1);
 			Assert.True(stopWatchInterceptorIndex < transactionInterceptorIndex);
-        }
-
-        [Fact]
-        public void GetService_BootstrapperOptionsWithCqrsModule_ReturnsRegisteredInterceptorsInOrder()
-        {
-            // arrange
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.BoltOn(b => b.BoltOnCqrsModule());
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            serviceProvider.TightenBolts();
-
-            // act
-            var bootstrapperOptions = serviceProvider.GetService<BootstrapperOptions>();
-
-            // assert
-            var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
-            var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
-            var transactionInterceptorIndex = interceptorTypes.IndexOf(typeof(TransactionInterceptor));
-            var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
-            Assert.True(stopWatchInterceptorIndex != -1);
-            Assert.True(transactionInterceptorIndex != -1);
-            Assert.True(cqrsInterceptorIndex != -1);
-            Assert.True(cqrsInterceptorIndex < transactionInterceptorIndex);
-            Assert.True(cqrsInterceptorIndex > stopWatchInterceptorIndex);
         }
 
 		public void Dispose()

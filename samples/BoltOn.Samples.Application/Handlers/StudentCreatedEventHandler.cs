@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Cqrs;
 using BoltOn.Requestor.Pipeline;
@@ -15,8 +14,6 @@ namespace BoltOn.Samples.Application.Handlers
 		public StudentCreatedEvent(string entityId, string firstName,
 			string lastName) 
 		{
-			//EntityId = entityId;
-			//CreatedDate = DateTimeOffset.Now;
 			FirstName = firstName;
 			LastName = lastName;
 		}

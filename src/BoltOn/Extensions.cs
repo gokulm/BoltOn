@@ -44,18 +44,6 @@ namespace BoltOn
 			}
 		}
 
-		public static BootstrapperOptions BoltOnCqrsModule(this BootstrapperOptions bootstrapperOptions,
-			Action<CqrsOptions> action = null)
-		{
-			bootstrapperOptions.IsCqrsEnabled = true;
-			var options = new CqrsOptions();
-			action?.Invoke(options);
-			bootstrapperOptions.AddInterceptor<CqrsInterceptor>().Before<TransactionInterceptor>();
-			bootstrapperOptions.ServiceCollection.AddSingleton(options);
-			bootstrapperOptions.ServiceCollection.AddTransient<IEventDispatcher, EventDispatcher>();
-			return bootstrapperOptions;
-		}
-
 		public static void After<TInterceptor>(this InterceptorOptions options)
 			where TInterceptor : IInterceptor
 		{

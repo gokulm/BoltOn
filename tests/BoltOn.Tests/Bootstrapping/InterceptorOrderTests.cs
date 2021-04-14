@@ -22,18 +22,13 @@ namespace BoltOn.Tests.Bootstrapping
 			// act
 			bootstrapperOptions.AddInterceptor<StopwatchInterceptor>();
 			bootstrapperOptions.AddInterceptor<TransactionInterceptor>();
-			bootstrapperOptions.AddInterceptor<CqrsInterceptor>().After<StopwatchInterceptor>();
 
 			// assert
 			var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
 			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
 			var transactionInterceptorIndex = interceptorTypes.IndexOf(typeof(TransactionInterceptor));
-			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
 			Assert.True(stopWatchInterceptorIndex != -1);
 			Assert.True(transactionInterceptorIndex != -1);
-			Assert.True(cqrsInterceptorIndex != -1);
-			Assert.True(cqrsInterceptorIndex < transactionInterceptorIndex);
-			Assert.True(cqrsInterceptorIndex > stopWatchInterceptorIndex);
 		}
 
 		[Fact]
@@ -46,18 +41,13 @@ namespace BoltOn.Tests.Bootstrapping
 			// act
 			bootstrapperOptions.AddInterceptor<StopwatchInterceptor>();
 			bootstrapperOptions.AddInterceptor<TransactionInterceptor>();
-			bootstrapperOptions.AddInterceptor<CqrsInterceptor>().Before<TransactionInterceptor>();
 
 			// assert
 			var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
 			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
 			var transactionInterceptorIndex = interceptorTypes.IndexOf(typeof(TransactionInterceptor));
-			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
 			Assert.True(stopWatchInterceptorIndex != -1);
 			Assert.True(transactionInterceptorIndex != -1);
-			Assert.True(cqrsInterceptorIndex != -1);
-			Assert.True(cqrsInterceptorIndex < transactionInterceptorIndex);
-			Assert.True(cqrsInterceptorIndex > stopWatchInterceptorIndex);
 		}
 
 		[Fact]
@@ -149,17 +139,13 @@ namespace BoltOn.Tests.Bootstrapping
 
 			// act
 			bootstrapperOptions.AddInterceptor<StopwatchInterceptor>();
-			bootstrapperOptions.AddInterceptor<CqrsInterceptor>().Before<TestBootstrappingInterceptor>();
 
 			// assert
 			var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
 			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
 			var testBootstrappingInterceptorIndex = interceptorTypes.IndexOf(typeof(TestBootstrappingInterceptor));
-			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
 			Assert.True(stopWatchInterceptorIndex != -1);
 			Assert.True(testBootstrappingInterceptorIndex == -1);
-			Assert.True(cqrsInterceptorIndex != -1);
-			Assert.True(cqrsInterceptorIndex > stopWatchInterceptorIndex);
 		}
 
 		[Fact]
@@ -171,17 +157,13 @@ namespace BoltOn.Tests.Bootstrapping
 
 			// act
 			bootstrapperOptions.AddInterceptor<StopwatchInterceptor>();
-			bootstrapperOptions.AddInterceptor<CqrsInterceptor>().After<TestBootstrappingInterceptor>();
 
 			// assert
 			var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
 			var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
 			var testBootstrappingInterceptorIndex = interceptorTypes.IndexOf(typeof(TestBootstrappingInterceptor));
-			var cqrsInterceptorIndex = interceptorTypes.IndexOf(typeof(CqrsInterceptor));
 			Assert.True(stopWatchInterceptorIndex != -1);
 			Assert.True(testBootstrappingInterceptorIndex == -1);
-			Assert.True(cqrsInterceptorIndex != -1);
-			Assert.True(cqrsInterceptorIndex > stopWatchInterceptorIndex);
 		}
 	}
 }

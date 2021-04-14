@@ -53,9 +53,6 @@ namespace BoltOn.Bootstrapping
 
 			ServiceCollection.AddScoped<ScopedContext>();
 			ServiceCollection.AddSingleton<Context.AppContext>();
-
-			var options = new CqrsOptions();
-			ServiceCollection.AddSingleton(options);
 		}
 
 		private void RegisterRequestor()
