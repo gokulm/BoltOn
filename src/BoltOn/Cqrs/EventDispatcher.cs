@@ -39,7 +39,7 @@ namespace BoltOn.Cqrs
 
 		public async Task DispatchAsync(IDomainEvent @event, CancellationToken cancellationToken = default)
 		{
-			_logger.Debug($"Publishing event to bus from EventDispatcher. Id: {@event.Id} SourceType: {@event.EntityType}");
+			//_logger.Debug($"Publishing event to bus from EventDispatcher. Id: {@event.Id} SourceType: {@event.EntityType}");
 			await _bus.PublishAsync(@event, cancellationToken);
 			_logger.Debug("Published event");
 		}

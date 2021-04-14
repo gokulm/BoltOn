@@ -29,11 +29,11 @@ namespace BoltOn.Cqrs
 			if (@event.Id == Guid.Empty)
 				@event.Id = Guid.NewGuid();
 
-			@event.EntityId = DomainEntityId;
-			if (string.IsNullOrEmpty(@event.EntityType))
-				@event.EntityType = GetType().FullName;
-			if (!@event.CreatedDate.HasValue)
-				@event.CreatedDate = DateTime.Now;
+			//@event.EntityId = DomainEntityId;
+			//if (string.IsNullOrEmpty(@event.EntityType))
+			//	@event.EntityType = GetType().FullName;
+			//if (!@event.CreatedDate.HasValue)
+			//	@event.CreatedDate = DateTime.Now;
 			_eventsToBeProcessed.Add(@event);
 			return true;
 		}

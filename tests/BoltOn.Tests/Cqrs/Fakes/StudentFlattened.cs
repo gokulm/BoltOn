@@ -23,7 +23,7 @@ namespace BoltOn.Tests.Cqrs.Fakes
 
 		public StudentFlattened(StudentCreatedEvent @event)
 		{
-			@event.ProcessedDate = DateTime.UtcNow.AddSeconds(-3);
+			//@event.ProcessedDate = DateTime.UtcNow.AddSeconds(-3);
 			//ProcessEvent(@event, e =>
 			//{
 			//	FirstName = @event.Input;

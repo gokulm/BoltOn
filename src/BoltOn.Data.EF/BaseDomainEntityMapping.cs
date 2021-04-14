@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using BoltOn.Cqrs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Newtonsoft.Json;
 
 namespace BoltOn.Data.EF
 {
@@ -11,15 +9,9 @@ namespace BoltOn.Data.EF
 	{
 		public virtual void Configure(EntityTypeBuilder<TEntity> builder)
 		{
-			var settings = new JsonSerializerSettings
-			{
-				TypeNameHandling = TypeNameHandling.All
-			};
 			builder
-				.Property(p => p.EventsToBeProcessed)
-				.HasConversion(
-						v => JsonConvert.SerializeObject(v, settings),
-						v => JsonConvert.DeserializeObject(v, settings) as HashSet<IDomainEvent>);
+				.Ignore(p => p.EventsToBeProcessed)
+				.Ignore(p => p.PurgeEvents);
 		}
 	}
 }

@@ -15,8 +15,8 @@ namespace BoltOn.Samples.Application.Handlers
 		public StudentCreatedEvent(string entityId, string firstName,
 			string lastName) 
 		{
-			EntityId = entityId;
-			CreatedDate = DateTimeOffset.Now;
+			//EntityId = entityId;
+			//CreatedDate = DateTimeOffset.Now;
 			FirstName = firstName;
 			LastName = lastName;
 		}
