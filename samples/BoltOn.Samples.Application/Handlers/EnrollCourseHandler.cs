@@ -35,13 +35,6 @@ namespace BoltOn.Samples.Application.Handlers
                                                         i => i.Courses)).Single();
             student.EnrollCourse(request.CourseId);
             await _studentRepository.UpdateAsync(student, cancellationToken: cancellationToken);
-
-            // inject eventrepository in cqrsrepository
-            // open a transaction, save entity and events
-            // commit transaction
-            // fetch all events for the entity in the events table 
-            // go over every event and publish
-            // remove event from events table after every publish
         }
     }
 }

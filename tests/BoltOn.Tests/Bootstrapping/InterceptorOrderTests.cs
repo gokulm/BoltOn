@@ -1,7 +1,5 @@
-using System;
 using System.Linq;
 using BoltOn.Bootstrapping;
-using BoltOn.Cqrs;
 using BoltOn.Requestor.Interceptors;
 using BoltOn.Tests.Bootstrapping.Fakes;
 using BoltOn.Transaction;

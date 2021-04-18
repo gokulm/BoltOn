@@ -101,7 +101,12 @@ namespace BoltOn.Samples.WebApi
 			});
 
 			services.AddTransient<IRepository<EventStore>, Repository<EventStore, SchoolDbContext>>();
-			services.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolDbContext>>();
+
+			if (Configuration.GetValue<bool>("IsHangfireEnabled"))
+				services.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolDbContext>>();
+			else
+				services.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
+
 			services.AddTransient<IQueryRepository<StudentType>, QueryRepository<StudentType, SchoolDbContext>>();
 			services.AddTransient<IQueryRepository<Course>, QueryRepository<Course, SchoolDbContext>>();
 		}

@@ -22,7 +22,6 @@ namespace BoltOn.Tests.Data.CosmosDb.Fakes
                 var guid = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
                 var studentFlattened = new StudentFlattened
                 {
-                    //CqrsEntityId = guid,
                     StudentTypeId = 1,
                     FirstName = "john",
                     LastName = "smith",
@@ -31,7 +30,6 @@ namespace BoltOn.Tests.Data.CosmosDb.Fakes
 
                 var recordToBeDeleted = new StudentFlattened
                 {
-                    //CqrsEntityId = Guid.Parse("ff96d626-3911-4c78-b337-00d7ecd2eadd"),
                     StudentTypeId = 1,
                     FirstName = "record to be deleted",
                     LastName = "smith",
