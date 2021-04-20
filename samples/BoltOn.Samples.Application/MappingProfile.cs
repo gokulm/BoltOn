@@ -10,6 +10,7 @@ namespace BoltOn.Samples.Application
 		{
 			CreateMap<Student, StudentDto>()
 				.ForMember(d => d.Courses, o => o.Ignore());
+			CreateMap<StudentFlattened, StudentDto>();
 			CreateMap<Course, CourseDto>();
 		}
 	}

@@ -20,7 +20,7 @@ namespace BoltOn.Samples.WebApi
         {
             using var scope = _serviceProvider.CreateScope();
             var schoolDbContext = scope.ServiceProvider.GetService<SchoolDbContext>();
-            //schoolDbContext.Database.EnsureDeleted();
+			schoolDbContext.Database.EnsureDeleted();
 			schoolDbContext.Database.EnsureCreated();
 
             if (schoolDbContext.Set<StudentType>().Find(1) == null)

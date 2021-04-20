@@ -1,6 +1,7 @@
 ﻿using System;
-using AutoMapper;
+using BoltOn.Bus.MassTransit;
 using BoltOn.Cache;
+using BoltOn.Cqrs;
 using BoltOn.Data;
 using BoltOn.Data.EF;
 using BoltOn.Samples.Application;
@@ -21,9 +22,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using BoltOn.Bus.MassTransit;
-using BoltOn.Bus;
-using BoltOn.Cqrs;
 
 namespace BoltOn.Samples.WebApi
 {
@@ -102,11 +100,12 @@ namespace BoltOn.Samples.WebApi
 
 			services.AddTransient<IRepository<EventStore>, Repository<EventStore, SchoolDbContext>>();
 
-			if (Configuration.GetValue<bool>("IsHangfireEnabled"))
+			if (Configuration.GetValue<bool>("IsCqrsEnabled"))
 				services.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolDbContext>>();
 			else
 				services.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
 
+			services.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, SchoolDbContext>>();
 			services.AddTransient<IQueryRepository<StudentType>, QueryRepository<StudentType, SchoolDbContext>>();
 			services.AddTransient<IQueryRepository<Course>, QueryRepository<Course, SchoolDbContext>>();
 		}

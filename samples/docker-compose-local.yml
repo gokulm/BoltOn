@@ -19,11 +19,6 @@ services:
     ports:
       - "6379:6379"
     container_name: bolton-redis-container
-  redis:
-    image: redis
-    ports:
-      - "6379:6379"
-    container_name: bolton-redis-container
 
 # docker-compose -f docker-compose-local.yml up -d
 # docker-compose -f docker-compose-local.yml down

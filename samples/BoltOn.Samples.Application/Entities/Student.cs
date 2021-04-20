@@ -26,7 +26,7 @@ namespace BoltOn.Samples.Application.Entities
 		{
 		}
 
-		internal Student(CreateStudentRequest request)
+		internal Student(CreateStudentRequest request, string studentType)
 		{
 			StudentId = Guid.NewGuid();
 			FirstName = request.FirstName;
@@ -34,7 +34,8 @@ namespace BoltOn.Samples.Application.Entities
 			StudentTypeId = request.StudentTypeId;
 			Email = request.Email;
 
-			RaiseEvent(new StudentCreatedEvent(DomainEntityId, FirstName, LastName));
+			RaiseEvent(new StudentCreatedEvent(StudentId, FirstName, LastName,
+				Email, StudentTypeId, studentType));
 		}
 
 		internal void Update(UpdateStudentRequest request)

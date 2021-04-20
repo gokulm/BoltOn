@@ -10,6 +10,21 @@ services:
     container_name: bolton-sql-container
     networks:
       - bolton-network
+  rabbitmq:
+    image: rabbitmq:3.8.2-management
+    ports:
+      - "5010:5672"
+      - "5015:15672"
+    container_name: bolton-rabbitmq-container
+    networks:
+      - bolton-network
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    container_name: bolton-redis-container
+    networks:
+      - bolton-network
   console:
     environment:
       - CONSOLE_ENVIRONMENT=Docker
@@ -18,6 +33,7 @@ services:
       dockerfile: Console.Dockerfile
     container_name: bolton-console-container
     depends_on:
+      - rabbitmq
       - sql
     networks:
       - bolton-network
@@ -34,8 +50,10 @@ services:
       - "5000:80"
     container_name: bolton-api-container
     depends_on:
+      - rabbitmq
       - sql
       - console
+      - redis
     networks:
       - bolton-network
 
