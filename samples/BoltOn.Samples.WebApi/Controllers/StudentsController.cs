@@ -25,6 +25,13 @@ namespace BoltOn.Samples.WebApi.Controllers
 			return students;
 		}
 
+		[HttpGet, Route("[controller]/flattened")]
+		public async Task<IEnumerable<StudentDto>> GetStudentsFlattened(CancellationToken cancellationToken)
+		{
+			var students = await _requestor.ProcessAsync(new GetAllStudentsFlattenedRequest(), cancellationToken);
+			return students;
+		}
+
 		[HttpPost, Route("[controller]")]
 		public async Task<StudentDto> Post([FromBody] CreateStudentRequest request,
 			CancellationToken cancellationToken)
