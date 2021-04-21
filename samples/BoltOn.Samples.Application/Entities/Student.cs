@@ -38,12 +38,21 @@ namespace BoltOn.Samples.Application.Entities
 				Email, StudentTypeId, studentType));
 		}
 
-		internal void Update(UpdateStudentRequest request)
+		internal void Update(UpdateStudentRequest request, string studentType)
 		{
 			FirstName = request.FirstName;
 			LastName = request.LastName;
 			StudentTypeId = request.StudentTypeId;
 			Email = request.Email;
+
+			RaiseEvent(new StudentUpdatedEvent
+			{
+				StudentId = StudentId,
+				FirstName = FirstName,
+				LastName = LastName,
+				StudentType = studentType,
+				StudentTypeId = StudentTypeId
+			});
 		}
 
 		internal void EnrollCourse(Guid courseId)

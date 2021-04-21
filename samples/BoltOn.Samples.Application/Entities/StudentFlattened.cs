@@ -23,5 +23,13 @@ namespace BoltOn.Samples.Application.Entities
 			StudentType = @event.StudentType;
 			StudentTypeId = @event.StudentTypeId;
 		}
+
+		internal void Update(StudentUpdatedEvent @event)
+		{
+			FirstName = @event.FirstName;
+			LastName = @event.LastName;
+			StudentType = @event.StudentType;
+			StudentTypeId = @event.StudentTypeId;
+		}
 	}
 }

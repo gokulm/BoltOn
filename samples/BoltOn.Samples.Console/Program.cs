@@ -78,6 +78,11 @@ namespace BoltOn.Samples.Console
 					{
 						ep.Consumer(() => provider.GetService<AppMessageConsumer<StudentCreatedEvent>>());
 					});
+
+					cfg.ReceiveEndpoint("StudentUpdatedEvent_queue", ep =>
+					{
+						ep.Consumer(() => provider.GetService<AppMessageConsumer<StudentUpdatedEvent>>());
+					});
 				}));
 			});
 
