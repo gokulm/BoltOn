@@ -18,7 +18,7 @@ namespace BoltOn.Samples.Infrastructure.Data.Mappings
 				.HasColumnName("StudentId")
 				.ValueGeneratedNever();
 			builder
-				.Ignore(p => p.Courses);
+				.HasMany(p => p.Courses);
 		}
 	}
 }
