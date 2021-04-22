@@ -1,13 +1,15 @@
+using BoltOn.Data.EF;
 using BoltOn.Samples.Application.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BoltOn.Samples.Infrastructure.Data.Mappings
 {
-	public class StudentMapping : IEntityTypeConfiguration<Student>
+	public class StudentMapping : BaseDomainEntityMapping<Student>
 	{
-		public void Configure(EntityTypeBuilder<Student> builder)
+		public override void Configure(EntityTypeBuilder<Student> builder)
 		{
+			base.Configure(builder);
 			builder
 				.ToTable("Student")
 				.HasKey(k => k.StudentId);
@@ -15,6 +17,8 @@ namespace BoltOn.Samples.Infrastructure.Data.Mappings
 				.Property(p => p.StudentId)
 				.HasColumnName("StudentId")
 				.ValueGeneratedNever();
+			builder
+				.HasMany(p => p.Courses);
 		}
 	}
 }

@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BoltOn.Bootstrapping;
-using BoltOn.Cqrs;
 using BoltOn.Requestor.Interceptors;
-using BoltOn.Transaction;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn
@@ -42,18 +40,6 @@ namespace BoltOn
 				postRegistrationTasks.Reverse().ToList().ForEach(t => t.Run());
 				bootstrapperOptions.IsAppCleaned = true;
 			}
-		}
-
-		public static BootstrapperOptions BoltOnCqrsModule(this BootstrapperOptions bootstrapperOptions,
-			Action<CqrsOptions> action = null)
-		{
-			bootstrapperOptions.IsCqrsEnabled = true;
-			var options = new CqrsOptions();
-			action?.Invoke(options);
-			bootstrapperOptions.AddInterceptor<CqrsInterceptor>().Before<TransactionInterceptor>();
-			bootstrapperOptions.ServiceCollection.AddSingleton(options);
-			bootstrapperOptions.ServiceCollection.AddTransient<IEventDispatcher, EventDispatcher>();
-			return bootstrapperOptions;
 		}
 
 		public static void After<TInterceptor>(this InterceptorOptions options)

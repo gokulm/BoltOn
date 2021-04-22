@@ -1,9 +1,15 @@
 ﻿using System;
 using System.IO;
+using BoltOn.Bus.MassTransit;
+using BoltOn.Data;
 using BoltOn.Data.EF;
 using BoltOn.Hangfire;
+using BoltOn.Samples.Application.Entities;
 using BoltOn.Samples.Application.Handlers;
+using BoltOn.Samples.Infrastructure.Data;
 using Hangfire;
+using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -34,6 +40,7 @@ namespace BoltOn.Samples.Console
 				o.BoltOnAssemblies(typeof(GetAllStudentsRequest).Assembly);
 				o.BoltOnEFModule();
 				o.BoltOnHangfireModule();
+				o.BoltOnMassTransitBusModule();
 			});
 
 			Log.Logger = new LoggerConfiguration()
@@ -44,9 +51,42 @@ namespace BoltOn.Samples.Console
 			serviceCollection.AddLogging(builder => builder.AddSerilog());
 
 			var boltOnSamplesDbConnectionString = configuration.GetValue<string>("BoltOnSamplesDbConnectionString");
+			serviceCollection.AddDbContext<SchoolDbContext>(options =>
+			{
+				options.UseSqlServer(boltOnSamplesDbConnectionString);
+			});
 
 			GlobalConfiguration.Configuration
 			 .UseSqlServerStorage(boltOnSamplesDbConnectionString);
+
+
+			var rabbitmqUri = configuration.GetValue<string>("RabbitMqUri");
+			var rabbitmqUsername = configuration.GetValue<string>("RabbitMqUsername");
+			var rabbitmqPassword = configuration.GetValue<string>("RabbitMqPassword");
+
+			serviceCollection.AddMassTransit(x =>
+			{
+				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
+				{
+					cfg.Host(new Uri(rabbitmqUri), hostConfigurator =>
+					{
+						hostConfigurator.Username(rabbitmqUsername);
+						hostConfigurator.Password(rabbitmqPassword);
+					});
+
+					cfg.ReceiveEndpoint("StudentCreatedEvent_queue", ep =>
+					{
+						ep.Consumer(() => provider.GetService<AppMessageConsumer<StudentCreatedEvent>>());
+					});
+
+					cfg.ReceiveEndpoint("StudentUpdatedEvent_queue", ep =>
+					{
+						ep.Consumer(() => provider.GetService<AppMessageConsumer<StudentUpdatedEvent>>());
+					});
+				}));
+			});
+
+			serviceCollection.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, SchoolDbContext>>();
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();

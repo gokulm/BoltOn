@@ -1,5 +1,7 @@
-﻿using AutoMapper;
+﻿using System;
+using BoltOn.Bus.MassTransit;
 using BoltOn.Cache;
+using BoltOn.Cqrs;
 using BoltOn.Data;
 using BoltOn.Data.EF;
 using BoltOn.Samples.Application;
@@ -40,6 +42,7 @@ namespace BoltOn.Samples.WebApi
 				options.BoltOnEFModule();
 				options.BoltOnCacheModule();
 				options.BoltOnWebModule();
+				options.BoltOnMassTransitBusModule();
 				options.BoltOnAssemblies(typeof(PingHandler).Assembly, typeof(SchoolDbContext).Assembly);
 			});
 
@@ -53,7 +56,22 @@ namespace BoltOn.Samples.WebApi
 			services.AddDistributedMemoryCache();
 			services.AddAutoMapper(typeof(MappingProfile));
 
-			// uncomment to use this app as Hangfire Dashboard
+			var rabbitmqUri = Configuration.GetValue<string>("RabbitMqUri");
+			var rabbitmqUsername = Configuration.GetValue<string>("RabbitMqUsername");
+			var rabbitmqPassword = Configuration.GetValue<string>("RabbitMqPassword");
+			var redisUrl = Configuration.GetValue<string>("RedisUrl");
+			services.AddMassTransit(x =>
+			{
+				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
+				{
+					cfg.Host(new Uri(rabbitmqUri), hostConfigurator =>
+					{
+						hostConfigurator.Username(rabbitmqUsername);
+						hostConfigurator.Password(rabbitmqPassword);
+					});
+				}));
+			});
+
 
 			if (Configuration.GetValue<bool>("IsHangfireEnabled"))
 			{
@@ -79,8 +97,17 @@ namespace BoltOn.Samples.WebApi
 				c.Filters.Add<CustomExceptionFilter>();
 				c.Filters.Add<ModelValidationFilter>();
 			});
-			services.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
+
+			services.AddTransient<IRepository<EventStore>, Repository<EventStore, SchoolDbContext>>();
+
+			if (Configuration.GetValue<bool>("IsCqrsEnabled"))
+				services.AddTransient<IRepository<Student>, CqrsRepository<Student, SchoolDbContext>>();
+			else
+				services.AddTransient<IRepository<Student>, Repository<Student, SchoolDbContext>>();
+
+			services.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, SchoolDbContext>>();
 			services.AddTransient<IQueryRepository<StudentType>, QueryRepository<StudentType, SchoolDbContext>>();
+			services.AddTransient<IQueryRepository<Course>, QueryRepository<Course, SchoolDbContext>>();
 		}
 
 		public void Configure(IApplicationBuilder app, IHostApplicationLifetime appLifetime, IWebHostEnvironment env)

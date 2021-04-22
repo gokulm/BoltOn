@@ -4,12 +4,15 @@ using Newtonsoft.Json;
 
 namespace BoltOn.Tests.Data.CosmosDb.Fakes
 {
-    public class StudentFlattened : BaseCqrsEntity
+    public class StudentFlattened : BaseDomainEntity
     {
         [JsonProperty("id")]
-        public override Guid Id { get; set; }
+        public Guid Id { get; set; }
 
-        [JsonProperty("firstName")]
+        [JsonProperty("id")]
+        public override string DomainEntityId => Id.ToString();
+
+		[JsonProperty("firstName")]
         public string FirstName { get; set; }
 
         [JsonProperty("lastName")]

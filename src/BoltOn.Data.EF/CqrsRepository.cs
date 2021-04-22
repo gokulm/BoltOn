@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Bootstrapping;
+using System.Transactions;
+using BoltOn.Bus;
 using BoltOn.Cqrs;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,16 +12,17 @@ namespace BoltOn.Data.EF
 {
 	public class CqrsRepository<TEntity, TDbContext> : Repository<TEntity, TDbContext>
 		where TDbContext : DbContext
-		where TEntity : BaseCqrsEntity
+		where TEntity : BaseDomainEntity
 	{
-		private readonly EventBag _eventBag;
-		private readonly CqrsOptions _cqrsOptions;
+		private readonly IAppServiceBus _bus;
+		private readonly IRepository<EventStore> _eventStoreRepository;
 
-		public CqrsRepository(TDbContext dbContext, EventBag eventBag,
-			CqrsOptions cqrsOptions) : base(dbContext)
+		public CqrsRepository(TDbContext dbContext,
+			IAppServiceBus bus,
+			IRepository<EventStore> repository) : base(dbContext)
 		{
-			_eventBag = eventBag;
-			_cqrsOptions = cqrsOptions;
+			_bus = bus;
+			_eventStoreRepository = repository;
 		}
 
 		protected override async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
@@ -28,36 +30,83 @@ namespace BoltOn.Data.EF
 			await SaveChangesAsync(new[] { entity }, cancellationToken);
 		}
 
-		protected override async Task SaveChangesAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+		protected override async Task SaveChangesAsync(IEnumerable<TEntity> entities,
+			CancellationToken cancellationToken = default)
 		{
-			foreach (var entity in entities)
+			var entitiesList = entities.ToList();
+			using (var transactionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions
 			{
-				PublishEvents(entity);
+				IsolationLevel = IsolationLevel.ReadCommitted
+			}, TransactionScopeAsyncFlowOption.Enabled))
+			{
+				foreach (var entity in entitiesList)
+				{
+					await AddEvents(entity, cancellationToken);
+				}
+
+				await DbContext.SaveChangesAsync(cancellationToken);
+				transactionScope.Complete();
 			}
-			await DbContext.SaveChangesAsync(cancellationToken);
+
+			foreach (var entity in entitiesList)
+			{
+				if (entity.PurgeEvents)
+					await PublishEventsAndPurge(entity, cancellationToken);
+				else
+					await PublishEvents(entity, cancellationToken);
+			}
 		}
 
-		protected virtual void PublishEvents(TEntity entity)
+		protected async virtual Task AddEvents(TEntity entity, CancellationToken cancellationToken)
 		{
-			entity.EventsToBeProcessed.ToList().ForEach(e =>
+			foreach (var @event in entity.EventsToBeProcessed.ToList())
 			{
-				_eventBag.AddEventToBeProcessed(e, async (e) => await RemoveEventToBeProcessed(e));
-			});
+				var eventStore = new EventStore
+				{
+					EventId = @event.Id,
+					EntityId = entity.DomainEntityId,
+					EntityType = entity.GetType().FullName,
+					CreatedDate = System.DateTimeOffset.Now,
+					Data = @event
+				};
 
-			if (entity.ProcessedEvents.Any() && _cqrsOptions.PurgeEventsProcessedBefore.HasValue)
-			{
-				var timeStamp = DateTime.UtcNow.Add(-1 * _cqrsOptions.PurgeEventsProcessedBefore.Value);
-				var processedEventsToBeRemoved = entity.ProcessedEvents.Where(w => w.ProcessedDate < timeStamp).ToList();
-				processedEventsToBeRemoved.ForEach(e => entity.RemoveProcessedEvent(e));
+				await _eventStoreRepository.AddAsync(eventStore, cancellationToken);
 			}
 		}
 
-		private async Task RemoveEventToBeProcessed(ICqrsEvent @event)
+		protected async virtual Task PublishEventsAndPurge(TEntity entity, CancellationToken cancellationToken)
 		{
-			var entity = await GetByIdAsync(@event.SourceId);
-			entity.RemoveEventToBeProcessed(@event);
-			await UpdateAsync(entity);
-			await DbContext.SaveChangesAsync();
+			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.DomainEntityId &&
+					f.EntityType == entity.GetType().FullName)).ToList();
+
+			foreach (var eventStore in eventStoreList)
+			{
+				using var transactionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions
+				{
+					IsolationLevel = IsolationLevel.ReadCommitted
+				}, TransactionScopeAsyncFlowOption.Enabled);
+				await _eventStoreRepository.DeleteAsync(eventStore.EventId, cancellationToken);
+				await _bus.PublishAsync(eventStore.Data, cancellationToken);
+				transactionScope.Complete();
+			}
+		}
+
+		protected async virtual Task PublishEvents(TEntity entity, CancellationToken cancellationToken)
+		{
+			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.DomainEntityId &&
+					f.EntityType == entity.GetType().FullName && !f.ProcessedDate.HasValue)).ToList();
+
+			foreach (var eventStore in eventStoreList)
+			{
+				using var transactionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions
+				{
+					IsolationLevel = IsolationLevel.ReadCommitted
+				}, TransactionScopeAsyncFlowOption.Enabled);
+				eventStore.ProcessedDate = DateTimeOffset.Now;
+				await _eventStoreRepository.UpdateAsync(eventStore, cancellationToken);
+				await _bus.PublishAsync(eventStore.Data, cancellationToken);
+				transactionScope.Complete();
+			}
 		}
 	}
 }

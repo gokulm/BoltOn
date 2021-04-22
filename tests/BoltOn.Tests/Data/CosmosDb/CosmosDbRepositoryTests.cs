@@ -104,7 +104,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			if (!IntegrationTestHelper.IsCosmosDbServer)
 				return;
 			var id = Guid.Parse("eda6ac19-0b7c-4698-a1f7-88279339d9ff");
-			var student = new StudentFlattened { Id = id, LastName = "smith jr", FirstName = "john", StudentTypeId = 1 };
+			var student = new StudentFlattened { LastName = "smith jr", FirstName = "john", StudentTypeId = 1 };
 
 			// act
 			await _cosmosDbFixture.SubjectUnderTest.UpdateAsync(student, new RequestOptions { PartitionKey = new PartitionKey(1) });
@@ -122,7 +122,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			if (!IntegrationTestHelper.IsCosmosDbServer)
 				return;
 			var id = Guid.NewGuid();
-			var studentFlattened = new StudentFlattened { Id = id, StudentTypeId = 2, FirstName = "meghan", LastName = "doe" };
+			var studentFlattened = new StudentFlattened { StudentTypeId = 2, FirstName = "meghan", LastName = "doe" };
 
 			// act
 			await _cosmosDbFixture.SubjectUnderTest.AddAsync(studentFlattened);
@@ -140,9 +140,9 @@ namespace BoltOn.Tests.Data.CosmosDb
 			if (!IntegrationTestHelper.IsCosmosDbServer)
 				return;
 			var id1 = Guid.NewGuid();
-			var student1Flattened = new StudentFlattened { Id = id1, StudentTypeId = 2, FirstName = "meghan", LastName = "doe" };
+			var student1Flattened = new StudentFlattened {  StudentTypeId = 2, FirstName = "meghan", LastName = "doe" };
 			var id2 = Guid.NewGuid();
-			var student2Flattened = new StudentFlattened { Id = id2, StudentTypeId = 2, FirstName = "john", LastName = "smith" };
+			var student2Flattened = new StudentFlattened { StudentTypeId = 2, FirstName = "john", LastName = "smith" };
 			var studentsFlattened = new List<StudentFlattened> { student1Flattened, student2Flattened };
 
 			// act

@@ -43,7 +43,7 @@ namespace BoltOn.Logging
 
 		public virtual void Error(Exception exception)
 		{
-			_logger?.LogError(null, exception);
+			_logger?.LogError(exception, exception.Message);
 		}
 	}
 }
