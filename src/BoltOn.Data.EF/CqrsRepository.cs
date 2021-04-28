@@ -86,6 +86,7 @@ namespace BoltOn.Data.EF
 					IsolationLevel = IsolationLevel.ReadCommitted
 				}, TransactionScopeAsyncFlowOption.Enabled);
 				await _eventStoreRepository.DeleteAsync(eventStore.EventId, cancellationToken);
+				entity.RemoveEventToBeProcessed(eventStore.Data);
 				await _bus.PublishAsync(eventStore.Data, cancellationToken);
 				transactionScope.Complete();
 			}
