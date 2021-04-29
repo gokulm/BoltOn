@@ -15,9 +15,9 @@ using BoltOn.Tests.Cqrs.Fakes;
 
 namespace BoltOn.Tests.Cqrs
 {
-    [Collection("IntegrationTests")]
-    public class CqrsIntegrationTests : IDisposable
-    {
+	[Collection("IntegrationTests")]
+	public class CqrsIntegrationTests : IDisposable
+	{
 		//[Fact]
 		//public async Task RequestorProcessAsync_WithCqrs_ReturnsResult()
 		//{
@@ -75,8 +75,10 @@ namespace BoltOn.Tests.Cqrs
 		//    //Assert.True(studentFlattened.ProcessedEvents.Count() > 0);
 		//}
 
-		[Fact]
-		public async Task RequestorProcessAsync_AddEntityAndPurgeEvents_AddsEntityAndRemovesEventsFromEventStore()
+		[Theory]
+		[InlineData(true)]
+		[InlineData(false)]
+		public async Task RequestorProcessAsync_AddEntityAndPurgeOrNotPurgeEvents_AddsEntityAndRemoveOrNotRemoveEventsFromEventStore(bool purgeEvents)
 		{
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.BoltOn(b =>
@@ -106,7 +108,7 @@ namespace BoltOn.Tests.Cqrs
 			var studentId = Guid.NewGuid();
 
 			// act
-			await requestor.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input" });
+			await requestor.ProcessAsync(new AddStudentRequest { StudentId = studentId, Name = "test input", PurgeEvents = purgeEvents });
 
 			// assert
 			await Task.Delay(500);
@@ -115,11 +117,20 @@ namespace BoltOn.Tests.Cqrs
 			var schoolDbContext = serviceProvider.GetService<SchoolDbContext>();
 			var student = schoolDbContext.Set<Student>().Find(studentId);
 			Assert.NotNull(student);
-			Assert.False(student.EventsToBeProcessed.Any());
+			if (purgeEvents)
+				Assert.False(student.EventsToBeProcessed.Any());
+			else
+				Assert.True(student.EventsToBeProcessed.Any());
+
 			var studentFlattened = schoolDbContext.Set<StudentFlattened>().Find(studentId);
 			Assert.NotNull(studentFlattened);
+			var eventStore = schoolDbContext.Set<EventStore>().FirstOrDefault(w => w.EntityId == studentId.ToString());
+			if (purgeEvents)
+				Assert.Null(eventStore);
+			else
+				Assert.NotNull(eventStore);
 		}
-
+		
 		//[Fact]
 		//public async Task RequestorProcessAsync_WithCqrsAndPurgeEventsToBeProcessedEnabled_RemovesEventsToBeProcessed()
 		//{
@@ -520,8 +531,8 @@ namespace BoltOn.Tests.Cqrs
 		//}
 
 		public void Dispose()
-        {
-            //CqrsTestHelper.LoggerStatements.Clear();
-        }
-    }
+		{
+			//CqrsTestHelper.LoggerStatements.Clear();
+		}
+	}
 }

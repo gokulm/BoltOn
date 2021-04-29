@@ -63,7 +63,7 @@ namespace BoltOn.Data.EF
 			{
 				var eventStore = new EventStore
 				{
-					EventId = @event.Id,
+					EventId = @event.EventId,
 					EntityId = entity.DomainEntityId,
 					EntityType = entity.GetType().FullName,
 					CreatedDate = System.DateTimeOffset.Now,

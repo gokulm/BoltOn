@@ -15,15 +15,18 @@ namespace BoltOn.Tests.Cqrs.Fakes
 		{
 		}
 
-		public Student(string name, Guid? id = null)
+		public Student(string name, Guid? studentId = null, bool purgeEvents = true)
 		{
 			Name = name;
-			if (id.HasValue)
-				StudentId = id.Value;
+			if (studentId.HasValue)
+				StudentId = studentId.Value;
+
+			PurgeEvents = purgeEvents;
 
 			RaiseEvent(new StudentCreatedEvent
 			{
-				Input = name
+				StudentId = StudentId,
+				Name = name
 			});
 		}
 
@@ -32,14 +35,14 @@ namespace BoltOn.Tests.Cqrs.Fakes
 			Name = request.Input;
 			RaiseEvent(new StudentUpdatedEvent
 			{
-				Id = CqrsConstants.EventId,
+				EventId = CqrsConstants.EventId,
 				Name = request.Input,
 				Input2 = new TestInput { Property1 = "prop1", Property2 = 10 }
 			});
 
 			RaiseEvent(new TestCqrsUpdated2Event
 			{
-				Id = CqrsConstants.Event2Id,
+				EventId = CqrsConstants.Event2Id,
 				Input1 = request.Input,
 				Input2 = new TestInput { Property1 = "prop2", Property2 = 20 }
 			});

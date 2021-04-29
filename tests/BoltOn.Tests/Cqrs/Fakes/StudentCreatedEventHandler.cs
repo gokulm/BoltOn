@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Cqrs;
 using BoltOn.Data;
@@ -9,8 +10,9 @@ namespace BoltOn.Tests.Cqrs.Fakes
 {
 	public class StudentCreatedEvent : BaseDomainEvent<Student>
     {
-        public string Input { get; set; }
-    }
+        public string Name { get; set; }
+		public Guid StudentId { get; set; }
+	}
 
     public class StudentCreatedEventHandler : IHandler<StudentCreatedEvent>
     {
