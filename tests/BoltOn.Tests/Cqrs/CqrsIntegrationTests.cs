@@ -12,6 +12,8 @@ using BoltOn.Data.EF;
 using BoltOn.Data;
 using BoltOn.Requestor.Pipeline;
 using BoltOn.Tests.Cqrs.Fakes;
+using System.Linq.Expressions;
+using System.Threading;
 
 namespace BoltOn.Tests.Cqrs
 {
@@ -130,56 +132,6 @@ namespace BoltOn.Tests.Cqrs
 			else
 				Assert.NotNull(eventStore);
 		}
-		
-		//[Fact]
-		//public async Task RequestorProcessAsync_WithCqrsAndPurgeEventsToBeProcessedEnabled_RemovesEventsToBeProcessed()
-		//{
-		//    var serviceCollection = new ServiceCollection();
-		//    serviceCollection.BoltOn(b =>
-		//    {
-		//        b.BoltOnEFModule();
-		//        b.BoltOnCqrsModule();
-		//        b.BoltOnMassTransitBusModule();
-		//        b.RegisterCqrsFakes();
-		//    });
-
-		//    serviceCollection.AddMassTransit(x =>
-		//    {
-		//        x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
-		//        {
-		//            cfg.ReceiveEndpoint($"{nameof(StudentCreatedEvent)}_queue", ep =>
-		//            {
-		//                ep.Consumer(() => provider.GetService<AppMessageConsumer<StudentCreatedEvent>>());
-		//            });
-		//        }));
-		//    });
-
-		//    var logger = new Mock<IAppLogger<StudentCreatedEventHandler>>();
-		//    serviceCollection.AddTransient((s) => logger.Object);
-
-		//    var serviceProvider = serviceCollection.BuildServiceProvider();
-		//    serviceProvider.TightenBolts();
-		//    var requestor = serviceProvider.GetService<IRequestor>();
-		//    var studentId = Guid.NewGuid();
-
-		//    // act
-		//    await requestor.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input", RaiseAnotherCreateEvent = false });
-
-		//    // assert
-		//    await Task.Delay(1000);
-		//    logger.Verify(v => v.Debug($"{nameof(StudentCreatedEventHandler)} invoked"));
-
-		//    //var eventBag = serviceProvider.GetService<EventBag>();
-		//    //Assert.True(eventBag.EventsToBeProcessed.Count == 0);
-
-		//    var cqrsDbContext = serviceProvider.GetService<CqrsDbContext>();
-		//    var student = cqrsDbContext.Set<Student>().Find(studentId);
-		//    Assert.True(student.EventsToBeProcessed.Count() == 0);
-		//    //Assert.True(student.ProcessedEvents.Count() == 0);
-		//    var studentFlattened = cqrsDbContext.Set<StudentFlattened>().Find(studentId);
-		//    Assert.True(studentFlattened.EventsToBeProcessed.Count() == 0);
-		//    //Assert.True(studentFlattened.ProcessedEvents.Count() > 0);
-		//}
 
 		//[Theory]
 		//[InlineData(1)]
@@ -240,60 +192,56 @@ namespace BoltOn.Tests.Cqrs
 		//    //    Assert.True(studentFlattened.ProcessedEvents.Count() > 0);
 		//}
 
-		//[Fact]
-		//public async Task RequestorProcessAsync_WithPurgeEventsToBeProcessedEnabledAndFailedPurging_DoesNotRemoveEventsToBeProcessed()
-		//{
-		//    var serviceCollection = new ServiceCollection();
-		//    serviceCollection.BoltOn(b =>
-		//    {
-		//        b.BoltOnEFModule();
-		//        b.BoltOnCqrsModule();
-		//        b.BoltOnMassTransitBusModule();
-		//        b.RegisterCqrsFakes();
-		//    });
+		[Fact]
+		public async Task RequestorProcessAsync_WithPurgeEventsToBeProcessedEnabledAndFailedPurging_DoesNotRemoveEventsToBeProcessedAndDoesNotPublish()
+		{
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn(b =>
+			{
+				b.BoltOnEFModule();
+				b.BoltOnMassTransitBusModule();
+				b.RegisterCqrsFakes();
+			});
 
-		//    serviceCollection.AddMassTransit(x =>
-		//    {
-		//        x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
-		//        {
-		//            cfg.ReceiveEndpoint($"{nameof(StudentCreatedEvent)}_queue", ep =>
-		//            {
-		//                ep.Consumer(() => provider.GetService<AppMessageConsumer<StudentCreatedEvent>>());
-		//            });
-		//        }));
-		//    });
+			serviceCollection.AddMassTransit(x =>
+			{
+				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
+				{
+					cfg.ReceiveEndpoint($"{nameof(StudentCreatedEvent)}_queue", ep =>
+					{
+						ep.Consumer(() => provider.GetService<AppMessageConsumer<StudentCreatedEvent>>());
+					});
+				}));
+			});
 
-		//    var logger = new Mock<IAppLogger<StudentCreatedEventHandler>>();
-		//    serviceCollection.AddTransient((s) => logger.Object);
+			var logger = new Mock<IAppLogger<StudentCreatedEventHandler>>();
+			serviceCollection.AddTransient((s) => logger.Object);
 
-		//    var logger2 = new Mock<IAppLogger<CqrsInterceptor>>();
-		//    logger2.Setup(s => s.Debug(It.Is<string>(s => s.StartsWith("Removing event. Id:")))).Throws(new Exception());
-		//    serviceCollection.AddSingleton((s) => logger2.Object);
+			var studentId = Guid.NewGuid();
+			var eventStoreRepository = new Mock<IRepository<EventStore>>();
+			var failedEventRepositoryException = new Exception("failed event repository");
+			eventStoreRepository.Setup(d => d.FindByAsync(It.IsAny<Expression<Func<EventStore, bool>>>(), It.IsAny<CancellationToken>()))
+				.Throws(failedEventRepositoryException);
+			serviceCollection.AddSingleton(eventStoreRepository.Object);
 
-		//    var serviceProvider = serviceCollection.BuildServiceProvider();
-		//    serviceProvider.TightenBolts();
-		//    var requestor = serviceProvider.GetService<IRequestor>();
-		//    var studentId = Guid.NewGuid();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var requestor = serviceProvider.GetService<IRequestor>();
 
-		//    // act
-		//    await requestor.ProcessAsync(new AddStudentRequest { Id = studentId, Name = "test input" });
+			// act
+			var exception = Record.ExceptionAsync(async () => await requestor.ProcessAsync(new AddStudentRequest { StudentId = studentId, Name = "test input" }));
 
-		//    // assert
-		//    await Task.Delay(300);
-		//    logger.Verify(v => v.Debug($"{nameof(StudentCreatedEventHandler)} invoked"));
+			// assert
+			await Task.Delay(300);
 
-		//    //var eventBag = serviceProvider.GetService<EventBag>();
-		//    //Assert.True(eventBag.EventsToBeProcessed.Count > 0);
-
-		//    logger2.Verify(v => v.Error(It.Is<string>(f => f.StartsWith("Dispatching or purging failed. Event Id:"))));
-		//    var cqrsDbContext = serviceProvider.GetService<CqrsDbContext>();
-		//    var student = cqrsDbContext.Set<Student>().Find(studentId);
-		//    Assert.True(student.EventsToBeProcessed.Count() > 0);
-		//    //Assert.True(student.ProcessedEvents.Count() == 0);
-		//    var studentFlattened = cqrsDbContext.Set<StudentFlattened>().Find(studentId);
-		//    Assert.True(studentFlattened.EventsToBeProcessed.Count() == 0);
-		//    //Assert.True(studentFlattened.ProcessedEvents.Count() > 0);
-		//}
+			Assert.NotNull(exception);
+			var schoolDbContext = serviceProvider.GetService<SchoolDbContext>();
+			var student = schoolDbContext.Set<Student>().Find(studentId);
+			Assert.True(student.EventsToBeProcessed.Count() > 0);
+			var studentFlattened = schoolDbContext.Set<StudentFlattened>().Find(studentId);
+			Assert.Null(studentFlattened);
+			logger.Verify(v => v.Debug($"{nameof(StudentCreatedEventHandler)} invoked"), Times.Never);
+		}
 
 		//[Fact]
 		//public async Task RequestorProcessAsync_WithCqrsAndFailedBus_EventsDoNotGetProcessed()

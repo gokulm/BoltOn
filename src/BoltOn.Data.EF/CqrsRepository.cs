@@ -77,7 +77,7 @@ namespace BoltOn.Data.EF
 		protected async virtual Task PublishEventsAndPurge(TEntity entity, CancellationToken cancellationToken)
 		{
 			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.DomainEntityId &&
-					f.EntityType == entity.GetType().FullName)).ToList();
+					f.EntityType == entity.GetType().FullName, cancellationToken)).ToList();
 
 			foreach (var eventStore in eventStoreList)
 			{
@@ -95,7 +95,7 @@ namespace BoltOn.Data.EF
 		protected async virtual Task PublishEvents(TEntity entity, CancellationToken cancellationToken)
 		{
 			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.DomainEntityId &&
-					f.EntityType == entity.GetType().FullName && !f.ProcessedDate.HasValue)).ToList();
+					f.EntityType == entity.GetType().FullName && !f.ProcessedDate.HasValue, cancellationToken)).ToList();
 
 			foreach (var eventStore in eventStoreList)
 			{
