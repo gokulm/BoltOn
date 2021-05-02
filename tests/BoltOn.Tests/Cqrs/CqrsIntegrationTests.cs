@@ -243,6 +243,61 @@ namespace BoltOn.Tests.Cqrs
 			logger.Verify(v => v.Debug($"{nameof(StudentCreatedEventHandler)} invoked"), Times.Never);
 		}
 
+		[Fact]
+		public async Task RequestorProcessAsync_WithPurgeEventsToBeProcessedEnabledAndFailedBus_DoesNotRemoveEventsToBeProcessedAndDoesNotPublish()
+		{
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.BoltOn(b =>
+			{
+				b.BoltOnEFModule();
+				b.BoltOnMassTransitBusModule();
+				b.RegisterCqrsFakes();
+			});
+
+			serviceCollection.AddMassTransit(x =>
+			{
+				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
+				{
+					cfg.ReceiveEndpoint($"{nameof(StudentCreatedEvent)}_queue", ep =>
+					{
+						ep.Consumer(() => provider.GetService<AppMessageConsumer<StudentCreatedEvent>>());
+					});
+				}));
+			});
+
+			var logger = new Mock<IAppLogger<StudentCreatedEventHandler>>();
+			serviceCollection.AddTransient((s) => logger.Object);
+
+			var studentId = Guid.NewGuid();
+			var bus = new Mock<BoltOn.Bus.IAppServiceBus>();
+			var failedBusException = new Exception("failed bus");
+			bus.Setup(d => d.PublishAsync(It.IsAny<IDomainEvent>(), default))
+				.Throws(failedBusException);
+			serviceCollection.AddSingleton(bus.Object);
+
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			serviceProvider.TightenBolts();
+			var requestor = serviceProvider.GetService<IRequestor>();
+
+			// act
+			var exception = Record.ExceptionAsync(async () => await requestor.ProcessAsync(new AddStudentRequest { StudentId = studentId, Name = "test input" }));
+
+			// assert
+			await Task.Delay(300);
+
+			Assert.NotNull(exception);
+			var schoolDbContext = serviceProvider.GetService<SchoolDbContext>();
+			var student = schoolDbContext.Set<Student>().Find(studentId);
+			Assert.NotNull(student);
+			var test = schoolDbContext.Set<EventStore>().ToList();
+			//var eventStore = schoolDbContext.Set<EventStore>().FirstOrDefault(w => w.EntityId == studentId.ToString() &&
+			//					w.EntityType == typeof(Student).FullName);
+			//Assert.NotNull(eventStore);
+			var studentFlattened = schoolDbContext.Set<StudentFlattened>().Find(studentId);
+			Assert.Null(studentFlattened);
+			logger.Verify(v => v.Debug($"{nameof(StudentCreatedEventHandler)} invoked"), Times.Never);
+		}
+
 		//[Fact]
 		//public async Task RequestorProcessAsync_WithCqrsAndFailedBus_EventsDoNotGetProcessed()
 		//{

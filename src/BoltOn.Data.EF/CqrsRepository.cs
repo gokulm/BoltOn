@@ -95,7 +95,7 @@ namespace BoltOn.Data.EF
 		protected async virtual Task PublishEvents(TEntity entity, CancellationToken cancellationToken)
 		{
 			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.DomainEntityId &&
-					f.EntityType == entity.GetType().FullName && !f.ProcessedDate.HasValue, cancellationToken)).ToList();
+					f.EntityType == entity.GetType().FullName && !f.ProcessedDate.HasValue)).ToList();
 
 			foreach (var eventStore in eventStoreList)
 			{
