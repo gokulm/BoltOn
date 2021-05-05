@@ -23,11 +23,15 @@ namespace BoltOn.Tests.Cqrs.Fakes
 
 			PurgeEvents = purgeEvents;
 
-			RaiseEvent(new StudentCreatedEvent
+			var @event = new StudentCreatedEvent
 			{
 				StudentId = StudentId,
 				Name = name
-			});
+			};
+			if (studentId == CqrsConstants.Event3Id)
+				@event.EventId = CqrsConstants.Event2Id;
+
+			RaiseEvent(@event);
 		}
 
 		public void Modify(UpdateStudentRequest request)

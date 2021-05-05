@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using BoltOn.Bus;
 using BoltOn.Cqrs;
+using BoltOn.Logging;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Data.EF
@@ -15,14 +16,15 @@ namespace BoltOn.Data.EF
 		where TEntity : BaseDomainEntity
 	{
 		private readonly IAppServiceBus _bus;
-		private readonly IRepository<EventStore> _eventStoreRepository;
+		private readonly IAppLogger<CqrsRepository<TEntity, TDbContext>> _appLogger;
 
 		public CqrsRepository(TDbContext dbContext,
 			IAppServiceBus bus,
-			IRepository<EventStore> repository) : base(dbContext)
+			IRepository<EventStore> repository,
+			IAppLoggerFactory appLoggerFactory) : base(dbContext)
 		{
 			_bus = bus;
-			_eventStoreRepository = repository;
+			_appLogger = appLoggerFactory.Create<CqrsRepository<TEntity, TDbContext>>();
 		}
 
 		protected override async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
@@ -39,6 +41,7 @@ namespace BoltOn.Data.EF
 				IsolationLevel = IsolationLevel.ReadCommitted
 			}, TransactionScopeAsyncFlowOption.Enabled))
 			{
+				_appLogger.Debug($"Adding entities. Count: {entitiesList.Count}");
 				foreach (var entity in entitiesList)
 				{
 					await AddEvents(entity, cancellationToken);
@@ -70,14 +73,14 @@ namespace BoltOn.Data.EF
 					Data = @event
 				};
 
-				await _eventStoreRepository.AddAsync(eventStore, cancellationToken);
+				await DbContext.Set<EventStore>().AddAsync(eventStore, cancellationToken);
 			}
 		}
 
 		protected async virtual Task PublishEventsAndPurge(TEntity entity, CancellationToken cancellationToken)
 		{
-			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.DomainEntityId &&
-					f.EntityType == entity.GetType().FullName, cancellationToken)).ToList();
+			var eventStoreList = await DbContext.Set<EventStore>().Where(f => f.EntityId == entity.DomainEntityId &&
+					f.EntityType == entity.GetType().FullName && !f.ProcessedDate.HasValue).OrderBy(o => o.CreatedDate).ToListAsync();
 
 			foreach (var eventStore in eventStoreList)
 			{
@@ -85,7 +88,7 @@ namespace BoltOn.Data.EF
 				{
 					IsolationLevel = IsolationLevel.ReadCommitted
 				}, TransactionScopeAsyncFlowOption.Enabled);
-				await _eventStoreRepository.DeleteAsync(eventStore.EventId, cancellationToken);
+				DbContext.Set<EventStore>().Remove(eventStore);
 				entity.RemoveEventToBeProcessed(eventStore.Data);
 				await _bus.PublishAsync(eventStore.Data, cancellationToken);
 				transactionScope.Complete();
@@ -94,8 +97,8 @@ namespace BoltOn.Data.EF
 
 		protected async virtual Task PublishEvents(TEntity entity, CancellationToken cancellationToken)
 		{
-			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.DomainEntityId &&
-					f.EntityType == entity.GetType().FullName && !f.ProcessedDate.HasValue)).ToList();
+			var eventStoreList = await DbContext.Set<EventStore>().Where(f => f.EntityId == entity.DomainEntityId &&
+					f.EntityType == entity.GetType().FullName && !f.ProcessedDate.HasValue).OrderBy(o => o.CreatedDate).ToListAsync();
 
 			foreach (var eventStore in eventStoreList)
 			{
@@ -104,7 +107,7 @@ namespace BoltOn.Data.EF
 					IsolationLevel = IsolationLevel.ReadCommitted
 				}, TransactionScopeAsyncFlowOption.Enabled);
 				eventStore.ProcessedDate = DateTimeOffset.Now;
-				await _eventStoreRepository.UpdateAsync(eventStore, cancellationToken);
+				DbContext.Set<EventStore>().Update(eventStore);
 				await _bus.PublishAsync(eventStore.Data, cancellationToken);
 				transactionScope.Complete();
 			}
