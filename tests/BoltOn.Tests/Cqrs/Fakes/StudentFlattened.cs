@@ -17,10 +17,5 @@ namespace BoltOn.Tests.Cqrs.Fakes
             StudentId = @event.StudentId;
             Name = @event.Name;
         }
-
-        public bool UpdateInput(StudentUpdatedEvent @event)
-        {
-            return false;
-        }
     }
 }

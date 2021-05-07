@@ -35,7 +35,7 @@ namespace BoltOn.Tests.Cqrs.Fakes
 
             if (request.RaiseAnotherCreateEvent)
             {
-                var student2 = new Student(request.Name + "2nd", CqrsConstants.Event3Id);
+                var student2 = new Student(request.Name + "2nd", CqrsConstants.Student2Id);
                 await _repository.AddAsync(student2, cancellationToken);
             }
         }

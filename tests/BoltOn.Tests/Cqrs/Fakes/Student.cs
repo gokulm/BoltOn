@@ -28,35 +28,12 @@ namespace BoltOn.Tests.Cqrs.Fakes
 				StudentId = StudentId,
 				Name = name
 			};
-			if (studentId == CqrsConstants.Event3Id)
+			if (studentId == CqrsConstants.Student2Id)
 				@event.EventId = CqrsConstants.Event2Id;
+			else
+				@event.EventId = CqrsConstants.Event1Id;
 
 			RaiseEvent(@event);
 		}
-
-		public void Modify(UpdateStudentRequest request)
-		{
-			Name = request.Input;
-			RaiseEvent(new StudentUpdatedEvent
-			{
-				EventId = CqrsConstants.EventId,
-				Name = request.Input,
-				Input2 = new TestInput { Property1 = "prop1", Property2 = 10 }
-			});
-
-			RaiseEvent(new TestCqrsUpdated2Event
-			{
-				EventId = CqrsConstants.Event2Id,
-				Input1 = request.Input,
-				Input2 = new TestInput { Property1 = "prop2", Property2 = 20 }
-			});
-		}
-	}
-
-	public class TestInput
-	{
-		public string Property1 { get; set; }
-
-		public int Property2 { get; set; }
 	}
 }

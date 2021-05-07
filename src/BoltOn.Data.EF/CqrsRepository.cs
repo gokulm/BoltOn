@@ -16,6 +16,7 @@ namespace BoltOn.Data.EF
 		where TEntity : BaseDomainEntity
 	{
 		private readonly IAppServiceBus _bus;
+		private readonly IRepository<EventStore> _eventStoreRepository;
 		private readonly IAppLogger<CqrsRepository<TEntity, TDbContext>> _appLogger;
 
 		public CqrsRepository(TDbContext dbContext,
@@ -24,6 +25,7 @@ namespace BoltOn.Data.EF
 			IAppLoggerFactory appLoggerFactory) : base(dbContext)
 		{
 			_bus = bus;
+			_eventStoreRepository = repository;
 			_appLogger = appLoggerFactory.Create<CqrsRepository<TEntity, TDbContext>>();
 		}
 
@@ -47,8 +49,9 @@ namespace BoltOn.Data.EF
 					await AddEvents(entity, cancellationToken);
 				}
 
-				await DbContext.SaveChangesAsync(cancellationToken);
+				//await DbContext.SaveChangesAsync(cancellationToken);
 				transactionScope.Complete();
+				_appLogger.Debug("Transaction complete. Added entities.");
 			}
 
 			foreach (var entity in entitiesList)
@@ -73,14 +76,17 @@ namespace BoltOn.Data.EF
 					Data = @event
 				};
 
-				await DbContext.Set<EventStore>().AddAsync(eventStore, cancellationToken);
+				await _eventStoreRepository.AddAsync(eventStore, cancellationToken);
+				_appLogger.Debug($"Added event. EventId: {eventStore.EventId}");
 			}
 		}
 
 		protected async virtual Task PublishEventsAndPurge(TEntity entity, CancellationToken cancellationToken)
 		{
-			var eventStoreList = await DbContext.Set<EventStore>().Where(f => f.EntityId == entity.DomainEntityId &&
-					f.EntityType == entity.GetType().FullName && !f.ProcessedDate.HasValue).OrderBy(o => o.CreatedDate).ToListAsync();
+			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.DomainEntityId &&
+					f.EntityType == entity.GetType().FullName, cancellationToken)).OrderBy(o => o.CreatedDate).ToList();
+
+			_appLogger.Debug($"Publishing events and purging. No. of events to be purged: {eventStoreList.Count}");
 
 			foreach (var eventStore in eventStoreList)
 			{
@@ -88,17 +94,20 @@ namespace BoltOn.Data.EF
 				{
 					IsolationLevel = IsolationLevel.ReadCommitted
 				}, TransactionScopeAsyncFlowOption.Enabled);
-				DbContext.Set<EventStore>().Remove(eventStore);
+				await _eventStoreRepository.DeleteAsync(eventStore.EventId, cancellationToken);
 				entity.RemoveEventToBeProcessed(eventStore.Data);
+				_appLogger.Debug($"Removed event. EventId: {eventStore.EventId}");
 				await _bus.PublishAsync(eventStore.Data, cancellationToken);
+				_appLogger.Debug($"Published event. EventId: {eventStore.EventId}");
 				transactionScope.Complete();
+				_appLogger.Debug($"Transaction complete. Removed and published successfully. EventId: {eventStore.EventId}");
 			}
 		}
 
 		protected async virtual Task PublishEvents(TEntity entity, CancellationToken cancellationToken)
 		{
-			var eventStoreList = await DbContext.Set<EventStore>().Where(f => f.EntityId == entity.DomainEntityId &&
-					f.EntityType == entity.GetType().FullName && !f.ProcessedDate.HasValue).OrderBy(o => o.CreatedDate).ToListAsync();
+			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.DomainEntityId &&
+					f.EntityType == entity.GetType().FullName && !f.ProcessedDate.HasValue)).OrderBy(o => o.CreatedDate).ToList();
 
 			foreach (var eventStore in eventStoreList)
 			{
@@ -107,9 +116,12 @@ namespace BoltOn.Data.EF
 					IsolationLevel = IsolationLevel.ReadCommitted
 				}, TransactionScopeAsyncFlowOption.Enabled);
 				eventStore.ProcessedDate = DateTimeOffset.Now;
-				DbContext.Set<EventStore>().Update(eventStore);
+				await _eventStoreRepository.UpdateAsync(eventStore, cancellationToken);
+				_appLogger.Debug($"Updated event. EventId: {eventStore.EventId}");
 				await _bus.PublishAsync(eventStore.Data, cancellationToken);
+				_appLogger.Debug($"Published event. EventId: {eventStore.EventId}");
 				transactionScope.Complete();
+				_appLogger.Debug($"Transaction complete. Updated and published successfully. EventId: {eventStore.EventId}");
 			}
 		}
 	}
