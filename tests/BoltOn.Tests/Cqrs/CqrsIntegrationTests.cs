@@ -189,7 +189,6 @@ namespace BoltOn.Tests.Cqrs
 			});
 
 			var loggerFactory = new Mock<IAppLoggerFactory>();
-			var logger = new Mock<IAppLogger<StudentCreatedEventHandler>>();
 			var cqrsRepositoryLogger = new Mock<IAppLogger<CqrsRepository<Student, SchoolDbContext>>>();
 			loggerFactory.Setup(s => s.Create<CqrsRepository<Student, SchoolDbContext>>())
 				.Returns(cqrsRepositoryLogger.Object);
@@ -221,7 +220,6 @@ namespace BoltOn.Tests.Cqrs
 			var student = schoolDbContext.Set<Student>().Find(studentId);
 			Assert.NotNull(student);
 			bus.Verify(v => v.PublishAsync(It.IsAny<IDomainEvent>(), It.IsAny<CancellationToken>()), Times.Once);
-			logger.Verify(v => v.Debug($"{nameof(StudentCreatedEventHandler)} invoked"), Times.Never);
 			cqrsRepositoryLogger.Verify(v => v.Debug($"Published event. EventId: {CqrsConstants.Event1Id}"), Times.Never);
 			cqrsRepositoryLogger.Verify(v => v.Debug($"Published event. EventId: {CqrsConstants.Event2Id}"), Times.Never);
 		}

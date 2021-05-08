@@ -16,7 +16,7 @@ namespace BoltOn.Tests.Cqrs.Fakes
             bootstrapperOptions.ServiceCollection.AddLogging();
             bootstrapperOptions.ServiceCollection.AddDbContext<SchoolDbContext>(options =>
             {
-                options.UseInMemoryDatabase(DateTime.Now.ToString("HHmmddss"));
+                options.UseInMemoryDatabase(Guid.NewGuid().ToString());
                 options.ConfigureWarnings(x => x.Ignore(RelationalEventId.AmbientTransactionWarning));
             });
 
