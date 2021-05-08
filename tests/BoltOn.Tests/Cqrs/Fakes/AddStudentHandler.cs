@@ -10,6 +10,7 @@ namespace BoltOn.Tests.Cqrs.Fakes
 	public class AddStudentRequest : IRequest
     {
         public Guid StudentId { get; set; }
+        public Guid EventId { get; set; }
         public string Name { get; set; }
         public bool RaiseAnotherCreateEvent { get; set; }
         public bool PurgeEvents { get; set; } = true;
@@ -30,12 +31,12 @@ namespace BoltOn.Tests.Cqrs.Fakes
         public async Task HandleAsync(AddStudentRequest request, CancellationToken cancellationToken)
         {
             _logger.Debug($"{nameof(AddStudentHandler)} invoked");
-            var student = new Student(request.Name, request.StudentId, request.PurgeEvents);
+            var student = new Student(request.Name, request.StudentId, purgeEvents: request.PurgeEvents);
             await _repository.AddAsync(student, cancellationToken);
 
             if (request.RaiseAnotherCreateEvent)
             {
-                var student2 = new Student(request.Name + "2nd", CqrsConstants.Student2Id);
+                var student2 = new Student(request.Name + "2nd", CqrsConstants.Student1Id, request.EventId);
                 await _repository.AddAsync(student2, cancellationToken);
             }
         }

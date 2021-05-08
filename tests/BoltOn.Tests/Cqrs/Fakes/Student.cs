@@ -15,7 +15,7 @@ namespace BoltOn.Tests.Cqrs.Fakes
 		{
 		}
 
-		public Student(string name, Guid? studentId = null, bool purgeEvents = true)
+		public Student(string name, Guid? studentId = null, Guid? eventId = null, bool purgeEvents = true)
 		{
 			Name = name;
 			if (studentId.HasValue)
@@ -28,8 +28,16 @@ namespace BoltOn.Tests.Cqrs.Fakes
 				StudentId = StudentId,
 				Name = name
 			};
-			if (studentId == CqrsConstants.Student2Id)
-				@event.EventId = CqrsConstants.Event2Id;
+
+			//if (studentId == CqrsConstants.Student2Id)
+			//	@event.EventId = CqrsConstants.Event2Id;
+			//else if (studentId == CqrsConstants.Student1Id)
+			//	@event.EventId = CqrsConstants.Event1Id;
+			//else
+			//@event.EventId = CqrsConstants.Event1Id;
+
+			if (eventId.HasValue)
+				@event.EventId = eventId.Value;
 			else
 				@event.EventId = CqrsConstants.Event1Id;
 
