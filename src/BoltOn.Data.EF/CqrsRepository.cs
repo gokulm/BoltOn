@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using BoltOn.Bus;
 using BoltOn.Cqrs;
+using BoltOn.Logging;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoltOn.Data.EF
@@ -16,13 +17,16 @@ namespace BoltOn.Data.EF
 	{
 		private readonly IAppServiceBus _bus;
 		private readonly IRepository<EventStore> _eventStoreRepository;
+		private readonly IAppLogger<CqrsRepository<TEntity, TDbContext>> _appLogger;
 
 		public CqrsRepository(TDbContext dbContext,
 			IAppServiceBus bus,
-			IRepository<EventStore> repository) : base(dbContext)
+			IRepository<EventStore> repository,
+			IAppLoggerFactory appLoggerFactory) : base(dbContext)
 		{
 			_bus = bus;
 			_eventStoreRepository = repository;
+			_appLogger = appLoggerFactory.Create<CqrsRepository<TEntity, TDbContext>>();
 		}
 
 		protected override async Task SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
@@ -39,6 +43,7 @@ namespace BoltOn.Data.EF
 				IsolationLevel = IsolationLevel.ReadCommitted
 			}, TransactionScopeAsyncFlowOption.Enabled))
 			{
+				_appLogger.Debug($"Adding entities. Count: {entitiesList.Count}");
 				foreach (var entity in entitiesList)
 				{
 					await AddEvents(entity, cancellationToken);
@@ -46,6 +51,7 @@ namespace BoltOn.Data.EF
 
 				await DbContext.SaveChangesAsync(cancellationToken);
 				transactionScope.Complete();
+				_appLogger.Debug("Transaction complete. Added entities.");
 			}
 
 			foreach (var entity in entitiesList)
@@ -63,7 +69,7 @@ namespace BoltOn.Data.EF
 			{
 				var eventStore = new EventStore
 				{
-					EventId = @event.Id,
+					EventId = @event.EventId,
 					EntityId = entity.DomainEntityId,
 					EntityType = entity.GetType().FullName,
 					CreatedDate = System.DateTimeOffset.Now,
@@ -71,13 +77,16 @@ namespace BoltOn.Data.EF
 				};
 
 				await _eventStoreRepository.AddAsync(eventStore, cancellationToken);
+				_appLogger.Debug($"Added event. EventId: {eventStore.EventId}");
 			}
 		}
 
 		protected async virtual Task PublishEventsAndPurge(TEntity entity, CancellationToken cancellationToken)
 		{
 			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.DomainEntityId &&
-					f.EntityType == entity.GetType().FullName)).ToList();
+					f.EntityType == entity.GetType().FullName, cancellationToken)).OrderBy(o => o.CreatedDate).ToList();
+
+			_appLogger.Debug($"Publishing events and purging. No. of events to be purged: {eventStoreList.Count}");
 
 			foreach (var eventStore in eventStoreList)
 			{
@@ -86,15 +95,20 @@ namespace BoltOn.Data.EF
 					IsolationLevel = IsolationLevel.ReadCommitted
 				}, TransactionScopeAsyncFlowOption.Enabled);
 				await _eventStoreRepository.DeleteAsync(eventStore.EventId, cancellationToken);
+				entity.RemoveEventToBeProcessed(eventStore.Data);
+				_appLogger.Debug($"Removed event. EventId: {eventStore.EventId}");
 				await _bus.PublishAsync(eventStore.Data, cancellationToken);
+				_appLogger.Debug($"Published event. EventId: {eventStore.EventId}");
 				transactionScope.Complete();
+				_appLogger.Debug($"Transaction complete. Removed and published successfully. EventId: {eventStore.EventId}");
 			}
 		}
 
 		protected async virtual Task PublishEvents(TEntity entity, CancellationToken cancellationToken)
 		{
 			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.DomainEntityId &&
-					f.EntityType == entity.GetType().FullName && !f.ProcessedDate.HasValue)).ToList();
+					f.EntityType == entity.GetType().FullName && !f.ProcessedDate.HasValue)).OrderBy(o => o.CreatedDate).ToList();
+			_appLogger.Debug($"Publishing events and updating. No. of events to be updated: {eventStoreList.Count}");
 
 			foreach (var eventStore in eventStoreList)
 			{
@@ -104,8 +118,11 @@ namespace BoltOn.Data.EF
 				}, TransactionScopeAsyncFlowOption.Enabled);
 				eventStore.ProcessedDate = DateTimeOffset.Now;
 				await _eventStoreRepository.UpdateAsync(eventStore, cancellationToken);
+				_appLogger.Debug($"Updated event. EventId: {eventStore.EventId}");
 				await _bus.PublishAsync(eventStore.Data, cancellationToken);
+				_appLogger.Debug($"Published event. EventId: {eventStore.EventId}");
 				transactionScope.Complete();
+				_appLogger.Debug($"Transaction complete. Updated and published successfully. EventId: {eventStore.EventId}");
 			}
 		}
 	}

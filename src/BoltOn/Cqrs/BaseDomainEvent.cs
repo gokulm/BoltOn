@@ -5,26 +5,26 @@ namespace BoltOn.Cqrs
 {
 	public interface IDomainEvent : IRequest
 	{
-		Guid Id { get; set; }
+		Guid EventId { get; set; }
 	}
 
 	public abstract class BaseDomainEvent<TEntity> : IDomainEvent
     {
-        public Guid Id { get; set; }
+        public Guid EventId { get; set; }
 
 		public BaseDomainEvent()
 		{
-			Id = Guid.NewGuid();
+			EventId = Guid.NewGuid();
 		}
 
 		public override bool Equals(object obj)
 		{
-			return obj is BaseDomainEvent<TEntity> value && Id == value.Id;
+			return obj is BaseDomainEvent<TEntity> value && EventId == value.EventId;
 		}
 
 		public override int GetHashCode()
 		{
-			return Id.GetHashCode();
+			return EventId.GetHashCode();
 		}
 	}
 }

@@ -23,14 +23,20 @@ namespace BoltOn.Cqrs
 		protected bool RaiseEvent<TEvent>(TEvent @event)
 			where TEvent : IDomainEvent
 		{
-			if (_eventsToBeProcessed.Any(c => c.Id == @event.Id))
+			if (_eventsToBeProcessed.Any(c => c.EventId == @event.EventId))
 				return false;
 
-			if (@event.Id == Guid.Empty)
-				@event.Id = Guid.NewGuid();
+			if (@event.EventId == Guid.Empty)
+				@event.EventId = Guid.NewGuid();
 
 			_eventsToBeProcessed.Add(@event);
 			return true;
+		}
+
+		public void RemoveEventToBeProcessed<TEvent>(TEvent @event)
+		   where TEvent : IDomainEvent
+		{
+			_eventsToBeProcessed.Remove(@event);
 		}
 	}
 }
