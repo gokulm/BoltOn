@@ -49,7 +49,7 @@ namespace BoltOn.Data.EF
 					await AddEvents(entity, cancellationToken);
 				}
 
-				//await DbContext.SaveChangesAsync(cancellationToken);
+				await DbContext.SaveChangesAsync(cancellationToken);
 				transactionScope.Complete();
 				_appLogger.Debug("Transaction complete. Added entities.");
 			}
