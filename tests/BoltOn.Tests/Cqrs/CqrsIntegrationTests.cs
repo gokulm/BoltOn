@@ -44,6 +44,12 @@ namespace BoltOn.Tests.Cqrs
 				}));
 			});
 
+			var loggerFactory = new Mock<IAppLoggerFactory>();
+			var cqrsRepositoryLogger = new Mock<IAppLogger<CqrsRepository<Student, SchoolDbContext>>>();
+			loggerFactory.Setup(s => s.Create<CqrsRepository<Student, SchoolDbContext>>())
+				.Returns(cqrsRepositoryLogger.Object);
+			serviceCollection.AddTransient((s) => loggerFactory.Object);
+
 			var logger = new Mock<IAppLogger<StudentCreatedEventHandler>>();
 			serviceCollection.AddTransient((s) => logger.Object);
 
@@ -57,6 +63,23 @@ namespace BoltOn.Tests.Cqrs
 
 			// assert
 			await Task.Delay(500);
+			cqrsRepositoryLogger.Verify(v => v.Debug("Adding entities. Count: 1"));
+			cqrsRepositoryLogger.Verify(v => v.Debug("Transaction complete. Added entities."));
+			if(purgeEvents)
+			{
+				cqrsRepositoryLogger.Verify(v => v.Debug("Publishing events and purging. No. of events to be purged: 1"));
+				cqrsRepositoryLogger.Verify(v => v.Debug($"Removed event. EventId: {CqrsConstants.Event1Id}"));
+				cqrsRepositoryLogger.Verify(v => v.Debug($"Published event. EventId: {CqrsConstants.Event1Id}"));
+				cqrsRepositoryLogger.Verify(v => v.Debug($"Transaction complete. Removed and published successfully. EventId: {CqrsConstants.Event1Id}"));
+			}
+			else
+			{
+				cqrsRepositoryLogger.Verify(v => v.Debug("Publishing events and updating. No. of events to be updated: 1"));
+				cqrsRepositoryLogger.Verify(v => v.Debug($"Updated event. EventId: {CqrsConstants.Event1Id}"));
+				cqrsRepositoryLogger.Verify(v => v.Debug($"Published event. EventId: {CqrsConstants.Event1Id}"));
+				cqrsRepositoryLogger.Verify(v => v.Debug($"Transaction complete. Updated and published successfully. EventId: {CqrsConstants.Event1Id}"));
+			}
+
 			logger.Verify(v => v.Debug($"{nameof(StudentCreatedEventHandler)} invoked"));
 
 			var schoolDbContext = serviceProvider.GetService<SchoolDbContext>();
@@ -101,6 +124,12 @@ namespace BoltOn.Tests.Cqrs
 			var logger = new Mock<IAppLogger<StudentCreatedEventHandler>>();
 			serviceCollection.AddTransient((s) => logger.Object);
 
+			var loggerFactory = new Mock<IAppLoggerFactory>();
+			var cqrsRepositoryLogger = new Mock<IAppLogger<CqrsRepository<Student, SchoolDbContext>>>();
+			loggerFactory.Setup(s => s.Create<CqrsRepository<Student, SchoolDbContext>>())
+				.Returns(cqrsRepositoryLogger.Object);
+			serviceCollection.AddTransient((s) => loggerFactory.Object);
+
 			var studentId = Guid.NewGuid();
 			var eventStoreRepository = new Mock<IRepository<EventStore>>();
 			var failedEventRepositoryException = new Exception("failed event repository");
@@ -116,6 +145,7 @@ namespace BoltOn.Tests.Cqrs
 			var exception = await Record.ExceptionAsync(async () => await requestor.ProcessAsync(new AddStudentRequest { StudentId = studentId, Name = "test input" }));
 
 			// assert
+			cqrsRepositoryLogger.Verify(v => v.Debug("Publishing events and purging. No. of events to be purged: 1"), Times.Never);
 			Assert.NotNull(exception);
 			var schoolDbContext = serviceProvider.GetService<SchoolDbContext>();
 			var student = schoolDbContext.Set<Student>().Find(studentId);
@@ -150,6 +180,12 @@ namespace BoltOn.Tests.Cqrs
 			var logger = new Mock<IAppLogger<StudentCreatedEventHandler>>();
 			serviceCollection.AddTransient((s) => logger.Object);
 
+			var loggerFactory = new Mock<IAppLoggerFactory>();
+			var cqrsRepositoryLogger = new Mock<IAppLogger<CqrsRepository<Student, SchoolDbContext>>>();
+			loggerFactory.Setup(s => s.Create<CqrsRepository<Student, SchoolDbContext>>())
+				.Returns(cqrsRepositoryLogger.Object);
+			serviceCollection.AddTransient((s) => loggerFactory.Object);
+
 			var studentId = Guid.NewGuid();
 			var bus = new Mock<BoltOn.Bus.IAppServiceBus>();
 			var failedBusException = new Exception("failed bus");
@@ -165,6 +201,10 @@ namespace BoltOn.Tests.Cqrs
 			var exception = await Record.ExceptionAsync(async () => await requestor.ProcessAsync(new AddStudentRequest { StudentId = studentId, Name = "test input" }));
 
 			// assert
+			cqrsRepositoryLogger.Verify(v => v.Debug("Publishing events and purging. No. of events to be purged: 1"));
+			cqrsRepositoryLogger.Verify(v => v.Debug($"Removed event. EventId: {CqrsConstants.Event1Id}"));
+			cqrsRepositoryLogger.Verify(v => v.Debug($"Published event. EventId: {CqrsConstants.Event1Id}"), Times.Never);
+
 			Assert.NotNull(exception);
 			var schoolDbContext = serviceProvider.GetService<SchoolDbContext>();
 			var student = schoolDbContext.Set<Student>().Find(studentId);
@@ -220,6 +260,8 @@ namespace BoltOn.Tests.Cqrs
 			var student = schoolDbContext.Set<Student>().Find(studentId);
 			Assert.NotNull(student);
 			bus.Verify(v => v.PublishAsync(It.IsAny<IDomainEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+			cqrsRepositoryLogger.Verify(v => v.Debug("Publishing events and purging. No. of events to be purged: 1"));
+			cqrsRepositoryLogger.Verify(v => v.Debug($"Removed event. EventId: {CqrsConstants.Event1Id}")); 
 			cqrsRepositoryLogger.Verify(v => v.Debug($"Published event. EventId: {CqrsConstants.Event1Id}"), Times.Never);
 			cqrsRepositoryLogger.Verify(v => v.Debug($"Published event. EventId: {CqrsConstants.Event2Id}"), Times.Never);
 		}
@@ -265,7 +307,10 @@ namespace BoltOn.Tests.Cqrs
 			var student = schoolDbContext.Set<Student>().Find(studentId);
 			Assert.NotNull(student);
 			bus.Verify(v => v.PublishAsync(It.IsAny<IDomainEvent>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
-			cqrsRepositoryLogger.Verify(v => v.Debug($"Published event. EventId: {CqrsConstants.Event1Id}"), Times.Once);
+			cqrsRepositoryLogger.Verify(v => v.Debug("Publishing events and purging. No. of events to be purged: 1"));
+			cqrsRepositoryLogger.Verify(v => v.Debug($"Removed event. EventId: {CqrsConstants.Event1Id}"));
+			cqrsRepositoryLogger.Verify(v => v.Debug($"Transaction complete. Removed and published successfully. EventId: {CqrsConstants.Event1Id}"));
+			cqrsRepositoryLogger.Verify(v => v.Debug($"Published event. EventId: {CqrsConstants.Event1Id}"));
 			cqrsRepositoryLogger.Verify(v => v.Debug($"Published event. EventId: {CqrsConstants.Event2Id}"), Times.Never);
 		}
 

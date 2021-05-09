@@ -108,6 +108,7 @@ namespace BoltOn.Data.EF
 		{
 			var eventStoreList = (await _eventStoreRepository.FindByAsync(f => f.EntityId == entity.DomainEntityId &&
 					f.EntityType == entity.GetType().FullName && !f.ProcessedDate.HasValue)).OrderBy(o => o.CreatedDate).ToList();
+			_appLogger.Debug($"Publishing events and updating. No. of events to be updated: {eventStoreList.Count}");
 
 			foreach (var eventStore in eventStoreList)
 			{

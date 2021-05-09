@@ -29,13 +29,6 @@ namespace BoltOn.Tests.Cqrs.Fakes
 				Name = name
 			};
 
-			//if (studentId == CqrsConstants.Student2Id)
-			//	@event.EventId = CqrsConstants.Event2Id;
-			//else if (studentId == CqrsConstants.Student1Id)
-			//	@event.EventId = CqrsConstants.Event1Id;
-			//else
-			//@event.EventId = CqrsConstants.Event1Id;
-
 			if (eventId.HasValue)
 				@event.EventId = eventId.Value;
 			else
