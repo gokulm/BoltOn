@@ -33,7 +33,7 @@ namespace BoltOn.Cache
             {
                 _logger.Debug($"Retrieving response from cache. Key: {cacheRequest.CacheKey}");
                 var responseFromCache = await _appCache.GetAsync<TResponse>(cacheRequest.CacheKey,
-                    cancellationToken, slidingExpiration: cacheRequest.SlidingExpiration);
+                    cancellationToken, absoluteExpiration: cacheRequest.AbsoluteExpiration);
 
                 if (!EqualityComparer<TResponse>.Default.Equals(responseFromCache, default))
                 {
@@ -49,7 +49,7 @@ namespace BoltOn.Cache
             {
                 _logger.Debug($"Saving response in cache. Key: {cacheRequest.CacheKey}");
                 await _appCache.SetAsync(cacheRequest.CacheKey, response,
-                    cancellationToken, cacheRequest.SlidingExpiration);
+                    cancellationToken, cacheRequest.AbsoluteExpiration);
             }
 
             if (request is IClearCachedResponse clearCacheRequest)
