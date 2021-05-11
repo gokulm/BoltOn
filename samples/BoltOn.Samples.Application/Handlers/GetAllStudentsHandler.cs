@@ -16,7 +16,7 @@ namespace BoltOn.Samples.Application.Handlers
 	{
 		public string CacheKey => "Students";
 
-		public TimeSpan? SlidingExpiration => TimeSpan.FromSeconds(45);
+		public TimeSpan? AbsoluteExpiration => TimeSpan.FromSeconds(45);
 	}
 
 	public class GetAllStudentsFlattenedRequest : IRequest<IEnumerable<StudentDto>>

@@ -24,9 +24,9 @@ namespace BoltOn.Tests.Cache
 				b.BoltOnCacheModule();
 			});
 
-			serviceCollection.AddLogging();
 			var distributedCache = new Mock<IDistributedCache>();
 			serviceCollection.AddTransient(s => distributedCache.Object);
+			serviceCollection.AddLogging();
 
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
@@ -166,17 +166,19 @@ namespace BoltOn.Tests.Cache
 			serviceProvider.TightenBolts();
 			var sut = serviceProvider.GetService<IAppCache>();
 			var student = new Fakes.Student { FirstName = "first", Id = Guid.NewGuid() };
-			const int expirationInterval = 1000;
+			const int expirationInterval = 2000;
 
 			// act
-			await sut.SetAsync("Student", student, slidingExpiration: TimeSpan.FromMilliseconds(expirationInterval));
+			await sut.SetAsync("Student", student, absoluteExpiration: TimeSpan.FromMilliseconds(expirationInterval));
 			var result = await sut.GetAsync<Fakes.Student>("Student");
 
 			// assert
 			Assert.NotNull(result);
 			Assert.Equal(student.Id, result.Id);
+			await Task.Delay(500);
+			await sut.GetAsync<Fakes.Student>("Student");
+			await Task.Delay(expirationInterval - 200);
 			logger.Verify(l => l.Debug("Setting value in cache... Key: Student"));
-			await Task.Delay(expirationInterval + 200);
 			var result2 = await sut.GetAsync<Fakes.Student>("Student");
 			Assert.Null(result2);
 
@@ -246,7 +248,6 @@ namespace BoltOn.Tests.Cache
 			{
 				b.BoltOnCacheModule();
 			});
-			serviceCollection.AddLogging();
 
 			if (!IntegrationTestHelper.IsRedisCache)
 			{
