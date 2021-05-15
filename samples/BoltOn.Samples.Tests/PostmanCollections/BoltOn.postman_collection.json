@@ -1,0 +1,200 @@
+{
+	"info": {
+		"_postman_id": "61183d98-8c81-4cc7-a01e-003f99152834",
+		"name": "BoltOn",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "PostStudent",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.environment.set(\"StudentId\", jsonData.studentId);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"g3\",\n    \"lastName\": \"m3\",\n    \"studentTypeId\": 2,\n    \"email\": \"g1.m1@g.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SamplesWebApiUrl}}students",
+					"host": [
+						"{{SamplesWebApiUrl}}students"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PutStudent",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"go5\",\n    \"lastName\": \"mu5\",\n    \"studentTypeId\": 1,\n    \"email\": \"go.mu@g.com\",\n    \"studentId\": \"{{StudentId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SamplesWebApiUrl}}students/",
+					"host": [
+						"{{SamplesWebApiUrl}}students"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetStudent",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"go5\",\n    \"lastName\": \"mu5\",\n    \"studentTypeId\": 1,\n    \"email\": \"go.mu@g.com\",\n    \"studentId\": \"{{StudentId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SamplesWebApiUrl}}students/{{StudentId}}",
+					"host": [
+						"{{SamplesWebApiUrl}}students"
+					],
+					"path": [
+						"{{StudentId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetStudents",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SamplesWebApiUrl}}students",
+					"host": [
+						"{{SamplesWebApiUrl}}students"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetStudentsFlattened",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SamplesWebApiUrl}}students/flattened",
+					"host": [
+						"{{SamplesWebApiUrl}}students"
+					],
+					"path": [
+						"flattened"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "EnrollCourse",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"go5\",\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SamplesWebApiUrl}}students/{{StudentId}}/courses/2e457208-f99a-41c4-8c0d-2fff3a52af4e",
+					"host": [
+						"{{SamplesWebApiUrl}}students"
+					],
+					"path": [
+						"{{StudentId}}",
+						"courses",
+						"2e457208-f99a-41c4-8c0d-2fff3a52af4e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ping",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SamplesWebApiUrl}}ping",
+					"host": [
+						"{{SamplesWebApiUrl}}ping"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
