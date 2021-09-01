@@ -34,7 +34,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Hangfire", "src\Bolt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Web", "src\BoltOn.Web\BoltOn.Web.csproj", "{B9F23940-8877-48DD-BBBE-BC2110045FD4}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "BoltOn.Samples.WebApi", "samples\BoltOn.Samples.WebApi\BoltOn.Samples.WebApi.csproj", "{14C386FE-B219-493D-9E4B-66831ED12837}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Samples.WebApi", "samples\BoltOn.Samples.WebApi\BoltOn.Samples.WebApi.csproj", "{14C386FE-B219-493D-9E4B-66831ED12837}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Data.MartenDb", "src\BoltOn.Data.MartenDb\BoltOn.Data.MartenDb.csproj", "{B7303552-3CE8-4EC2-93B7-1197A9E854F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,6 +100,10 @@ Global
 		{14C386FE-B219-493D-9E4B-66831ED12837}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14C386FE-B219-493D-9E4B-66831ED12837}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14C386FE-B219-493D-9E4B-66831ED12837}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7303552-3CE8-4EC2-93B7-1197A9E854F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7303552-3CE8-4EC2-93B7-1197A9E854F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7303552-3CE8-4EC2-93B7-1197A9E854F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7303552-3CE8-4EC2-93B7-1197A9E854F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,6 +123,7 @@ Global
 		{50443599-2F40-4A02-B367-102B1810117A} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 		{B9F23940-8877-48DD-BBBE-BC2110045FD4} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 		{14C386FE-B219-493D-9E4B-66831ED12837} = {15E5CCAC-85EB-4C98-B1FA-B5DEFD213FCD}
+		{B7303552-3CE8-4EC2-93B7-1197A9E854F3} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {530F371A-8A38-41FE-9A1E-A03ACCDE867B}
