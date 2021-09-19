@@ -58,6 +58,7 @@
         <Folder Include="Bus\Fakes\" />
         <Folder Include="Data\EF\Fakes\" />
         <Folder Include="Data\MartenDb\" />
+        <Folder Include="Data\MartenDb\Fakes\" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\BoltOn\BoltOn.csproj" />
@@ -67,5 +68,6 @@
         <ProjectReference Include="..\..\src\BoltOn.Cache\BoltOn.Cache.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Data.Elasticsearch\BoltOn.Data.Elasticsearch.csproj" />
         <ProjectReference Include="..\..\src\BoltOn.Web\BoltOn.Web.csproj" />
+        <ProjectReference Include="..\..\src\BoltOn.Data.MartenDb\BoltOn.Data.MartenDb.csproj" />
     </ItemGroup>
 </Project>

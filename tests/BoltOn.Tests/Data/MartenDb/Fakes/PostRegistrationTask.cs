@@ -2,8 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using BoltOn.Bootstrapping;
 using BoltOn.Tests.Other;
+using Marten;
 
-namespace BoltOn.Tests.Data.EF.Fakes
+namespace BoltOn.Tests.Data.MartenDb.Fakes
 {
 	public class PostRegistrationTask : IPostRegistrationTask
 	{
@@ -16,16 +17,16 @@ namespace BoltOn.Tests.Data.EF.Fakes
 
 		public void Run()
 		{
-			if (IntegrationTestHelper.IsSeedData)
+			if (IntegrationTestHelper.IsSeedMartenDb)
 			{
-				using var scope = _serviceProvider.CreateScope();
-				var schoolDbContext = scope.ServiceProvider.GetService<SchoolDbContext>();
-				if (schoolDbContext != null)
-				{
-					schoolDbContext.Database.EnsureDeleted();
-					schoolDbContext.Database.EnsureCreated();
+				var documentStore = _serviceProvider.GetService<IDocumentStore>();
+				documentStore.Advanced.Clean.DeleteAllDocuments();
 
-					schoolDbContext.Set<Student>().Add(new Student
+				using var scope = _serviceProvider.CreateScope();
+				var documentSession = scope.ServiceProvider.GetService<IDocumentSession>();
+				if (documentSession != null)
+				{
+					documentSession.Insert(new Student
 					{
 						Id = 1,
 						FirstName = "a",
@@ -37,23 +38,23 @@ namespace BoltOn.Tests.Data.EF.Fakes
 						FirstName = "x",
 						LastName = "y"
 					};
-					schoolDbContext.Set<Student>().Add(new Student
+					documentSession.Insert(new Student
 					{
 						Id = 10,
 						FirstName = "record to be deleted",
 						LastName = "b"
 					});
-					schoolDbContext.Set<Student>().Add(new Student
+					documentSession.Insert(new Student
 					{
 						Id = 11,
 						FirstName = "record to be deleted",
 						LastName = "b"
 					});
-					var address = new Address { Id = Guid.NewGuid(), Street = "Computer Science", Student = student };
-					schoolDbContext.Set<Student>().Add(student);
-					schoolDbContext.Set<Address>().Add(address);
-					schoolDbContext.SaveChanges();
-					schoolDbContext.Dispose();
+					//var address = new Address { Id = Guid.NewGuid(), Street = "Computer Science", Student = student };
+					documentSession.Insert(student);
+					//documentSession.Insert(address);
+					documentSession.SaveChanges();
+					documentSession.Dispose();
 				}
 			}
 		}

@@ -20,12 +20,12 @@ namespace BoltOn.Data.MartenDb
 
 		public async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
 		{
-			return await _querySession.Query<TEntity>().Where(predicate).ToListAsync();
+			return await _querySession.Query<TEntity>().Where(predicate).ToListAsync(cancellationToken);
 		}
 
 		public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
 		{
-			return await _querySession.Query<TEntity>().ToListAsync();
+			return await _querySession.Query<TEntity>().ToListAsync(cancellationToken);
 		}
 
 		public async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
