@@ -20,7 +20,8 @@ namespace BoltOn.Tests.Data.MartenDb.Fakes
 			if (IntegrationTestHelper.IsSeedMartenDb)
 			{
 				var documentStore = _serviceProvider.GetService<IDocumentStore>();
-				documentStore.Advanced.Clean.DeleteAllDocuments();
+				documentStore.Advanced.Clean.CompletelyRemoveAll();
+				//documentStore.Advanced.Clean.DeleteAllDocuments();
 
 				using var scope = _serviceProvider.CreateScope();
 				var documentSession = scope.ServiceProvider.GetService<IDocumentSession>();
