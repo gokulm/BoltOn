@@ -13,69 +13,13 @@ namespace BoltOn.Tests.Data.MartenDb
 {
     [Collection("IntegrationTests")]
 	[TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
-	public class MartenDbRepositoryTests : IClassFixture<MartenDbRepositoryFixture>
+	public class RepositoryTests : IClassFixture<MartenDbRepositoryFixture>
     {
         private readonly MartenDbRepositoryFixture _fixture;
 
-        public MartenDbRepositoryTests(MartenDbRepositoryFixture fixture)
+        public RepositoryTests(MartenDbRepositoryFixture fixture)
         {
             _fixture = fixture;
-        }
-
-        //[Fact]
-		public async Task Test()
-        {
-			// arrange
-			
-			var student = new Student
-            {
-                Id = 1,
-                FirstName = "c",
-                LastName = "d"
-            };
-
-            // act
-            var result = await _fixture.SubjectUnderTest.AddAsync(student);
-
-            try
-            {
-                var queryResult = await _fixture.SubjectUnderTest.GetByIdAsync(1);
-
-                // assert
-                Assert.NotNull(queryResult);
-                Assert.Equal("c", queryResult.FirstName);
-                Assert.Equal(result.FirstName, queryResult.FirstName);
-            }
-            catch(Exception ex)
-			{
-
-			}
-
-            //        var serviceCollection = new ServiceCollection();
-            //        serviceCollection.AddMarten(BuildStoreOptions());
-
-            //        var serviceProvider = serviceCollection.BuildServiceProvider();
-
-            //        var store = DocumentStore
-            //.For("host=localhost;database=bolton;password=bolton;username=bolton");
-
-            //        //using (var session = store.LightweightSession())
-            //        //using (var session2 = store.QuerySession())
-            //        //using (var session3 = store.DirtyTrackedSession())
-            //        //using (var session4 = store.OpenSession())
-            //            using(var session5 = serviceProvider.GetService<IDocumentSession>())
-            //        {
-            //            var user = new User { FirstName = "Han", LastName = "Solo" };
-            //session5.Store(user);
-
-            //session5.SaveChanges();
-            //        } 
-
-            //serviceCollection.AddElasticsearch<TestElasticsearchOptions>(
-            //    t => t.ConnectionSettings = new Nest.ConnectionSettings(new Uri("http://127.0.0.1:9200")));
-            //ServiceProvider = serviceCollection.BuildServiceProvider();
-            //ServiceProvider.TightenBolts();
-            //SubjectUnderTest = ServiceProvider.GetService<IRepository<Student>>();
         }
 
 		[Fact, Trait("Category", "Integration")]

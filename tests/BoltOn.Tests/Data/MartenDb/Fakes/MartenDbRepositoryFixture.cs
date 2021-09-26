@@ -22,7 +22,7 @@ namespace BoltOn.Tests.Data.MartenDb.Fakes
 					options.BoltOnMartenDbModule(BuildStoreOptions());
 				});
 
-			serviceCollection.AddTransient<IRepository<Student>, Repository<Student>>();
+			serviceCollection.AddScoped<IRepository<Student>, Repository<Student>>();
 
 			ServiceProvider = serviceCollection.BuildServiceProvider();
 			ServiceProvider.TightenBolts();

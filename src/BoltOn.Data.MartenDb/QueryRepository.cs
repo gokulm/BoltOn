@@ -11,26 +11,56 @@ namespace BoltOn.Data.MartenDb
 	public class QueryRepository<TEntity> : IQueryRepository<TEntity>
 		where TEntity : class
 	{
-		private readonly IQuerySession _querySession;
+		private readonly IDocumentStore _documentStore;
 
-		public QueryRepository(IQuerySession querySession)
+		public QueryRepository(IDocumentStore documentStore)
 		{
-			_querySession = querySession;
+			_documentStore = documentStore;
 		}
 
 		public async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
 		{
-			return await _querySession.Query<TEntity>().Where(predicate).ToListAsync(cancellationToken);
+			using var querySession = _documentStore.QuerySession();
+			return await querySession.Query<TEntity>().Where(predicate).ToListAsync(cancellationToken);
 		}
 
 		public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
 		{
-			return await _querySession.Query<TEntity>().ToListAsync(cancellationToken);
+			using var querySession = _documentStore.QuerySession();
+			return await querySession.Query<TEntity>().ToListAsync(cancellationToken);
 		}
 
 		public async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
 		{
-			return await _querySession.LoadAsync<TEntity>(id.ToString(), cancellationToken);
+			if (includes?.Count() > 0)
+				throw new Exception("includes is not supported");
+
+			using var querySession = _documentStore.QuerySession();
+
+			if (id.GetType() == typeof(string))
+			{
+				var tempId = id.ToString();
+				return await querySession.LoadAsync<TEntity>(tempId, cancellationToken);
+			}
+			else if (id.GetType() == typeof(int))
+			{
+				var tempId = (int)Convert.ChangeType(id, typeof(int));
+				return await querySession.LoadAsync<TEntity>(tempId, cancellationToken);
+			}
+			else if (id.GetType() == typeof(long))
+			{
+				var tempId = (long)Convert.ChangeType(id, typeof(long));
+				return await querySession.LoadAsync<TEntity>(tempId, cancellationToken);
+			}
+			else if (id.GetType() == typeof(Guid))
+			{
+				var tempId = (Guid)Convert.ChangeType(id, typeof(Guid));
+				return await querySession.LoadAsync<TEntity>(tempId, cancellationToken);
+			}
+			else
+			{
+				throw new Exception($"GetByIdAsync doesn't support fetching entity based on the Id of type {id.GetType()}");
+			}
 		}
 	}
 }

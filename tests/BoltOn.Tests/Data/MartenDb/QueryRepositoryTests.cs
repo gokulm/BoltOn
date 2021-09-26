@@ -1,8 +1,6 @@
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Tests.Data.EF.Fakes;
 using BoltOn.Tests.Data.MartenDb.Fakes;
 using BoltOn.Tests.Other;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +22,6 @@ namespace BoltOn.Tests.Data.MartenDb
 		public async Task GetById_WhenRecordExists_ReturnsRecord()
 		{
 			// arrange
-			var schoolDbContext = _fixture.ServiceProvider.GetService<SchoolDbContext>();
 
 			// act
 			var result = await _fixture.SubjectUnderTest.GetByIdAsync(1);
@@ -32,7 +29,6 @@ namespace BoltOn.Tests.Data.MartenDb
 			// assert
 			Assert.NotNull(result);
 			Assert.Equal("a", result.FirstName);
-			//Assert.DoesNotContain(result, schoolDbContext.ChangeTracker.Entries<Student>().Select(s => s.Entity));
 		}
 
 		[Fact, Trait("Category", "Integration")]
@@ -61,7 +57,7 @@ namespace BoltOn.Tests.Data.MartenDb
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public async Task GetByIdAsync_WhenCancellationRequestedIsTrue_ThrowsOperationCanceledException()
+		public async Task GetByIdAsync_WhenCancellationRequestedIsTrue_ThrowsTaskCanceledException()
 		{
 			// arrange
 			var cancellationToken = new CancellationToken(true);
@@ -71,8 +67,8 @@ namespace BoltOn.Tests.Data.MartenDb
 
 			// assert			
 			Assert.NotNull(exception);
-			Assert.IsType<OperationCanceledException>(exception);
-			Assert.Equal("The operation was canceled.", exception.Message);
+			Assert.IsType<TaskCanceledException>(exception);
+			Assert.Equal("A task was canceled.", exception.Message);
 		}
 
 		[Fact, Trait("Category", "Integration")]
@@ -100,7 +96,7 @@ namespace BoltOn.Tests.Data.MartenDb
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public async Task GetAllAsync_WhenCancellationRequestedIsTrue_ThrowsOperationCanceledException()
+		public async Task GetAllAsync_WhenCancellationRequestedIsTrue_ThrowsTaskCanceledException()
 		{
 			// arrange
 			var cancellationToken = new CancellationToken(true);
@@ -110,8 +106,8 @@ namespace BoltOn.Tests.Data.MartenDb
 
 			// assert			
 			Assert.NotNull(exception);
-			Assert.IsType<OperationCanceledException>(exception);
-			Assert.Equal("The operation was canceled.", exception.Message);
+			Assert.IsType<TaskCanceledException>(exception);
+			Assert.Equal("A task was canceled.", exception.Message);
 		}
 
 		[Fact, Trait("Category", "Integration")]
@@ -126,47 +122,6 @@ namespace BoltOn.Tests.Data.MartenDb
 			// assert
 			Assert.NotNull(result);
 			Assert.Equal("x", result.FirstName);
-			//Assert.DoesNotContain(result, schoolDbContext.ChangeTracker.Entries<Student>().Select(s => s.Entity));
 		}
-
-		//[Fact, Trait("Category", "Integration")]
-		//public async Task FindByWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
-		//{
-		//	// act
-		//	var result = (await _fixture.SubjectUnderTest.FindByAsync(f => f.Id == 2, default, i => i.Addresses)).FirstOrDefault();
-
-		//	// assert
-		//	Assert.NotNull(result);
-		//	Assert.Equal("x", result.FirstName);
-		//	Assert.NotEmpty(result.Addresses);
-		//}
-
-		//[Fact, Trait("Category", "Integration")]
-		//public async Task FindByAsyncWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
-		//{
-		//	// act
-		//	var result = (await _fixture.SubjectUnderTest.FindByAsync(f => f.Id == 2, default, i => i.Addresses)).FirstOrDefault();
-
-		//	// assert
-		//	Assert.NotNull(result);
-		//	Assert.Equal("x", result.FirstName);
-		//	Assert.NotEmpty(result.Addresses);
-		//}
-
-		//[Fact, Trait("Category", "Integration")]
-		//public async Task FindByAsync_WhenCancellationRequestedIsTrue_ThrowsOperationCanceledException()
-		//{
-		//	// arrange
-		//	var cancellationToken = new CancellationToken(true);
-
-		//	// act
-		//	var exception = await Record.ExceptionAsync(() => _fixture.SubjectUnderTest.FindByAsync(f => f.Id == 2,
-		//		cancellationToken, i => i.Addresses));
-
-		//	// assert			
-		//	Assert.NotNull(exception);
-		//	Assert.IsType<OperationCanceledException>(exception);
-		//	Assert.Equal("The operation was canceled.", exception.Message);
-		//}
 	}
 }

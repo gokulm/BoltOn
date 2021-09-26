@@ -44,7 +44,7 @@ namespace BoltOn.Data.MartenDb
 		public async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
 			CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
 		{
-			if (includes != null)
+			if (includes?.Count() > 0) 
 				throw new Exception("includes is not supported");
 
 			using var session = _documentStore.OpenSession();
@@ -60,7 +60,7 @@ namespace BoltOn.Data.MartenDb
 		public async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default,
 			params Expression<Func<TEntity, object>>[] includes)
 		{
-			if (includes != null)
+			if (includes?.Count() > 0)
 				throw new Exception("includes is not supported");
 
 			using var session = _documentStore.OpenSession();
