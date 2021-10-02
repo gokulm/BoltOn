@@ -26,6 +26,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[TestPriority(10)]
 		public async Task GetByIdAsync_WhenRecordDoesNotExist_ReturnsNull()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 
 			// act
@@ -39,6 +42,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[TestPriority(10)]
 		public async Task GetByIdAsync_WhenRecordExists_ReturnsRecord()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 
 			// act
@@ -53,6 +59,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[TestPriority(10)]
 		public async Task GetByIdAsync_WhenCancellationRequestedIsTrue_ThrowsTaskCanceledException()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 			var cancellationToken = new CancellationToken(true);
 
@@ -69,6 +78,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[TestPriority(10)]
 		public async Task GetAllAsync_WhenRecordsExist_ReturnsAllTheRecords()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 
 			// act
@@ -82,6 +94,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[TestPriority(10)]
 		public async Task GetAllAsync_WhenCancellationRequestedIsTrue_ThrowsOperationCanceledException()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 			var cancellationToken = new CancellationToken(true);
 
@@ -98,6 +113,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[TestPriority(10)]
 		public async Task FindByWithoutIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheFindByCriteria()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 
 			// act
@@ -108,38 +126,13 @@ namespace BoltOn.Tests.Data.MartenDb
 			Assert.Equal("x", result.FirstName);
 		}
 
-		//[Fact, Trait("Category", "Integration")]
-		//public async Task FindByAsyncWithIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheCriteria()
-		//{
-		//	// act
-		//	var result = (await _fixture.SubjectUnderTest.FindByAsync(f => f.Id == 2, default, i => i.Addresses)).FirstOrDefault();
-
-		//	// assert
-		//	Assert.NotNull(result);
-		//	Assert.Equal("x", result.FirstName);
-		//	Assert.NotEmpty(result.Addresses);
-		//}
-
-		//[Fact, Trait("Category", "Integration")]
-		//public async Task FindByAsync_WhenCancellationRequestedIsTrue_ThrowsOperationCanceledException()
-		//{
-		//	// arrange
-		//	var cancellationToken = new CancellationToken(true);
-
-		//	// act
-		//	var exception = await Record.ExceptionAsync(() => _fixture.SubjectUnderTest.FindByAsync(f => f.Id == 2,
-		//		cancellationToken: cancellationToken, s => s.Addresses));
-
-		//	// assert			
-		//	Assert.NotNull(exception);
-		//	Assert.IsType<OperationCanceledException>(exception);
-		//	Assert.Equal("The operation was canceled.", exception.Message);
-		//}
-
 		[Fact, Trait("Category", "Integration")]
 		[TestPriority(20)]
 		public async Task AddAsync_AddNewEntity_ReturnsAddedEntity()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 			const int newStudentId = 6;
 			var student = new Student
@@ -163,6 +156,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[TestPriority(20)]
 		public async Task AddAsync_AddNewEntities_ReturnsAddedEntities()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 			var student1 = new Fakes.Student
 			{
@@ -192,6 +188,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[TestPriority(20)]
 		public async Task AddAsync_WhenCancellationRequestedIsTrue_ThrowsTaskCanceledException()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 			var cancellationToken = new CancellationToken(true);
 			const int newStudentId = 9;
@@ -216,6 +215,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[TestPriority(30)]
 		public async Task UpdateAsync_UpdateAnExistingEntity_UpdatesTheEntity()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 			var student = await _fixture.SubjectUnderTest.GetByIdAsync(1);
 
@@ -233,6 +235,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[TestPriority(30)]
 		public async Task UpdateAsync_WhenCancellationRequestedIsTrue_ThrowsTaskCanceledException()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 			var student = await _fixture.SubjectUnderTest.GetByIdAsync(1);
 			var cancellationToken = new CancellationToken(true);
@@ -251,6 +256,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[TestPriority(40)]
 		public async Task DeleteAsync_DeleteAfterFetching_DeletesTheEntity()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 			var student = await _fixture.SubjectUnderTest.GetByIdAsync(10);
 
@@ -269,6 +277,9 @@ namespace BoltOn.Tests.Data.MartenDb
 			if (!IntegrationTestHelper.IsMartenDbRunning)
 				return;
 
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 
 			// act
@@ -283,6 +294,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[TestPriority(40)]
 		public async Task DeleteAsync_WhenCancellationRequestedIsTrue_ThrowsTaskCanceledException()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 			var student = await _fixture.SubjectUnderTest.GetByIdAsync(10);
 			var cancellationToken = new CancellationToken(true);

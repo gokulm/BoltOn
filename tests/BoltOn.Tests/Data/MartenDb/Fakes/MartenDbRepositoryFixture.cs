@@ -12,7 +12,9 @@ namespace BoltOn.Tests.Data.MartenDb.Fakes
 		public MartenDbRepositoryFixture()
 		{
 			IntegrationTestHelper.IsMartenDbRunning = true;
-			IntegrationTestHelper.IsSeedMartenDb = true;
+
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
 
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddMarten(BuildStoreOptions());
@@ -31,7 +33,11 @@ namespace BoltOn.Tests.Data.MartenDb.Fakes
 
 		public void Dispose()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			ServiceProvider.LoosenBolts();
+			IntegrationTestHelper.IsMartenDbRunning = false;
 		}
 
 		public IServiceProvider ServiceProvider { get; set; }
@@ -52,8 +58,10 @@ namespace BoltOn.Tests.Data.MartenDb.Fakes
 	{
 		public MartenDbQueryRepositoryFixture()
 		{
-			IntegrationTestHelper.IsMartenDbRunning = true;
-			IntegrationTestHelper.IsSeedMartenDb = true;
+			IntegrationTestHelper.IsMartenDbRunning = false;
+
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
 
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddMarten(BuildStoreOptions());
@@ -72,7 +80,11 @@ namespace BoltOn.Tests.Data.MartenDb.Fakes
 
 		public void Dispose()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			ServiceProvider.LoosenBolts();
+			IntegrationTestHelper.IsMartenDbRunning = false;
 		}
 
 		public IServiceProvider ServiceProvider { get; set; }

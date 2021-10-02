@@ -21,6 +21,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[Fact, Trait("Category", "Integration")]
 		public async Task GetById_WhenRecordExists_ReturnsRecord()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 
 			// act
@@ -34,6 +37,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[Fact, Trait("Category", "Integration")]
 		public async Task GetById_WhenRecordDoesNotExist_ReturnsNull()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 
 			// act
@@ -46,6 +52,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[Fact, Trait("Category", "Integration")]
 		public async Task GetByIdAsync_WhenRecordExists_ReturnsRecord()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 
 			// act
@@ -59,6 +68,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[Fact, Trait("Category", "Integration")]
 		public async Task GetByIdAsync_WhenCancellationRequestedIsTrue_ThrowsTaskCanceledException()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 			var cancellationToken = new CancellationToken(true);
 
@@ -74,6 +86,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[Fact, Trait("Category", "Integration")]
 		public async Task GetAll_WhenRecordsExist_ReturnsAllTheRecords()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 
 			// act
@@ -86,6 +101,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[Fact, Trait("Category", "Integration")]
 		public async Task GetAllAsync_WhenRecordsExist_ReturnsAllTheRecords()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 
 			// act
@@ -98,6 +116,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[Fact, Trait("Category", "Integration")]
 		public async Task GetAllAsync_WhenCancellationRequestedIsTrue_ThrowsTaskCanceledException()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 			var cancellationToken = new CancellationToken(true);
 
@@ -113,6 +134,9 @@ namespace BoltOn.Tests.Data.MartenDb
 		[Fact, Trait("Category", "Integration")]
 		public async Task FindByWithoutIncludes_WhenRecordsExist_ReturnsRecordsThatMatchesTheFindByCriteria()
 		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
 			// arrange
 			var schoolDbContext = _fixture.ServiceProvider.GetService<SchoolDbContext>();
 

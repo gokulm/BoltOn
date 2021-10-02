@@ -17,7 +17,7 @@ namespace BoltOn.Tests.Data.MartenDb.Fakes
 
 		public void Run()
 		{
-			if (IntegrationTestHelper.IsSeedMartenDb)
+			if (IntegrationTestHelper.IsMartenDbRunning)
 			{
 				var documentStore = _serviceProvider.GetService<IDocumentStore>();
 				documentStore.Advanced.Clean.CompletelyRemoveAll();
