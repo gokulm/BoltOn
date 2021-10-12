@@ -1,5 +1,4 @@
 using System;
-using BoltOn.Data;
 using BoltOn.Data.MartenDb;
 using BoltOn.Tests.Other;
 using Marten;
@@ -25,6 +24,7 @@ namespace BoltOn.Tests.Data.MartenDb.Fakes
 				});
 
 			serviceCollection.AddScoped<IRepository<Student>, Repository<Student>>();
+			serviceCollection.AddScoped<IRepository<User>, Repository<User>>();
 
 			ServiceProvider = serviceCollection.BuildServiceProvider();
 			ServiceProvider.TightenBolts();

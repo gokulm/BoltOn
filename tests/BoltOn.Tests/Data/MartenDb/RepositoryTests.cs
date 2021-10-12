@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BoltOn.Data.MartenDb;
 using BoltOn.Tests.Common;
 using BoltOn.Tests.Data.MartenDb.Fakes;
 using BoltOn.Tests.Other;
 using Xunit;
 using Student = BoltOn.Tests.Data.MartenDb.Fakes.Student;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Tests.Data.MartenDb
 {
@@ -182,6 +184,41 @@ namespace BoltOn.Tests.Data.MartenDb
 			// assert
 			Assert.NotNull(actualResult);
 			Assert.Equal(expectedResult.Where(s => studentIds.Contains(s.Id)).Count(), actualResult.Count());
+		}
+
+		[Fact, Trait("Category", "Integration")]
+		[TestPriority(20)]
+		public async Task StoreAsync_AddNewEntities_ReturnsAddedEntities()
+		{
+			if (!IntegrationTestHelper.IsMartenDbRunning)
+				return;
+
+			var cancellationToken = new CancellationToken(false);
+			var userRepository = _fixture.ServiceProvider.GetService<IRepository<User>>();
+
+			// arrange
+			var student = new Student
+			{
+				Id = 9,
+				FirstName = "a",
+				LastName = "b"
+			};
+
+			var user = new User
+			{
+				Id = 10,
+				FirstName = "c",
+				LastName = "d"
+			};
+
+			// act
+			await _fixture.SubjectUnderTest.StoreAsync(cancellationToken, student, user);
+			var expectedStudent = await _fixture.SubjectUnderTest.GetByIdAsync(9);
+			var expectedUser = await userRepository.GetByIdAsync(10);
+
+			// assert
+			Assert.NotNull(expectedStudent);
+			Assert.NotNull(expectedUser);
 		}
 
 		[Fact, Trait("Category", "Integration")]

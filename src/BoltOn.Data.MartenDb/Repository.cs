@@ -42,11 +42,8 @@ namespace BoltOn.Data.MartenDb
 		}
 
 		public async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
-			CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
+			CancellationToken cancellationToken = default)
 		{
-			if (includes?.Count() > 0) 
-				throw new Exception("includes is not supported");
-
 			using var session = _documentStore.OpenSession();
 			return await session.Query<TEntity>().Where(predicate).ToListAsync(cancellationToken);
 		}
@@ -57,12 +54,8 @@ namespace BoltOn.Data.MartenDb
 			return await session.Query<TEntity>().ToListAsync(cancellationToken);
 		}
 
-		public async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default,
-			params Expression<Func<TEntity, object>>[] includes)
+		public async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default)
 		{
-			if (includes?.Count() > 0)
-				throw new Exception("includes is not supported");
-
 			using var session = _documentStore.OpenSession();
 			if (id.GetType() == typeof(string))
 			{
@@ -95,6 +88,14 @@ namespace BoltOn.Data.MartenDb
 			using var session = _documentStore.OpenSession();
 			session.Update(entity);
 			await session.SaveChangesAsync(cancellationToken);
+		}
+
+		public async Task<object[]> StoreAsync(CancellationToken cancellationToken = default, params object[] objects)
+		{
+			using var session = _documentStore.OpenSession();
+			session.Store(objects);
+			await session.SaveChangesAsync(cancellationToken);
+			return objects;
 		}
 	}
 }

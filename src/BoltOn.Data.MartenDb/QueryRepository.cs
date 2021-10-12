@@ -18,7 +18,7 @@ namespace BoltOn.Data.MartenDb
 			_documentStore = documentStore;
 		}
 
-		public async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
+		public async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
 		{
 			using var querySession = _documentStore.QuerySession();
 			return await querySession.Query<TEntity>().Where(predicate).ToListAsync(cancellationToken);
@@ -30,11 +30,8 @@ namespace BoltOn.Data.MartenDb
 			return await querySession.Query<TEntity>().ToListAsync(cancellationToken);
 		}
 
-		public async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
+		public async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default)
 		{
-			if (includes?.Count() > 0)
-				throw new Exception("includes is not supported");
-
 			using var querySession = _documentStore.QuerySession();
 
 			if (id.GetType() == typeof(string))
