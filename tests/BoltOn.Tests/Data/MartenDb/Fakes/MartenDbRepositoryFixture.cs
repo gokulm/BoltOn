@@ -10,7 +10,7 @@ namespace BoltOn.Tests.Data.MartenDb.Fakes
 	{
 		public MartenDbRepositoryFixture()
 		{
-			IntegrationTestHelper.IsMartenDbRunning = true;
+			IntegrationTestHelper.IsMartenDbRunning = false;
 
 			if (!IntegrationTestHelper.IsMartenDbRunning)
 				return;
