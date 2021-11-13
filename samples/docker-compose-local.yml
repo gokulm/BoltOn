@@ -1,7 +1,7 @@
 version: '3'
 services:
   sql:
-    image: microsoft/mssql-server-linux:latest
+    image: mcr.microsoft.com/mssql/server
     ports:
       - "5005:1433"
     environment:
@@ -19,6 +19,17 @@ services:
     ports:
       - "6379:6379"
     container_name: bolton-redis-container
+  db:
+    container_name: bolton-postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: bolton
+      POSTGRES_PASSWORD: bolton
+      POSTGRES_DB: bolton
+    ports:
+      - "5432:5432"
 
 # docker-compose -f docker-compose-local.yml up -d
 # docker-compose -f docker-compose-local.yml down
+
+# docker run --name bolton-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres

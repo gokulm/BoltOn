@@ -11,5 +11,6 @@ namespace BoltOn.Tests.Other
 		public static bool IsRedisCache { get; set; }
 		public static bool IsElasticsearchServer { get; set; }
 		public static bool IsSeedElasticsearch { get; set; }
+		public static bool IsMartenDbRunning { get; set; }
 	}
 }
