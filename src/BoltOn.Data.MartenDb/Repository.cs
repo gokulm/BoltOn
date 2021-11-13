@@ -20,7 +20,7 @@ namespace BoltOn.Data.MartenDb
 
 		public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
-			using var session = _documentStore.OpenSession();
+			using var session = _documentStore.DirtyTrackedSession();
 			session.Insert(entity);
 			await session.SaveChangesAsync(cancellationToken);
 			return entity;
@@ -28,7 +28,7 @@ namespace BoltOn.Data.MartenDb
 
 		public async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
 		{
-			using var session = _documentStore.OpenSession();
+			using var session = _documentStore.DirtyTrackedSession();
 			session.Insert(entities);
 			await session.SaveChangesAsync(cancellationToken);
 			return entities;
@@ -36,7 +36,7 @@ namespace BoltOn.Data.MartenDb
 
 		public async Task DeleteAsync(object id, CancellationToken cancellationToken = default)
 		{
-			using var session = _documentStore.OpenSession();
+			using var session = _documentStore.DirtyTrackedSession();
 			session.Delete(await GetByIdAsync(id, cancellationToken));
 			await session.SaveChangesAsync(cancellationToken);
 		}
@@ -44,19 +44,19 @@ namespace BoltOn.Data.MartenDb
 		public async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
 			CancellationToken cancellationToken = default)
 		{
-			using var session = _documentStore.OpenSession();
+			using var session = _documentStore.DirtyTrackedSession();
 			return await session.Query<TEntity>().Where(predicate).ToListAsync(cancellationToken);
 		}
 
 		public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
 		{
-			using var session = _documentStore.OpenSession();
+			using var session = _documentStore.DirtyTrackedSession();
 			return await session.Query<TEntity>().ToListAsync(cancellationToken);
 		}
 
 		public async Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default)
 		{
-			using var session = _documentStore.OpenSession();
+			using var session = _documentStore.DirtyTrackedSession();
 			if (id.GetType() == typeof(string))
 			{
 				var tempId = id.ToString();
@@ -85,14 +85,14 @@ namespace BoltOn.Data.MartenDb
 
 		public async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
-			using var session = _documentStore.OpenSession();
+			using var session = _documentStore.DirtyTrackedSession();
 			session.Update(entity);
 			await session.SaveChangesAsync(cancellationToken);
 		}
 
 		public async Task<object[]> StoreAsync(CancellationToken cancellationToken = default, params object[] objects)
 		{
-			using var session = _documentStore.OpenSession();
+			using var session = _documentStore.DirtyTrackedSession();
 			session.Store(objects);
 			await session.SaveChangesAsync(cancellationToken);
 			return objects;
