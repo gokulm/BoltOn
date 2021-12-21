@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -79,8 +80,8 @@ namespace BoltOn.Tests.Data.MartenDb
 
 			// assert			
 			Assert.NotNull(exception);
-			Assert.IsType<TaskCanceledException>(exception);
-			Assert.Equal("A task was canceled.", exception.Message);
+			Assert.IsType<OperationCanceledException>(exception);
+			Assert.Equal("The operation was canceled.", exception.Message);
 		}
 
 		[Fact, Trait("Category", "Integration")]
@@ -114,7 +115,7 @@ namespace BoltOn.Tests.Data.MartenDb
 		}
 
 		[Fact, Trait("Category", "Integration")]
-		public async Task GetAllAsync_WhenCancellationRequestedIsTrue_ThrowsTaskCanceledException()
+		public async Task GetAllAsync_WhenCancellationRequestedIsTrue_ThrowsOperationCanceledException()
 		{
 			if (!IntegrationTestHelper.IsMartenDbRunning)
 				return;
@@ -127,8 +128,8 @@ namespace BoltOn.Tests.Data.MartenDb
 
 			// assert			
 			Assert.NotNull(exception);
-			Assert.IsType<TaskCanceledException>(exception);
-			Assert.Equal("A task was canceled.", exception.Message);
+			Assert.IsType<OperationCanceledException>(exception);
+			Assert.Equal("The operation was canceled.", exception.Message);
 		}
 
 		[Fact, Trait("Category", "Integration")]

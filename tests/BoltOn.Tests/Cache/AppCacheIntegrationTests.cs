@@ -63,6 +63,7 @@ namespace BoltOn.Tests.Cache
 			var result = await sut.GetAsync<string>("TestKey");
 
 			// assert
+			await Task.Delay(500);
 			Assert.Equal("TestValue", result);
 			logger.Verify(l => l.Debug("Setting value in cache... Key: TestKey"));
 
