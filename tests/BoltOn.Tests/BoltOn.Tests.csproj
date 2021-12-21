@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 	 <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -11,30 +11,30 @@
       <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
         <PackageReference Include="xunit" Version="2.4.1" />
         <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
         <PackageReference Include="Moq" Version="4.16.1" />
-        <PackageReference Include="Moq.AutoMock" Version="2.3.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.3" />
-        <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.1.6" />
-        <PackageReference Include="MassTransit.RabbitMQ" Version="7.1.6" />
+        <PackageReference Include="Moq.AutoMock" Version="3.1.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
+        <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.3.0" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="7.3.0" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 <PrivateAssets>all</PrivateAssets>
 </PackageReference>
-        <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.13.1" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="5.0.0" />
-        <PackageReference Include="System.Text.Json" Version="5.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="5.0.1" />
-        <PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="7.1.6" />
+        <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.16.2" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
+        <PackageReference Include="System.Text.Json" Version="6.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="6.0.1" />
+        <PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="7.3.0" />
         <PackageReference Include="Serilog" Version="2.10.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
-        <PackageReference Include="Marten" Version="3.13.4" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+        <PackageReference Include="Marten" Version="4.3.0" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Bootstrapping\" />
@@ -44,14 +44,12 @@
         <Folder Include="Other\" />
         <Folder Include="Bus\" />
         <Folder Include="Utilities\" />
-        <Folder Include="Data\CosmosDb\" />
         <Folder Include="Cqrs\Fakes\" />
         <Folder Include="Bootstrapping\Fakes\" />
         <Folder Include="Cache\" />
         <Folder Include="Cache\Fakes\" />
         <Folder Include="Data\Elasticsearch\" />
         <Folder Include="Data\Elasticsearch\Fakes\" />
-        <Folder Include="Data\CosmosDb\Fakes\" />
         <Folder Include="StateMachine\" />
         <Folder Include="StateMachine\Fakes\" />
         <Folder Include="Web\" />
