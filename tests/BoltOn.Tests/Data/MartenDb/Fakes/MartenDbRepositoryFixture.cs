@@ -48,7 +48,7 @@ namespace BoltOn.Tests.Data.MartenDb.Fakes
 		{
 			var options = new StoreOptions();
 			options.Connection("host=localhost;database=bolton;password=bolton;username=bolton");
-			options.AutoCreateSchemaObjects = AutoCreate.All;
+			options.AutoCreateSchemaObjects = Weasel.Postgresql.AutoCreate.All;
 
 			return options;
 		}
@@ -95,7 +95,7 @@ namespace BoltOn.Tests.Data.MartenDb.Fakes
 		{
 			var options = new StoreOptions();
 			options.Connection("host=localhost;database=bolton;password=bolton;username=bolton");
-			options.AutoCreateSchemaObjects = AutoCreate.All;
+			options.AutoCreateSchemaObjects = Weasel.Postgresql.AutoCreate.All;
 
 			return options;
 		}
