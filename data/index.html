@@ -69,9 +69,6 @@
     <li class="toctree-l2"><a href="#entity-framework-repository">Entity Framework Repository</a></li>
     
 
-    <li class="toctree-l2"><a href="#cosmosdb">CosmosDb</a></li>
-    
-
     <li class="toctree-l2"><a href="#elasticsearch">Elasticsearch</a></li>
     
 
@@ -247,65 +244,6 @@ public class StudentRepository : Repository&lt;Student, SchoolDbContext&gt;, ISt
     modelBuilder.ApplyConfigurationsFromNamespaceOfType&lt;StudentMapping&gt;();
 }
 </code></pre>
-<h2 id="cosmosdb">CosmosDb</h2>
-<p>In order to use CosmosDb, you need do the following:</p>
-<ul>
-<li>Install <strong>BoltOn.Data.CosmosDb</strong> NuGet package.</li>
-<li>Call <code>BoltOnCosmosDbModule()</code> in your startup's BoltOn() method.</li>
-<li>Create an options class by inheriting <code>BaseCosmosDbOptions</code> class. </li>
-<li>Use AddCosmosDb extension method to initialize options like URI, AuthorizationKey and Database Name.</li>
-<li>Inherit <code>Repository&lt;TEntity, TCosmosDbOptions&gt;</code> to create a repository for your entity.</li>
-<li>All the repository methods accept an optional parameter options. For some of the methods, RequestOptions can be passed and for some FeedOptions can be passed as the options object, take a look at the <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.CosmosDb/Repository.cs"><code>Repository&lt;TEntity, TCosmosDbOptions&gt;</code></a> to see the implementation.</li>
-</ul>
-<p>Example:</p>
-<pre><code>services.BoltOn(options =&gt;
-{
-    options.BoltOnCosmosDbModule();
-});
-
-services.AddCosmosDb&lt;SchoolCosmosDbOptions&gt;(options =&gt;
-{
-    options.Uri = "&lt;&lt;SPECIFY URI&gt;&gt;";
-    options.AuthorizationKey = "&lt;&lt;SPECIFY AUTHORIZATION KEY&gt;&gt;";
-    options.DatabaseName = "&lt;&lt;DATABASE NAME&gt;&gt;";
-});
-
-public class SchoolCosmosDbOptions : BaseCosmosDbOptions
-{
-}
-
-// Entity
-public class Student 
-{
-    [JsonProperty("id")]
-    public string Id { get; set; }
-    [JsonProperty("studentId")]
-    public int StudentId { get; set; }
-    public string FirstName { get; set; }
-}
-</code></pre>
-<p>and register like this:</p>
-<pre><code>serviceCollection.AddTransient&lt;IRepository&lt;Student&gt;, Repository&lt;Student, SchoolCosmosDbOptions&gt;&gt;();
-</code></pre>
-<p>If you want to override the Repository class' methods or if you want to add methods, create your own repository, like this:</p>
-<pre><code>// Repository
-public interface IStudentRepository : IRepository&lt;Student&gt;
-{
-}
-
-public class StudentRepository : Repository&lt;Student, SchoolCosmosDbOptions&gt;, IStudentRepository
-{
-    public StudentRepository(SchoolCosmosDbOptions options)
-        : base(options)
-    {
-    }
-}
-</code></pre>
-<p><strong>Note:</strong> </p>
-<ul>
-<li>While using any property in CosmosDb query, make sure property name matches exactly as it is in stored in the document collection.</li>
-<li>Since EF 3.0+ supports CosmosDb, feel free to use EF directly instead of BoltOn.Data.CosmosDb</li>
-</ul>
 <h2 id="elasticsearch">Elasticsearch</h2>
 <p>BoltOn.Data.Elasticsearch uses <a href="https://www.nuget.org/packages/NEST/">NEST</a> library internally.</p>
 <p>In order to use Elasticsearch, you need do the following:</p>
