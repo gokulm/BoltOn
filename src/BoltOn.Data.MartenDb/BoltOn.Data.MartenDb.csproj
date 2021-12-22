@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>  
     <Authors>Gokulnath Murugesan</Authors>
@@ -8,7 +7,7 @@
     <PackageTags>C#, .NET</PackageTags>
     <Title>BoltOn.Data.MartenDb</Title>
     <PackageId>BoltOn.Data.MartenDb</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Copyright>BoltOn</Copyright>
     <Description>This is an add-on to BoltOn NuGet package to support MartenDb</Description>
   </PropertyGroup>
