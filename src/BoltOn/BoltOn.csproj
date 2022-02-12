@@ -9,7 +9,7 @@
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <PackageId>BoltOn</PackageId>
     <Description>BoltOn is an open source framework to build any .NET application with proper separation of concerns.</Description>
-    <Version>1.4.0</Version>
+    <Version>1.5.0</Version>
     <Copyright>BoltOn</Copyright>
     <PackageTags>C#, .NET Core</PackageTags>
   </PropertyGroup>
@@ -30,7 +30,6 @@
   <ItemGroup>
     <Folder Include="Logging\" />
     <Folder Include="Utilities\" />
-    <Folder Include="UoW\" />
     <Folder Include="Other\" />
     <Folder Include="Mediator\" />
     <Folder Include="Mediator\Interceptors\" />
