@@ -47,6 +47,7 @@ namespace BoltOn.Web
 		{
 			_isAuthorizationModuleAdded = true;
 			var serviceCollection = bootstrapperOptions.ServiceCollection;
+			serviceCollection.AddTransient<IClaimsService, DefaultClaimsService>();
 			serviceCollection.AddScoped<IAuthorizationHandler, ScopeAuthorizationHandler>();
 			serviceCollection.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 			serviceCollection.AddSingleton<IAuthorizationPolicyProvider, AppPolicyProvider>();
