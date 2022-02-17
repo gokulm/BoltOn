@@ -29,7 +29,7 @@ namespace BoltOn.Web.Authorization
 
             if (string.IsNullOrWhiteSpace(scopePolicyPrefix))
                 scopePolicyPrefix = "Scope";
-            if (string.IsNullOrWhiteSpace(scopePolicyPrefix))
+            if (string.IsNullOrWhiteSpace(permissionPolicyPrefix))
                 permissionPolicyPrefix = "Permission";
 
             if (policyName.StartsWith(scopePolicyPrefix, StringComparison.OrdinalIgnoreCase))
