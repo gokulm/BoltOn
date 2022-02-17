@@ -1,13 +1,10 @@
-using System;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using BoltOn.Web.Authorization;
 using Microsoft.AspNetCore.Http;
 
 namespace BoltOn.Web.Middlewares
 {
-    public class UserClaimsMiddleware
+	public class UserClaimsMiddleware
     {
         private readonly RequestDelegate _next;
 
