@@ -15,10 +15,10 @@
     <Folder Include="Entities\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="BoltOn" Version="1.3.0" />
-    <PackageReference Include="BoltOn.Bus.MassTransit" Version="1.0.0" />
-    <PackageReference Include="BoltOn.Data.EF" Version="1.1.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="BoltOn" Version="1.7.0" />
+    <PackageReference Include="BoltOn.Bus.MassTransit" Version="1.2.0" />
+    <PackageReference Include="BoltOn.Data.EF" Version="1.3.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="AutoMapper" Version="12.0.0" />
   </ItemGroup>
 </Project>

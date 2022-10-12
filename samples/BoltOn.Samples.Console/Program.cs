@@ -74,15 +74,27 @@ namespace BoltOn.Samples.Console
 						hostConfigurator.Password(rabbitmqPassword);
 					});
 
-					cfg.ReceiveEndpoint("StudentCreatedEvent_queue", ep =>
+					x.AddConsumer<AppMessageConsumer<StudentCreatedEvent>>()
+					.Endpoint(e =>
 					{
-						ep.Consumer(() => provider.GetService<AppMessageConsumer<StudentCreatedEvent>>());
+						e.Name = $"{nameof(StudentCreatedEvent)}_queue";
 					});
 
-					cfg.ReceiveEndpoint("StudentUpdatedEvent_queue", ep =>
+					x.AddConsumer<AppMessageConsumer<StudentUpdatedEvent>>()
+					.Endpoint(e =>
 					{
-						ep.Consumer(() => provider.GetService<AppMessageConsumer<StudentUpdatedEvent>>());
+						e.Name = $"{nameof(StudentUpdatedEvent)}_queue";
 					});
+
+					//cfg.ReceiveEndpoint("StudentCreatedEvent_queue", ep =>
+					//{
+					//	ep.Consumer(() => provider.GetService<AppMessageConsumer<StudentCreatedEvent>>());
+					//});
+
+					//cfg.ReceiveEndpoint("StudentUpdatedEvent_queue", ep =>
+					//{
+					//	ep.Consumer(() => provider.GetService<AppMessageConsumer<StudentUpdatedEvent>>());
+					//});
 				}));
 			});
 
