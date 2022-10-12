@@ -18,7 +18,7 @@ namespace BoltOn.Tests.Bus
     public class AppServiceBusIntegrationTests : IDisposable
     {
         [Fact]
-        public async Task PublishAsync_PublishToInMemoryHost_GetsConsumed()
+		public async Task PublishAsync_PublishToInMemoryHost_GetsConsumed()
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging();
@@ -30,13 +30,13 @@ namespace BoltOn.Tests.Bus
 
             serviceCollection.AddMassTransit(x =>
             {
-                x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg =>
-                {
-                    cfg.ReceiveEndpoint("CreateTestStudent_queue", ep =>
+                x.AddConsumer<AppMessageConsumer<CreateTestStudent>>()
+                    .Endpoint(e =>
                     {
-                        ep.Consumer(() => provider.GetService<AppMessageConsumer<CreateTestStudent>>());
+                        e.Name = $"{nameof(CreateTestStudent)}_Queue";
                     });
-                }));
+
+                x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
             });
 
 
@@ -83,12 +83,15 @@ namespace BoltOn.Tests.Bus
                         hostConfigurator.Username("guest");
                         hostConfigurator.Password("guest");
                     });
-
-                    cfg.ReceiveEndpoint($"{nameof(CreateTestStudent)}_Queue", endpoint =>
-                    {
-                        endpoint.Consumer(provider.GetService<AppMessageConsumer<CreateTestStudent>>);
-                    });
                 }));
+
+				x.AddConsumer <AppMessageConsumer<CreateTestStudent>>()
+                    .Endpoint(e =>
+                    {
+                        e.Name = $"{nameof(CreateTestStudent)}_Queue";
+                    });
+
+                x.UsingRabbitMq((context, cfg) => cfg.ConfigureEndpoints(context));
             });
 
             var logger = new Mock<IAppLogger<CreateTestStudentHandler>>();
@@ -124,20 +127,21 @@ namespace BoltOn.Tests.Bus
                 b.BoltOnMassTransitBusModule();
             });
 
-            serviceCollection.AddMassTransit(x =>
-            {
-                x.UsingAzureServiceBus((context, cfg) =>
-                {
-                    cfg.Host("ADD_CONNECTIONSTRING");
+			serviceCollection.AddMassTransit(x =>
+			{
+				x.UsingAzureServiceBus((context, cfg) =>
+				{
+					cfg.Host("ADD_CONNECTIONSTRING");
+				});
 
-                    cfg.ReceiveEndpoint($"createteststudent_queue", endpoint =>
+                x.AddConsumer<AppMessageConsumer<CreateTestStudent>>()
+                    .Endpoint(e =>
                     {
-                        endpoint.Consumer(context.GetService<AppMessageConsumer<CreateTestStudent>>);
+                        e.Name = $"{nameof(CreateTestStudent)}_Queue";
                     });
-                });
             });
 
-            var logger = new Mock<IAppLogger<CreateTestStudentHandler>>();
+			var logger = new Mock<IAppLogger<CreateTestStudentHandler>>();
             logger.Setup(s => s.Debug(It.IsAny<string>()))
                                 .Callback<string>(st => RequestorTestHelper.LoggerStatements.Add(st));
             serviceCollection.AddTransient((s) => logger.Object);
