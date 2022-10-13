@@ -1,7 +1,7 @@
 version: '3'
 services:
   sql:
-    image: microsoft/mssql-server-linux:latest
+    image: mcr.microsoft.com/mssql/server:2022-latest
     ports:
       - "5005:1433"
     environment:
