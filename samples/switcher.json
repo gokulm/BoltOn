@@ -1,9 +1,9 @@
 {
   "solution": "BoltOn.Samples.sln",
+  "solutionFolder": null,
   "mappings": {
     "BoltOn": "../src/BoltOn/BoltOn.csproj",
     "BoltOn.Data.EF": "../src/BoltOn.Data.EF/BoltOn.Data.EF.csproj",
-    "BoltOn.Data.CosmosDb": "../src/BoltOn.Data.CosmosDb/BoltOn.Data.CosmosDb.csproj",
     "BoltOn.Bus.MassTransit": "../src/BoltOn.Bus.MassTransit/BoltOn.Bus.MassTransit.csproj",
     "BoltOn.Cache": "../src/BoltOn.Cache/BoltOn.Cache.csproj",
     "BoltOn.Hangfire": "../src/BoltOn.Hangfire/BoltOn.Hangfire.csproj",
@@ -15,15 +15,15 @@
       "packages": [
         {
           "packageName": "BoltOn",
-          "version": "1.3.0"
+          "version": "1.7.0"
         },
         {
           "packageName": "BoltOn.Data.EF",
-          "version": "1.1.1"
+          "version": "1.3.0"
         },
         {
           "packageName": "BoltOn.Bus.MassTransit",
-          "version": "1.0.0"
+          "version": "1.2.0"
         }
       ]
     },
@@ -32,19 +32,19 @@
       "packages": [
         {
           "packageName": "BoltOn",
-          "version": "1.3.0"
+          "version": "1.7.0"
         },
         {
           "packageName": "BoltOn.Data.EF",
-          "version": "1.1.1"
+          "version": "1.3.0"
         },
         {
           "packageName": "BoltOn.Bus.MassTransit",
-          "version": "1.0.0"
+          "version": "1.2.0"
         },
         {
           "packageName": "BoltOn.Hangfire",
-          "version": "1.1.0"
+          "version": "1.3.0"
         }
       ]
     },
@@ -53,15 +53,15 @@
       "packages": [
         {
           "packageName": "BoltOn",
-          "version": "1.3.0"
+          "version": "1.7.0"
         },
         {
           "packageName": "BoltOn.Data.EF",
-          "version": "1.1.1"
+          "version": "1.3.0"
         },
         {
           "packageName": "BoltOn.Bus.MassTransit",
-          "version": "1.0.0"
+          "version": "1.2.0"
         }
       ]
     },
@@ -70,29 +70,30 @@
       "packages": [
         {
           "packageName": "BoltOn",
-          "version": "1.3.0"
+          "version": "1.7.0"
         },
         {
           "packageName": "BoltOn.Data.EF",
-          "version": "1.1.1"
+          "version": "1.3.0"
         },
         {
           "packageName": "BoltOn.Cache",
-          "version": "1.1.0"
+          "version": "1.3.0"
         },
         {
           "packageName": "BoltOn.Hangfire",
-          "version": "1.1.0"
+          "version": "1.3.0"
         },
         {
           "packageName": "BoltOn.Web",
-          "version": "1.1.0"
+          "version": "1.4.0"
         },
         {
           "packageName": "BoltOn.Bus.MassTransit",
-          "version": "1.0.0"
+          "version": "1.2.0"
         }
       ]
     }
-  ]
+  ],
+  "removeProjects": true
 }

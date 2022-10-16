@@ -35,13 +35,15 @@ namespace BoltOn.Tests.Cqrs
 
 			serviceCollection.AddMassTransit(x =>
 			{
-				x.AddConsumer<AppMessageConsumer<StudentCreatedEvent>>()
-					.Endpoint(e =>
-					{
-						e.Name = $"{nameof(StudentCreatedEvent)}_queue";
-					});
+				//x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingInMemory(cfg => { }));
 
-				x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
+				x.AddConsumer<AppMessageConsumer<StudentCreatedEvent>>();
+				x.SetKebabCaseEndpointNameFormatter();
+
+				x.UsingInMemory((context, cfg) =>
+				{
+					cfg.ConfigureEndpoints(context);
+				});
 			});
 
 			var loggerFactory = new Mock<IAppLoggerFactory>();
