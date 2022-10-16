@@ -59,14 +59,26 @@ namespace BoltOn.Samples.Console
 			GlobalConfiguration.Configuration
 			 .UseSqlServerStorage(boltOnSamplesDbConnectionString);
 
-
 			var rabbitmqUri = configuration.GetValue<string>("RabbitMqUri");
 			var rabbitmqUsername = configuration.GetValue<string>("RabbitMqUsername");
 			var rabbitmqPassword = configuration.GetValue<string>("RabbitMqPassword");
 
 			serviceCollection.AddMassTransit(x =>
 			{
-				x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
+				x.AddConsumer<AppMessageConsumer<StudentCreatedEvent>>()
+					.Endpoint(e =>
+					{
+						e.Name = $"{nameof(StudentCreatedEvent)}_queue";
+					});
+
+				x.AddConsumer<AppMessageConsumer<StudentUpdatedEvent>>()
+					.Endpoint(e =>
+					{
+						e.Name = $"{nameof(StudentUpdatedEvent)}_queue";
+					});
+
+
+				x.UsingRabbitMq((context, cfg) =>
 				{
 					cfg.Host(new Uri(rabbitmqUri), hostConfigurator =>
 					{
@@ -74,16 +86,17 @@ namespace BoltOn.Samples.Console
 						hostConfigurator.Password(rabbitmqPassword);
 					});
 
-					cfg.ReceiveEndpoint("StudentCreatedEvent_queue", ep =>
+					cfg.ReceiveEndpoint($"{nameof(StudentCreatedEvent)}_queue", e =>
 					{
-						ep.Consumer(() => provider.GetService<AppMessageConsumer<StudentCreatedEvent>>());
+						e.ConfigureConsumer<AppMessageConsumer<StudentCreatedEvent>>(context);
 					});
 
-					cfg.ReceiveEndpoint("StudentUpdatedEvent_queue", ep =>
+					cfg.ReceiveEndpoint($"{nameof(StudentUpdatedEvent)}_queue", e =>
 					{
-						ep.Consumer(() => provider.GetService<AppMessageConsumer<StudentUpdatedEvent>>());
+						e.ConfigureConsumer<AppMessageConsumer<StudentUpdatedEvent>>(context);
 					});
-				}));
+
+				});
 			});
 
 			serviceCollection.AddTransient<IRepository<StudentFlattened>, Repository<StudentFlattened, SchoolDbContext>>();
@@ -91,13 +104,13 @@ namespace BoltOn.Samples.Console
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			serviceProvider.TightenBolts();
 
-			RecurringJob.AddOrUpdate<AppHangfireJobProcessor>("StudentsNotifier",
-				p => p.ProcessAsync(new NotifyStudentsRequest { JobType = "Recurring" }, default), Cron.Minutely());
+			//RecurringJob.AddOrUpdate<AppHangfireJobProcessor>("StudentsNotifier",
+			//	p => p.ProcessAsync(new NotifyStudentsRequest { JobType = "Recurring" }, default), Cron.Minutely());
 
-			BackgroundJob.Schedule<AppHangfireJobProcessor>(p => p.ProcessAsync(new NotifyStudentsRequest { JobType = "OneTime" }, default),
-				TimeSpan.FromSeconds(30));
+			//BackgroundJob.Schedule<AppHangfireJobProcessor>(p => p.ProcessAsync(new NotifyStudentsRequest { JobType = "OneTime" }, default),
+			//	TimeSpan.FromSeconds(30));
 
-			using var hangfireServer = new BackgroundJobServer();
+			//using var hangfireServer = new BackgroundJobServer();
 			System.Console.ReadLine();
 		}
 	}

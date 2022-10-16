@@ -1,12 +1,12 @@
 # build
-FROM mcr.microsoft.com/dotnet/sdk:5.0 as build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as build
 WORKDIR /app
 COPY . .
 RUN dotnet restore ./BoltOn.Samples.Console/BoltOn.Samples.Console.csproj
 RUN dotnet publish -c Release ./BoltOn.Samples.Console/BoltOn.Samples.Console.csproj -o /publish
 
 # runtime
-FROM mcr.microsoft.com/dotnet/runtime:5.0
+FROM mcr.microsoft.com/dotnet/runtime:6.0
 WORKDIR /app    
 COPY --from=build /publish .
 
