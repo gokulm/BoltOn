@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
-using BoltOn.Data;
+using BoltOn.Data.EF;
 using BoltOn.Requestor.Pipeline;
 using BoltOn.Tests.Other;
 

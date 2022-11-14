@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BoltOn.Data
+namespace BoltOn.Data.EF
 {
     public interface IRepository<TEntity> : IQueryRepository<TEntity>
        where TEntity : class

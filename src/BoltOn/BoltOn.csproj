@@ -36,7 +36,6 @@
     <Folder Include="Logging\" />
     <Folder Include="Utilities\" />
     <Folder Include="Other\" />
-    <Folder Include="Data\" />
     <Folder Include="Bus\" />
     <Folder Include="Cqrs\" />
   </ItemGroup>
