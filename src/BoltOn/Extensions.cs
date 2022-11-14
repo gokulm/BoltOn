@@ -34,8 +34,8 @@ namespace BoltOn
 			var bootstrapperOptions = serviceProvider.GetService<BootstrapperOptions>();
 			if (!bootstrapperOptions.IsAppCleaned)
 			{
-				var postRegistrationTasks = serviceProvider.GetService<IEnumerable<ICleanupTask>>();
-				postRegistrationTasks.Reverse().ToList().ForEach(t => t.Run());
+				var cleanupTasks = serviceProvider.GetService<IEnumerable<ICleanupTask>>();
+				cleanupTasks.Reverse().ToList().ForEach(t => t.Run());
 				bootstrapperOptions.IsAppCleaned = true;
 			}
 		}

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using BoltOn.Context;
 using BoltOn.Logging;
 using BoltOn.Other;
 using BoltOn.Requestor.Pipeline;
@@ -19,14 +18,12 @@ namespace BoltOn.Bootstrapping
 		internal bool IsAppCleaned { get; set; }
 		internal HashSet<Type> InterceptorTypes { get; set; } = new HashSet<Type>();
 		internal Type RecentlyAddedInterceptor { get; set; }
-		internal InterceptorOptions InterceptorOptions { get; }
 		internal HashSet<Assembly> RegisteredAssemblies { get; } = new HashSet<Assembly>();
 		public IServiceCollection ServiceCollection { get; }
 
 		public BootstrapperOptions(IServiceCollection serviceCollection)
 		{
 			ServiceCollection = serviceCollection;
-			InterceptorOptions = new InterceptorOptions(this);
 			RegisterByConvention(GetType().Assembly);
 			RegisterCoreTypes();
 			RegisterRequestor();
@@ -47,9 +44,6 @@ namespace BoltOn.Bootstrapping
 		{
 			ServiceCollection.AddSingleton(typeof(IAppLogger<>), typeof(AppLogger<>));
 			ServiceCollection.AddSingleton<IAppLoggerFactory, AppLoggerFactory>();
-
-			ServiceCollection.AddScoped<ScopedContext>();
-			ServiceCollection.AddSingleton<Context.AppContext>();
 		}
 
 		private void RegisterRequestor()

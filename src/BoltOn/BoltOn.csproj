@@ -45,7 +45,4 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Context\ContextScope.cs" />
-  </ItemGroup>
 </Project>
