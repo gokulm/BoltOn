@@ -1,15 +1,12 @@
-﻿using System;
-using System.Linq;
-using BoltOn.Bootstrapping;
-using BoltOn.Cqrs;
-using BoltOn.Tests.Bootstrapping.Fakes;
-using BoltOn.Transaction;
+﻿using BoltOn.Tests.Bootstrapping.Fakes;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Linq;
 using Xunit;
 
 namespace BoltOn.Tests.Bootstrapping
 {
-	[Collection("IntegrationTests")]
+    [Collection("IntegrationTests")]
     public class BootstrapperTests : IDisposable
     {
 		public BootstrapperTests()

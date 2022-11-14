@@ -1,7 +1,5 @@
 ﻿using System;
 using BoltOn.Bootstrapping;
-using BoltOn.Logging;
-using BoltOn.Transaction;
 using BoltOn.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;

@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Transactions;
-using BoltOn.Logging;
-using BoltOn.Requestor.Pipeline;
+﻿using BoltOn.Requestor.Pipeline;
 using BoltOn.Tests.Requestor.Fakes;
-using BoltOn.Transaction;
-using BoltOn.Utilities;
 using Moq;
 using Moq.AutoMock;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace BoltOn.Tests.Requestor
