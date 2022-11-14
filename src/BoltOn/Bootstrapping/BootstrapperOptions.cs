@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BoltOn.Context;
-using BoltOn.Cqrs;
 using BoltOn.Logging;
 using BoltOn.Other;
-using BoltOn.Requestor.Interceptors;
 using BoltOn.Requestor.Pipeline;
-using BoltOn.Transaction;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
 {
-	public sealed class BootstrapperOptions
+    public sealed class BootstrapperOptions
 	{
 		private bool _isDisableRequestorHandlerRegistrations = false;
 
@@ -58,42 +55,11 @@ namespace BoltOn.Bootstrapping
 		private void RegisterRequestor()
 		{
 			ServiceCollection.AddTransient<IRequestor, Requestor.Pipeline.Requestor>();
-			AddInterceptor<StopwatchInterceptor>();
-			AddInterceptor<TransactionInterceptor>();
-		}
-
-		public InterceptorOptions AddInterceptor<TInterceptor>() where TInterceptor : IInterceptor
-		{
-			InterceptorTypes.Add(typeof(TInterceptor));
-			RecentlyAddedInterceptor = typeof(TInterceptor);
-			return new InterceptorOptions(this);
-		}
-
-		public InterceptorOptions RemoveInterceptor<TInterceptor>() where TInterceptor : IInterceptor
-		{
-			InterceptorTypes.Remove(typeof(TInterceptor));
-			return new InterceptorOptions(this);
-		}
-
-		public void RemoveAllInterceptors()
-		{
-			InterceptorTypes.Clear();
 		}
 
 		internal void RegisterByConvention(Assembly assembly)
 		{
 			RegisterByConvention(new List<Assembly> { assembly });
-		}
-
-		internal void RegisterInterceptors()
-		{
-			foreach (var interceptorImplementation in InterceptorTypes)
-			{
-				var serviceDescriptor = ServiceCollection.FirstOrDefault(descriptor =>
-							descriptor.ServiceType == interceptorImplementation);
-				if (serviceDescriptor == null)
-					ServiceCollection.AddTransient(typeof(IInterceptor), interceptorImplementation);
-			}
 		}
 
 		private void RegisterByConvention(IEnumerable<Assembly> assemblies)

@@ -2,7 +2,6 @@
 using System.Linq;
 using BoltOn.Bootstrapping;
 using BoltOn.Cqrs;
-using BoltOn.Requestor.Interceptors;
 using BoltOn.Tests.Bootstrapping.Fakes;
 using BoltOn.Transaction;
 using Microsoft.Extensions.DependencyInjection;
@@ -152,45 +151,6 @@ namespace BoltOn.Tests.Bootstrapping
             var postRegistrationTaskCount = BootstrapperRegistrationTasksHelper.Tasks
                                     .Count(w => w == "Executed test service");
             Assert.True(postRegistrationTaskCount == 1);
-        }
-
-		[Fact]
-		public void GetService_WithAllDefaultInterceptors_ReturnsRegisteredInterceptorsInOrder()
-		{
-			// arrange
-			var serviceCollection = new ServiceCollection();
-            serviceCollection.AddLogging();
-            serviceCollection.BoltOn();
-			var serviceProvider = serviceCollection.BuildServiceProvider();
-			serviceProvider.TightenBolts();
-
-			// act
-			var interceptors = serviceProvider.GetServices<IInterceptor>().ToList();
-
-			// assert
-			Assert.NotNull(interceptors.FirstOrDefault(f => f.GetType() == typeof(StopwatchInterceptor)));
-			Assert.NotNull(interceptors.FirstOrDefault(f => f.GetType() == typeof(TransactionInterceptor)));
-		}
-
-        [Fact]
-        public void GetService_BootstrapperOptionsWithDefaultInterceptors_ReturnsRegisteredInterceptorsInOrder()
-        {
-            // arrange
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.BoltOn();
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            serviceProvider.TightenBolts();
-
-            // act
-            var bootstrapperOptions = serviceProvider.GetService<BootstrapperOptions>();
-
-            // assert
-            var interceptorTypes = bootstrapperOptions.InterceptorTypes.ToList();
-            var stopWatchInterceptorIndex = interceptorTypes.IndexOf(typeof(StopwatchInterceptor));
-            var transactionInterceptorIndex = interceptorTypes.IndexOf(typeof(TransactionInterceptor));
-			Assert.True(stopWatchInterceptorIndex != -1);
-            Assert.True(transactionInterceptorIndex != -1);
-			Assert.True(stopWatchInterceptorIndex < transactionInterceptorIndex);
         }
 
 		public void Dispose()
