@@ -1,4 +1,4 @@
-﻿namespace BoltOn.Requestor.Pipeline
+﻿namespace BoltOn.Requestor
 {
     public class DummyResponse
     {

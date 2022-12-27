@@ -2,18 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using BoltOn.Context;
-using BoltOn.Cqrs;
 using BoltOn.Logging;
 using BoltOn.Other;
-using BoltOn.Requestor.Interceptors;
-using BoltOn.Requestor.Pipeline;
-using BoltOn.Transaction;
+using BoltOn.Requestor;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
 {
-	public sealed class BootstrapperOptions
+    public sealed class BootstrapperOptions
 	{
 		private bool _isDisableRequestorHandlerRegistrations = false;
 
@@ -22,14 +18,12 @@ namespace BoltOn.Bootstrapping
 		internal bool IsAppCleaned { get; set; }
 		internal HashSet<Type> InterceptorTypes { get; set; } = new HashSet<Type>();
 		internal Type RecentlyAddedInterceptor { get; set; }
-		internal InterceptorOptions InterceptorOptions { get; }
 		internal HashSet<Assembly> RegisteredAssemblies { get; } = new HashSet<Assembly>();
 		public IServiceCollection ServiceCollection { get; }
 
 		public BootstrapperOptions(IServiceCollection serviceCollection)
 		{
 			ServiceCollection = serviceCollection;
-			InterceptorOptions = new InterceptorOptions(this);
 			RegisterByConvention(GetType().Assembly);
 			RegisterCoreTypes();
 			RegisterRequestor();
@@ -50,50 +44,16 @@ namespace BoltOn.Bootstrapping
 		{
 			ServiceCollection.AddSingleton(typeof(IAppLogger<>), typeof(AppLogger<>));
 			ServiceCollection.AddSingleton<IAppLoggerFactory, AppLoggerFactory>();
-
-			ServiceCollection.AddScoped<ScopedContext>();
-			ServiceCollection.AddSingleton<Context.AppContext>();
 		}
 
 		private void RegisterRequestor()
 		{
-			ServiceCollection.AddTransient<IRequestor, Requestor.Pipeline.Requestor>();
-			AddInterceptor<StopwatchInterceptor>();
-			AddInterceptor<TransactionInterceptor>();
-		}
-
-		public InterceptorOptions AddInterceptor<TInterceptor>() where TInterceptor : IInterceptor
-		{
-			InterceptorTypes.Add(typeof(TInterceptor));
-			RecentlyAddedInterceptor = typeof(TInterceptor);
-			return new InterceptorOptions(this);
-		}
-
-		public InterceptorOptions RemoveInterceptor<TInterceptor>() where TInterceptor : IInterceptor
-		{
-			InterceptorTypes.Remove(typeof(TInterceptor));
-			return new InterceptorOptions(this);
-		}
-
-		public void RemoveAllInterceptors()
-		{
-			InterceptorTypes.Clear();
+			ServiceCollection.AddTransient<IRequestor, Requestor.Requestor>();
 		}
 
 		internal void RegisterByConvention(Assembly assembly)
 		{
 			RegisterByConvention(new List<Assembly> { assembly });
-		}
-
-		internal void RegisterInterceptors()
-		{
-			foreach (var interceptorImplementation in InterceptorTypes)
-			{
-				var serviceDescriptor = ServiceCollection.FirstOrDefault(descriptor =>
-							descriptor.ServiceType == interceptorImplementation);
-				if (serviceDescriptor == null)
-					ServiceCollection.AddTransient(typeof(IInterceptor), interceptorImplementation);
-			}
 		}
 
 		private void RegisterByConvention(IEnumerable<Assembly> assemblies)

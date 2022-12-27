@@ -1,8 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using BoltOn.Requestor.Pipeline;
-using BoltOn.Transaction;
+using BoltOn.Requestor;
 
 namespace BoltOn.Tests.Requestor.Fakes
 {
@@ -10,9 +9,8 @@ namespace BoltOn.Tests.Requestor.Fakes
     {
 	}
 
-	public class TestCommand : IRequest<bool>, IEnableTransaction
+	public class TestCommand : IRequest<bool>
 	{
-		public IsolationLevel IsolationLevel => IsolationLevel.ReadCommitted;
 	}
 
 	public class TestOneWayRequest : IRequest
@@ -20,14 +18,14 @@ namespace BoltOn.Tests.Requestor.Fakes
 		public int Value { get; set; }
 	}
 
-	public class TestOneWayCommand : IRequest, IEnableTransaction
+	public class TestOneWayCommand : IRequest
 	{
 		public int Value { get; set; }
 
 		public IsolationLevel IsolationLevel => IsolationLevel.ReadCommitted;
 	}
 
-	public class TestStaleQuery : IRequest<bool>, IEnableTransaction
+	public class TestStaleQuery : IRequest<bool>
 	{
 		public IsolationLevel IsolationLevel => IsolationLevel.ReadUncommitted;
 	}
