@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="appsettings.Development.json" />
@@ -26,19 +26,15 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="BoltOn" Version="1.7.0" />
-    <PackageReference Include="BoltOn.Bus.MassTransit" Version="1.2.0" />
-    <PackageReference Include="BoltOn.Data.EF" Version="1.3.0" />
-    <PackageReference Include="BoltOn.Hangfire" Version="1.3.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.3.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
-    <PackageReference Include="MassTransit.RabbitMQ" Version="8.0.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.10" />
-    <PackageReference Include="Hangfire.Core" Version="1.7.31" />
-    <PackageReference Include="Hangfire.SqlServer" Version="1.7.31" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.1" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.32" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.7.32" />
     <PackageReference Include="Serilog" Version="2.12.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
@@ -47,6 +43,10 @@
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="../../src/BoltOn.Bus.MassTransit/BoltOn.Bus.MassTransit.csproj" />
+    <ProjectReference Include="../../src/BoltOn.Data.EF/BoltOn.Data.EF.csproj" />
+    <ProjectReference Include="../../src/BoltOn.Hangfire/BoltOn.Hangfire.csproj" />
+    <ProjectReference Include="../../src/BoltOn/BoltOn.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Infrastructure\BoltOn.Samples.Infrastructure.csproj" />
   </ItemGroup>

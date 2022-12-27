@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Cqrs;
 using BoltOn.Data;
-using BoltOn.Requestor.Pipeline;
+using BoltOn.Data.EF;
+using BoltOn.Requestor;
 using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers

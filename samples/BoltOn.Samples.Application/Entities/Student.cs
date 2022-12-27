@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using BoltOn.Samples.Application.Handlers;
 using System.Linq;
 using BoltOn.Exceptions;
-using BoltOn.Cqrs;
 
 namespace BoltOn.Samples.Application.Entities
 {

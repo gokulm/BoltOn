@@ -3,14 +3,15 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BoltOn.Cache;
 using BoltOn.Data;
+using BoltOn.Data.EF;
 using BoltOn.Logging;
-using BoltOn.Requestor.Pipeline;
+using BoltOn.Requestor;
 using BoltOn.Samples.Application.DTOs;
 using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class CreateStudentRequest : IRequest<StudentDto>, IClearCachedResponse
+	public class CreateStudentRequest : IRequest<StudentDto>
 	{
 		public string FirstName { get; set; }
 		public string LastName { get; set; }

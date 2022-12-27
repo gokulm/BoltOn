@@ -1,7 +1,6 @@
 ﻿using System;
 using BoltOn.Bus.MassTransit;
 using BoltOn.Cache;
-using BoltOn.Cqrs;
 using BoltOn.Data;
 using BoltOn.Data.EF;
 using BoltOn.Samples.Application;
