@@ -36,7 +36,7 @@ namespace BoltOn
 			{
 				var cleanupTasks = serviceProvider.GetService<IEnumerable<ICleanupTask>>();
 				cleanupTasks.Reverse().ToList().ForEach(t => t.Run());
-				bootstrapperOptions.IsAppCleaned = true;
+				bootstrapperOptions.IsAppCleaned = true; 
 			}
 		}
 	}
