@@ -26,6 +26,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="BoltOn" Version="1.10.0" />
+    <PackageReference Include="BoltOn.Bus.MassTransit" Version="1.4.0" />
+    <PackageReference Include="BoltOn.Data.EF" Version="1.5.0" />
+    <PackageReference Include="BoltOn.Hangfire" Version="1.5.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.3.1" />
@@ -43,10 +47,6 @@
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../src/BoltOn.Bus.MassTransit/BoltOn.Bus.MassTransit.csproj" />
-    <ProjectReference Include="../../src/BoltOn.Data.EF/BoltOn.Data.EF.csproj" />
-    <ProjectReference Include="../../src/BoltOn.Hangfire/BoltOn.Hangfire.csproj" />
-    <ProjectReference Include="../../src/BoltOn/BoltOn.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj" />
     <ProjectReference Include="..\BoltOn.Samples.Infrastructure\BoltOn.Samples.Infrastructure.csproj" />
   </ItemGroup>
