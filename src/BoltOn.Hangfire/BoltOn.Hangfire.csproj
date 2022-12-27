@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
    <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Version>1.2.0</Version>
+    <TargetFramework>net7.0</TargetFramework>
+    <Version>1.4.0</Version>
     <Copyright>BoltOn</Copyright>
     <Authors>Gokulnath Murugesan</Authors>
     <Owners>Gokulnath Murugesan</Owners>
@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageReference Include="Hangfire.Core" Version="1.7.32" />
   </ItemGroup>
 </Project>

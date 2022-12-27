@@ -24,7 +24,6 @@ namespace BoltOn.Web.Middlewares
             using (logger.BeginScope(new Dictionary<string, object> { { "ClientIp", httpContext.Connection.RemoteIpAddress.ToString() } }))
             using (logger.BeginScope(new Dictionary<string, object> { { "RequestUrl", httpContext.Request.Path.Value } }))
             using (logger.BeginScope(new Dictionary<string, object> { { "CorrelationId", correlationContextAccessor?.CorrelationContext?.CorrelationId } }))
-            using (logger.BeginScope(new Dictionary<string, object> { { "Module", configuration.GetValue<string>("Module") } }))
             {
                 logger.LogDebug($"Executing {nameof(RequestLoggerContextMiddleware)} ...");
                 await _next(httpContext);
