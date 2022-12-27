@@ -44,7 +44,6 @@
         <Folder Include="Other\" />
         <Folder Include="Bus\" />
         <Folder Include="Utilities\" />
-        <Folder Include="Cqrs\Fakes\" />
         <Folder Include="Bootstrapping\Fakes\" />
         <Folder Include="Cache\" />
         <Folder Include="Cache\Fakes\" />

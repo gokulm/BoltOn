@@ -31,15 +31,12 @@
     <Compile Remove="Mediator\**" />
     <EmbeddedResource Remove="Mediator\**" />
     <None Remove="Mediator\**" />
-    <None Remove="Requestor\Pipeline\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Logging\" />
     <Folder Include="Utilities\" />
     <Folder Include="Other\" />
     <Folder Include="Bus\" />
-    <Folder Include="Cqrs\" />
-    <Folder Include="Requestor\Pipeline\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
