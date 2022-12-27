@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using BoltOn.Requestor.Pipeline;
+using BoltOn.Requestor;
 using BoltOn.Samples.Application.Handlers;
 using Microsoft.AspNetCore.Mvc;
 

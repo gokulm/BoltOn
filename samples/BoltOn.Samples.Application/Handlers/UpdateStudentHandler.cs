@@ -2,14 +2,14 @@
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Cache;
-using BoltOn.Data;
+using BoltOn.Data.EF;
 using BoltOn.Logging;
-using BoltOn.Requestor.Pipeline;
+using BoltOn.Requestor;
 using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class UpdateStudentRequest : IRequest, IClearCachedResponse
+	public class UpdateStudentRequest : IRequest
 	{
 		public Guid StudentId { get; set; }
 		public string FirstName { get; set; }

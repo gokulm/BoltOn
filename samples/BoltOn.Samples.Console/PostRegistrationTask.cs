@@ -1,4 +1,4 @@
-﻿using BoltOn.Requestor.Pipeline;
+﻿using BoltOn.Requestor;
 using BoltOn.Samples.Application.Handlers;
 using BoltOn.Bootstrapping;
 

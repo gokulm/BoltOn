@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BoltOn.Cache;
 using BoltOn.Data;
-using BoltOn.Requestor.Pipeline;
+using BoltOn.Data.EF;
+using BoltOn.Requestor;
 using BoltOn.Samples.Application.DTOs;
 using BoltOn.Samples.Application.Entities;
 
 namespace BoltOn.Samples.Application.Handlers
 {
-	public class GetAllStudentsRequest : IRequest<IEnumerable<StudentDto>>, ICacheResponse
+	public class GetAllStudentsRequest : IRequest<IEnumerable<StudentDto>>
 	{
 		public string CacheKey => "Students";
 
