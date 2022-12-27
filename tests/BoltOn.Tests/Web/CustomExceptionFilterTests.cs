@@ -68,7 +68,7 @@ namespace BoltOn.Tests.Web
 		}
 
 		[Fact]
-		public void OnException_BusinessValidationExceptionThrown_Returns412AndViewResult()
+		public void OnException_BusinessValidationExceptionThrown_Returns412AndJsonResult()
 		{
 			// arrange
 			var autoMocker = new AutoMocker();
@@ -89,6 +89,7 @@ namespace BoltOn.Tests.Web
 				RouteData = Mock.Of<RouteData>(),
 				ActionDescriptor = Mock.Of<ActionDescriptor>()
 			};
+			actionContext.HttpContext.Request.ContentType = "application/json";
 			var exceptionContext = new ExceptionContext(actionContext, new List<IFilterMetadata>())
 			{
 				Exception = new BusinessValidationException("test 412")
@@ -102,14 +103,56 @@ namespace BoltOn.Tests.Web
 			Assert.Equal(412, exceptionContext.HttpContext.Response.StatusCode);
 			Assert.True(exceptionContext.ExceptionHandled);
 			Assert.NotNull(exceptionContext.Result);
-			var viewResult = (ViewResult)exceptionContext.Result;
-			Assert.NotNull(viewResult);
-			Assert.Equal("Error", viewResult.ViewName);
-			var errorModel = (ErrorModel)viewResult.ViewData.Model;
+			var jsonResult = (JsonResult)exceptionContext.Result;
+			Assert.NotNull(jsonResult);
+			var errorModel = (ErrorModel)jsonResult.Value;
 			Assert.Equal("test 412", errorModel.Message);
 			Assert.Equal(correlationId, errorModel.Id);
 		}
-		
+
+		[Fact]
+		public void OnException_BadRequestExceptionThrown_Returns400AndJsonResult()
+		{
+			// arrange
+			var autoMocker = new AutoMocker();
+			var sut = autoMocker.CreateInstance<CustomExceptionFilter>();
+			var logger = autoMocker.GetMock<IAppLogger<CustomExceptionFilter>>();
+
+			var configuration = autoMocker.GetMock<IConfiguration>();
+			configuration.Setup(s => s.GetSection(It.IsAny<string>())).Returns(Mock.Of<IConfigurationSection>());
+
+			var corrleationContextAccessor = autoMocker.GetMock<ICorrelationContextAccessor>();
+			var correlationId = Guid.NewGuid().ToString();
+			var correlationContext = new CorrelationContext(correlationId, "test header");
+			corrleationContextAccessor.Setup(s => s.CorrelationContext).Returns(correlationContext);
+
+			var actionContext = new ActionContext()
+			{
+				HttpContext = new DefaultHttpContext(),
+				RouteData = Mock.Of<RouteData>(),
+				ActionDescriptor = Mock.Of<ActionDescriptor>()
+			};
+			actionContext.HttpContext.Request.ContentType = "application/json";
+			var exceptionContext = new ExceptionContext(actionContext, new List<IFilterMetadata>())
+			{
+				Exception = new BadRequestException("test 400")
+			};
+
+			// act
+			sut.OnException(exceptionContext);
+
+			// assert
+			logger.Verify(v => v.Warn("test 400"));
+			Assert.Equal(400, exceptionContext.HttpContext.Response.StatusCode);
+			Assert.True(exceptionContext.ExceptionHandled);
+			Assert.NotNull(exceptionContext.Result);
+			var jsonResult = (JsonResult)exceptionContext.Result;
+			Assert.NotNull(jsonResult);
+			var errorModel = (ErrorModel)jsonResult.Value;
+			Assert.Equal("test 400", errorModel.Message);
+			Assert.Equal(correlationId, errorModel.Id);
+		}
+
 		
 		[Fact]
 		public void OnException_BusinessValidationExceptionThrownWithContentTypeJson_Returns412AndJsonResult()
