@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using BoltOn.Requestor.Pipeline;
+using BoltOn.Requestor;
 using BoltOn.Tests.Other;
 
 namespace BoltOn.Tests.Requestor.Fakes

@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace BoltOn.Requestor.Pipeline
+namespace BoltOn.Requestor
 {
 	public interface IHandler<in TRequest, TResponse>
 		where TRequest : IRequest<TResponse>

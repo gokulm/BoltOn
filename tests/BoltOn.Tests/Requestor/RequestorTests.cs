@@ -1,4 +1,4 @@
-﻿using BoltOn.Requestor.Pipeline;
+﻿using BoltOn.Requestor;
 using BoltOn.Tests.Requestor.Fakes;
 using Moq;
 using Moq.AutoMock;
@@ -20,27 +20,7 @@ namespace BoltOn.Tests.Requestor
             var testHandler = new Mock<TestHandler>();
             serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
                           .Returns(testHandler.Object);
-            var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
-            var request = new TestRequest();
-            testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
-
-            // act
-            var result = await sut.ProcessAsync(request);
-
-            // assert 
-            Assert.True(result);
-        }
-
-        [Fact]
-        public async Task Process_RequestorWithInterceptor_ExecutesInterceptor()
-        {
-            // arrange
-            var autoMocker = new AutoMocker();
-            var serviceProvider = autoMocker.GetMock<IServiceProvider>();
-            var testHandler = new Mock<TestHandler>();
-            serviceProvider.Setup(s => s.GetService(typeof(IHandler<TestRequest, bool>)))
-                          .Returns(testHandler.Object);
-            var sut = autoMocker.CreateInstance<BoltOn.Requestor.Pipeline.Requestor>();
+            var sut = autoMocker.CreateInstance<BoltOn.Requestor.Requestor>();
             var request = new TestRequest();
             testHandler.Setup(s => s.HandleAsync(request, It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
 

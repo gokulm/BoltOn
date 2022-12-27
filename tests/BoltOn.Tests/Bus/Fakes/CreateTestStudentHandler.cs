@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Logging;
-using BoltOn.Requestor.Pipeline;
+using BoltOn.Requestor;
 
 namespace BoltOn.Tests.Bus.Fakes
 {

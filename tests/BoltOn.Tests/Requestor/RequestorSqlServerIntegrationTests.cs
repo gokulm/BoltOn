@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using BoltOn.Data.EF;
-using BoltOn.Requestor.Pipeline;
+using BoltOn.Requestor;
 using BoltOn.Tests.Common;
 using BoltOn.Tests.Other;
 using BoltOn.Tests.Requestor.Fakes;

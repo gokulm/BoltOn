@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using BoltOn.Logging;
 using System.Reflection;
 
-namespace BoltOn.Requestor.Pipeline
+namespace BoltOn.Requestor
 {
 	public interface IRequestor
 	{

@@ -2,7 +2,7 @@
 using BoltOn.Logging;
 using MassTransit;
 using System.Threading;
-using BoltOn.Requestor.Pipeline;
+using BoltOn.Requestor;
 
 namespace BoltOn.Bus.MassTransit
 {

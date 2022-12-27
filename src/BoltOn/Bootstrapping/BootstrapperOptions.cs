@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BoltOn.Logging;
 using BoltOn.Other;
-using BoltOn.Requestor.Pipeline;
+using BoltOn.Requestor;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoltOn.Bootstrapping
@@ -48,7 +48,7 @@ namespace BoltOn.Bootstrapping
 
 		private void RegisterRequestor()
 		{
-			ServiceCollection.AddTransient<IRequestor, Requestor.Pipeline.Requestor>();
+			ServiceCollection.AddTransient<IRequestor, Requestor.Requestor>();
 		}
 
 		internal void RegisterByConvention(Assembly assembly)

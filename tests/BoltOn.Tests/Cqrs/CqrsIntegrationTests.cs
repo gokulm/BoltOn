@@ -10,7 +10,7 @@ using MassTransit;
 using BoltOn.Cqrs;
 using BoltOn.Data.EF;
 using BoltOn.Data;
-using BoltOn.Requestor.Pipeline;
+using BoltOn.Requestor;
 using BoltOn.Tests.Cqrs.Fakes;
 using System.Linq.Expressions;
 using System.Threading;

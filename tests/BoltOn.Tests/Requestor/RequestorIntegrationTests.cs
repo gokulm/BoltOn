@@ -1,4 +1,4 @@
-﻿using BoltOn.Requestor.Pipeline;
+﻿using BoltOn.Requestor;
 using BoltOn.Tests.Other;
 using BoltOn.Tests.Requestor.Fakes;
 using Microsoft.Extensions.DependencyInjection;

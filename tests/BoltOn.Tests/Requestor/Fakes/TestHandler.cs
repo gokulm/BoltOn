@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using BoltOn.Requestor.Pipeline;
+using BoltOn.Requestor;
 
 namespace BoltOn.Tests.Requestor.Fakes
 {
