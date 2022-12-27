@@ -4,8 +4,6 @@ using BoltOn.Web.Models;
 using CorrelationId.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 
 namespace BoltOn.Web.Filters
@@ -46,17 +44,6 @@ namespace BoltOn.Web.Filters
 				exceptionContext.HttpContext.Request.ContentType.Contains("application/json"))
 			{
 				exceptionContext.Result = new JsonResult(errorViewModel);
-			}
-			else
-			{
-				var errorViewName = _configuration.GetValue<string>("ErrorViewName");
-				var result = new ViewResult { ViewName = string.IsNullOrWhiteSpace(errorViewName) ? "Error" : errorViewName };
-				var modelMetadata = new EmptyModelMetadataProvider();
-				result.ViewData = new ViewDataDictionary<ErrorModel>(modelMetadata, exceptionContext.ModelState)
-				{
-					Model = errorViewModel
-				};
-				exceptionContext.Result = result;
 			}
 			exceptionContext.ExceptionHandled = true;
 		}
