@@ -41,6 +41,7 @@ namespace BoltOn.Samples.Application.Handlers
         public async Task HandleAsync(StudentCreatedEvent request, CancellationToken cancellationToken)
         {
 			var studentFlattened = new StudentFlattened(request);
+			//throw new Exception("test");
 			await _studentRepository.AddAsync(studentFlattened, cancellationToken);
         }
     }

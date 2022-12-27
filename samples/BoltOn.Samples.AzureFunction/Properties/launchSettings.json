@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "BoltOn.Samples.AzureFunction": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7223",
+      "launchBrowser": false
+    }
+  }
+}
+
