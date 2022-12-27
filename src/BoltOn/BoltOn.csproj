@@ -28,11 +28,6 @@
     <NoStdLib>true</NoStdLib>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Mediator\**" />
-    <EmbeddedResource Remove="Mediator\**" />
-    <None Remove="Mediator\**" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Logging\" />
     <Folder Include="Utilities\" />
     <Folder Include="Other\" />
