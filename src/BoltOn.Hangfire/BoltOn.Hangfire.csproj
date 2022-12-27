@@ -1,37 +1,259 @@
-<Project Sdk="Microsoft.NET.Sdk">
-   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <Version>1.4.0</Version>
-    <Copyright>BoltOn</Copyright>
-    <Authors>Gokulnath Murugesan</Authors>
-    <Owners>Gokulnath Murugesan</Owners>
-    <PackageProjectUrl>https://github.com/gokulm/BoltOn</PackageProjectUrl>
-    <PackageTags>C#, .NET</PackageTags>
-    <Title>BoltOn.Hangfire</Title>
-    <PackageId>BoltOn.Hangfire</PackageId>
-    <Description>This is an add-on to BoltOn NuGet package to support Hangfire</Description>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <LangVersion>latest</LangVersion>
-    <DefineConstants>TRACE;RELEASE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
-    <NoStdLib>true</NoStdLib>
-    <DefineConstants>TRACE;RELEASE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
-    <NoStdLib>true</NoStdLib>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Hangfire.Core" Version="1.7.32" />
-  </ItemGroup>
-</Project>
+<Project Sdk="Microsoft.NET.Sdk">
+
+
+
+
+
+
+   <PropertyGroup>
+
+
+
+
+
+
+    <TargetFramework>net7.0</TargetFramework>
+
+
+
+
+
+
+    <Version>1.4.0</Version>
+
+
+
+
+
+
+    <Copyright>BoltOn</Copyright>
+
+
+
+
+
+
+    <Authors>Gokulnath Murugesan</Authors>
+
+
+
+
+
+
+    <Owners>Gokulnath Murugesan</Owners>
+
+
+
+
+
+
+    <PackageProjectUrl>https://github.com/gokulm/BoltOn</PackageProjectUrl>
+
+
+
+
+
+
+    <PackageTags>C#, .NET</PackageTags>
+
+
+
+
+
+
+    <Title>BoltOn.Hangfire</Title>
+
+
+
+
+
+
+    <PackageId>BoltOn.Hangfire</PackageId>
+
+
+
+
+
+
+    <Description>This is an add-on to BoltOn NuGet package to support Hangfire</Description>
+
+
+
+
+
+
+  </PropertyGroup>
+
+
+
+
+
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+
+
+
+
+
+
+    <LangVersion>latest</LangVersion>
+
+
+
+
+
+
+  </PropertyGroup>
+
+
+
+
+
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+
+
+
+
+
+
+    <LangVersion>latest</LangVersion>
+
+
+
+
+
+
+    <DefineConstants>TRACE;RELEASE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
+
+
+
+
+
+
+    <DocumentationFile>
+
+
+
+
+
+
+    </DocumentationFile>
+
+
+
+
+
+
+    <NoStdLib>true</NoStdLib>
+
+
+
+
+
+
+    <DefineConstants>TRACE;RELEASE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
+
+
+
+
+
+
+    <DocumentationFile>
+
+
+
+
+
+
+    </DocumentationFile>
+
+
+
+
+
+
+    <NoStdLib>true</NoStdLib>
+
+
+
+
+
+
+  </PropertyGroup>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <ItemGroup>
+
+
+
+
+
+
+    <ProjectReference Include="..\BoltOn\BoltOn.csproj" />
+
+
+
+
+
+
+  </ItemGroup>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <ItemGroup>
+
+
+
+
+
+
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+
+
+
+
+
+
+    <PackageReference Include="Hangfire.Core" Version="1.7.32" />
+
+
+
+
+
+
+  </ItemGroup>
+
+
+
+
+
+
+</Project>
+
+
+
+
+
+
