@@ -128,7 +128,7 @@ function NugetPack {
     
     $projectPath = Join-Path $_rootDirPath "src/$key/$key.csproj"
     UpdateVersion $projectPath $value
-    dotnet pack $projectPath --configuration Release -o $_outputPath
+    dotnet pack $projectPath --include-symbols --include-source --configuration Release -o $_outputPath
     LogDebug "Packed package: $key.$value.nupkg"
 }
 
