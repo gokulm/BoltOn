@@ -61,9 +61,6 @@
     <li class="toctree-l2"><a href="#request-response-and-handler">Request, Response and Handler</a></li>
     
 
-    <li class="toctree-l2"><a href="#interceptors">Interceptors</a></li>
-    
-
     <li class="toctree-l2"><a href="#why-requestor">Why Requestor?</a></li>
     
 
@@ -92,11 +89,6 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../cqrs/">CQRS</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
     <a class="" href="../statemachine/">State Machine</a>
 	    </li>
           
@@ -108,11 +100,6 @@
             <li class="toctree-l1">
 		
     <a class="" href="../utilities/">Utilities</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../logging/">Logging</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -162,17 +149,17 @@
 <h2 id="request-response-and-handler">Request, Response and Handler</h2>
 <p>In order to use the Requestor, you need to create a request by implementing any of these interfaces:</p>
 <ul>
-<li><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/IRequest.cs"><code>IRequest</code></a>
+<li><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/IRequest.cs"><code>IRequest</code></a>
 <br /> To create a request that doesn't have any response and doesn't require unit of work.</li>
-<li><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/IRequest.cs"><code>IRequest&lt;out TResponse&gt;</code></a>
+<li><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/IRequest.cs"><code>IRequest&lt;out TResponse&gt;</code></a>
 <br /> To create a request with response of type TResponse and doesn't require unit of work.</li>
 </ul>
 <p>The <strong>response</strong> can be any value or reference type.</p>
 <p>After declaring the request and the response, you need to create a handler by implementiong any of these interfaces:</p>
 <ul>
-<li><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/IHandler.cs"><code>IHandler&lt;in TRequest&gt;</code></a>
+<li><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/IHandler.cs"><code>IHandler&lt;in TRequest&gt;</code></a>
 <br> For handlers that do not return any response.</li>
-<li><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/IHandler.cs"><code>IHandler&lt;in TRequest, TResponse&gt;</code></a>
+<li><a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/IHandler.cs"><code>IHandler&lt;in TRequest, TResponse&gt;</code></a>
 <br> For handlers that have responses.</li>
 </ul>
 <p>Example:</p>
@@ -193,7 +180,7 @@ public class GetAllStudentsHandler : IHandler&lt;GetAllStudentsRequest, IEnumera
 }
 </code></pre>
 <ul>
-<li>To invoke the handler, you need to inject <code>IRequestor</code> in a class in your application, like a controller in WebAPI or a MVC application, and call <code>ProcessAsync</code> method. Check out the implemenation <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/Requestor.cs">Requestor</a> to know the internals.</li>
+<li>To invoke the handler, you need to inject <code>IRequestor</code> in a class in your application, like a controller in WebAPI or a MVC application, and call <code>ProcessAsync</code> method. Check out the implemenation <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Requestor.cs">Requestor</a> to know the internals.</li>
 </ul>
 <p>Example:</p>
 <pre><code>[Route("api/[controller]")]
@@ -222,41 +209,11 @@ serviceCollection.BoltOn(options =&gt;
     options.DisableRequestorHandlerRegistrations();
 });
 </code></pre>
-<h2 id="interceptors">Interceptors</h2>
-<p>Every request flows thru a set of built-in interceptors (mentioned below), and the execution of them can be controlled by implementing appropriate marker interfaces. </p>
-<ul>
-<li>
-<p><code>StopwatchInterceptor</code>
-<br> This interceptor logs the time that a request enters and exits the pipeline. This interceptor is enabled by default as <code>IRequest</code> implements <code>IEnableInterceptor&lt;StopwatchInterceptor&gt;</code> interface.</p>
-</li>
-<li>
-<p><code>TransactionInterceptor</code>
-<br> This interceptor starts a transaction with an isolation level set in the request class. This interceptor is enabled only if the request implements <code>IEnableTransaction</code> interface. </p>
-</li>
-</ul>
-<p>You could create an interceptor by implementing <code>IInterceptor</code> interface. If you want to control the execution of an interceptor based on the incoming request, you can make the request implement <code>IEnableInterceptor&lt;TInterceptor&gt;</code> and add a check something like this:</p>
-<pre><code>if (!(request is IEnableInterceptor&lt;StopwatchInterceptor&gt;))
-    return await next.Invoke(request, cancellationToken);
-</code></pre>
-<p><strong>Note: </strong></p>
-<ul>
-<li>Interceptors from all the attached modules and assemblies <strong>must be</strong> added explicitly  using <code>AddInterceptor&lt;TInterceptor&gt;</code> extension method.</li>
-<li>Interceptors get executed in the order they're added.</li>
-<li>Interceptors can be removed using <code>RemoveInterceptor&lt;TInterceptor&gt;</code> extension method. </li>
-<li>All the interceptors in the pipeline (in other packages) can be removed using <code>RemoveAllInterceptors</code> extension method. However, if this extension method is executed in a registration task and if there is another registration task after your registration task to add interceptors, those interceptors will be added to the pipeline.</li>
-<li>
-<p>Interceptors can be added before or after an existing interceptor using <code>Before&lt;TInterceptor&gt;</code> or <code>After&lt;TInterceptor&gt;</code> respectively.</p>
-<p>Example:</p>
-<pre><code>bootstrapperOptions.AddInterceptor&lt;TransactionInterceptor&gt;().Before&lt;StopwatchInterceptor&gt;();
-</code></pre>
-</li>
-</ul>
 <h2 id="why-requestor">Why Requestor?</h2>
 <p>Adding a request, a handler and a response for every single request may look like as if we are writing a lot of code, but the advantages of it are:</p>
 <ol>
 <li>Every handler class will be responsible for one and only one thing, and thus follow <strong>Single Responsibility Principle</strong>, which makes them <strong>readable, maintainable, testable</strong> and <strong>reusable</strong>. </li>
-<li>The same request/handler and the requestor can be used in Web API based applications, background jobs using <a href="../hangfire">Hangfire</a> and message queueing using <a href="../bus">AppServiceBus</a>, and thus it will be easy for developers to pick it up.</li>
-<li>Common functionality like logging, caching, unit of work etc., can be abstracted out and can be added to handlers easily using <a href="../requestor/#interceptors">interceptors</a>.  </li>
+<li>The same request/handler and the requestor can be used in Web API based applications, background jobs using <a href="../hangfire">Hangfire</a> and message queueing using <a href="../bus">AppServiceBus</a>, and thus it will be easy for developers to pick it up. </li>
 </ol>
               
             </div>

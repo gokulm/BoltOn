@@ -83,11 +83,6 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../cqrs/">CQRS</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
     <a class="" href="../statemachine/">State Machine</a>
 	    </li>
           
@@ -99,11 +94,6 @@
             <li class="toctree-l1">
 		
     <a class="" href="../utilities/">Utilities</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../logging/">Logging</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -179,32 +169,27 @@ services.AddMassTransit(x =&gt;
 <p><strong>Consumer Configuration</strong></p>
 <pre><code>serviceCollection.AddMassTransit(x =&gt;
 {
-    x.AddBus(provider =&gt; MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =&gt;
+    x.AddConsumer&lt;AppMessageConsumer&lt;StudentCreatedEvent&gt;&gt;()
+        .Endpoint(e =&gt;
+        {
+            e.Name = $"{nameof(StudentCreatedEvent)}_queue";
+        });
+
+    x.UsingRabbitMq((context, cfg) =&gt;
     {
-        var host = cfg.Host(new Uri("rabbitmq://localhost:5672"), hostConfigurator =&gt;
+        cfg.Host(new Uri(rabbitmqUri), hostConfigurator =&gt;
         {
             hostConfigurator.Username("guest");
             hostConfigurator.Password("guest");
         });
 
-        cfg.ReceiveEndpoint(host, "CreateStudent_Queue", endpoint =&gt;
+        cfg.ReceiveEndpoint($"{nameof(StudentCreatedEvent)}_queue", e =&gt;
         {
-            endpoint.Consumer(() =&gt; provider.GetService&lt;AppMessageConsumer&lt;CreateStudent&gt;&gt;());
+            e.ConfigureConsumer&lt;AppMessageConsumer&lt;StudentCreatedEvent&gt;&gt;(context);
         });
-    }));
+    });
 });
 </code></pre>
-<p>You could add an extension method for your transport something like the one mentioned below to configure consumers:</p>
-<pre><code>public static void BoltOnConsumer&lt;TRequest&gt;(this IRabbitMqBusFactoryConfigurator configurator, IServiceProvider serviceProvider, IRabbitMqHost host, string queueName = null)
-        where TRequest : class, IRequest
-{
-    configurator.ReceiveEndpoint(host, queueName ?? $"{typeof(TRequest).Name}_Queue", endpoint =&gt;
-    {
-        endpoint.Consumer(() =&gt; serviceProvider.GetService&lt;AppMessageConsumer&lt;TRequest&gt;&gt;());
-    });
-}
-</code></pre>
-<p>and then call <code>BoltOnConsumer&lt;CreateStudent&gt;(provider, host)</code></p>
 <p><strong>Note:</strong></p>
 <ul>
 <li>As MassTransit had abstracted out the transport like RabbitMq, Azure Service Bus etc., and all the other things very well, BoltOn just adds a minor add-on <code>AppMessageConsumer&lt;TMessage&gt;</code> to it, which injects <code>IRequestor</code> for processing <code>TMessage</code> of type <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Requestor/Pipeline/IRequest.cs"><code>IRequest</code></a>. </li>

@@ -73,20 +73,12 @@
     <a class="current" href="./">Cache</a>
     <ul class="subnav">
             
-    <li class="toctree-l2"><a href="#icacheresponse-and-iclearcachedresponse">ICacheResponse and IClearCachedResponse</a></li>
-    
-
     </ul>
 	    </li>
           
             <li class="toctree-l1">
 		
     <a class="" href="../hangfire/">Hangfire</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../cqrs/">CQRS</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -102,11 +94,6 @@
             <li class="toctree-l1">
 		
     <a class="" href="../utilities/">Utilities</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../logging/">Logging</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -174,30 +161,6 @@ serviceCollection.BoltOn(b =&gt;
 </code></pre>
 <p>To use in-memory cache:</p>
 <pre><code>services.AddDistributedMemoryCache();
-</code></pre>
-<h2 id="icacheresponse-and-iclearcachedresponse">ICacheResponse and IClearCachedResponse</h2>
-<p>The BoltOnCacheModule comes with 2 other marker interfaces - <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/ICacheResponse.cs">ICacheResponse</a> and <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/IClearCachedResponse.cs">IClearCachedResponse</a> to cache and clear <a href="../requestor">Requestor</a>'s response automatically. It's done using <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/CacheResponseInterceptor.cs">CacheResponseInterceptor</a>. </p>
-<p>If the request implements <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/ICacheResponse.cs">ICacheResponse</a>, the cache is checked before entering the pipeline, and if the response exists in the cache, the response is returned without executing the request's handler. If the response is not in the cache, the handler is executed and the response is cached before returning it, so that subsequent requests will be served by the cache. </p>
-<p>Example:</p>
-<pre><code>public class GetAllStudentsRequest : IQuery&lt;IEnumerable&lt;StudentDto&gt;&gt;, ICacheResponse
-{
-    public string CacheKey =&gt; "Students";
-
-    public TimeSpan? SlidingExpiration =&gt; TimeSpan.FromHours(2);
-}
-</code></pre>
-<p>If the request implements <a href="https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/IClearCachedResponse.cs">IClearCachedResponse</a>, the cache is cleared before returning the response, and thus subsequent requests will enter the pipeline. </p>
-<p>Example:</p>
-<pre><code>public class CreateStudentRequest : IRequest&lt;Student&gt;, IClearCachedResponse
-{
-    public string FirstName { get; set; }
-
-    public string LastName { get; set; }
-
-    public int StudentTypeId { get; set; }
-
-    public string CacheKey =&gt; "Students";
-}
 </code></pre>
 <p><strong>Note:</strong>
 <br />
