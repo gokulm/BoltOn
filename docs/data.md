@@ -1,6 +1,6 @@
 Repository 
 -----------
-[`IRepository`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs) and [`IQueryRepository`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IQueryRepository.cs) interfaces in the core BoltOn package is abstracted out to keep it agnostic of any particular database. However, they're currently implemented only in BoltOn.Data.EF package. 
+[`IRepository`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/IRepository.cs) and [`IQueryRepository`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/IQueryRepository.cs) interfaces in the core BoltOn package is abstracted out to keep it agnostic of any particular database. However, they're currently implemented only in BoltOn.Data.EF package. 
 
 There are separate `IRepository` interfaces in CosmosDb and ElasticSearch packages too.
 
@@ -10,7 +10,7 @@ In order to use Entity Framework implementation of the repository, you need to d
 
 * Install **BoltOn.Data.EF** NuGet package.
 * Call `BoltOnEFModule()` in your startup's BoltOn() method.
-* Register [`IRepository<TEntity>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IRepository.cs) to [`Repository<TEntity, TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs) or [`IQueryRepository<TEntity>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Data/IQueryRepository.cs) to [`QueryRepository<TEntity, TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/QueryRepository.cs).
+* Register [`IRepository<TEntity>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/IRepository.cs) to [`Repository<TEntity, TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/Repository.cs) or [`IQueryRepository<TEntity>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/IQueryRepository.cs) to [`QueryRepository<TEntity, TDbContext>`](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Data.EF/QueryRepository.cs).
 * `IQueryRepository` has only methods related to data retrieval, and it sets EF's `QueryTrackingBehavior` to `QueryTrackingBehavior.NoTracking`.
 
 Example:

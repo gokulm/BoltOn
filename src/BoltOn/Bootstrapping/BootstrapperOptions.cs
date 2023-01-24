@@ -16,8 +16,6 @@ namespace BoltOn.Bootstrapping
 		internal bool IsCqrsEnabled { get; set; }
 		internal bool IsTightened { get; set; }
 		internal bool IsAppCleaned { get; set; }
-		internal HashSet<Type> InterceptorTypes { get; set; } = new HashSet<Type>();
-		internal Type RecentlyAddedInterceptor { get; set; }
 		internal HashSet<Assembly> RegisteredAssemblies { get; } = new HashSet<Assembly>();
 		public IServiceCollection ServiceCollection { get; }
 

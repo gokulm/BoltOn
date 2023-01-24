@@ -26,36 +26,6 @@ To use in-memory cache:
 
     services.AddDistributedMemoryCache();
 
-ICacheResponse and IClearCachedResponse
----------------------------------------
-The BoltOnCacheModule comes with 2 other marker interfaces - [ICacheResponse](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/ICacheResponse.cs) and [IClearCachedResponse](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/IClearCachedResponse.cs) to cache and clear [Requestor](../requestor)'s response automatically. It's done using [CacheResponseInterceptor](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/CacheResponseInterceptor.cs). 
-
-If the request implements [ICacheResponse](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/ICacheResponse.cs), the cache is checked before entering the pipeline, and if the response exists in the cache, the response is returned without executing the request's handler. If the response is not in the cache, the handler is executed and the response is cached before returning it, so that subsequent requests will be served by the cache. 
-
-Example:
-
-    public class GetAllStudentsRequest : IQuery<IEnumerable<StudentDto>>, ICacheResponse
-	{
-		public string CacheKey => "Students";
-
-		public TimeSpan? SlidingExpiration => TimeSpan.FromHours(2);
-	}
-
-If the request implements [IClearCachedResponse](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn/Cache/IClearCachedResponse.cs), the cache is cleared before returning the response, and thus subsequent requests will enter the pipeline. 
-
-Example:
-
-    public class CreateStudentRequest : IRequest<Student>, IClearCachedResponse
-	{
-		public string FirstName { get; set; }
-
-		public string LastName { get; set; }
-
-		public int StudentTypeId { get; set; }
-
-		public string CacheKey => "Students";
-	}
-
 **Note:**
 <br />
 [AppCache](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Cache/AppCache.cs) uses .NET Core's built-in serializer (System.Text.Json) for serializing cache values to byte array. You can switch the serializer by writing your own implementation for [IAppCacheSerializer](https://github.com/gokulm/BoltOn/blob/master/src/BoltOn.Cache/AppCacheSerializer.cs) and registering the implementation while bootstrapping your application.
