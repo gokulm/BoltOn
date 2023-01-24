@@ -63,8 +63,6 @@ namespace BoltOn.Tests.Requestor
 
 		public void Dispose()
 		{
-			RequestorTestHelper.IsRemoveStopwatchInterceptor = false;
-			RequestorTestHelper.IsClearInterceptors = false;
 			RequestorTestHelper.IsCustomizeIsolationLevel = false;
 			RequestorTestHelper.LoggerStatements.Clear();
 			IntegrationTestHelper.IsSeedData = false;

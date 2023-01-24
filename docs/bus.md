@@ -33,33 +33,26 @@ Example:
 
     serviceCollection.AddMassTransit(x =>
     {
-        x.AddBus(provider => MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
+        x.AddConsumer<AppMessageConsumer<StudentCreatedEvent>>()
+            .Endpoint(e =>
+            {
+                e.Name = $"{nameof(StudentCreatedEvent)}_queue";
+            });
+
+        x.UsingRabbitMq((context, cfg) =>
         {
-            var host = cfg.Host(new Uri("rabbitmq://localhost:5672"), hostConfigurator =>
+            cfg.Host(new Uri(rabbitmqUri), hostConfigurator =>
             {
                 hostConfigurator.Username("guest");
                 hostConfigurator.Password("guest");
             });
 
-            cfg.ReceiveEndpoint(host, "CreateStudent_Queue", endpoint =>
+            cfg.ReceiveEndpoint($"{nameof(StudentCreatedEvent)}_queue", e =>
             {
-                endpoint.Consumer(() => provider.GetService<AppMessageConsumer<CreateStudent>>());
+                e.ConfigureConsumer<AppMessageConsumer<StudentCreatedEvent>>(context);
             });
-        }));
-    });
-
-You could add an extension method for your transport something like the one mentioned below to configure consumers:
-
-    public static void BoltOnConsumer<TRequest>(this IRabbitMqBusFactoryConfigurator configurator, IServiceProvider serviceProvider, IRabbitMqHost host, string queueName = null)
-            where TRequest : class, IRequest
-    {
-        configurator.ReceiveEndpoint(host, queueName ?? $"{typeof(TRequest).Name}_Queue", endpoint =>
-        {
-            endpoint.Consumer(() => serviceProvider.GetService<AppMessageConsumer<TRequest>>());
         });
-    } 
-
-and then call `BoltOnConsumer<CreateStudent>(provider, host)`
+    });
 
 **Note:**
 

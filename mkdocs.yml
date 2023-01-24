@@ -6,11 +6,11 @@ nav:
     - Bus: bus.md
     - Cache: cache.md
     - Hangfire: hangfire.md
-    - CQRS: cqrs.md
+    # - CQRS: cqrs.md
     - State Machine: statemachine.md
     - Web: web.md
     - Utilities: utilities.md
-    - Logging: logging.md
+    # - Logging: logging.md
     - Samples: samples.md
     # - CLI: cli.md
     - CI & CD: build.md
