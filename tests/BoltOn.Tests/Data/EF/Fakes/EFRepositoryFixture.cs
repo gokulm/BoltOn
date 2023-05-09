@@ -3,6 +3,7 @@ using BoltOn.Data;
 using BoltOn.Data.EF;
 using BoltOn.Tests.Other;
 using Microsoft.Extensions.DependencyInjection;
+using BoltOn.DataAbstractions.EF;
 
 namespace BoltOn.Tests.Data.EF.Fakes
 {

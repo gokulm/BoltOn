@@ -32,10 +32,18 @@
     <Folder Include="Utilities\" />
     <Folder Include="Other\" />
     <Folder Include="Bus\" />
+    <Folder Include="DataAbstractions\" />
+    <Folder Include="DataAbstractions\EF\" />
+    <Folder Include="DataAbstractions\MartenDb\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Data\" />
+    <None Remove="Data\EF\" />
+    <None Remove="DataAbstractions\MartenDb\" />
   </ItemGroup>
 </Project>

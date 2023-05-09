@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BoltOn.Data.MartenDb
+namespace BoltOn.DataAbstractions.MartenDb
 {
     public interface IQueryRepository<TEntity> where TEntity : class
     {

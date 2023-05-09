@@ -3,6 +3,7 @@ using BoltOn.Data.MartenDb;
 using BoltOn.Tests.Other;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
+using BoltOn.DataAbstractions.MartenDb;
 
 namespace BoltOn.Tests.Data.MartenDb.Fakes
 {

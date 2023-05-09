@@ -4,6 +4,7 @@ using BoltOn.Data.EF;
 using BoltOn.Tests.Other;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using BoltOn.DataAbstractions.EF;
 
 namespace BoltOn.Tests.Data.EF.Fakes
 {

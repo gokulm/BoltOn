@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using BoltOn.DataAbstractions.EF;
 
 namespace BoltOn.Data.EF
 {
