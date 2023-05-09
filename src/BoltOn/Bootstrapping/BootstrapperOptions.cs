@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using BoltOn.Logging;
+﻿using BoltOn.Logger;
 using BoltOn.Other;
 using BoltOn.Requestor;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace BoltOn.Bootstrapping
 {
@@ -23,7 +22,6 @@ namespace BoltOn.Bootstrapping
 		{
 			ServiceCollection = serviceCollection;
 			RegisterByConvention(GetType().Assembly);
-			RegisterCoreTypes();
 			RegisterRequestor();
 		}
 
@@ -36,12 +34,6 @@ namespace BoltOn.Bootstrapping
 		public void DisableRequestorHandlerRegistrations()
 		{
 			_isDisableRequestorHandlerRegistrations = true;
-		}
-
-		private void RegisterCoreTypes()
-		{
-			ServiceCollection.AddSingleton(typeof(IAppLogger<>), typeof(AppLogger<>));
-			ServiceCollection.AddSingleton<IAppLoggerFactory, AppLoggerFactory>();
 		}
 
 		private void RegisterRequestor()

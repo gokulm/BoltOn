@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using BoltOn.Bootstrapping;
 using BoltOn.Bus.MassTransit;
-using BoltOn.Logging;
+using BoltOn.Logger;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;

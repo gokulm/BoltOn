@@ -1,6 +1,6 @@
 ﻿using System;
 using BoltOn.Bootstrapping;
-using BoltOn.Logging;
+using BoltOn.Logger;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 

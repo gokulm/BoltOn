@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using BoltOn.Logging;
+using BoltOn.Logger;
 using BoltOn.Exceptions;
 using Microsoft.AspNetCore.Mvc.Filters;
 

@@ -5,7 +5,7 @@ using MassTransit;
 using Moq;
 using Moq.AutoMock;
 using Xunit;
-using BoltOn.Logging;
+using BoltOn.Logger;
 using BoltOn.Requestor;
 using BoltOn.Tests.Bus.Fakes;
 

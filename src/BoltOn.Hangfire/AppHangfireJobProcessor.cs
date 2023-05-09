@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Logging;
+using BoltOn.Logger;
 using BoltOn.Requestor;
 using Hangfire;
 

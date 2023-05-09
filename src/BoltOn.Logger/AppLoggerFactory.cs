@@ -1,12 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace BoltOn.Logging
+namespace BoltOn.Logger
 {
-	public interface IAppLoggerFactory
-	{
-		IAppLogger<TType> Create<TType>();
-	}
-
 	public sealed class AppLoggerFactory : IAppLoggerFactory
 	{
 		private readonly ILoggerFactory _loggerFactory;

@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using BoltOn.Cache;
-using BoltOn.Logging;
+using BoltOn.Logger;
 using BoltOn.Tests.Cache.Fakes;
 using BoltOn.Tests.Other;
 using Microsoft.Extensions.Caching.Distributed;

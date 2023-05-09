@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Data;
 using BoltOn.Data.EF;
 using BoltOn.Logging;
 using BoltOn.Requestor;

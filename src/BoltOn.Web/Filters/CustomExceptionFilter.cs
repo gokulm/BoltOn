@@ -1,4 +1,4 @@
-using BoltOn.Logging;
+using BoltOn.Logger;
 using BoltOn.Exceptions;
 using BoltOn.Web.Models;
 using CorrelationId.Abstractions;

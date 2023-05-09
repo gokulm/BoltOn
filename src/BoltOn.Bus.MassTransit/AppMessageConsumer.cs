@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using MassTransit;
-using BoltOn.Logging;
+using BoltOn.Logger;
 using BoltOn.Requestor;
 
 namespace BoltOn.Bus.MassTransit

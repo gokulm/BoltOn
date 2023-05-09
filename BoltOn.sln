@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29424.173
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33417.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}"
 EndProject
@@ -8,33 +8,35 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C751203D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{15E5CCAC-85EB-4C98-B1FA-B5DEFD213FCD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Tests", "tests\BoltOn.Tests\BoltOn.Tests.csproj", "{6AB42094-D912-4DBE-8253-86409EA08896}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Tests", "tests\BoltOn.Tests\BoltOn.Tests.csproj", "{6AB42094-D912-4DBE-8253-86409EA08896}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Data.EF", "src\BoltOn.Data.EF\BoltOn.Data.EF.csproj", "{E9FBB8EF-7628-4351-B008-A54EA28C67C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Data.EF", "src\BoltOn.Data.EF\BoltOn.Data.EF.csproj", "{E9FBB8EF-7628-4351-B008-A54EA28C67C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Samples.Application", "samples\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj", "{30D494B5-63C0-459B-81D1-7FDB9B914B6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Samples.Application", "samples\BoltOn.Samples.Application\BoltOn.Samples.Application.csproj", "{30D494B5-63C0-459B-81D1-7FDB9B914B6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Samples.Infrastructure", "samples\BoltOn.Samples.Infrastructure\BoltOn.Samples.Infrastructure.csproj", "{5A571C42-5FED-4568-94DC-0D7340E2BC4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Samples.Infrastructure", "samples\BoltOn.Samples.Infrastructure\BoltOn.Samples.Infrastructure.csproj", "{5A571C42-5FED-4568-94DC-0D7340E2BC4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn", "src\BoltOn\BoltOn.csproj", "{440B9E87-690B-4475-BD11-BF6D4B1CA246}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn", "src\BoltOn\BoltOn.csproj", "{440B9E87-690B-4475-BD11-BF6D4B1CA246}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Samples.Console", "samples\BoltOn.Samples.Console\BoltOn.Samples.Console.csproj", "{FD5F35F9-FC73-4CC4-AFE3-95F3B1C668D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Samples.Console", "samples\BoltOn.Samples.Console\BoltOn.Samples.Console.csproj", "{FD5F35F9-FC73-4CC4-AFE3-95F3B1C668D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Bus.MassTransit", "src\BoltOn.Bus.MassTransit\BoltOn.Bus.MassTransit.csproj", "{21DD4150-15A7-4417-9538-51F0B07FD31A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Bus.MassTransit", "src\BoltOn.Bus.MassTransit\BoltOn.Bus.MassTransit.csproj", "{21DD4150-15A7-4417-9538-51F0B07FD31A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Samples.WebApi", "samples\BoltOn.Samples.WebApi\BoltOn.Samples.WebApi.csproj", "{14C386FE-B219-493D-9E4B-66831ED12837}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Samples.WebApi", "samples\BoltOn.Samples.WebApi\BoltOn.Samples.WebApi.csproj", "{14C386FE-B219-493D-9E4B-66831ED12837}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Data.Elasticsearch", "src\BoltOn.Data.Elasticsearch\BoltOn.Data.Elasticsearch.csproj", "{D5EBEF57-3A65-4BA2-A93E-7E489D468C40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Data.Elasticsearch", "src\BoltOn.Data.Elasticsearch\BoltOn.Data.Elasticsearch.csproj", "{D5EBEF57-3A65-4BA2-A93E-7E489D468C40}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Hangfire", "src\BoltOn.Hangfire\BoltOn.Hangfire.csproj", "{03EC61D2-84CD-4CBF-804D-1ABB0ABC2E27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Hangfire", "src\BoltOn.Hangfire\BoltOn.Hangfire.csproj", "{03EC61D2-84CD-4CBF-804D-1ABB0ABC2E27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Web", "src\BoltOn.Web\BoltOn.Web.csproj", "{C2CC4795-41FE-4FDA-9DF5-BAD9237C65D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Web", "src\BoltOn.Web\BoltOn.Web.csproj", "{C2CC4795-41FE-4FDA-9DF5-BAD9237C65D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Data.MartenDb", "src\BoltOn.Data.MartenDb\BoltOn.Data.MartenDb.csproj", "{308654E2-1509-4BA5-8352-344C3F40CDEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Data.MartenDb", "src\BoltOn.Data.MartenDb\BoltOn.Data.MartenDb.csproj", "{308654E2-1509-4BA5-8352-344C3F40CDEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Cache", "src\BoltOn.Cache\BoltOn.Cache.csproj", "{2F1A7FA1-6DEF-41EE-9C36-1FE616342EBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Cache", "src\BoltOn.Cache\BoltOn.Cache.csproj", "{2F1A7FA1-6DEF-41EE-9C36-1FE616342EBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Samples.Tests", "samples\BoltOn.Samples.Tests\BoltOn.Samples.Tests.csproj", "{FFD18747-6E2E-426C-A824-13DEF3276A0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Samples.Tests", "samples\BoltOn.Samples.Tests\BoltOn.Samples.Tests.csproj", "{FFD18747-6E2E-426C-A824-13DEF3276A0E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoltOn.Logger", "src\BoltOn.Logger\BoltOn.Logger.csproj", "{CFAD8EB1-20E3-4F1B-AB65-E1B46335DF42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,6 +100,10 @@ Global
 		{FFD18747-6E2E-426C-A824-13DEF3276A0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFD18747-6E2E-426C-A824-13DEF3276A0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFD18747-6E2E-426C-A824-13DEF3276A0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFAD8EB1-20E3-4F1B-AB65-E1B46335DF42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFAD8EB1-20E3-4F1B-AB65-E1B46335DF42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFAD8EB1-20E3-4F1B-AB65-E1B46335DF42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFAD8EB1-20E3-4F1B-AB65-E1B46335DF42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,6 +123,7 @@ Global
 		{308654E2-1509-4BA5-8352-344C3F40CDEF} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 		{2F1A7FA1-6DEF-41EE-9C36-1FE616342EBC} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 		{FFD18747-6E2E-426C-A824-13DEF3276A0E} = {15E5CCAC-85EB-4C98-B1FA-B5DEFD213FCD}
+		{CFAD8EB1-20E3-4F1B-AB65-E1B46335DF42} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {530F371A-8A38-41FE-9A1E-A03ACCDE867B}

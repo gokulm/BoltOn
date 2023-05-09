@@ -1,4 +1,4 @@
-﻿using BoltOn.Logging;
+﻿using BoltOn.Logger;
 
 namespace BoltOn.Tests.Bootstrapping.Fakes
 {

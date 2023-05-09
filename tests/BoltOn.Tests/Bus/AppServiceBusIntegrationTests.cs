@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using BoltOn.Bus.MassTransit;
-using BoltOn.Logging;
+using BoltOn.Logger;
 using Moq;
 using BoltOn.Tests.Other;
 using System.Linq;

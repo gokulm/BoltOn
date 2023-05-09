@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using BoltOn.Logger;
+using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using BoltOn.Logging;
-using System.Reflection;
 
 namespace BoltOn.Requestor
 {
-	public interface IRequestor
+    public interface IRequestor
 	{
 		Task<TResponse> ProcessAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default);
 		Task ProcessAsync(IRequest request, CancellationToken cancellationToken = default);

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using BoltOn.Logging;
+using BoltOn.Logger;
 using MassTransit;
 using System.Threading;
 using BoltOn.Requestor;
