@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using BoltOn.DataAbstractions.EF;
 
-
 namespace BoltOn.Data.EF
 {
 	public class Repository<TEntity, TDbContext> : IRepository<TEntity>
