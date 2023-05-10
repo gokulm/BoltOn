@@ -10,7 +10,6 @@ using BoltOn.Tests.Other;
 using Xunit;
 using Student = BoltOn.Tests.Data.MartenDb.Fakes.Student;
 using Microsoft.Extensions.DependencyInjection;
-using BoltOn.DataAbstractions.MartenDb;
 
 namespace BoltOn.Tests.Data.MartenDb
 {

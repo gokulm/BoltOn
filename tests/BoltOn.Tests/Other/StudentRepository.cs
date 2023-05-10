@@ -1,6 +1,5 @@
 using BoltOn.Data;
 using BoltOn.Data.EF;
-using BoltOn.DataAbstractions.EF;
 
 namespace BoltOn.Tests.Other
 {

@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Marten;
 using System.Linq;
-using BoltOn.DataAbstractions.MartenDb;
 
 namespace BoltOn.Data.MartenDb
 {

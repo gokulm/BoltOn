@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BoltOn.DataAbstractions.EF
+namespace BoltOn.Data.EF
 {
     public interface IQueryRepository<TEntity> where TEntity : class
     {

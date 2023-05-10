@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using BoltOn.Data.EF;
 using BoltOn.Requestor;
 using BoltOn.Tests.Other;
-using BoltOn.DataAbstractions.EF;
 
 namespace BoltOn.Tests.Requestor.Fakes
 {
