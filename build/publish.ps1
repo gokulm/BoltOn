@@ -74,6 +74,7 @@ function NuGetPackAndPublish {
             } -Unique
 
             $changedProjects = $tempChangedProjects | Select-Object -ExpandProperty Project
+            LogDebug "Changed projects: "
             $changedProjects
             $newVersions = GetProjectNewVersions $commits $changedProjects
         }
