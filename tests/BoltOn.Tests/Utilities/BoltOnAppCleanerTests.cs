@@ -21,8 +21,8 @@ namespace BoltOn.Tests.Utilities
 			serviceCollection.AddLogging();
 			serviceCollection.BoltOn(b => b.BoltOnMassTransitBusModule());
             var logger = new Mock<IAppLogger<CleanupTask>>();
-            logger.Setup(s => s.Debug(It.IsAny<string>()))
-                .Callback<string>(st => BoltOnAppCleanerHelper.LoggerStatements.Add(st));
+            logger.Setup(s => s.Debug(It.IsAny<string>(), It.IsAny<object[]>()))
+                .Callback<string, object[]>((st, a) => BoltOnAppCleanerHelper.LoggerStatements.Add(st));
             serviceCollection.AddTransient(s => logger.Object);
 
 
