@@ -35,6 +35,7 @@ namespace BoltOn.Samples.Console
 
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging(configure => configure.AddConsole());
+
 			serviceCollection.BoltOn(o =>
 			{
 				o.BoltOnAssemblies(typeof(GetAllStudentsRequest).Assembly);
