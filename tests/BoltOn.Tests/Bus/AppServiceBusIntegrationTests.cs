@@ -41,8 +41,8 @@ namespace BoltOn.Tests.Bus
 
 
             var logger = new Mock<IAppLogger<CreateTestStudentHandler>>();
-            logger.Setup(s => s.Debug(It.IsAny<string>()))
-                                .Callback<string>(st => RequestorTestHelper.LoggerStatements.Add(st));
+            logger.Setup(s => s.Debug(It.IsAny<string>(), It.IsAny<object[]>()))
+                                .Callback<string, object[]>((st, a) => RequestorTestHelper.LoggerStatements.Add(st));
             serviceCollection.AddTransient((s) => logger.Object);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -95,7 +95,7 @@ namespace BoltOn.Tests.Bus
             });
 
             var logger = new Mock<IAppLogger<CreateTestStudentHandler>>();
-            logger.Setup(s => s.Debug(It.IsAny<string>()))
+            logger.Setup(s => s.Debug(It.IsAny<string>(), It.IsAny<object[]>()))
                                 .Callback<string>(st => RequestorTestHelper.LoggerStatements.Add(st));
             serviceCollection.AddTransient((s) => logger.Object);
 
@@ -142,7 +142,7 @@ namespace BoltOn.Tests.Bus
             });
 
 			var logger = new Mock<IAppLogger<CreateTestStudentHandler>>();
-            logger.Setup(s => s.Debug(It.IsAny<string>()))
+            logger.Setup(s => s.Debug(It.IsAny<string>(), It.IsAny<object[]>()))
                                 .Callback<string>(st => RequestorTestHelper.LoggerStatements.Add(st));
             serviceCollection.AddTransient((s) => logger.Object);
 
