@@ -5,13 +5,13 @@ namespace BoltOn.Logging
 {
 	public interface IAppLogger<TType>
 	{
-		void Debug(string message);
-		void Info(string message);
-		void Error(string message);
-		void Error(Exception exception);
-		void Warn(string message);
+		void Debug(string message, params object[] args);
+		void Info(string message, params object[] args);
+		void Error(string message, params object[] args);
+		void Error(Exception exception, params object[] args);
+		void Warn(string message, params object[] args);
 	}
-
+	
 	public class AppLogger<TType> : IAppLogger<TType>
 	{
 		readonly ILogger<TType> _logger;
@@ -21,29 +21,29 @@ namespace BoltOn.Logging
 			_logger = logger;
 		}
 
-		public virtual void Debug(string message)
+		public virtual void Debug(string message, params object[] args)
 		{
-			_logger?.LogDebug(message);
+			_logger?.LogDebug(message, args);
 		}
 
-		public virtual void Info(string message)
+		public virtual void Info(string message, params object[] args)
 		{
-			_logger?.LogInformation(message);
+			_logger?.LogInformation(message, args);
 		}
 
-		public virtual void Warn(string message)
+		public virtual void Warn(string message, params object[] args)
 		{
-			_logger?.LogWarning(message);
+			_logger?.LogWarning(message, args);
 		}
 
-		public virtual void Error(string message)
+		public virtual void Error(string message, params object[] args)
 		{
-			_logger?.LogError(message);
+			_logger?.LogError(message, args);
 		}
 
-		public virtual void Error(Exception exception)
+		public virtual void Error(Exception exception, params object[] args)
 		{
-			_logger?.LogError(exception, exception.Message);
+			_logger?.LogError(exception, exception.Message, args);
 		}
 	}
 }
