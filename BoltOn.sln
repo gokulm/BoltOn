@@ -36,6 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Cache", "src\BoltOn.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Samples.Tests", "samples\BoltOn.Samples.Tests\BoltOn.Samples.Tests.csproj", "{FFD18747-6E2E-426C-A824-13DEF3276A0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoltOn.Data.CosmosDb", "src\BoltOn.Data.CosmosDb\BoltOn.Data.CosmosDb.csproj", "{EECA7B29-A7D4-45C2-9DA0-91C8404DEAC9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -98,6 +100,10 @@ Global
 		{FFD18747-6E2E-426C-A824-13DEF3276A0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFD18747-6E2E-426C-A824-13DEF3276A0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFD18747-6E2E-426C-A824-13DEF3276A0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EECA7B29-A7D4-45C2-9DA0-91C8404DEAC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EECA7B29-A7D4-45C2-9DA0-91C8404DEAC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EECA7B29-A7D4-45C2-9DA0-91C8404DEAC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EECA7B29-A7D4-45C2-9DA0-91C8404DEAC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,6 +123,7 @@ Global
 		{308654E2-1509-4BA5-8352-344C3F40CDEF} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 		{2F1A7FA1-6DEF-41EE-9C36-1FE616342EBC} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 		{FFD18747-6E2E-426C-A824-13DEF3276A0E} = {15E5CCAC-85EB-4C98-B1FA-B5DEFD213FCD}
+		{EECA7B29-A7D4-45C2-9DA0-91C8404DEAC9} = {CF6C3199-B58A-4FB2-8E69-4E27B3A7BA29}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {530F371A-8A38-41FE-9A1E-A03ACCDE867B}
