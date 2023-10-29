@@ -13,7 +13,7 @@ public static class Extensions
         return _pluralizer.Pluralize(word);
     }
 
-    public static BootstrapperOptions BoltOnEFModule(this BootstrapperOptions bootstrapperOptions)
+    public static BootstrapperOptions BoltOnCosmosDbModule(this BootstrapperOptions bootstrapperOptions)
     {
         bootstrapperOptions.BoltOnAssemblies(Assembly.GetExecutingAssembly());
         return bootstrapperOptions;

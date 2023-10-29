@@ -49,7 +49,9 @@ namespace BoltOn.Data.EF
 			}
 		}
 
-		public async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
+		public async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
+			CancellationToken cancellationToken = default,
+			params Expression<Func<TEntity, object>>[] includes)
 		{
 			try
 			{
