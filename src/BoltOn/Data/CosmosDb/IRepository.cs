@@ -11,7 +11,7 @@ namespace BoltOn.Data.CosmosDb
     {
         Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
         Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
-            CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes);
+            CancellationToken cancellationToken = default);
         Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default);
         Task UpdateAsync(TEntity entity, string id, CancellationToken cancellationToken = default);
         Task DeleteAsync(string id, string partitionKey, CancellationToken cancellationToken = default);

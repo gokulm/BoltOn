@@ -28,13 +28,8 @@ namespace BoltOn.Data.CosmosDb
 			return response.Resource;
 		}
 
-		public async Task DeleteAsync(string id, string partitionKey, CancellationToken cancellationToken = default)
-		{
-			await _container.DeleteItemAsync<TEntity>(id, new PartitionKey(partitionKey), cancellationToken: cancellationToken);
-		}
-
 		public async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
-			CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includes)
+			CancellationToken cancellationToken = default)
 		{
 			var query = _container.GetItemLinqQueryable<TEntity>()
 							.Where(predicate)
@@ -68,6 +63,11 @@ namespace BoltOn.Data.CosmosDb
 		public async Task UpdateAsync(TEntity entity, string id, CancellationToken cancellationToken = default)
 		{
 			await _container.ReplaceItemAsync(entity, id, cancellationToken: cancellationToken);
+		}
+
+		public async Task DeleteAsync(string id, string partitionKey, CancellationToken cancellationToken = default)
+		{
+			await _container.DeleteItemAsync<TEntity>(id, new PartitionKey(partitionKey), cancellationToken: cancellationToken);
 		}
 	}
 }
