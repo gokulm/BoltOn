@@ -23,27 +23,19 @@ namespace BoltOn.Tests.Data.CosmosDb
 		[Fact]
 		public async Task AddAsync_AddNewEntity_ReturnsAddedEntity()
 		{
-			try
-			{
-				// arrange
-				if (!IntegrationTestHelper.IsCosmosDbServer)
-					return;
-				var id = Guid.NewGuid();
-				var student = new Fakes.Student { Id = id, FirstName = "meghan", LastName = "doe", CourseId = 1 };
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+			var id = Guid.NewGuid();
+			var student = new Fakes.Student { Id = id, FirstName = "meghan", LastName = "doe", CourseId = 1 };
 
-				// act
-				await _cosmosDbFixture.SubjectUnderTest.AddAsync(student);
+			// act
+			await _cosmosDbFixture.SubjectUnderTest.AddAsync(student);
 
-				// assert
-				var result = (await _cosmosDbFixture.SubjectUnderTest.FindByAsync(f => f.Id == id)).FirstOrDefault();
-				Assert.NotNull(result);
-				Assert.Equal("meghan", result.FirstName);
-
-			}
-			catch(Exception ex)
-			{
-				var test = ex;
-			}
+			// assert
+			var result = (await _cosmosDbFixture.SubjectUnderTest.FindByAsync(f => f.Id == id)).FirstOrDefault();
+			Assert.NotNull(result);
+			Assert.Equal("meghan", result.FirstName);
 		}
 
 		//[Fact]
