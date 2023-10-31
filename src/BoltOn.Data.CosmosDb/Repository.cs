@@ -13,25 +13,25 @@ namespace BoltOn.Data.CosmosDb
 	public class Repository<TEntity> : IRepository<TEntity>
 		where TEntity : class
 	{
-		private readonly Container _container;
+		public Container Container { get; private set; }
 
 		public Repository(CosmosClient cosmosClient, string? containerName = null)
 		{
 			var clientOptions = cosmosClient.ClientOptions;
 			var dbContainerName = containerName ?? typeof(TEntity).Name.Pluralize();
-			_container = cosmosClient.GetContainer(clientOptions.ApplicationName, dbContainerName);
+			Container = cosmosClient.GetContainer(clientOptions.ApplicationName, dbContainerName);
 		}
 
-		public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+		public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
 		{
-			var response = await _container.CreateItemAsync(entity, cancellationToken: cancellationToken);
+			var response = await Container.CreateItemAsync(entity, cancellationToken: cancellationToken);
 			return response.Resource;
 		}
 
-		public async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
+		public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
 			CancellationToken cancellationToken = default)
 		{
-			var query = _container.GetItemLinqQueryable<TEntity>()
+			var query = Container.GetItemLinqQueryable<TEntity>()
 							.Where(predicate)
 							.ToFeedIterator();
 
@@ -45,9 +45,9 @@ namespace BoltOn.Data.CosmosDb
 			return entities;
 		}
 
-		public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
+		public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
 		{
-			var query = _container.GetItemLinqQueryable<TEntity>()
+			var query = Container.GetItemLinqQueryable<TEntity>()
 					.ToFeedIterator();
 
 			var entities = new List<TEntity>();
@@ -60,14 +60,14 @@ namespace BoltOn.Data.CosmosDb
 			return entities;
 		}
 
-		public async Task UpdateAsync(TEntity entity, string id, CancellationToken cancellationToken = default)
+		public virtual async Task UpdateAsync(TEntity entity, string id, CancellationToken cancellationToken = default)
 		{
-			await _container.ReplaceItemAsync(entity, id, cancellationToken: cancellationToken);
+			await Container.ReplaceItemAsync(entity, id, cancellationToken: cancellationToken);
 		}
 
-		public async Task DeleteAsync(string id, string partitionKey, CancellationToken cancellationToken = default)
+		public virtual async Task DeleteAsync(string id, string partitionKey, CancellationToken cancellationToken = default)
 		{
-			await _container.DeleteItemAsync<TEntity>(id, new PartitionKey(partitionKey), cancellationToken: cancellationToken);
+			await Container.DeleteItemAsync<TEntity>(id, new PartitionKey(partitionKey), cancellationToken: cancellationToken);
 		}
 	}
 }

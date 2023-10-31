@@ -9,7 +9,7 @@ namespace BoltOn.Tests.Data.CosmosDb.Fakes
 	{
 		[JsonProperty("id")]
 		public Guid Id { get; set; }
-		public int CourseId { get; set; }
+		public string CourseId { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
 		public List<Address> Addresses { get; set; } = new List<Address>();

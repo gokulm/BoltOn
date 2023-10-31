@@ -12,10 +12,11 @@ using Xunit;
 namespace BoltOn.Tests.Data.CosmosDb
 {
 	[Collection("IntegrationTests")]
+	[TestCaseOrderer("BoltOn.Tests.Common.PriorityOrderer", "BoltOn.Tests")]
 	public class CosmosDbRepositoryTests : IClassFixture<CosmosDbFixture>
 	{
 		private readonly CosmosDbFixture _cosmosDbFixture;
-		private Guid _studentId = Guid.NewGuid();
+		private static Guid _studentId = Guid.NewGuid();
 
 		public CosmosDbRepositoryTests(CosmosDbFixture cosmosDbFixture)
 		{
@@ -29,7 +30,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			// arrange
 			if (!IntegrationTestHelper.IsCosmosDbServer)
 				return;
-			var student = new Fakes.Student { Id = _studentId, FirstName = "meghan", LastName = "doe", CourseId = 1 };
+			var student = new Fakes.Student { Id = _studentId, FirstName = "meghan", LastName = "doe", CourseId = "1" };
 
 			// act
 			await _cosmosDbFixture.SubjectUnderTest.AddAsync(student);
@@ -41,13 +42,49 @@ namespace BoltOn.Tests.Data.CosmosDb
 		}
 
 		[Fact]
+		[TestPriority(2)]
+		public async Task UpdateAsync_UpdateAnExistingEntity_UpdatesTheEntity()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+			//var student = new Fakes.Student { LastName = "smith jr" };
+			var student = (await _cosmosDbFixture.SubjectUnderTest.FindByAsync(f => f.Id == _studentId)).FirstOrDefault();
+			student.LastName = "smith jr";
+
+			// act
+			await _cosmosDbFixture.SubjectUnderTest.UpdateAsync(student, _studentId.ToString());
+
+			// assert
+			var result = (await _cosmosDbFixture.SubjectUnderTest.FindByAsync(f => f.Id == _studentId)).FirstOrDefault();
+			Assert.NotNull(result);
+			Assert.Equal("smith jr", result.LastName);
+		}
+
+		[Fact]
+		[TestPriority(3)]
+		public async Task DeleteAsync_DeleteById_DeletesTheEntity()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+
+			// act
+			await _cosmosDbFixture.SubjectUnderTest.DeleteAsync(_studentId.ToString(), "1");
+
+			// assert
+			var result = (await _cosmosDbFixture.SubjectUnderTest.FindByAsync(f => f.Id == _studentId)).FirstOrDefault();
+			Assert.Null(result);
+		}
+
+		[Fact]
 		public async Task GetAllAsync_WhenRecordsExist_ReturnsRecords()
 		{
 			// arrange
 			if (!IntegrationTestHelper.IsCosmosDbServer)
 				return;
 			var id = Guid.NewGuid();
-			var student = new Fakes.Student { Id = id, FirstName = "john", LastName = "smith", CourseId = 1 };
+			var student = new Fakes.Student { Id = id, FirstName = "john", LastName = "smith", CourseId = "1" };
 			await _cosmosDbFixture.SubjectUnderTest.AddAsync(student);
 
 			// act
@@ -190,38 +227,5 @@ namespace BoltOn.Tests.Data.CosmosDb
 		//	Assert.NotNull(expectedResult.FirstOrDefault(a => a.FirstName == "will" && a.LastName == "smith"));
 		//	Assert.NotNull(expectedResult.FirstOrDefault(a => a.FirstName == "brad" && a.LastName == "pitt"));
 		//}
-
-		[Fact]
-		[TestPriority(2)]
-		public async Task UpdateAsync_UpdateAnExistingEntity_UpdatesTheEntity()
-		{
-			// arrange
-			if (!IntegrationTestHelper.IsCosmosDbServer)
-				return;
-			var student = new Fakes.Student { LastName = "smith jr" };
-
-			// act
-			await _cosmosDbFixture.SubjectUnderTest.UpdateAsync(student, _studentId.ToString());
-
-			// assert
-			var result = (await _cosmosDbFixture.SubjectUnderTest.FindByAsync(f => f.Id == _studentId)).FirstOrDefault();
-			Assert.NotNull(result);
-			Assert.Equal("smith jr", result.LastName);
-		}
-
-		[Fact]
-		public async Task DeleteAsync_DeleteById_DeletesTheEntity()
-		{
-			// arrange
-			if (!IntegrationTestHelper.IsCosmosDbServer)
-				return;
-
-			// act
-			await _cosmosDbFixture.SubjectUnderTest.DeleteAsync(_studentId.ToString(), "1");
-
-			// assert
-			var result = (await _cosmosDbFixture.SubjectUnderTest.FindByAsync(f => f.Id == _studentId)).FirstOrDefault();
-			Assert.Null(result);
-		}
 	}
 }
