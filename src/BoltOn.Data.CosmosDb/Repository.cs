@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
-using BoltOn.Data.CosmosDb;
 
 namespace BoltOn.Data.CosmosDb
 {
@@ -22,9 +16,10 @@ namespace BoltOn.Data.CosmosDb
 			Container = cosmosClient.GetContainer(clientOptions.ApplicationName, dbContainerName);
 		}
 
-		public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+		public virtual async Task<TEntity> AddAsync(TEntity entity, PartitionKey? partitionKey = null, 
+			CancellationToken cancellationToken = default)
 		{
-			var response = await Container.CreateItemAsync(entity, cancellationToken: cancellationToken);
+			var response = await Container.CreateItemAsync(entity, partitionKey, cancellationToken: cancellationToken);
 			return response.Resource;
 		}
 
@@ -38,7 +33,7 @@ namespace BoltOn.Data.CosmosDb
 			var entities = new List<TEntity>();
 			while (query.HasMoreResults)
 			{
-				var response = await query.ReadNextAsync();
+				var response = await query.ReadNextAsync(cancellationToken);
 				entities.AddRange(response);
 			}
 
@@ -53,21 +48,46 @@ namespace BoltOn.Data.CosmosDb
 			var entities = new List<TEntity>();
 			while (query.HasMoreResults)
 			{
-				var response = await query.ReadNextAsync();
+				var response = await query.ReadNextAsync(cancellationToken);
 				entities.AddRange(response);
 			}
 
 			return entities;
 		}
 
-		public virtual async Task UpdateAsync(TEntity entity, string id, CancellationToken cancellationToken = default)
+		public virtual async Task UpdateAsync(TEntity entity, string id, 
+			PartitionKey? partitionKey = null, CancellationToken cancellationToken = default)
 		{
-			await Container.ReplaceItemAsync(entity, id, cancellationToken: cancellationToken);
+			await Container.ReplaceItemAsync(entity, id, partitionKey, cancellationToken: cancellationToken);
 		}
 
-		public virtual async Task DeleteAsync(string id, string partitionKey, CancellationToken cancellationToken = default)
+		public virtual async Task DeleteAsync(string id, PartitionKey partitionKey, 
+			CancellationToken cancellationToken = default)
 		{
-			await Container.DeleteItemAsync<TEntity>(id, new PartitionKey(partitionKey), cancellationToken: cancellationToken);
+			await Container.DeleteItemAsync<TEntity>(id, partitionKey, cancellationToken: cancellationToken);
+		}
+
+		public async Task<IEnumerable<TEntity>> AddAsync(IEnumerable<TEntity> entities, PartitionKey partitionKey,
+			CancellationToken cancellationToken = default)
+		{
+			var batch = Container.CreateTransactionalBatch(partitionKey);
+
+			foreach (var entity in entities)
+			{
+				batch.CreateItem<TEntity>(entity);
+			}
+
+			using TransactionalBatchResponse response = await batch.ExecuteAsync(cancellationToken);
+			var results = new List<TEntity>();
+			if (response.IsSuccessStatusCode)
+			{
+				for (int i = 0; i < entities.Count(); i++)
+				{
+					var entityResponse = response.GetOperationResultAtIndex<TEntity>(i);
+					results.Add(entityResponse.Resource);
+				}
+			}
+			return results;
 		}
 	}
 }

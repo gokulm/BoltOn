@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 using BoltOn.Tests.Common;
 using BoltOn.Tests.Data.CosmosDb.Fakes;
 using BoltOn.Tests.Other;
-using Microsoft.Extensions.DependencyInjection;
-using Nest;
+using Microsoft.Azure.Cosmos;
 using Xunit;
 
 namespace BoltOn.Tests.Data.CosmosDb
@@ -43,6 +42,125 @@ namespace BoltOn.Tests.Data.CosmosDb
 
 		[Fact]
 		[TestPriority(2)]
+		public async Task GetAllAsync_WhenRecordsExist_ReturnsRecords()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+			var id = Guid.NewGuid();
+			var student = new Fakes.Student
+			{
+				Id = id, FirstName = "john",
+				LastName = "smith",
+				CourseId = "1",
+				Addresses = new List<Fakes.Address>
+				{
+					new Fakes.Address { Id = Guid.NewGuid(), City ="a", Street = "b"},
+					new Fakes.Address { Id = Guid.NewGuid(), City ="x", Street = "y"}
+				}
+			};
+			await _cosmosDbFixture.SubjectUnderTest.AddAsync(student);
+
+			// act
+			var result = await _cosmosDbFixture.SubjectUnderTest.GetAllAsync();
+
+			// assert
+			Assert.True(result.Count() == 2);
+		}
+
+		[Fact]
+		[TestPriority(3)]
+		public async Task FindByAsync_WhenExactMatch_ReturnsRecord()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+
+			// act
+			var result = await _cosmosDbFixture.SubjectUnderTest
+					.FindByAsync(f => f.FirstName.Equals("john"));
+
+			// assert
+			Assert.NotNull(result);
+			Assert.True(result.Count() == 1);
+			Assert.Equal("john", result.First().FirstName);
+		}
+
+		[Fact]
+		[TestPriority(3)]
+		public async Task FindByAsync_ChildNodeSearch_ReturnsRecord()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+
+			// act
+			var result = await _cosmosDbFixture.SubjectUnderTest
+					.FindByAsync(f => f.Addresses.Any(w => w.City == "a"));
+
+			// assert
+			Assert.NotNull(result);
+			Assert.True(result.Count() == 1);
+			Assert.Equal("john", result.First().FirstName);
+		}
+
+		[Fact]
+		[TestPriority(3)]
+		public async Task FindByAsync_CaseInsensitive_ReturnsRecord()
+		{
+
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+
+			// act
+			var result = await _cosmosDbFixture.SubjectUnderTest
+					.FindByAsync(f => f.FirstName.Equals("John", StringComparison.InvariantCultureIgnoreCase));
+
+			// assert
+			Assert.NotNull(result);
+			Assert.True(result.Count() == 1);
+			Assert.Equal("john", result.First().FirstName);
+		}
+
+		[Fact]
+		[TestPriority(3)]
+		public async Task FindByAsync_WhenContainsMatch_ReturnRecord()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+
+			// act
+			var result = await _cosmosDbFixture.SubjectUnderTest
+					.FindByAsync(f => f.FirstName.Contains("jo"));
+
+			// assert
+			Assert.NotNull(result);
+			Assert.True(result.Count() == 1);
+			Assert.Equal("john", result.First().FirstName);
+		}
+
+		[Fact]
+		[TestPriority(3)]
+		public async Task FindByAsync_AndSearch_ReturnRecord()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+
+			// act
+			var result = await _cosmosDbFixture.SubjectUnderTest
+					.FindByAsync(f => f.FirstName.Contains("jo") && f.LastName.Equals("smith"));
+
+			// assert
+			Assert.NotNull(result);
+			Assert.True(result.Count() == 1);
+			Assert.Equal("john", result.First().FirstName);
+		}
+
+		[Fact]
+		[TestPriority(4)]
 		public async Task UpdateAsync_UpdateAnExistingEntity_UpdatesTheEntity()
 		{
 			// arrange
@@ -62,7 +180,26 @@ namespace BoltOn.Tests.Data.CosmosDb
 		}
 
 		[Fact]
-		[TestPriority(3)]
+		[TestPriority(5)]
+		public async Task AddAsync_AddNewEntities_ReturnsAddedEntities()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+			var student1 = new Fakes.Student { Id = Guid.NewGuid(), FirstName = "will", LastName = "smith", CourseId = "1" };
+			var student2 = new Fakes.Student { Id = Guid.NewGuid(), FirstName = "brad", LastName = "pitt", CourseId = "1" };
+			var students = new List<Fakes.Student> { student1, student2 };
+
+			// act
+			var expectedResult = await _cosmosDbFixture.SubjectUnderTest.AddAsync(students, new PartitionKey("1"));
+
+			// assert
+			Assert.NotNull(expectedResult.FirstOrDefault(a => a.FirstName == "will" && a.LastName == "smith"));
+			Assert.NotNull(expectedResult.FirstOrDefault(a => a.FirstName == "brad" && a.LastName == "pitt"));
+		}
+
+		[Fact]
+		[TestPriority(10)]
 		public async Task DeleteAsync_DeleteById_DeletesTheEntity()
 		{
 			// arrange
@@ -70,162 +207,11 @@ namespace BoltOn.Tests.Data.CosmosDb
 				return;
 
 			// act
-			await _cosmosDbFixture.SubjectUnderTest.DeleteAsync(_studentId.ToString(), "1");
+			await _cosmosDbFixture.SubjectUnderTest.DeleteAsync(_studentId.ToString(), new PartitionKey("1"));
 
 			// assert
 			var result = (await _cosmosDbFixture.SubjectUnderTest.FindByAsync(f => f.Id == _studentId)).FirstOrDefault();
 			Assert.Null(result);
 		}
-
-		[Fact]
-		public async Task GetAllAsync_WhenRecordsExist_ReturnsRecords()
-		{
-			// arrange
-			if (!IntegrationTestHelper.IsCosmosDbServer)
-				return;
-			var id = Guid.NewGuid();
-			var student = new Fakes.Student { Id = id, FirstName = "john", LastName = "smith", CourseId = "1" };
-			await _cosmosDbFixture.SubjectUnderTest.AddAsync(student);
-
-			// act
-			var result = await _cosmosDbFixture.SubjectUnderTest.GetAllAsync();
-
-			// assert
-			Assert.True(result.Count() > 1);
-		}
-
-		[Fact]
-		public async Task FindByAsync_WhenExactMatch_ReturnsRecord()
-		{
-			// arrange
-			if (!IntegrationTestHelper.IsCosmosDbServer)
-				return;
-
-			// act
-			var result = await _cosmosDbFixture.SubjectUnderTest
-					.FindByAsync(f => f.FirstName.Equals("john"));
-
-			// assert
-			Assert.NotNull(result);
-			Assert.True(result.Count() == 1);
-			Assert.Equal("john", result.First().FirstName);
-		}
-
-		//[Fact]
-		//public async Task FindByAsync_ChildNodeSearch_ReturnsRecord()
-		//{
-		//	// arrange
-		//	if (!IntegrationTestHelper.IsElasticsearchServer)
-		//		return;
-		//	var searchRequest = new SearchRequest
-		//	{
-		//		Query = new MatchQuery { Field = "addresses.street", Query = "sparkman" }
-		//	};
-
-		//	// act
-		//	var result = await Search(searchRequest);
-
-		//	// assert
-		//	Assert.NotNull(result);
-		//	Assert.True(result.Count() == 1);
-		//	Assert.Equal("Jaden", result.First().FirstName);
-		//}
-
-		[Fact]
-		public async Task FindByAsync_CaseInsensitive_ReturnsRecord()
-		{
-
-			// arrange
-			if (!IntegrationTestHelper.IsCosmosDbServer)
-				return;
-
-			// act
-			var result = await _cosmosDbFixture.SubjectUnderTest
-					.FindByAsync(f => f.FirstName.Equals("John", StringComparison.InvariantCultureIgnoreCase));
-
-			// assert
-			Assert.NotNull(result);
-			Assert.True(result.Count() == 1);
-			Assert.Equal("john", result.First().FirstName);
-		}
-
-		[Fact]
-		public async Task FindByAsync_WhenContainsMatch_ReturnRecord()
-		{
-			// arrange
-			if (!IntegrationTestHelper.IsCosmosDbServer)
-				return;
-
-			// act
-			var result = await _cosmosDbFixture.SubjectUnderTest
-					.FindByAsync(f => f.FirstName.StartsWith("jo"));
-
-			// assert
-			Assert.NotNull(result);
-			Assert.True(result.Count() == 1);
-			Assert.Equal("john", result.First().FirstName);
-		}
-
-		//[Fact]
-		//public async Task FindByAsync_AndSearch_ReturnRecord()
-		//{
-		//	// arrange
-		//	if (!IntegrationTestHelper.IsElasticsearchServer)
-		//		return;
-		//	var searchRequest = new SearchRequest
-		//	{
-		//		Query = new MatchQuery { Field = "firstName", Query = "John" } &&
-		//		new MatchQuery { Field = "lastName", Query = "Smith" }
-		//	};
-
-		//	// act
-		//	var result = await Search(searchRequest);
-
-		//	// assert
-		//	Assert.NotNull(result);
-		//	Assert.True(result.Count() == 1);
-		//}
-
-		//[Fact]
-		//public async Task FindByAsync_WhenNoMatch_ReturnNull()
-		//{
-		//	// arrange
-		//	if (!IntegrationTestHelper.IsElasticsearchServer)
-		//		return;
-		//	var searchRequest = new SearchRequest
-		//	{
-		//		Query = new MatchQuery { Field = "firstName", Query = "2" }
-		//	};
-
-		//	// act
-		//	var result = await Search(searchRequest);
-
-		//	// assert
-		//	Assert.NotNull(result);
-		//	Assert.True(result.Count() == 0);
-		//}
-
-		//[Fact]
-		//public async Task AddAsync_AddNewEntities_ReturnsAddedEntities()
-		//{
-		//	// arrange
-		//	if (!IntegrationTestHelper.IsElasticsearchServer)
-		//		return;
-		//	var id1 = 5;
-		//	var student1 = new Student { Id = id1, FirstName = "will", LastName = "smith" };
-		//	var id2 = 6;
-		//	var student2 = new Student { Id = id2, FirstName = "brad", LastName = "pitt" };
-		//	var employees = new List<Student> { student1, student2 };
-
-		//	// act
-		//	var actualResult = await _elasticDbFixture.SubjectUnderTest.AddAsync(employees);
-
-		//	// assert
-		//	System.Threading.Thread.Sleep(1000);
-		//	var expectedResult = await _elasticDbFixture.SubjectUnderTest.GetAllAsync();
-		//	Assert.NotNull(actualResult);
-		//	Assert.NotNull(expectedResult.FirstOrDefault(a => a.FirstName == "will" && a.LastName == "smith"));
-		//	Assert.NotNull(expectedResult.FirstOrDefault(a => a.FirstName == "brad" && a.LastName == "pitt"));
-		//}
 	}
 }
