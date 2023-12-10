@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using BoltOn.Tests.Common;
 using BoltOn.Tests.Data.CosmosDb.Fakes;
@@ -29,7 +30,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 			// arrange
 			if (!IntegrationTestHelper.IsCosmosDbServer)
 				return;
-			var student = new Fakes.Student { Id = _studentId, FirstName = "meghan", LastName = "doe", CourseId = "1" };
+			var student = new Fakes.Student { Id = _studentId, FirstName = "meghan", LastName = "doe", CourseId = "1", Age = 20 };
 
 			// act
 			await _cosmosDbFixture.SubjectUnderTest.AddAsync(student);
@@ -50,7 +51,8 @@ namespace BoltOn.Tests.Data.CosmosDb
 			var id = Guid.NewGuid();
 			var student = new Fakes.Student
 			{
-				Id = id, FirstName = "john",
+				Id = id,
+				FirstName = "john",
 				LastName = "smith",
 				CourseId = "1",
 				Addresses = new List<Fakes.Address>
@@ -196,6 +198,34 @@ namespace BoltOn.Tests.Data.CosmosDb
 			// assert
 			Assert.NotNull(expectedResult.FirstOrDefault(a => a.FirstName == "will" && a.LastName == "smith"));
 			Assert.NotNull(expectedResult.FirstOrDefault(a => a.FirstName == "brad" && a.LastName == "pitt"));
+		}
+
+		[Fact]
+		[TestPriority(6)]
+		public async Task PatchAsync_WithPatchOperations_PatchesTheEntity()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+			List<PatchOperation> patchOperations = new()
+			{
+				PatchOperation.Add("/MiddleName", "M"),
+				PatchOperation.Remove("/LastName"),
+				PatchOperation.Increment("/Age", 25)
+			};
+
+			// act
+			await _cosmosDbFixture.SubjectUnderTest.PatchAsync(_studentId.ToString(), new PartitionKey("1"), patchOperations);
+
+			// assert
+			// await Task.Delay(2000);
+			var result = (await _cosmosDbFixture.SubjectUnderTest.FindByAsync(f => f.Id == _studentId)).FirstOrDefault();
+			Assert.NotNull(result);
+			Assert.Equal(45, result.Age);
+			Assert.Null(result.LastName);
+			// todo: assert patch operations
+			// var studentString = JsonSerializer.Serialize(result);
+			// Assert.Contains("MiddleName", studentString);
 		}
 
 		[Fact]

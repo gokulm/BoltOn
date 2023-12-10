@@ -23,5 +23,8 @@ namespace BoltOn.Data.CosmosDb
             CancellationToken cancellationToken = default);
         Task DeleteAsync(string id, PartitionKey partitionKey, 
             CancellationToken cancellationToken = default);
+        Task<ItemResponse<TEntity>> PatchAsync(string id, PartitionKey partitionKey, 
+            IEnumerable<PatchOperation> patchOperations,
+            CancellationToken cancellationToken = default);    
     }
 }

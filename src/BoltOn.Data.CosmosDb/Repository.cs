@@ -7,7 +7,7 @@ namespace BoltOn.Data.CosmosDb
 	public class Repository<TEntity> : IRepository<TEntity>
 		where TEntity : class
 	{
-		public Container Container { get; private set; }
+		protected Container Container { get; private set; }
 
 		public Repository(CosmosClient cosmosClient, string? containerName = null)
 		{
@@ -16,7 +16,7 @@ namespace BoltOn.Data.CosmosDb
 			Container = cosmosClient.GetContainer(clientOptions.ApplicationName, dbContainerName);
 		}
 
-		public virtual async Task<TEntity> AddAsync(TEntity entity, PartitionKey? partitionKey = null, 
+		public virtual async Task<TEntity> AddAsync(TEntity entity, PartitionKey? partitionKey = null,
 			CancellationToken cancellationToken = default)
 		{
 			var response = await Container.CreateItemAsync(entity, partitionKey, cancellationToken: cancellationToken);
@@ -55,13 +55,13 @@ namespace BoltOn.Data.CosmosDb
 			return entities;
 		}
 
-		public virtual async Task UpdateAsync(TEntity entity, string id, 
+		public virtual async Task UpdateAsync(TEntity entity, string id,
 			PartitionKey? partitionKey = null, CancellationToken cancellationToken = default)
 		{
 			await Container.ReplaceItemAsync(entity, id, partitionKey, cancellationToken: cancellationToken);
 		}
 
-		public virtual async Task DeleteAsync(string id, PartitionKey partitionKey, 
+		public virtual async Task DeleteAsync(string id, PartitionKey partitionKey,
 			CancellationToken cancellationToken = default)
 		{
 			await Container.DeleteItemAsync<TEntity>(id, partitionKey, cancellationToken: cancellationToken);
@@ -74,7 +74,7 @@ namespace BoltOn.Data.CosmosDb
 
 			foreach (var entity in entities)
 			{
-				batch.CreateItem<TEntity>(entity);
+				_ = batch.CreateItem<TEntity>(entity);
 			}
 
 			using TransactionalBatchResponse response = await batch.ExecuteAsync(cancellationToken);
@@ -88,6 +88,15 @@ namespace BoltOn.Data.CosmosDb
 				}
 			}
 			return results;
+		}
+
+		public async Task<ItemResponse<TEntity>> PatchAsync(string id, PartitionKey partitionKey,
+			IEnumerable<PatchOperation> patchOperations,
+			CancellationToken cancellationToken = default)
+		{
+			return await Container.PatchItemAsync<TEntity>(id, partitionKey,
+				patchOperations: patchOperations.ToList(),
+				cancellationToken: cancellationToken);
 		}
 	}
 }
