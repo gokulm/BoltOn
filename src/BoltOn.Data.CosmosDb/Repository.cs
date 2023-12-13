@@ -26,14 +26,14 @@ namespace BoltOn.Data.CosmosDb
 		public virtual async Task<IEnumerable<TEntity>> FindByAsync(Expression<Func<TEntity, bool>> predicate,
 			CancellationToken cancellationToken = default)
 		{
-			var query = Container.GetItemLinqQueryable<TEntity>()
+			using var feedIterator = Container.GetItemLinqQueryable<TEntity>()
 							.Where(predicate)
 							.ToFeedIterator();
 
 			var entities = new List<TEntity>();
-			while (query.HasMoreResults)
+			while (feedIterator.HasMoreResults)
 			{
-				var response = await query.ReadNextAsync(cancellationToken);
+				var response = await feedIterator.ReadNextAsync(cancellationToken);
 				entities.AddRange(response);
 			}
 
@@ -97,6 +97,20 @@ namespace BoltOn.Data.CosmosDb
 			return await Container.PatchItemAsync<TEntity>(id, partitionKey,
 				patchOperations: patchOperations.ToList(),
 				cancellationToken: cancellationToken);
+		}
+
+		public async Task<IEnumerable<TEntity>> QueryAsync(QueryDefinition queryDefinition, 
+			CancellationToken cancellationToken = default)
+		{
+			using var feedIterator = Container.GetItemQueryIterator<TEntity>(queryDefinition: queryDefinition);
+			var entities = new List<TEntity>();
+			while (feedIterator.HasMoreResults)
+			{
+				var response = await feedIterator.ReadNextAsync(cancellationToken);
+				entities.AddRange(response);
+			}
+			
+			return entities;
 		}
 	}
 }

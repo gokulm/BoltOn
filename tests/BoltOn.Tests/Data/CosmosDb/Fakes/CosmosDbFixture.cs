@@ -46,8 +46,6 @@ namespace BoltOn.Tests.Data.CosmosDb.Fakes
 				return cosmosClient;
 			});
 			serviceCollection.AddScoped<IRepository<Student>, Repository<Student>>();
-
-
 			ServiceProvider = serviceCollection.BuildServiceProvider();
             ServiceProvider.TightenBolts();
             SubjectUnderTest = ServiceProvider.GetService<IRepository<Student>>();

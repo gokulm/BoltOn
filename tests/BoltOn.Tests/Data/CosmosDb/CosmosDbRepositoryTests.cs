@@ -202,6 +202,105 @@ namespace BoltOn.Tests.Data.CosmosDb
 
 		[Fact]
 		[TestPriority(6)]
+		public async Task QueryAsync_WithParameterizedEqualSearch_ReturnsEntities()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+			var parameterizedQuery = new QueryDefinition(
+					query: "SELECT * FROM Students s WHERE s.LastName = @lastName"
+				).WithParameter("@lastName", "smith");
+
+			// act
+			var result = await _cosmosDbFixture.SubjectUnderTest.QueryAsync(parameterizedQuery);
+
+			// assert
+			Assert.NotNull(result);
+			Assert.True(result.Count() == 2);
+			Assert.Equal("john", result.First().FirstName);
+			Assert.Equal("will", result.Last().FirstName);
+		}
+
+		[Fact]
+		[TestPriority(7)]
+		public async Task QueryAsync_WithParameterizedLikeSearch_ReturnsEntities()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+			var parameterizedQuery = new QueryDefinition(
+					query: "SELECT * FROM Students s WHERE s.FirstName like @firstName"
+				).WithParameter("@firstName", "jo%");
+
+			// act
+			var result = await _cosmosDbFixture.SubjectUnderTest.QueryAsync(parameterizedQuery);
+
+			// assert
+			Assert.NotNull(result);
+			Assert.True(result.Count() == 1);
+			Assert.Equal("john", result.First().FirstName);
+		}
+
+		[Fact]
+		[TestPriority(8)]
+		public async Task QueryAsync_WithDifferentCasingInTheTableName_ReturnsEntities()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+			var parameterizedQuery = new QueryDefinition(
+					query: "SELECT * FROM students s WHERE s.FirstName = @firstName"
+				).WithParameter("@firstName", "john");
+
+			// act
+			var result = await _cosmosDbFixture.SubjectUnderTest.QueryAsync(parameterizedQuery);
+
+			// assert
+			Assert.NotNull(result);
+			Assert.True(result.Count() == 1);
+			Assert.Equal("john", result.First().FirstName);
+		}
+
+		[Fact]
+		[TestPriority(9)]
+		public async Task QueryAsync_WithDifferentCasingInTheColumnName_ReturnsNoEntity()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+			var parameterizedQuery = new QueryDefinition(
+					query: "SELECT * FROM Students s WHERE s.firstName = @firstName"
+				).WithParameter("@firstName", "john");
+
+			// act
+			var result = await _cosmosDbFixture.SubjectUnderTest.QueryAsync(parameterizedQuery);
+
+			// assert
+			Assert.NotNull(result);
+			Assert.True(result.Count() == 0);
+		}
+
+		[Fact]
+		[TestPriority(10)]
+		public async Task QueryAsync_WithDifferentCasingInTheColumnValue_ReturnsNoEntity()
+		{
+			// arrange
+			if (!IntegrationTestHelper.IsCosmosDbServer)
+				return;
+			var parameterizedQuery = new QueryDefinition(
+					query: "SELECT * FROM Students s WHERE s.FirstName = @firstName"
+				).WithParameter("@firstName", "John");
+
+			// act
+			var result = await _cosmosDbFixture.SubjectUnderTest.QueryAsync(parameterizedQuery);
+
+			// assert
+			Assert.NotNull(result);
+			Assert.True(result.Count() == 0);
+		}
+		
+		[Fact]
+		[TestPriority(11)]
 		public async Task PatchAsync_WithPatchOperations_PatchesTheEntity()
 		{
 			// arrange
@@ -229,7 +328,7 @@ namespace BoltOn.Tests.Data.CosmosDb
 		}
 
 		[Fact]
-		[TestPriority(10)]
+		[TestPriority(12)]
 		public async Task DeleteAsync_DeleteById_DeletesTheEntity()
 		{
 			// arrange
